@@ -254,6 +254,7 @@ Record every non-obvious choice here: **What**, **Why**, **Alternatives consider
 - [0247](#0247-parda-switches-servers-only-on-a-crash-and-only-in-auto): Parda switches servers only on a crash, and only in Auto
 - [0248](#0248-servers-1-to-4-follow-the-viduki-embed-contract): Servers 1 to 4 follow the Viduki embed contract
 - [0249](#0249-pardas-billboard-fills-the-first-screen-names-no-provider-and-has-its-own-account-page): Parda's billboard fills the first screen, names no provider, and has its own account page
+- [0250](#0250-a-resting-mouse-holds-the-billboard-only-over-its-lower-mask): A resting mouse holds the billboard only over its lower mask
 </details>
 
 ---
@@ -3305,3 +3306,14 @@ Measured on the owner's Windows machine (Node 24.11, 12 threads, 11.7 GB), 2026-
 - Text over the picture from `lg` (a shade and on-picture tokens): built, then dropped for the reason above.
 - Copying the account forms into Parda: two copies to keep in step; the frame context reuses them.
 - Linking the account menu to `/account` (as before): the visitor left Parda's look for the admin's.
+
+## 0250: A resting mouse holds the billboard only over its lower mask
+
+**What:** The billboard's hold on a resting mouse (`onPointerEnter`/`onPointerLeave`, mouse only) moved from the whole section to its lower mask: the title, facts, actions and dots. Focus inside the billboard still holds it, and the pause button, the hidden tab and reduced motion are unchanged.
+
+**Why:** From `lg` the billboard is the whole first screen under the top mask (0249), so wherever a visitor left the cursor it was over the billboard, and the slides never moved: the owner reported them "not playing" (2026-11-07). WCAG 2.2.2 asks for a way to pause, which the visible button gives; a hover hold is a courtesy for someone reaching for the controls, and the lower mask is where they are.
+
+**Alternatives considered:**
+
+- Dropping the hover hold: a visitor moving to Play or the dots could see the slide change under the cursor.
+- Holding only from `md` down, or over the picture's centre: harder to explain, and the screen's size still decides where the cursor rests.

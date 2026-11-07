@@ -105,7 +105,7 @@ function Picture({ item, priority, current }: { item: BillboardItem; priority: b
  * the actions; from lg it is exactly the first screen. It moves on every 6 s (4 s on
  * phones), and it stops (WCAG 2.2.2) when:
  * - the visible pause button is pressed (it stays paused until played again);
- * - a pointer rests on it or focus is inside it (only while it is);
+ * - a pointer rests on its lower mask, or focus is inside it (only while it is; 0250);
  * - the visitor prefers reduced motion (it never moves on its own, and the button is hidden);
  * - the tab is hidden.
  *
@@ -172,8 +172,6 @@ export function Billboard({
 			aria-roledescription={m.pd_billboard_role()}
 			aria-label={m.pd_billboard_label()}
 			className={cn(FRAME, className)}
-			onPointerEnter={(event) => event.pointerType === "mouse" && setHeld(true)}
-			onPointerLeave={() => setHeld(false)}
 			onFocus={() => setHeld(true)}
 			onBlur={release}
 			data-testid="billboard"
@@ -191,7 +189,15 @@ export function Billboard({
 					</p>
 				) : null}
 			</div>
-			<div className={LOWER}>
+			{/*
+			 * A pointer holds the slide only over the lower mask (title, actions, dots): from lg
+			 * the picture is the whole first screen, so a resting cursor held it for good (0250).
+			 */}
+			<div
+				className={LOWER}
+				onPointerEnter={(event) => event.pointerType === "mouse" && setHeld(true)}
+				onPointerLeave={() => setHeld(false)}
+			>
 				{/* The carousel pattern (WAI-ARIA APG): a slide is a group with a role description, not a fieldset. */}
 				{/* biome-ignore lint/a11y/useSemanticElements: a <fieldset> is for form controls. */}
 				<div

@@ -19,16 +19,17 @@
       "schedule": "30 2 * * *"
     }
   ],
-  "rewrites": [
-    {
-      "source": "/:path*",
-      "has": [
-        {
-          "type": "host",
-          "value": "portfolio-ak-lime.vercel.app"
-        }
-      ],
-      "destination": "/app/parda/:path*"
-    }
-  ]
+ 
+"rewrites": [
+  {
+    "source": "/",
+    "has": [
+      {
+        "type": "host",
+        "value": "portfolio-ak-lime.vercel.app"
+      }
+    ],
+    "destination": "/app/parda"
+  }
+]
 }
