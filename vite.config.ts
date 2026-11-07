@@ -133,6 +133,16 @@ export default defineConfig(async ({ command, mode }) => {
 					"/**": { headers: STATIC_SECURITY_HEADERS },
 					// Parda's placeholder player is framed by this app's own pages (decision 0230).
 					"/parda/api/**": { headers: { "x-frame-options": "SAMEORIGIN" } }, // @parda
+					// parda:start
+					// For now the Vercel deployment is Parda alone: its home redirects there (decision 0252).
+					// Vercel sets VERCEL=1 at build time; local builds, dev and e2e keep the portfolio at /.
+					...(process.env.VERCEL
+						? {
+								"/": { redirect: { to: "/app/parda", status: 307 } },
+								"/ne": { redirect: { to: "/ne/app/parda", status: 307 } },
+							}
+						: {}),
+					// parda:end
 				},
 				rolldownConfig: {
 					onwarn(warning, warn) {

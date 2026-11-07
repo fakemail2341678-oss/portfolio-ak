@@ -63,4 +63,6 @@ Moved here from CLAUDE.md, which keeps only the ones that apply everywhere. Don'
 
 - **Running production locally** needs `EMAIL_PROVIDER=resend` and a `RESEND_API_KEY` (any `re_…` placeholder works when emails aren't sent). Production refuses the console email provider.
 - **Raw SQL inserts into Better Auth tables** (seeds, scripts) must set `updated_at` on `account` and `session`: those columns have no database default.
+- **Redirects and rewrites go in Nitro's `routeRules`** (`vite.config.ts`), never in `vercel.json`: Nitro writes Vercel's routing (`.vercel/output/config.json`), and a rewrite keeps the old URL, which the client router then renders. For now a Vercel build (`VERCEL=1`) sends `/` and `/ne` to Parda with a 307; delete that block to bring the portfolio back (0252). <!-- @parda -->
 - **Slow `pnpm dev`?** Run `pnpm diagnose`: a remote database costs a few hundred ms per query from far away; `pnpm dev:local` uses a local one (0155).
+- **`read ECONNRESET` in the dev overlay or logs:** Neon dropped an idle pooled connection (its compute suspends after a few idle minutes). `src/server/db/client.ts` listens for the pool's `error` and logs a `warn`; the next query opens a fresh connection. Keep that listener on any new `Pool` (0251).

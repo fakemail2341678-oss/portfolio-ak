@@ -7,13 +7,14 @@ import { attachDatabasePool } from "@vercel/functions";
 import { drizzle, type NodePgDatabase } from "drizzle-orm/node-postgres";
 import { Pool } from "pg";
 import { serverEnv } from "../env";
+import { errorFields, log } from "../log";
 import { withVerifiedSsl } from "./connection-string";
 import * as schema from "./schema";
 
 export type Database = NodePgDatabase<typeof schema> & { $client: Pool };
 
-const createPool = () =>
-	new Pool({
+const createPool = () => {
+	const pool = new Pool({
 		connectionString: withVerifiedSsl(serverEnv.DATABASE_URL),
 		// Neon's PgBouncer (the -pooler host) does the real pooling. Keep the client pool small.
 		max: 5,
@@ -22,6 +23,12 @@ const createPool = () =>
 		idleTimeoutMillis: process.env.NODE_ENV === "production" ? 10_000 : 300_000,
 		connectionTimeoutMillis: 10_000,
 	});
+	// An idle connection the server drops (Neon suspending its compute, a network blip) makes
+	// the pool emit "error"; unheard, that is an uncaught `read ECONNRESET`. The pool has
+	// already discarded the client and opens a fresh one for the next query (decision 0251).
+	pool.on("error", (error) => log("warn", "db idle connection dropped", errorFields(error)));
+	return pool;
+};
 
 // Reuse one pool across dev hot reloads instead of leaking a new pool per edit.
 const globalForDb = globalThis as typeof globalThis & { __appDbPool?: Pool };

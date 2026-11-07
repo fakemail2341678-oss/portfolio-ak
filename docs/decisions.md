@@ -255,6 +255,8 @@ Record every non-obvious choice here: **What**, **Why**, **Alternatives consider
 - [0248](#0248-servers-1-to-4-follow-the-viduki-embed-contract): Servers 1 to 4 follow the Viduki embed contract
 - [0249](#0249-pardas-billboard-fills-the-first-screen-names-no-provider-and-has-its-own-account-page): Parda's billboard fills the first screen, names no provider, and has its own account page
 - [0250](#0250-a-resting-mouse-holds-the-billboard-only-over-its-lower-mask): A resting mouse holds the billboard only over its lower mask
+- [0251](#0251-the-database-pool-listens-for-dropped-idle-connections): The database pool listens for dropped idle connections
+- [0252](#0252-the-vercel-deployment-opens-on-parda): The Vercel deployment opens on Parda
 </details>
 
 ---
@@ -3317,3 +3319,26 @@ Measured on the owner's Windows machine (Node 24.11, 12 threads, 11.7 GB), 2026-
 
 - Dropping the hover hold: a visitor moving to Play or the dots could see the slide change under the cursor.
 - Holding only from `md` down, or over the picture's centre: harder to explain, and the screen's size still decides where the cursor rests.
+
+## 0251: The database pool listens for dropped idle connections
+
+**What:** `src/server/db/client.ts` adds an `error` listener to the `pg` `Pool` when it creates it, logging `warn` "db idle connection dropped" with the error's message. Nothing else changes: the pool has already removed the broken client, and the next query opens a new connection.
+
+**Why:** `pnpm dev` showed `read ECONNRESET at TCP.onStreamRead` in the Vite overlay (2026-11-07). Reproduced with the same pool settings against the dev Neon database: a connection left idle was reset by the server after 402 s (`ECONNRESET`), and a query afterwards succeeded. Dev keeps idle connections up to 5 min (`idleTimeoutMillis: 300_000`), as long as Neon's compute stays awake after the last query, so a suspend can drop them first. A pool emits `error` for an idle client that fails; with no listener, Node treats that as an uncaught exception. The listener is added inside `createPool`, so the pool reused across hot reloads gets exactly one.
+
+**Alternatives considered:**
+
+- A shorter dev idle timeout: fewer resets, not none (network blips still drop connections), and every request after a pause pays a new TLS handshake.
+- Neon's pooled (`-pooler`) host in dev: 0015 assumes it; worth doing, but it changes where connections end, not whether one can drop.
+
+## 0252: The Vercel deployment opens on Parda
+
+**What:** On a Vercel build (`VERCEL=1`, set by Vercel at build time), Nitro `routeRules` in `vite.config.ts` redirect `/` to `/app/parda` and `/ne` to `/ne/app/parda` with a 307. Nitro compiles them into `.vercel/output/config.json`, so Vercel answers before the function runs. The rest of the site keeps its URLs. `vercel.json` keeps only the framework and the crons.
+
+**Why:** The owner uses Parda as the deployed app for now (2026-11-07). A `rewrites` entry in `vercel.json` (host `portfolio-ak-lime.vercel.app`, `/` to `/app/parda`) did nothing visible: Nitro writes the deployment's routing itself, and a rewrite keeps `/` in the address bar, so the router hydrates the portfolio's page even if the server rendered Parda. A redirect changes the URL, so server and client agree. 307 because it is temporary: browsers don't cache it for good.
+
+**Alternatives considered:**
+
+- A redirect in the portfolio's route (`beforeLoad`): it would apply in dev and e2e too, or need an env check in app code.
+- Matching only the production host: every preview deployment would show the portfolio, which isn't the deployed app now.
+- An env variable to turn it on: one more setting to remember; `VERCEL` already says where the build runs.
