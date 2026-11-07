@@ -125,6 +125,40 @@ export const serverEnvSchema = {
 	/** The e2e suite's stand-in for the realtime service (ws://). Leave unset everywhere else. */
 	PARDA_REALTIME_URL: z.url({ protocol: /^wss?$/ }).optional(),
 	// parda:end
+	// chaal:start
+	/** Lichess's hosts (Chaal, decision 0255); override only for a proxy or a local stand-in. */
+	LICHESS_API_BASE: z.url({ protocol: /^https?$/ }).default("https://lichess.org"),
+	LICHESS_EXPLORER_BASE: z.url({ protocol: /^https?$/ }).default("https://explorer.lichess.org"),
+	LICHESS_TABLEBASE_BASE: z.url({ protocol: /^https?$/ }).default("https://tablebase.lichess.org"),
+	/** The OAuth client id Chaal sends Lichess: any unique name, e.g. your domain. */
+	LICHESS_CLIENT_ID: z
+		.string()
+		.trim()
+		.regex(/^[\w.-]{1,64}$/, "Use letters, digits, dots, dashes or underscores, e.g. your domain.")
+		.default("chaal"),
+	/**
+	 * Seals Lichess tokens at rest (decision 0256): 32 random bytes in base64, e.g.
+	 * `openssl rand -base64 32`. Several, comma-separated, rotate it: the first seals, all open.
+	 * Unset: connecting Lichess is off; the public features still work.
+	 */
+	CHAAL_TOKEN_KEY: z
+		.string()
+		.trim()
+		.refine(
+			(value) =>
+				value
+					.split(",")
+					.every((key) => /^[A-Za-z0-9+/]{43}=$/.test(key.trim()) && Buffer.from(key.trim(), "base64").length === 32),
+			"Use 32 random bytes in base64 (openssl rand -base64 32); several keys are separated by commas.",
+		)
+		.optional(),
+	/** A Lichess personal token with no scopes, server only: the opening explorer refuses calls without one (decision 0255). */
+	LICHESS_APP_TOKEN: z
+		.string()
+		.trim()
+		.regex(/^[A-Za-z0-9_]{8,512}$/, "Use a personal API token from lichess.org/account/oauth/token (no scopes needed).")
+		.optional(),
+	// chaal:end
 };
 
 export const createServerEnv = (runtimeEnv: Record<string, string | undefined>) =>

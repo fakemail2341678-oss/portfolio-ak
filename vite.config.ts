@@ -132,6 +132,12 @@ export default defineConfig(async ({ command, mode }) => {
 					// The daily source probe (decision 0238): GET what to probe, POST what it saw; 404 without its secret.
 					"/api/parda/probe": { handler: "./src/server/routes/parda-probe.ts" },
 					// parda:end
+					// chaal:start
+					// Connecting Lichess and its streams, through this server so tokens never leave it (decision 0256).
+					"/api/chaal/oauth/start": { handler: "./src/server/routes/chaal-oauth.ts", method: "GET" },
+					"/api/chaal/oauth/callback": { handler: "./src/server/routes/chaal-oauth.ts", method: "GET" },
+					"/api/chaal/stream/events": { handler: "./src/server/routes/chaal-stream.ts", method: "GET" },
+					// chaal:end
 				},
 				// Security headers on every response (pages, assets, API). The CSP is per
 				// request (nonce) and is added by src/middleware/security-headers.ts.

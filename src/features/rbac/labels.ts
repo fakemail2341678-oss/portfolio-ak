@@ -15,6 +15,7 @@ export const RESOURCE_LABELS: Record<Resource, () => string> = {
 	links: m.perm_resource_links, // @apps
 	taskline: m.perm_resource_taskline, // @taskline
 	parda: m.perm_resource_parda, // @parda
+	chaal: m.perm_resource_chaal, // @chaal
 	// @new-feature:resource-labels
 };
 
@@ -55,6 +56,12 @@ export const PERMISSION_LABELS: Record<Permission, () => string> = {
 	"parda:moderate": m.perm_parda_moderate,
 	"parda:configure": m.perm_parda_configure,
 	// parda:end
+	// chaal:start
+	"chaal:read": m.perm_chaal_read,
+	"chaal:configure": m.perm_chaal_configure,
+	"chaal:moderate": m.perm_chaal_moderate,
+	"chaal:curate": m.perm_chaal_curate,
+	// chaal:end
 	// @new-feature:permission-labels
 };
 

@@ -13,7 +13,8 @@
 			"!**/pnpm-lock.yaml",
 			"!**/.claude",
 			"!**/storybook-static",
-			"!**/tests/fixtures/tmdb"
+			"!**/tests/fixtures/tmdb",
+			"!**/tests/fixtures/lichess"
 		]
 	},
 	"formatter": {

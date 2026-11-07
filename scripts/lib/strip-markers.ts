@@ -11,7 +11,7 @@
  * work (PLAN.md, decisions.md, docs/history) are never edited.
  */
 
-export const LAYERS = ["portfolio", "apps", "taskline", "parda"] as const;
+export const LAYERS = ["portfolio", "apps", "taskline", "parda", "chaal"] as const;
 export type Layer = (typeof LAYERS)[number];
 
 /** Not a layer: what exists only for the script (CI's template job), removed once no layer is left. */

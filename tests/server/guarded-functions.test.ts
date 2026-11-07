@@ -233,6 +233,12 @@ const GUARDED_FUNCTIONS: Record<string, ReadonlyArray<[name: string, permission:
 		["unblockPardaTitles", "parda:moderate"],
 	],
 	// parda:end
+	// chaal:start
+	"chaal-admin/lab.ts": [
+		["getChaalLab", "chaal:configure"],
+		["checkChaalPublicLane", "chaal:configure"],
+	],
+	// chaal:end
 	// @new-feature:guarded-functions
 };
 
@@ -481,6 +487,27 @@ const PARDA_FUNCTIONS: Record<string, ReadonlyArray<string>> = {
 };
 // parda:end
 
+// chaal:start
+/**
+ * Chaal's public files (PLAN 13.5, decision 0254): open to everyone, signed in or not, so no
+ * permission; every function starts with `withChaalPublic`, whose context holds the only
+ * Lichess client (its lanes, cooldowns and cache). Its admin files (chaal-admin/) are guarded
+ * by permission, in GUARDED_FUNCTIONS.
+ */
+const CHAAL_PUBLIC_FUNCTIONS: Record<string, ReadonlyArray<string>> = {
+	"chaal/status.ts": ["getChaalStatus"],
+};
+
+/**
+ * Chaal's personal files (decision 0256): anyone with a session, guests included. Each runs
+ * requireChaalUser (the session, not blocked) then withChaalServices, and acts on the
+ * caller's own connection only (tests/server/chaal-access.test.ts).
+ */
+const CHAAL_FUNCTIONS: Record<string, ReadonlyArray<string>> = {
+	"chaal/connection.ts": ["getChaalConnection", "disconnectChaal"],
+};
+// chaal:end
+
 /**
  * Files whose functions deliberately don't require a permission, with why, and
  * the functions they hold (adding one to these files also needs a look here).
@@ -600,6 +627,8 @@ describe("guarded server functions", () => {
 			...Object.keys(TASKLINE_FUNCTIONS), // @taskline
 			...Object.keys(PARDA_PUBLIC_FUNCTIONS), // @parda
 			...Object.keys(PARDA_FUNCTIONS), // @parda
+			...Object.keys(CHAAL_PUBLIC_FUNCTIONS), // @chaal
+			...Object.keys(CHAAL_FUNCTIONS), // @chaal
 		];
 		expect(files.filter((file) => !declared.includes(file))).toEqual([]);
 		expect(declared.filter((file) => !files.includes(file))).toEqual([]);
@@ -678,6 +707,32 @@ describe("guarded server functions", () => {
 		});
 	}
 	// parda:end
+
+	// chaal:start
+	for (const [file, expected] of Object.entries(CHAAL_PUBLIC_FUNCTIONS)) {
+		it(`every function in ${file} runs withChaalPublic first`, () => {
+			const functions = serverFunctions(file);
+			expect(functions.map((fn) => fn.name)).toEqual(expected);
+			for (const { definition } of functions) {
+				expect(definition).toMatch(
+					/= createServerFn\(\{ method: "(GET|POST)" \}\)\s*\.middleware\(\[withChaalPublic\]\)/,
+				);
+			}
+		});
+	}
+
+	for (const [file, expected] of Object.entries(CHAAL_FUNCTIONS)) {
+		it(`every function in ${file} runs requireChaalUser and withChaalServices first`, () => {
+			const functions = serverFunctions(file);
+			expect(functions.map((fn) => fn.name)).toEqual(expected);
+			for (const { definition } of functions) {
+				expect(definition).toMatch(
+					/= createServerFn\(\{ method: "(GET|POST)" \}\)\s*\.middleware\(\[requireChaalUser, withChaalServices\]\)/,
+				);
+			}
+		});
+	}
+	// chaal:end
 
 	for (const [file, { functions }] of Object.entries(UNGUARDED_FILES)) {
 		it(`${file} holds only its declared functions`, () => {

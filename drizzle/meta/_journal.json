@@ -274,6 +274,13 @@
 			"when": 1794028916782,
 			"tag": "0038_parda_viduki",
 			"breakpoints": true
+		},
+		{
+			"idx": 39,
+			"version": "7",
+			"when": 1794070513093,
+			"tag": "0039_chaal_foundation",
+			"breakpoints": true
 		}
 	]
 }

@@ -40,8 +40,16 @@ export const HTTP_STATUS: Readonly<Record<AppErrorCode, number>> = {
  * (optimistic concurrency, src/lib/concurrency.ts). "two-factor-required" is a
  * FORBIDDEN because the user must turn on two-factor authentication before using
  * their admin permissions (AUTH_REQUIRE_ADMIN_2FA, decisions.md 0126).
+ * "lichess-wait" is a RATE_LIMITED because Lichess asked Chaal to wait (a 429 starts a
+ * cooldown), and "lichess-reconnect" a FORBIDDEN because the user's Lichess token was
+ * revoked or lacks a scope (decision 0255).
  */
-export const APP_ERROR_REASONS = ["stale", "two-factor-required"] as const;
+export const APP_ERROR_REASONS = [
+	"stale",
+	"two-factor-required",
+	"lichess-wait", // @chaal
+	"lichess-reconnect", // @chaal
+] as const;
 export type AppErrorReason = (typeof APP_ERROR_REASONS)[number];
 
 /** Field path -> error keys/messages, e.g. from Zod input validation. */

@@ -390,6 +390,10 @@ export const REVIEWED_PAGES: ReadonlyArray<ReviewedPage> = [
 	{ route: "/app/parda/party/$code", params: { from: "parda-party" }, label: "signed out" },
 	{ route: "/app/parda/party/$code", params: { from: "parda-party" }, as: "viewer", label: "viewer" },
 	// parda:end
+	// chaal:start
+	// Chaal (decision 0254): Task 71's lab, the admin's only page until Chaal's own arrive (Task 73).
+	{ route: "/admin/chaal/lab", as: "admin" },
+	// chaal:end
 	// @new-feature:reviewed-pages
 	// Errors
 	{ route: "(not found)", path: "/no-such-page", status: 404 },
@@ -406,6 +410,7 @@ export const NOT_REVIEWED: Readonly<Record<string, string>> = {
 	"/l/$slug": "a redirect, or the 404 (checked by e2e/flows/apps.spec.ts)", // @apps
 	"/app/taskline/$ws": "a redirect to the workspace's projects (checked by e2e/flows/taskline.spec.ts)", // @taskline
 	"/app/parda/surprise": "a redirect to a random title (checked by e2e/flows/parda.spec.ts)", // @parda
+	"/admin/chaal": "a redirect to the lab until the overview arrives (checked by e2e/flows/chaal.spec.ts)", // @chaal
 	"/app/taskline/$ws/p/$key/settings": "a redirect to the settings' first section", // @taskline
 	"/apps/kanban": "Kanban's old address, a redirect to Taskline (checked by e2e/flows/taskline.spec.ts)", // @taskline
 	"/apps/kanban/$boardId": "an old board's address, a redirect to its project (checked by e2e/flows/taskline.spec.ts)", // @taskline

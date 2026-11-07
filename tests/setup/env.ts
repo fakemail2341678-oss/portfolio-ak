@@ -32,5 +32,11 @@ const OFF = [
 	"PARDA_PROBE_SECRET", // @parda
 	"PARDA_REALTIME_KEY", // @parda
 	"PARDA_REALTIME_URL", // @parda
+	"CHAAL_TOKEN_KEY", // @chaal
+	"LICHESS_APP_TOKEN", // @chaal
+	"LICHESS_API_BASE", // @chaal
+	"LICHESS_EXPLORER_BASE", // @chaal
+	"LICHESS_TABLEBASE_BASE", // @chaal
+	"LICHESS_CLIENT_ID", // @chaal
 ];
 for (const key of OFF) delete process.env[key];

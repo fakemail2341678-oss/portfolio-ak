@@ -79,6 +79,38 @@ describe("server env", () => {
 	});
 	// parda:end
 
+	// chaal:start
+	it("Chaal: Lichess's hosts and client id have defaults; the token key is 32 bytes in base64, one or several", () => {
+		const key = Buffer.alloc(32, 7).toString("base64");
+		const next = Buffer.alloc(32, 9).toString("base64");
+		expect(createServerEnv({ ...validServer })).toMatchObject({
+			LICHESS_API_BASE: "https://lichess.org",
+			LICHESS_EXPLORER_BASE: "https://explorer.lichess.org",
+			LICHESS_TABLEBASE_BASE: "https://tablebase.lichess.org",
+			LICHESS_CLIENT_ID: "chaal",
+		});
+		expect(createServerEnv({ ...validServer }).CHAAL_TOKEN_KEY).toBeUndefined();
+		expect(createServerEnv({ ...validServer, CHAAL_TOKEN_KEY: key }).CHAAL_TOKEN_KEY).toBe(key);
+		expect(createServerEnv({ ...validServer, CHAAL_TOKEN_KEY: `${next},${key}` }).CHAAL_TOKEN_KEY).toBe(
+			`${next},${key}`,
+		);
+		const short = Buffer.alloc(16, 7).toString("base64");
+		expect((serverError({ ...validServer, CHAAL_TOKEN_KEY: short }) as Error).message).toMatch(/CHAAL_TOKEN_KEY/);
+		expect((serverError({ ...validServer, CHAAL_TOKEN_KEY: `${key},nope` }) as Error).message).toMatch(
+			/CHAAL_TOKEN_KEY/,
+		);
+		expect((serverError({ ...validServer, LICHESS_APP_TOKEN: "lip_with space" }) as Error).message).toMatch(
+			/LICHESS_APP_TOKEN/,
+		);
+		expect(createServerEnv({ ...validServer, LICHESS_APP_TOKEN: "lip_abc123XYZ" }).LICHESS_APP_TOKEN).toBe(
+			"lip_abc123XYZ",
+		);
+		expect((serverError({ ...validServer, LICHESS_API_BASE: "ftp://lichess.org" }) as Error).message).toMatch(
+			/LICHESS_API_BASE/,
+		);
+	});
+	// chaal:end
+
 	it("Cloudinary: all three or none; a numeric key; defaults for folder and hosts", () => {
 		const cloudinary = {
 			CLOUDINARY_CLOUD_NAME: "my-cloud",

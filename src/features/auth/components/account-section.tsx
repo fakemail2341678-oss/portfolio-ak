@@ -17,6 +17,11 @@ export type AccountSectionProps = {
  */
 const AccountSectionFrame = createContext<((props: AccountSectionProps) => ReactNode) | null>(null);
 
+/**
+ * Only Parda provides a frame today; a project without that layer keeps it as core (as `setGuestScope`, 0244).
+ *
+ * @public
+ */
 export const AccountSectionFrameProvider = AccountSectionFrame.Provider;
 
 /** One section of the account page, with an h2 title (and an anchor id when it's linked to). */

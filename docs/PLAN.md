@@ -2830,7 +2830,7 @@ The reviews with their fixes, the design record, the measurements and the templa
 
 ---
 
-## 13. Part 7: Chaal, a chess app on Lichess (Tasks 71–85, planned)
+## 13. Part 7: Chaal, a chess app on Lichess (Tasks 71–85, under way)
 
 Part 7 adds **Chaal** (चाल, "a move"), a chess product built on the Lichess API. It has its own URL, shell and brand, and is a layer the way Taskline and Parda are (0208).
 - **Data and online play:** Lichess (`lichess.org`, the opening explorer, the tablebase).
@@ -2870,7 +2870,7 @@ As 12.1, with these differences:
 
 | Task | Name | Effort | Status |
 | --- | --- | --- | --- |
-| 71 | Foundation: the `chaal` layer, the Lichess client and cache, fixtures and the fake Lichess, connecting (OAuth, vault), spikes | xhigh | Planned |
+| 71 | Foundation: the `chaal` layer, the Lichess client and cache, fixtures and the fake Lichess, connecting (OAuth, vault), spikes | xhigh | Done (decisions 0254–0257) |
 | 72 | Design direction: comps (the owner picks), tokens, boards, pieces, sounds | high | Planned |
 | 73 | Shell, brand, home, auth pages, settings, about | high | Planned |
 | 74 | The board kit and the game model | xhigh | Planned |
@@ -2924,18 +2924,17 @@ As 12.1, with these differences:
   - `dashboard/{days}`, `replay/{days}/{theme}` and `activity` (`puzzle:read`).
 - **Analysis:**
   - `GET /api/cloud-eval`: cached positions only, `multiPv` up to 5, 404 when not cached; "a few positions here and there";
-  - the explorer at `explorer.lichess.org` (`/masters`, `/lichess`, and `/player`, which is ndjson) declares OAuth2 security; **Task 71 checks whether a token is required**;
+  - the explorer at `explorer.lichess.org` (`/masters`, `/lichess`, and `/player`, which is ndjson) **needs a token**: any token, no scope; 401 without one (checked in Task 71, decision 0257), so visitors use `LICHESS_APP_TOKEN`;
   - the tablebase at `tablebase.lichess.org/standard`.
 - **Tournaments:**
   - `GET /api/tournament` is public; join and withdraw need `tournament:write`; the games export is public (20 games/s without a token);
   - Swiss tournaments are listed through `/api/team/{id}/swiss`.
-- **Not checked yet (Task 71):**
-  - stream behaviour on Vercel (maximum duration, buffering);
-  - whether the explorer needs a token;
-  - CORS on public streams;
-  - the TV feed and broadcast payloads;
-  - chat details;
-  - a Board API rematch (none is known).
+- **Checked in Task 71** (decision 0257, details in [chaal.md](guides/chaal.md), "Spikes"):
+  - streams through Nitro are unbuffered; Vercel stops a function after 300 s on Hobby (up to 800 s on Pro), so the stream route closes at 270 s;
+  - the explorer needs a token (above);
+  - every public stream answers `access-control-allow-origin: *`, and preflights allow `Authorization`;
+  - the TV feed sends `featured` then `fen` lines; a spectated game sends every position so far before the live ones; a broadcast round streams PGN with `[%eval]` and `[%clk]`.
+- **Still not checked** (they need a live account; Task 77, with the lab): Board API seeks, chat and endings in practice, and a Board API rematch (none is known).
 
 **The repo** (as of Part 5; check after Part 6):
 - **CSP:**
@@ -2956,7 +2955,7 @@ As 12.1, with these differences:
   - the dnd-kit model in `src/features/taskline/calendar/calendar.tsx` (`useDraggable`, `useDroppable`, `Accessibility.configure`);
   - `enforceRateLimit` (`src/server/http/rate-limit.ts`);
   - env in `src/server/env.ts`, plus the dev-offline `OFF` list, `tests/setup/env.ts`, the harness `APP_ENV` regex and `tests/unit/env.test.ts`.
-- **Bundle:** the entry was 267.5 of 275 KB after Task 53, and each route definition adds about 0.3 KB (0217). Check after Part 6.
+- **Bundle:** the entry was 283.7 of 285 kB after Part 6 and 284.4 after Task 71 (built without Sentry or PostHog keys, as CI builds), and each route definition adds about 0.3 kB (0217). Task 73's routes will need room: raise the budget with a decision, or move weight out of the entry.
 
 ### 13.5 Architecture (every task follows it)
 
@@ -2979,15 +2978,15 @@ As 12.1, with these differences:
 **Shared changes (core, unmarked):**
 - **CSP:** on `/app/chaal` pages, `connect-src https://lichess.org` (public streams) and `worker-src 'self'`.
   - The engine files get their own header through routeRules: `script-src 'self' 'wasm-unsafe-eval'`.
-  - A page-level `'wasm-unsafe-eval'` is added only if the Task 71 spike shows the worker needs it.
-- **Cache:** if Parda's LRU (TTL, stale-while-revalidate, coalescing, epoch) is generic, its core moves to `src/server/cache/lru.ts` and both layers use it (0215). Otherwise Chaal has its own.
+  - No page-level `'wasm-unsafe-eval'`: Task 71 showed a dedicated worker follows its own response's CSP (0257).
+- **Cache:** Parda's LRU core moved to `src/server/cache/lru.ts` (with `peek`), and both layers use it (Task 71, 0255).
 
 **The Lichess client** (`server/chaal/lichess/`):
 - **Constructor:** `createLichess({ apiBase, explorerBase, tablebaseBase, userAgent }, fetcher = fetch)`.
 - **Env** (the `CLOUDINARY_*` pattern, with `.env.example`, README, diagnose, `OFF` lists, the harness regex and the env test):
   - `LICHESS_API_BASE`, `LICHESS_EXPLORER_BASE`, `LICHESS_TABLEBASE_BASE`;
   - `LICHESS_CLIENT_ID` (default `chaal`);
-  - `CHAAL_TOKEN_KEY` (32 bytes, base64; without it, connecting is off and public features still work);
+  - `CHAAL_TOKEN_KEY` (32 bytes, base64; several, comma-separated, rotate it: the first seals, all open; without it, connecting is off and public features still work);
   - optional `LICHESS_APP_TOKEN`: a personal token with no scopes, server only, for explorer calls when the visitor has no token and the explorer needs one.
 - **JSON calls:** an 8 s timeout, one retry on 5xx for GETs, and Zod-mapped lean DTOs (the dehydrated state is in the HTML).
 - **One request at a time:**
@@ -3052,7 +3051,7 @@ As 12.1, with these differences:
   - a correspondence game can't be opened in analysis until it ends.
 
 **The engine** (`features/chaal/engine/`):
-- **Build:** the `stockfish` package's lite single-threaded build (check the version; about 7 MB with NNUE). It ships with immutable cache headers, its licence, and a source link on `/about`.
+- **Build:** the `stockfish` package's lite single-threaded build: 19.0.1, `stockfish-19-lite-single.js` (28 KB) and `.wasm` (1.85 MB); the package unpacks to 205 MB, so `engine:copy` copies only those and `Copying.txt` (0257). It ships with immutable cache headers, its own `script-src 'self' 'wasm-unsafe-eval'`, its licence, and a source link on `/about`.
 - **API:** `createEngine()`, UCI over postMessage:
   - `analyse(fen, { multiPv, depth | movetime })` streams `{ depth, multipv, score, pv }`;
   - `bestMove(fen, { level })` maps levels 1–8 to `Skill Level`/`UCI_Elo`;
@@ -3087,8 +3086,8 @@ As 12.1, with these differences:
 
 | Table | Holds | Task |
 | --- | --- | --- |
-| `ch_settings` (one row, `version`) | feature switches, quick-pair controls, AI max level, rated allowed, chat, guests may connect, extra scopes, defaults (board, pieces, sounds), engine limits, banner and maintenance (en/ne), `cache_epoch`, public cooldown | 71 |
-| `ch_connection` | user (unique, cascade), Lichess id (unique), username, title, sealed token, scopes, connected and last used, `cooldown_until`, `revoked_at` | 71 |
+| `ch_settings` (one row, `version`) | feature switches (Task 71: `features`, `guests_may_connect`, `extra_scopes`, `cache_epoch`, the public cooldown), quick-pair controls, AI max level, rated allowed, chat, guests may connect, extra scopes, defaults (board, pieces, sounds), engine limits, banner and maintenance (en/ne), `cache_epoch`, public cooldown | 71 |
+| `ch_connection` | user (the primary key, cascade), Lichess id (unique), username, title, sealed token, scopes, expiry, connected and last used, `cooldown_until` and `cooldown_ms`, `revoked_at` | 71 |
 | `ch_block` | a site user or a Lichess username, reason, by, at | 71 |
 | `ch_preference` | per user: board, pieces, sounds, volume, auto-queen, premove, confirm moves, coordinates, notation, zen. Without a session these live in localStorage, imported once | 73 |
 | `ch_analysis` | owner, title, the tree (jsonb), start FEN, updated | 75 |
@@ -3111,7 +3110,7 @@ As 12.1, with these differences:
   - `/studies` and `/studies/$id`;
   - `/about`.
 - **Personal:** `/local/$id`, `/settings`, `/sign-in`, `/sign-up`.
-- **Admin:** `/admin/chaal` (overview), plus `settings`, `connections`, `health` and `curation`, with a temporary `lab` page.
+- **Admin:** `/admin/chaal` (overview; until Task 84 it redirects to the lab), plus `settings`, `connections`, `health` and `curation`, with a temporary `lab` page.
 
 **SEO:**
 - **Indexable:** home, play, analysis, puzzles, watch, broadcasts, players (leaderboards), tournaments and about. They use `seo({ siteName: "Chaal" })` and JSON-LD (`WebApplication`), and are listed in `INDEXABLE` and the sitemap.
@@ -3168,38 +3167,40 @@ As 12.1, with these differences:
   - measure after every task.
 - **Docs:** `docs/guides/chaal.md` (a section per module plus the glossary), decisions, CLAUDE.md.
 
-### Task 71: Foundation, spikes and connecting Lichess (planned)
+### Task 71: Foundation, spikes and connecting Lichess (done)
 
-- **Layer:**
-  - `LAYERS`, `SPECS.chaal`, markers, the CI strip matrix;
-  - the permissions in the catalog (no admin pages yet).
-- **Client:**
-  - the env variables;
-  - `createLichess` with its lanes, cooldown, ndjson reader, DTOs and cache (the core move if Parda's is generic);
-  - the store singleton, logging and counters.
-- **Fixtures:** the recorder, the fixtures, and the fake Lichess in the e2e harness.
-- **Connecting:**
-  - the OAuth start and callback routes, the vault, and `ch_connection`;
-  - disconnect and the 401 handling;
-  - `ch_settings` (switches, scopes) and `ch_block`;
-  - the middleware (`withChaalPublic`, `requireChaalUser`, `withChaalServices`);
-  - `GUEST_DATA` and the claim.
-- **Lab** `/admin/chaal/lab` (`chaal:configure`): connect, show the account and scopes, open the event stream, and time a stream.
-- **Spikes** (findings go in the guide):
-  1. streams through Nitro on Vercel: maximum duration, unbuffered flushing, reconnects;
-  2. the engine: the package version and size, a worker with its own header versus a page-level `'wasm-unsafe-eval'`, speed on a mid-range phone;
-  3. whether the explorer needs a token;
-  4. Board API seeks, chat and endings in practice;
-  5. the TV, broadcast and spectator payloads;
-  6. CORS on public streams.
-- **Tests:**
-  - the client (timeout, 5xx, 429 across lanes, DTOs);
-  - ndjson (split chunks, keepalives);
-  - the vault (round trip, wrong key, rotation prefix);
-  - OAuth (state, return path, verifier);
-  - connection rules (uniqueness, claim);
-  - env and markers.
-- **Decisions:** Chaal as a layer and its identity; the Lichess client; the token vault and streams through the server.
+**Done** (decisions 0254–0257; the guide is [chaal.md](guides/chaal.md)).
+
+**What changed:**
+- **Layer:** `"chaal"` in `LAYERS`, `SPECS.chaal`, `// @chaal` markers, `--keep-chaal` in CI's strip matrix. The permissions `chaal:read`, `chaal:configure`, `chaal:moderate` and `chaal:curate` with their labels, an admin group "Chaal" with the lab. `src/server/cache/lru.ts` is core and in `SHARED` for Parda and Chaal.
+- **Client:** the env variables (`LICHESS_API_BASE`, `LICHESS_EXPLORER_BASE`, `LICHESS_TABLEBASE_BASE`, `LICHESS_CLIENT_ID`, `CHAAL_TOKEN_KEY`, `LICHESS_APP_TOKEN`, in `.env.example`, the README, diagnose, the `OFF` lists, the harness and the env test); `createLichess` with lanes, an 8 s timeout, a GET retry after a 5xx, 429 cooldowns shared through Postgres, Zod-mapped answers, logging and counters; the ndjson reader; Chaal's cache on the shared LRU (Parda's TMDB cache now sits on it too, unchanged); the singletons in `store.ts`.
+- **Fixtures:** `pnpm lichess:record` (the daily puzzle, the TV channels, a cloud eval, a tablebase position, the TV feed's first lines; the explorer with `LICHESS_APP_TOKEN`), `events.ndjson` by hand from the API's examples, and the fake Lichess in `e2e/harness/lichess.ts`.
+- **Connecting:** the OAuth routes (`/api/chaal/oauth/{start,callback}`, PKCE, a sealed state cookie, safe return paths), the vault (AES-256-GCM, key ids, rotation by listing keys), `ch_connection`, `ch_settings`, `ch_block` (migration `0039_chaal_foundation`), disconnect, 401 → revoked, scopes by feature, `withToken`, the middleware (`withChaalPublic`, `requireChaalUser`, `withChaalServices`), `CHAAL_GUEST_DATA` and its claim, the error reasons `lichess-wait` and `lichess-reconnect`.
+- **Streams:** `/api/chaal/stream/events`, the user's event stream through our server, mapped, closing itself at 270 s with a `reconnect` event.
+- **Lab** `/admin/chaal/lab` (`chaal:configure`): connect, the account, scopes and state, disconnect, open and time the event stream, the setup (never a key), this server's Lichess calls and a check of the public lane. `/admin/chaal` redirects there until the overview (Task 84).
+- **Functions:** `getChaalStatus` (public), `getChaalConnection` and `disconnectChaal` (personal), `getChaalLab` and `checkChaalPublicLane` (admin), each with its Storybook mock, guard-test entry and access-matrix row.
+
+**Spikes** (decision 0257): streams pass through Nitro unbuffered; Vercel allows 300 s on Hobby; the engine is 1.85 MB and never needs a page-level `'wasm-unsafe-eval'`; the explorer needs a token; public streams allow CORS; the TV, spectator and broadcast payloads are recorded in the guide. Board API seeks, chat and endings need a live account and wait for Task 77.
+
+**Deviations:**
+- **`ch_connection` is keyed by the user** (not a surrogate id), so the token exchange has a lane before the row exists (0254).
+- **Scopes are stored as asked;** `/api/token/test` isn't called (Lichess grants all or none, 0256).
+- **The fake Lichess covers what Task 71 uses:** OAuth, the token, the account, the event stream and recorded reads. The game stream with a scripted opponent, seeks, the AI, puzzles, tournaments, teams, studies and broadcasts join it with the tasks that use them (PLAN 13.5 lists them all).
+- **No explorer fixtures yet:** recording them needs `LICHESS_APP_TOKEN`, which this machine doesn't have; Task 75 records them.
+- **Return paths** may also be `/admin/chaal/...`, for the lab.
+- **The engine's files and `engine:copy`** arrive with Task 75; this task only measured them.
+
+**Numbers:** entry 284.4 of 285 kB (283.7 before), built as CI builds it, without Sentry or PostHog keys; this machine's `.env` adds them and its build is over the budget (299.4 kB), as it was before this task. `pnpm test` 162 files, 1,728 tests. E2E run: `e2e/flows/chaal.spec.ts` (9 of 9; its first 8 also repeated three times on one worker, 24 of 24), `e2e/flows/rbac.spec.ts`, and the review of `/admin/chaal/lab` (12 of 12). Storybook: the admin shell and RBAC stories in en/light and ne/dark (26 of 26), and `pnpm build-storybook`. CI's template job, in scratch worktrees: `--keep-chaal` and `--keep-parda` (which strips Chaal) pass every step.
+
+**Fixed on the way:**
+- `scroll-region.tsx` is in strip-demo's `SHARED` for Chaal too (the lab uses it), or `--keep-chaal` deleted it.
+- `AccountSectionFrameProvider` (core, used only by Parda since 0249) is marked `@public`, as `setGuestScope` is (0244): without it, knip failed every template row that strips Parda.
+- A new connection revokes the user's earlier token even when it's the same Lichess account.
+
+**Left for the owner:**
+- Run `pnpm db:migrate` on Neon (`0039_chaal_foundation`).
+- To try connecting on the deployment: set `CHAAL_TOKEN_KEY` (`openssl rand -base64 32`) in Vercel, and optionally `LICHESS_CLIENT_ID` (your domain) and `LICHESS_APP_TOKEN` (a personal token with no scopes, for the explorer). Then open `/admin/chaal/lab`, connect, and time the event stream there (spike 1 on Vercel).
+- With `LICHESS_APP_TOKEN` in `.env`, run `pnpm lichess:record` once to add the explorer's recordings.
 
 ### Task 72: Design direction (planned)
 

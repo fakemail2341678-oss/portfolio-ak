@@ -1,6 +1,7 @@
 import "@tanstack/react-start/server-only";
 import type { Locale } from "@/paraglide/runtime";
 import { APP_SERVERS } from "@/server/apps/registry"; // @apps
+import { CHAAL_GUEST_DATA } from "@/server/chaal/guest-data"; // @chaal
 import type { Tx } from "@/server/db/types";
 import { PARDA_GUEST_DATA } from "@/server/parda/guest-data"; // @parda
 import { TASKLINE_GUEST_DATA } from "@/server/taskline/sandbox"; // @taskline
@@ -28,6 +29,7 @@ export const GUEST_DATA: ReadonlyArray<GuestData> = [
 	...APP_SERVERS, // @apps
 	TASKLINE_GUEST_DATA, // @taskline
 	PARDA_GUEST_DATA, // @parda
+	CHAAL_GUEST_DATA, // @chaal
 ];
 
 /**

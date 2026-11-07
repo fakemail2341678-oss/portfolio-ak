@@ -41,6 +41,8 @@ const OFF = [
 	"PARDA_PROBE_SECRET", // @parda
 	"PARDA_REALTIME_KEY", // @parda
 	"PARDA_REALTIME_URL", // @parda
+	"CHAAL_TOKEN_KEY", // @chaal
+	"LICHESS_APP_TOKEN", // @chaal
 ];
 
 console.log(`[offline] database: in-memory PGlite on port ${served.port}`);
@@ -58,6 +60,13 @@ const vite = spawn(process.execPath, ["node_modules/vite/bin/vite.js", "dev", "-
 		BETTER_AUTH_SECRET: process.env.BETTER_AUTH_SECRET || "offline-dev-secret-not-for-production-0123456789",
 		VITE_APP_TITLE: process.env.VITE_APP_TITLE || "App",
 		VITE_SITE_URL: "http://localhost:3000",
+		// chaal:start
+		// Chaal's public reads need no key, so offline they point at a closed local port:
+		// its pages show Lichess as unavailable instead of calling lichess.org.
+		LICHESS_API_BASE: "http://127.0.0.1:9",
+		LICHESS_EXPLORER_BASE: "http://127.0.0.1:9",
+		LICHESS_TABLEBASE_BASE: "http://127.0.0.1:9",
+		// chaal:end
 	},
 });
 

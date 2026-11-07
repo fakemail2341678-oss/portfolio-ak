@@ -7,6 +7,7 @@ import {
 	DatabaseIcon,
 	FlagIcon, // @parda
 	FlaskConicalIcon, // @parda
+	FlaskRoundIcon, // @chaal
 	FolderKanbanIcon, // @portfolio
 	GalleryHorizontalIcon, // @parda
 	GaugeIcon, // @taskline
@@ -39,6 +40,7 @@ import {
 	WrenchIcon, // @portfolio
 	ZapIcon, // @taskline
 } from "lucide-react";
+import { CHAAL_NAME } from "@/features/chaal/brand"; // @chaal
 import { PARDA_NAME } from "@/features/parda/brand"; // @parda
 import type { Permission } from "@/features/rbac/permissions";
 import { TASKLINE_NAME } from "@/features/taskline/brand"; // @taskline
@@ -55,6 +57,7 @@ export const ADMIN_GROUPS = [
 	"apps",
 	"taskline", // @taskline
 	"parda", // @parda
+	"chaal", // @chaal
 	"access",
 	"system",
 ] as const;
@@ -66,6 +69,7 @@ export const ADMIN_GROUP_LABELS: Record<AdminGroup, () => string> = {
 	apps: m.admin_group_apps,
 	taskline: () => TASKLINE_NAME, // @taskline
 	parda: () => PARDA_NAME, // @parda
+	chaal: () => CHAAL_NAME, // @chaal
 	access: m.admin_group_access,
 	system: m.admin_group_system,
 };
@@ -389,6 +393,18 @@ export const ADMIN_SECTIONS: ReadonlyArray<AdminSection> = [
 		keywords: m.admin_keywords_parda_player_lab,
 	},
 	// parda:end
+	// chaal:start
+	{
+		// Task 71's lab (decision 0254): connect Lichess, see the account and scopes, time the event stream.
+		...linkOptions({ to: "/admin/chaal/lab" }),
+		label: m.admin_nav_chaal_lab,
+		description: m.ch_lab_description,
+		icon: FlaskRoundIcon,
+		permission: "chaal:configure",
+		group: "chaal",
+		keywords: m.admin_keywords_chaal_lab,
+	},
+	// chaal:end
 	{
 		...linkOptions({ to: "/admin/users" }),
 		label: m.admin_nav_users,

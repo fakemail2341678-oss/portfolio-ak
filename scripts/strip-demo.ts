@@ -1,5 +1,5 @@
 /**
- * pnpm strip-demo [--keep-portfolio] [--keep-apps] [--keep-taskline] [--keep-parda] [--no-build]
+ * pnpm strip-demo [--keep-portfolio] [--keep-apps] [--keep-taskline] [--keep-parda] [--keep-chaal] [--no-build]
  *
  * Turns the template into a clean starting point (docs/guides/new-project.md) by
  * removing layers, each whole: its files, its marked code in shared files, its
@@ -13,6 +13,7 @@
  * - `apps`: the showcase apps under /apps (filled by Task 41).
  * - `taskline`: Taskline, the project management app at /app/taskline (Part 5, from Task 46).
  * - `parda`: Parda, the movie and series product at /app/parda (Part 6, from Task 59).
+ * - `chaal`: Chaal, the chess app on Lichess at /app/chaal (Part 7, from Task 71).
  *
  * Markers: scripts/lib/strip-markers.ts. Paths per layer are data below, so a
  * task that adds to a layer appends to its lists. Then it removes dependencies
@@ -260,15 +261,49 @@ const SPECS: Record<Layer, LayerSpec> = {
 		knipEntries: [],
 		schema: [],
 	},
+	chaal: {
+		// Chaal (Part 7, decision 0254). Its schema is a folder, removed with `paths`.
+		sentinel: "src/server/chaal",
+		paths: [
+			"src/features/chaal",
+			"src/server/chaal",
+			"src/functions/chaal",
+			"src/functions/chaal-admin",
+			"src/middleware/chaal.ts",
+			"src/routes/_admin/admin/chaal",
+			// Connecting Lichess and the streams through the server (decision 0256).
+			"src/server/routes/chaal-oauth.ts",
+			"src/server/routes/chaal-stream.ts",
+			"src/server/db/schema/chaal",
+			".storybook/mocks/functions/chaal",
+			".storybook/mocks/functions/chaal-admin",
+			// The Lichess client's recordings and the fake Lichess (decision 0255).
+			"scripts/record-lichess-fixtures.ts",
+			"tests/fixtures/lichess",
+			"e2e/harness/lichess.ts",
+			"tests/unit/chaal-lichess.test.ts",
+			"tests/unit/chaal-connect.test.ts",
+			"tests/server/chaal-connect.test.ts",
+			"tests/server/chaal-access.test.ts",
+			"e2e/flows/chaal.spec.ts",
+			"docs/guides/chaal.md",
+		],
+		packageScripts: ["lichess:record"],
+		crons: [],
+		knipEntries: [],
+		schema: [],
+	},
 };
 
 /** Files more than one layer uses: removed only when every one of those layers goes. */
 const SHARED: ReadonlyArray<{ paths: string[]; layers: Layer[] }> = [
 	{ paths: ["src/components/forms/csv-source.tsx", "src/server/db/quota.ts"], layers: ["apps", "taskline"] },
 	{ paths: [".impeccable/config.json"], layers: ["portfolio", "parda"] },
-	{ paths: ["src/components/data-display/scroll-region.tsx"], layers: ["taskline", "parda"] },
+	{ paths: ["src/components/data-display/scroll-region.tsx"], layers: ["taskline", "parda", "chaal"] },
 	// The horizontal rail (Task 61) is core, but only Parda uses it so far.
 	{ paths: ["src/components/data-display/rail.tsx"], layers: ["parda"] },
+	// The server's LRU cache (decision 0255) is core; Parda's TMDB answers and Chaal's Lichess answers use it.
+	{ paths: ["src/server/cache/lru.ts", "tests/unit/lru-cache.test.ts"], layers: ["parda", "chaal"] },
 ];
 
 /** Written when the portfolio goes: the home page becomes a neutral landing page. */

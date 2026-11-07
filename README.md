@@ -57,6 +57,9 @@ Everything is validated at startup with T3 Env (`src/server/env.ts` and `src/lib
 | `PARDA_PLAYER_BASE` | no | Where Parda's relative source templates live, path included, when this app doesn't serve the player. <!-- @parda --> |
 | `PARDA_PROBE_SECRET` | no | Bearer token for Parda's daily source probe (`/api/parda/probe`, `.github/workflows/parda-probe.yml`); unset, the route answers 404. <!-- @parda --> |
 | `PARDA_REALTIME_KEY` | no | Ably API key for Parda's watch parties; unset, the party's UI is hidden. <!-- @parda --> |
+| `CHAAL_TOKEN_KEY` | no | Seals Chaal's Lichess tokens at rest (32 random bytes, base64; comma-separated to rotate). Unset, connecting Lichess is off. <!-- @chaal --> |
+| `LICHESS_CLIENT_ID` | no | The OAuth client id Chaal shows Lichess (default `chaal`). <!-- @chaal --> |
+| `LICHESS_APP_TOKEN` | no | A Lichess personal token with no scopes, server only: the opening explorer refuses calls without one. <!-- @chaal --> |
 | `CRON_SECRET` | no | Bearer token for `/api/cron/*` (Vercel Cron, `vercel.json`); unset, the routes answer 404. |
 
 ## Architecture

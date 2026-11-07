@@ -24,6 +24,8 @@ export const errorMessage = (error: unknown): string => {
 	if (!isAppError(error)) return m.error_internal();
 	if (error.reason === "stale") return m.error_stale();
 	if (error.reason === "two-factor-required") return m.error_two_factor_required();
+	if (error.reason === "lichess-wait") return m.ch_error_lichess_wait(); // @chaal
+	if (error.reason === "lichess-reconnect") return m.ch_error_lichess_reconnect(); // @chaal
 	return error.fieldErrors?.[FORM_ERROR_KEY]?.[0] ?? messages[error.code]();
 };
 

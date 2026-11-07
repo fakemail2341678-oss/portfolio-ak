@@ -23,6 +23,8 @@ export const E2E = {
 	probeSecret: "e2e-probe-secret-0123456789", // @parda
 	/** PARDA_REALTIME_KEY for the server under test; the relay checks tokens with its secret. */
 	realtimeKey: "e2e.key:e2e-realtime-secret-0123456789", // @parda
+	/** CHAAL_TOKEN_KEY for the server under test: 32 bytes in base64, never used anywhere else. */
+	chaalTokenKey: "ZTJlLWNoYWFsLXRva2VuLWtleS0zMi1ieXRlcy0wMDE=", // @chaal
 	users: {
 		admin: { email: "admin@example.com", name: "E2E Admin" },
 		editor: { email: "editor@example.com", name: "Demo Editor" },

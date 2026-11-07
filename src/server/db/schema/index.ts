@@ -10,6 +10,8 @@
  * - portfolio.ts: the portfolio at `/` and its contact messages (the `portfolio` layer).
  * - apps/<app>.ts: the showcase apps' tables, each row owned by a user (the `apps` layer).
  * - taskline/*.ts: Taskline, the project management app at /app/taskline (the `taskline` layer).
+ * - parda/*.ts: Parda, the streaming product at /app/parda (the `parda` layer).
+ * - chaal/*.ts: Chaal, the chess app on Lichess at /app/chaal (the `chaal` layer).
  * - columns.ts: column helpers (localized text), no tables.
  *
  * `pnpm new:feature` adds its table's file above the marker line.
@@ -23,6 +25,8 @@ export * from "./apps/notes"; // @apps
 export * from "./attachments";
 export * from "./audit";
 export * from "./auth";
+export * from "./chaal/connection"; // @chaal
+export * from "./chaal/settings"; // @chaal
 export * from "./parda/alerts"; // @parda
 export * from "./parda/catalog"; // @parda
 export * from "./parda/curation"; // @parda

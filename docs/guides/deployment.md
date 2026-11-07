@@ -32,6 +32,8 @@ pnpm db:seed-taskline --password "…"   # Taskline's demo team: 5 accounts, 3 p
 
 **Parda's source probe** (decision 0238) is a GitHub Actions workflow, not a Vercel cron: `.github/workflows/parda-probe.yml` runs `pnpm parda:probe` daily at 01:40 UTC. Set `PARDA_PROBE_SECRET` (16+ random characters) in the Vercel env and, with the same value, in the repo's Actions secrets, and the deployed URL as the Actions variable `PARDA_PROBE_URL`; without the variable the job is skipped. It takes about a minute per source and title (about 12 minutes a day for 4 sources): after the first runs, check the Actions minutes against the repo's allowance, and run it every other day if they don't fit. <!-- @parda -->
 
+**Chaal's Lichess connection** (decisions 0255 and 0256) needs `CHAAL_TOKEN_KEY` in the Vercel env: 32 random bytes in base64 (`openssl rand -base64 32`), which seal every connected Lichess token. Without it, connecting is off and the public features work. Keep it secret and never change it in place: to rotate, set `"<new>,<old>"` and drop the old key once its tokens are gone ([chaal.md](chaal.md), "The vault"). Optionally set `LICHESS_CLIENT_ID` (your domain) and `LICHESS_APP_TOKEN` (a Lichess personal token with no scopes: the opening explorer refuses calls without one). The event stream route stays open up to 270 s, under Hobby's 300 s function limit; Chaal needs no cron yet. <!-- @chaal -->
+
 ## Every release
 
 - **Gates:** CI runs `typecheck`, `check`, `knip`, `test`, `test:storybook`, `build` and `build-storybook` on every PR and on `main`. Deploy only a green commit.

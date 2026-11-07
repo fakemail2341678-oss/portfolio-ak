@@ -83,6 +83,8 @@ const services: Array<[string, string[]]> = [
 	["TMDB (Parda's catalogue)", ["TMDB_READ_TOKEN"]], // @parda
 	["Parda's source probe", ["PARDA_PROBE_SECRET"]], // @parda
 	["Parda's watch parties", ["PARDA_REALTIME_KEY"]], // @parda
+	["Chaal: connecting Lichess", ["CHAAL_TOKEN_KEY"]], // @chaal
+	["Chaal: the opening explorer for visitors", ["LICHESS_APP_TOKEN"]], // @chaal
 ];
 const on = services.filter(([, keys]) => configured(keys)).map(([name]) => name);
 const off = services.filter(([, keys]) => !configured(keys)).map(([name]) => name);

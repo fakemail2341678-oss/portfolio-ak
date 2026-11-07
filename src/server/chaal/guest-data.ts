@@ -1,0 +1,44 @@
+import "@tanstack/react-start/server-only";
+import type { Tx } from "@/server/db/types";
+import type { GuestData } from "@/server/guests/data";
+import { log } from "@/server/log";
+import { connectionOf, deleteConnection, moveConnection } from "./connect/repository";
+
+/** Revokes a sealed token at Lichess, best effort (connect/service.ts's `revokeSealed`, with the app's services). */
+type Revoke = (sealed: string, userId: string) => Promise<void>;
+
+const revokeWithStore: Revoke = async (sealed, userId) => {
+	const [{ chaalConnectDeps }, { revokeSealed }] = await Promise.all([import("./store"), import("./connect/service")]);
+	await revokeSealed(await chaalConnectDeps(), sealed, userId);
+};
+
+/**
+ * Chaal's guests (PLAN 13.5, "Guests"; decision 0254). A guest starts with nothing: it
+ * connects Lichess, plays and saves on its own. The claim moves the guest's connection to
+ * the account, unless the account already has one: then the account's stays, and the
+ * guest's token is revoked at Lichess outside the claim's transaction, not awaited (a
+ * network call doesn't belong inside it; if the claim rolls back, that guest reconnects).
+ * Preferences, local games, analyses and puzzle attempts join the claim with their tables
+ * (Tasks 73–80).
+ */
+export function createChaalGuestData(revoke: Revoke = revokeWithStore): GuestData {
+	return {
+		slug: "chaal",
+		section: "chaal",
+		seedGuestData: async () => {},
+		claim: async (tx: Tx, fromUserId: string, toUserId: string) => {
+			const guest = await connectionOf(tx, fromUserId);
+			if (!guest) return;
+			if (!(await connectionOf(tx, toUserId))) {
+				await moveConnection(tx, fromUserId, toUserId);
+				return;
+			}
+			await deleteConnection(tx, fromUserId);
+			void revoke(guest.token, toUserId).catch((error: unknown) =>
+				log("warn", "chaal guest token revoke failed", { error: String(error) }),
+			);
+		},
+	};
+}
+
+export const CHAAL_GUEST_DATA: GuestData = createChaalGuestData();

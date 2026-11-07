@@ -45,6 +45,13 @@ export const PERMISSION_CATALOG = {
 	 */
 	parda: ["read", "curate", "moderate", "configure"],
 	// parda:end
+	// chaal:start
+	/**
+	 * Chaal (/app/chaal, decision 0254): read sees /admin/chaal; configure the switches, limits,
+	 * scopes and the lab; moderate connections and blocks; curate the home page and featured content.
+	 */
+	chaal: ["read", "configure", "moderate", "curate"],
+	// chaal:end
 	// @new-feature:permissions
 } as const;
 

@@ -32,6 +32,7 @@
 		"db:seed-taskline": "node scripts/seed-taskline.ts",
 		"tmdb:record": "node scripts/record-tmdb-fixtures.ts",
 		"parda:probe": "node scripts/probe-sources.ts",
+		"lichess:record": "node scripts/record-lichess-fixtures.ts",
 		"auth:schema": "auth generate --config src/server/auth/auth.ts --output src/server/db/schema/auth.ts --yes && biome format --write src/server/db/schema/auth.ts",
 		"test:storybook": "vitest run --project storybook --project storybook-dark-ne",
 		"test:e2e": "playwright test",

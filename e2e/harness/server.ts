@@ -26,7 +26,7 @@ rmSync("e2e/.auth", { recursive: true, force: true });
 
 /** App settings a developer's shell may export; the server under test gets only the harness's values. */
 const APP_ENV =
-	/^(VITE_|DATABASE_|EMAIL_|RESEND_|BETTER_AUTH_|AUTH_|TURNSTILE_|GOOGLE_|ADMIN_|DEMO_|SENTRY_|CLOUDINARY_|CRON_|TMDB_|PARDA_)/;
+	/^(VITE_|DATABASE_|EMAIL_|RESEND_|BETTER_AUTH_|AUTH_|TURNSTILE_|GOOGLE_|ADMIN_|DEMO_|SENTRY_|CLOUDINARY_|CRON_|TMDB_|PARDA_|LICHESS_|CHAAL_)/;
 const inherited = Object.fromEntries(Object.entries(process.env).filter(([key]) => !APP_ENV.test(key)));
 
 const publicEnv = {
@@ -137,6 +137,15 @@ const app = spawn(process.execPath, [".output/server/index.mjs"], {
 		PARDA_REALTIME_KEY: E2E.realtimeKey,
 		PARDA_REALTIME_URL: `${E2E.harnessURL.replace("http", "ws")}/parda-relay`,
 		// parda:end
+		// chaal:start
+		// The suite never calls Lichess: the harness's fake answers OAuth, the account, the event
+		// stream and the recorded public reads (decision 0255).
+		LICHESS_API_BASE: `${E2E.harnessURL}/lichess`,
+		LICHESS_EXPLORER_BASE: `${E2E.harnessURL}/lichess-explorer`,
+		LICHESS_TABLEBASE_BASE: `${E2E.harnessURL}/lichess-tablebase`,
+		LICHESS_CLIENT_ID: "chaal-e2e",
+		CHAAL_TOKEN_KEY: E2E.chaalTokenKey,
+		// chaal:end
 	},
 });
 log(`server: ${E2E.baseURL}`);
