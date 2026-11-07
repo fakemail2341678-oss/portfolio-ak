@@ -2872,7 +2872,7 @@ As 12.1, with these differences:
 | --- | --- | --- | --- |
 | 71 | Foundation: the `chaal` layer, the Lichess client and cache, fixtures and the fake Lichess, connecting (OAuth, vault), spikes | xhigh | Done (decisions 0254–0257) |
 | 72 | Design direction: comps (the owner picks), tokens, boards, pieces, sounds | high | Done (decision 0258) |
-| 73 | Shell, brand, home, auth pages, settings, about | high | Planned |
+| 73 | Shell, brand, home, auth pages, settings, about | high | Done (decisions 0259, 0260) |
 | 74 | The board kit and the game model | xhigh | Planned |
 | 75 | Analysis board and the engine | xhigh | Planned |
 | 76 | Play offline: the computer and over the board | high | Planned |
@@ -2955,7 +2955,7 @@ As 12.1, with these differences:
   - the dnd-kit model in `src/features/taskline/calendar/calendar.tsx` (`useDraggable`, `useDroppable`, `Accessibility.configure`);
   - `enforceRateLimit` (`src/server/http/rate-limit.ts`);
   - env in `src/server/env.ts`, plus the dev-offline `OFF` list, `tests/setup/env.ts`, the harness `APP_ENV` regex and `tests/unit/env.test.ts`.
-- **Bundle:** the entry was 283.7 of 285 kB after Part 6 and 284.4 after Tasks 71 and 72 (built without Sentry or PostHog keys, as CI builds), and each route definition adds about 0.3 kB (0217). Task 73's routes will need room: raise the budget with a decision, or move weight out of the entry.
+- **Bundle:** the entry was 283.7 kB after Part 6, 284.4 after Tasks 71 and 72 and 286.3 after Task 73 (built as CI builds, without Sentry or PostHog keys); each route definition adds about 0.3 kB (0217). Task 73 raised the budget to 290 kB for Part 7's routes (0260); Task 85 measures and trims.
 
 ### 13.5 Architecture (every task follows it)
 
@@ -3229,25 +3229,29 @@ As 12.1, with these differences:
 
 **Left for the owner:** nothing.
 
-### Task 73: Shell, brand, home, auth pages, settings and about (planned)
+### Task 73: Shell, brand, home, auth pages, settings and about (done)
 
-- **Layout and brand:** the `_chaal` layout, `CHAAL_BRAND`, `chaalLinks`, the manifest, `public/chaal`, and the `· Chaal` suffix.
-  - From Task 72 (0258): `CHAAL_BRAND` has `id: "chaal"` (which scopes `chaal.css`), follows the device for light and dark, and has `themeColors` `#f3f2ee` and `#121211`. The head adds `chaalFontPreloads(locale)`. The settings offer `CHAAL_BOARD_THEMES`. The about page credits the cburnett pieces (BSD 3-clause, Colin M.L. Burnett) and says the sounds are our own. Build to the contract in `.impeccable/surfaces/src-routes-chaal-route-tsx.md` and the comps in `.impeccable/mocks/chaal/`.
-- **Shell:**
-  - a top bar on desktop and a phone tab bar (Play, Puzzles, Analysis, Watch, More);
-  - the user menu (connection status, Connect or Disconnect, settings, language, theme, Admin);
-  - the settings banner, the palette, the shortcuts dialog;
-  - the 404 and error pages inside the frame.
-- **Sign-in and sign-up,** copied.
-- **`/settings`:**
-  - preferences (`ch_preference`, with localStorage without a session);
-  - the connection, with its scopes and Reconnect;
-  - deleting local data.
-- **`/about`:** attribution, credits, licences and the Stockfish source.
-- **Home, first version:**
-  - a hero with a server-drawn mini board;
-  - entry cards;
-  - the footer.
+**Done** (decisions 0259 and 0260; the guide's "The shell and pages").
+
+**What changed:**
+- **Layout and brand:** `src/routes/_chaal/route.tsx` with `CHAAL_BRAND` (`id: "chaal"`, follows the device, `themeColors` `#f3f2ee`/`#121211`), `chaalFontPreloads`, noindex by default and its own 404. Its loader reads the status, and for a session the connection and preferences. The mark (four diagram squares, two hatched) in `public/chaal/icon.svg` and PNGs rendered from it; the manifest at `/app/chaal/manifest.webmanifest` (and `/ne`); `chaalLinks`, `CHAAL_PATHS`, `CHAAL_SITEMAP`; the `· Chaal` suffix.
+- **Shell:** the top bar (wordmark Chaal चाल, sections, search, language, theme, account), the admin's notice (`ch_settings.banner`), the footer ("Powered by Lichess, not affiliated", about, credits, Stockfish source), the phone's tab bar with More, the account menu (a dot for the connection; connect or disconnect, settings, theme, language, admin, sign in or out), the palette (⌘K) and the shortcuts (`?`). The 404 and errors render in the frame.
+- **Connecting from any page:** `useConnectLichess` starts a Chaal-scoped guest when needed, then goes through the OAuth start route and back.
+- **Preferences:** `ch_preference` (migration `0040_chaal_shell`, with `ch_settings.banner`), `getChaalPreferences`, `saveChaalPreferences`, `importChaalPreferences`; `localStorage` (`chaal:` keys) without a session, imported once when a session appears (a saved row wins); the guest claim moves them (the account's own win).
+- **Pages:** the home (a hero with the server-drawn diagram in the player's board theme, one primary action, three entries), settings (board theme, notation, coordinates, moves, sound with "Try it", the Lichess connection with its permissions, Reconnect and Disconnect, and deleting this device's data), about (Lichess, what connecting shares, credits and licences, Stockfish's source), sign-in and sign-up copied from Parda's.
+- **Kit:** `MiniBoard` (`src/features/chaal/board/`, with stories) and a FEN placement reader.
+- **Shared:** the lab's connect and disconnect messages became Chaal-wide ones (`ch_connect`, `ch_disconnect`, …); `Slider` takes `thumbLabel` (Radix puts the slider role on the thumb, so a root label never named it, which axe caught).
+
+**Deviations:**
+- **The tab bar is Home and More for now:** Play, Analysis, Puzzles and Watch join with their routes (PLAN 13.3), and the home's entries grow the same way (0259).
+- **`MiniBoard` is HTML squares, not SVG,** so the board theme's CSS hatching applies (0259).
+- **The about page names Stockfish now,** as this task asks, though the engine ships in Task 75.
+- **The account menu links to the site's `/account`** (Chaal has no account page of its own).
+- **Design flow:** the comps (Task 72) were the reference, checked with Playwright screenshots at 390 and 1280, en/ne, light and dark, which found the mark vanishing in dark and a Nepali caption overflowing (both fixed). `ui-ux-pro-max` and impeccable's critique weren't run; the finish review is Task 85's.
+
+**Numbers:** entry 286.3 kB (284.4 before) built as CI builds; budget raised to 290 kB (0260). Run: `pnpm test` (164 files, 1,737 tests; `chaal-access.test.ts` failed once at file level under full-suite load and passed on the next run and twice alone); `e2e/flows/chaal.spec.ts` (14 of 14, five new); the browser review of `/app/chaal` pages (108 of 108); Storybook for Chaal and the shared primitives and form fields in both projects (one context-menu story flaked once and passed on rerun); `typecheck`, `check`, `knip`, `i18n:check`, `build`, `build-storybook` and the bundle check.
+
+**Left for the owner:** run `pnpm db:migrate` on Neon (`0040_chaal_shell`).
 
 ### Task 74: The board kit and the game model (planned)
 

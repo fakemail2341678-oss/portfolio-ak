@@ -26,6 +26,7 @@ export * from "./attachments";
 export * from "./audit";
 export * from "./auth";
 export * from "./chaal/connection"; // @chaal
+export * from "./chaal/preference"; // @chaal
 export * from "./chaal/settings"; // @chaal
 export * from "./parda/alerts"; // @parda
 export * from "./parda/catalog"; // @parda

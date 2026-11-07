@@ -271,6 +271,9 @@ const SPECS: Record<Layer, LayerSpec> = {
 			"src/functions/chaal-admin",
 			"src/middleware/chaal.ts",
 			"src/routes/_admin/admin/chaal",
+			// Its pages, in its own layout and frame (Task 73, decision 0259).
+			"src/routes/_chaal",
+			"src/server/routes/chaal-manifest.ts",
 			// Connecting Lichess and the streams through the server (decision 0256).
 			"src/server/routes/chaal-oauth.ts",
 			"src/server/routes/chaal-stream.ts",
@@ -291,6 +294,7 @@ const SPECS: Record<Layer, LayerSpec> = {
 			"src/styles/chaal.css",
 			".impeccable/surfaces/src-routes-chaal-route-tsx.md",
 			"tests/unit/chaal-tokens.test.ts",
+			"tests/unit/chaal-preferences.test.ts",
 			".storybook/mocks/chaal.tsx",
 			"public/chaal",
 			"scripts/chaal-sounds.ts",

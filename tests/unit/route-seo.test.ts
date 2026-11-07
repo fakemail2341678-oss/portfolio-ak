@@ -189,6 +189,10 @@ const INDEXABLE: ReadonlyArray<{
 	{ to: "/app/parda/discover", label: "parda discover", context: {}, path: "/app/parda/discover", siteName: "Parda" },
 	...pardaContentPages,
 	// parda:end
+	// chaal:start
+	{ to: "/app/chaal", label: "chaal home", context: {}, path: "/app/chaal", siteName: "Chaal" },
+	{ to: "/app/chaal/about", label: "chaal about", context: {}, path: "/app/chaal/about", siteName: "Chaal" },
+	// chaal:end
 	// @strip-demo:indexable (the neutral landing page goes here when the portfolio is stripped)
 	// @new-feature:indexable
 ];

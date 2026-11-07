@@ -1,4 +1,6 @@
 import "@tanstack/react-start/server-only";
+import { eq } from "drizzle-orm";
+import { chPreference } from "@/server/db/schema";
 import type { Tx } from "@/server/db/types";
 import type { GuestData } from "@/server/guests/data";
 import { log } from "@/server/log";
@@ -18,8 +20,8 @@ const revokeWithStore: Revoke = async (sealed, userId) => {
  * the account, unless the account already has one: then the account's stays, and the
  * guest's token is revoked at Lichess outside the claim's transaction, not awaited (a
  * network call doesn't belong inside it; if the claim rolls back, that guest reconnects).
- * Preferences, local games, analyses and puzzle attempts join the claim with their tables
- * (Tasks 73–80).
+ * Preferences move the same way, the account's own winning (Task 73). Local games, analyses
+ * and puzzle attempts join the claim with their tables (Tasks 75–80).
  */
 export function createChaalGuestData(revoke: Revoke = revokeWithStore): GuestData {
 	return {
@@ -27,6 +29,7 @@ export function createChaalGuestData(revoke: Revoke = revokeWithStore): GuestDat
 		section: "chaal",
 		seedGuestData: async () => {},
 		claim: async (tx: Tx, fromUserId: string, toUserId: string) => {
+			await claimPreferences(tx, fromUserId, toUserId);
 			const guest = await connectionOf(tx, fromUserId);
 			if (!guest) return;
 			if (!(await connectionOf(tx, toUserId))) {
@@ -39,6 +42,16 @@ export function createChaalGuestData(revoke: Revoke = revokeWithStore): GuestDat
 			);
 		},
 	};
+}
+
+/** The guest's preferences become the account's, unless the account has its own (they win). */
+async function claimPreferences(tx: Tx, fromUserId: string, toUserId: string): Promise<void> {
+	const [own] = await tx
+		.select({ userId: chPreference.userId })
+		.from(chPreference)
+		.where(eq(chPreference.userId, toUserId));
+	if (own) await tx.delete(chPreference).where(eq(chPreference.userId, fromUserId));
+	else await tx.update(chPreference).set({ userId: toUserId }).where(eq(chPreference.userId, fromUserId));
 }
 
 export const CHAAL_GUEST_DATA: GuestData = createChaalGuestData();

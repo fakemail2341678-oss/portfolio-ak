@@ -27,7 +27,9 @@ import { gzipSync } from "node:zlib";
 // person, collection and surprise routes took it to 276.0 kB; the rest of Part 6 is measured in Task 70.
 // Task 67 (0240): 285. The library and profiles routes took it to 280.9 kB; Tasks 68 to 69a added their
 // routes (283.7 kB after 69a, about 0.3 kB each), and Task 70 measures and trims.
-const ENTRY_BUDGET_KB = 285;
+// Part 7 Task 73 (0260): 290. Chaal's layout and first six pages took it from 284.4 to 286.3 kB;
+// the room is for Tasks 74–84's routes, and Task 85 measures and trims.
+const ENTRY_BUDGET_KB = 290;
 const ROUTE_BUDGET_KB = 300;
 const FONT_BUDGET_KB = 150;
 /** Code that must never be preloaded by every page, found by a string it always contains: its pages load it. */

@@ -1,3 +1,4 @@
+import type { Localized } from "@/lib/i18n/localized";
 import type { ChaalFeature } from "./features";
 
 /** Shapes Chaal's server functions return (Task 71). */
@@ -9,6 +10,8 @@ export type ChaalStatus = {
 	connect: "on" | "off";
 	/** The explorer answers visitors who haven't connected (LICHESS_APP_TOKEN is set). */
 	explorerForVisitors: boolean;
+	/** The admin's notice under the top bar (Task 73), or null. */
+	banner: Localized | null;
 };
 
 /** A connected Lichess account as a page sees it: never the token (src/server/chaal/connect/service.ts). */

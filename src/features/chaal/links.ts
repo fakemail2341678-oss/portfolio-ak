@@ -1,8 +1,35 @@
+import { linkOptions } from "@tanstack/react-router";
+
 /**
  * Where Chaal lives (PLAN 13.2): its base path is here and nowhere else, so a rename is
- * one edit. Its pages arrive from Task 73; Task 71 has the connect routes and the admin's lab.
+ * one edit (with a move of src/routes/_chaal/app/chaal). Task 71 has the connect routes and
+ * the admin's lab; its pages start with Task 73.
  */
 export const CHAAL_BASE = "/app/chaal";
+
+/**
+ * Every link into Chaal: pages link through these. A link arrives with its route
+ * (PLAN 13.3), never before.
+ */
+export const chaalLinks = {
+	home: () => linkOptions({ to: "/app/chaal" }),
+	/** Preferences, the Lichess connection, this browser's data (noindex). `hash` opens a section. */
+	settings: (hash?: "connection" | "board" | "device") =>
+		linkOptions({ to: "/app/chaal/settings", ...(hash ? { hash } : {}) }),
+	about: (hash?: string) => linkOptions({ to: "/app/chaal/about", ...(hash ? { hash } : {}) }),
+	signIn: (redirect?: string) => linkOptions({ to: "/app/chaal/sign-in", search: { redirect } }),
+	signUp: (redirect?: string) => linkOptions({ to: "/app/chaal/sign-up", search: { redirect } }),
+};
+
+/** De-localized paths for redirects, `?redirect=` targets, heads and the sitemap. */
+export const CHAAL_PATHS = {
+	home: CHAAL_BASE,
+	about: `${CHAAL_BASE}/about`,
+	settings: `${CHAAL_BASE}/settings`,
+} as const;
+
+/** Chaal's indexable pages (PLAN 13.5, "SEO"): each joins with its route. */
+export const CHAAL_SITEMAP: ReadonlyArray<string> = [CHAAL_PATHS.home, CHAAL_PATHS.about];
 
 /** The admin's Chaal: connecting from the lab returns there. */
 const CHAAL_ADMIN = "/admin/chaal";

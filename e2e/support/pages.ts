@@ -391,8 +391,17 @@ export const REVIEWED_PAGES: ReadonlyArray<ReviewedPage> = [
 	{ route: "/app/parda/party/$code", params: { from: "parda-party" }, as: "viewer", label: "viewer" },
 	// parda:end
 	// chaal:start
-	// Chaal (decision 0254): Task 71's lab, the admin's only page until Chaal's own arrive (Task 73).
+	// Chaal (decision 0254): Task 71's lab, and its own pages in its frame (Task 73, decision 0259).
 	{ route: "/admin/chaal/lab", as: "admin" },
+	{ route: "/app/chaal" },
+	{ route: "/app/chaal", as: "viewer", label: "viewer" },
+	{ route: "/app/chaal/about" },
+	{ route: "/app/chaal/settings", label: "signed out" },
+	{ route: "/app/chaal/settings", as: "viewer", label: "viewer" },
+	{ route: "/app/chaal/settings", path: "/app/chaal/settings?lichess=denied", label: "connect result" },
+	{ route: "/app/chaal/sign-in" },
+	{ route: "/app/chaal/sign-up" },
+	{ route: "/app/chaal/$", path: "/app/chaal/no/such/page", status: 404, label: "unknown page" },
 	// chaal:end
 	// @new-feature:reviewed-pages
 	// Errors

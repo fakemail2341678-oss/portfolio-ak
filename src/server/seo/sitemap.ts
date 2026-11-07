@@ -1,5 +1,6 @@
 import "@tanstack/react-start/server-only";
 import { APPS, appPath } from "@/features/apps/registry"; // @apps
+import { CHAAL_SITEMAP } from "@/features/chaal/links"; // @chaal
 import { PARDA_SITEMAP } from "@/features/parda/links"; // @parda
 import { localizedUrl } from "@/lib/seo";
 import { baseLocale, locales } from "@/paraglide/runtime";
@@ -43,6 +44,7 @@ export async function sitemapEntries({ db }: Pick<Services, "db">): Promise<Site
 	entries.push({ path: "/apps" }, ...APPS.map((app) => ({ path: appPath(app.slug) }))); // @apps
 	entries.push({ path: "/app/taskline" }); // @taskline
 	entries.push(...PARDA_SITEMAP.map((path) => ({ path }))); // @parda
+	entries.push(...CHAAL_SITEMAP.map((path) => ({ path }))); // @chaal
 	for (const source of SITEMAP_SOURCES) entries.push(...(await source({ db })));
 	return entries;
 }

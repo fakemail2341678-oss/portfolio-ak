@@ -13,6 +13,7 @@ import { Route as AdminRouteImport } from './routes/_admin'
 import { Route as AppsRouteImport } from './routes/_apps'
 import { Route as AuthRouteImport } from './routes/_auth'
 import { Route as AuthedRouteImport } from './routes/_authed'
+import { Route as ChaalRouteRouteImport } from './routes/_chaal/route'
 import { Route as PardaRouteRouteImport } from './routes/_parda/route'
 import { Route as PublicRouteImport } from './routes/_public'
 import { Route as SiteRouteImport } from './routes/_site'
@@ -134,6 +135,12 @@ import { Route as AppsAppsLinksIndexRouteImport } from './routes/_apps/apps/link
 import { Route as AppsAppsLinksLinkIdRouteImport } from './routes/_apps/apps/links/$linkId'
 import { Route as AppsAppsNotesIndexRouteImport } from './routes/_apps/apps/notes/index'
 import { Route as AppsAppsNotesNoteIdRouteImport } from './routes/_apps/apps/notes/$noteId'
+import { Route as ChaalAppChaalIndexRouteImport } from './routes/_chaal/app/chaal/index'
+import { Route as ChaalAppChaalSplatRouteImport } from './routes/_chaal/app/chaal/$'
+import { Route as ChaalAppChaalAboutRouteImport } from './routes/_chaal/app/chaal/about'
+import { Route as ChaalAppChaalSettingsRouteImport } from './routes/_chaal/app/chaal/settings'
+import { Route as ChaalAppChaalSignInRouteImport } from './routes/_chaal/app/chaal/sign-in'
+import { Route as ChaalAppChaalSignUpRouteImport } from './routes/_chaal/app/chaal/sign-up'
 import { Route as PardaAppPardaIndexRouteImport } from './routes/_parda/app/parda/index'
 import { Route as PardaAppPardaSplatRouteImport } from './routes/_parda/app/parda/$'
 import { Route as PardaAppPardaHubRouteImport } from './routes/_parda/app/parda/$hub'
@@ -236,6 +243,10 @@ const AuthRoute = AuthRouteImport.update({
 } as any)
 const AuthedRoute = AuthedRouteImport.update({
   id: '/_authed',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ChaalRouteRoute = ChaalRouteRouteImport.update({
+  id: '/_chaal',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PardaRouteRoute = PardaRouteRouteImport.update({
@@ -867,6 +878,36 @@ const AppsAppsNotesNoteIdRoute = AppsAppsNotesNoteIdRouteImport.update({
   path: '/apps/notes/$noteId',
   getParentRoute: () => AppsRoute,
 } as any)
+const ChaalAppChaalIndexRoute = ChaalAppChaalIndexRouteImport.update({
+  id: '/app/chaal/',
+  path: '/app/chaal/',
+  getParentRoute: () => ChaalRouteRoute,
+} as any)
+const ChaalAppChaalSplatRoute = ChaalAppChaalSplatRouteImport.update({
+  id: '/app/chaal/$',
+  path: '/app/chaal/$',
+  getParentRoute: () => ChaalRouteRoute,
+} as any)
+const ChaalAppChaalAboutRoute = ChaalAppChaalAboutRouteImport.update({
+  id: '/app/chaal/about',
+  path: '/app/chaal/about',
+  getParentRoute: () => ChaalRouteRoute,
+} as any)
+const ChaalAppChaalSettingsRoute = ChaalAppChaalSettingsRouteImport.update({
+  id: '/app/chaal/settings',
+  path: '/app/chaal/settings',
+  getParentRoute: () => ChaalRouteRoute,
+} as any)
+const ChaalAppChaalSignInRoute = ChaalAppChaalSignInRouteImport.update({
+  id: '/app/chaal/sign-in',
+  path: '/app/chaal/sign-in',
+  getParentRoute: () => ChaalRouteRoute,
+} as any)
+const ChaalAppChaalSignUpRoute = ChaalAppChaalSignUpRouteImport.update({
+  id: '/app/chaal/sign-up',
+  path: '/app/chaal/sign-up',
+  getParentRoute: () => ChaalRouteRoute,
+} as any)
 const PardaAppPardaIndexRoute = PardaAppPardaIndexRouteImport.update({
   id: '/app/parda/',
   path: '/app/parda/',
@@ -1477,6 +1518,11 @@ export interface FileRoutesByFullPath {
   '/apps/habits/$habitId': typeof AppsAppsHabitsHabitIdRoute
   '/apps/links/$linkId': typeof AppsAppsLinksLinkIdRoute
   '/apps/notes/$noteId': typeof AppsAppsNotesNoteIdRoute
+  '/app/chaal/$': typeof ChaalAppChaalSplatRoute
+  '/app/chaal/about': typeof ChaalAppChaalAboutRoute
+  '/app/chaal/settings': typeof ChaalAppChaalSettingsRoute
+  '/app/chaal/sign-in': typeof ChaalAppChaalSignInRoute
+  '/app/chaal/sign-up': typeof ChaalAppChaalSignUpRoute
   '/app/parda/$': typeof PardaAppPardaSplatRoute
   '/app/parda/$hub': typeof PardaAppPardaHubRoute
   '/app/parda/about': typeof PardaAppPardaAboutRoute
@@ -1504,6 +1550,7 @@ export interface FileRoutesByFullPath {
   '/apps/habits/': typeof AppsAppsHabitsIndexRoute
   '/apps/links/': typeof AppsAppsLinksIndexRoute
   '/apps/notes/': typeof AppsAppsNotesIndexRoute
+  '/app/chaal/': typeof ChaalAppChaalIndexRoute
   '/app/parda/': typeof PardaAppPardaIndexRoute
   '/app/taskline/': typeof TasklineAppTasklineIndexRoute
   '/apps/kanban/': typeof TasklineAppsKanbanIndexRoute
@@ -1663,6 +1710,11 @@ export interface FileRoutesByTo {
   '/apps/habits/$habitId': typeof AppsAppsHabitsHabitIdRoute
   '/apps/links/$linkId': typeof AppsAppsLinksLinkIdRoute
   '/apps/notes/$noteId': typeof AppsAppsNotesNoteIdRoute
+  '/app/chaal/$': typeof ChaalAppChaalSplatRoute
+  '/app/chaal/about': typeof ChaalAppChaalAboutRoute
+  '/app/chaal/settings': typeof ChaalAppChaalSettingsRoute
+  '/app/chaal/sign-in': typeof ChaalAppChaalSignInRoute
+  '/app/chaal/sign-up': typeof ChaalAppChaalSignUpRoute
   '/app/parda/$': typeof PardaAppPardaSplatRoute
   '/app/parda/$hub': typeof PardaAppPardaHubRoute
   '/app/parda/about': typeof PardaAppPardaAboutRoute
@@ -1690,6 +1742,7 @@ export interface FileRoutesByTo {
   '/apps/habits': typeof AppsAppsHabitsIndexRoute
   '/apps/links': typeof AppsAppsLinksIndexRoute
   '/apps/notes': typeof AppsAppsNotesIndexRoute
+  '/app/chaal': typeof ChaalAppChaalIndexRoute
   '/app/parda': typeof PardaAppPardaIndexRoute
   '/apps/kanban': typeof TasklineAppsKanbanIndexRoute
   '/dev/examples/masking': typeof DevExamplesMaskingIndexRoute
@@ -1759,6 +1812,7 @@ export interface FileRoutesByTo {
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
+  '/_chaal': typeof ChaalRouteRouteWithChildren
   '/_parda': typeof PardaRouteRouteWithChildren
   '/_taskline': typeof TasklineRouteRouteWithChildren
   '/dev': typeof DevRouteRouteWithChildren
@@ -1873,6 +1927,11 @@ export interface FileRoutesById {
   '/_apps/apps/habits/$habitId': typeof AppsAppsHabitsHabitIdRoute
   '/_apps/apps/links/$linkId': typeof AppsAppsLinksLinkIdRoute
   '/_apps/apps/notes/$noteId': typeof AppsAppsNotesNoteIdRoute
+  '/_chaal/app/chaal/$': typeof ChaalAppChaalSplatRoute
+  '/_chaal/app/chaal/about': typeof ChaalAppChaalAboutRoute
+  '/_chaal/app/chaal/settings': typeof ChaalAppChaalSettingsRoute
+  '/_chaal/app/chaal/sign-in': typeof ChaalAppChaalSignInRoute
+  '/_chaal/app/chaal/sign-up': typeof ChaalAppChaalSignUpRoute
   '/_parda/app/parda/$': typeof PardaAppPardaSplatRoute
   '/_parda/app/parda/$hub': typeof PardaAppPardaHubRoute
   '/_parda/app/parda/about': typeof PardaAppPardaAboutRoute
@@ -1900,6 +1959,7 @@ export interface FileRoutesById {
   '/_apps/apps/habits/': typeof AppsAppsHabitsIndexRoute
   '/_apps/apps/links/': typeof AppsAppsLinksIndexRoute
   '/_apps/apps/notes/': typeof AppsAppsNotesIndexRoute
+  '/_chaal/app/chaal/': typeof ChaalAppChaalIndexRoute
   '/_parda/app/parda/': typeof PardaAppPardaIndexRoute
   '/_taskline/app/taskline/': typeof TasklineAppTasklineIndexRoute
   '/_taskline/apps/kanban/': typeof TasklineAppsKanbanIndexRoute
@@ -2081,6 +2141,11 @@ export interface FileRouteTypes {
     | '/apps/habits/$habitId'
     | '/apps/links/$linkId'
     | '/apps/notes/$noteId'
+    | '/app/chaal/$'
+    | '/app/chaal/about'
+    | '/app/chaal/settings'
+    | '/app/chaal/sign-in'
+    | '/app/chaal/sign-up'
     | '/app/parda/$'
     | '/app/parda/$hub'
     | '/app/parda/about'
@@ -2108,6 +2173,7 @@ export interface FileRouteTypes {
     | '/apps/habits/'
     | '/apps/links/'
     | '/apps/notes/'
+    | '/app/chaal/'
     | '/app/parda/'
     | '/app/taskline/'
     | '/apps/kanban/'
@@ -2267,6 +2333,11 @@ export interface FileRouteTypes {
     | '/apps/habits/$habitId'
     | '/apps/links/$linkId'
     | '/apps/notes/$noteId'
+    | '/app/chaal/$'
+    | '/app/chaal/about'
+    | '/app/chaal/settings'
+    | '/app/chaal/sign-in'
+    | '/app/chaal/sign-up'
     | '/app/parda/$'
     | '/app/parda/$hub'
     | '/app/parda/about'
@@ -2294,6 +2365,7 @@ export interface FileRouteTypes {
     | '/apps/habits'
     | '/apps/links'
     | '/apps/notes'
+    | '/app/chaal'
     | '/app/parda'
     | '/apps/kanban'
     | '/dev/examples/masking'
@@ -2362,6 +2434,7 @@ export interface FileRouteTypes {
     | '/app/taskline/$ws/p/$key/settings'
   id:
     | '__root__'
+    | '/_chaal'
     | '/_parda'
     | '/_taskline'
     | '/dev'
@@ -2476,6 +2549,11 @@ export interface FileRouteTypes {
     | '/_apps/apps/habits/$habitId'
     | '/_apps/apps/links/$linkId'
     | '/_apps/apps/notes/$noteId'
+    | '/_chaal/app/chaal/$'
+    | '/_chaal/app/chaal/about'
+    | '/_chaal/app/chaal/settings'
+    | '/_chaal/app/chaal/sign-in'
+    | '/_chaal/app/chaal/sign-up'
     | '/_parda/app/parda/$'
     | '/_parda/app/parda/$hub'
     | '/_parda/app/parda/about'
@@ -2503,6 +2581,7 @@ export interface FileRouteTypes {
     | '/_apps/apps/habits/'
     | '/_apps/apps/links/'
     | '/_apps/apps/notes/'
+    | '/_chaal/app/chaal/'
     | '/_parda/app/parda/'
     | '/_taskline/app/taskline/'
     | '/_taskline/apps/kanban/'
@@ -2577,6 +2656,7 @@ export interface FileRouteTypes {
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
+  ChaalRouteRoute: typeof ChaalRouteRouteWithChildren
   PardaRouteRoute: typeof PardaRouteRouteWithChildren
   TasklineRouteRoute: typeof TasklineRouteRouteWithChildren
   DevRouteRoute: typeof DevRouteRouteWithChildren
@@ -2624,6 +2704,13 @@ declare module '@tanstack/react-router' {
       path: ''
       fullPath: '/'
       preLoaderRoute: typeof AuthedRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_chaal': {
+      id: '/_chaal'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof ChaalRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_parda': {
@@ -3473,6 +3560,48 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppsAppsNotesNoteIdRouteImport
       parentRoute: typeof AppsRoute
     }
+    '/_chaal/app/chaal/': {
+      id: '/_chaal/app/chaal/'
+      path: '/app/chaal'
+      fullPath: '/app/chaal/'
+      preLoaderRoute: typeof ChaalAppChaalIndexRouteImport
+      parentRoute: typeof ChaalRouteRoute
+    }
+    '/_chaal/app/chaal/$': {
+      id: '/_chaal/app/chaal/$'
+      path: '/app/chaal/$'
+      fullPath: '/app/chaal/$'
+      preLoaderRoute: typeof ChaalAppChaalSplatRouteImport
+      parentRoute: typeof ChaalRouteRoute
+    }
+    '/_chaal/app/chaal/about': {
+      id: '/_chaal/app/chaal/about'
+      path: '/app/chaal/about'
+      fullPath: '/app/chaal/about'
+      preLoaderRoute: typeof ChaalAppChaalAboutRouteImport
+      parentRoute: typeof ChaalRouteRoute
+    }
+    '/_chaal/app/chaal/settings': {
+      id: '/_chaal/app/chaal/settings'
+      path: '/app/chaal/settings'
+      fullPath: '/app/chaal/settings'
+      preLoaderRoute: typeof ChaalAppChaalSettingsRouteImport
+      parentRoute: typeof ChaalRouteRoute
+    }
+    '/_chaal/app/chaal/sign-in': {
+      id: '/_chaal/app/chaal/sign-in'
+      path: '/app/chaal/sign-in'
+      fullPath: '/app/chaal/sign-in'
+      preLoaderRoute: typeof ChaalAppChaalSignInRouteImport
+      parentRoute: typeof ChaalRouteRoute
+    }
+    '/_chaal/app/chaal/sign-up': {
+      id: '/_chaal/app/chaal/sign-up'
+      path: '/app/chaal/sign-up'
+      fullPath: '/app/chaal/sign-up'
+      preLoaderRoute: typeof ChaalAppChaalSignUpRouteImport
+      parentRoute: typeof ChaalRouteRoute
+    }
     '/_parda/app/parda/': {
       id: '/_parda/app/parda/'
       path: '/app/parda'
@@ -4084,6 +4213,28 @@ declare module '@tanstack/react-router' {
     }
   }
 }
+
+interface ChaalRouteRouteChildren {
+  ChaalAppChaalSplatRoute: typeof ChaalAppChaalSplatRoute
+  ChaalAppChaalAboutRoute: typeof ChaalAppChaalAboutRoute
+  ChaalAppChaalSettingsRoute: typeof ChaalAppChaalSettingsRoute
+  ChaalAppChaalSignInRoute: typeof ChaalAppChaalSignInRoute
+  ChaalAppChaalSignUpRoute: typeof ChaalAppChaalSignUpRoute
+  ChaalAppChaalIndexRoute: typeof ChaalAppChaalIndexRoute
+}
+
+const ChaalRouteRouteChildren: ChaalRouteRouteChildren = {
+  ChaalAppChaalSplatRoute: ChaalAppChaalSplatRoute,
+  ChaalAppChaalAboutRoute: ChaalAppChaalAboutRoute,
+  ChaalAppChaalSettingsRoute: ChaalAppChaalSettingsRoute,
+  ChaalAppChaalSignInRoute: ChaalAppChaalSignInRoute,
+  ChaalAppChaalSignUpRoute: ChaalAppChaalSignUpRoute,
+  ChaalAppChaalIndexRoute: ChaalAppChaalIndexRoute,
+}
+
+const ChaalRouteRouteWithChildren = ChaalRouteRoute._addFileChildren(
+  ChaalRouteRouteChildren,
+)
 
 interface PardaRouteRouteChildren {
   PardaAppPardaSplatRoute: typeof PardaAppPardaSplatRoute
@@ -4862,6 +5013,7 @@ const SiteRouteChildren: SiteRouteChildren = {
 const SiteRouteWithChildren = SiteRoute._addFileChildren(SiteRouteChildren)
 
 const rootRouteChildren: RootRouteChildren = {
+  ChaalRouteRoute: ChaalRouteRouteWithChildren,
   PardaRouteRoute: PardaRouteRouteWithChildren,
   TasklineRouteRoute: TasklineRouteRouteWithChildren,
   DevRouteRoute: DevRouteRouteWithChildren,

@@ -188,7 +188,7 @@ function ConnectionSection() {
 		...disconnectChaalMutationOptions(),
 		onSuccess: async () => {
 			await queryClient.invalidateQueries({ queryKey: chaalKeys.connection() });
-			toast.success(m.ch_lab_disconnected());
+			toast.success(m.ch_disconnected());
 		},
 		onError: (error) => toast.error(errorMessage(error)),
 	});
@@ -198,9 +198,9 @@ function ConnectionSection() {
 	const askDisconnect = async () => {
 		if (
 			await confirm({
-				title: m.ch_lab_disconnect_title(),
-				description: m.ch_lab_disconnect_description(),
-				confirmLabel: m.ch_lab_disconnect(),
+				title: m.ch_disconnect_title(),
+				description: m.ch_disconnect_description(),
+				confirmLabel: m.ch_disconnect(),
 				destructive: true,
 			})
 		) {
@@ -233,10 +233,10 @@ function ConnectionSection() {
 			)}
 			{canConnect ? null : <p className="text-muted-foreground text-sm">{m.ch_lab_connect_off()}</p>}
 			<div className="flex flex-wrap gap-2">
-				{connection ? connectButton(m.ch_lab_reconnect()) : connectButton(m.ch_lab_connect())}
+				{connection ? connectButton(m.ch_reconnect()) : connectButton(m.ch_connect())}
 				{connection ? (
 					<Button variant="outline" onClick={askDisconnect} disabled={disconnect.isPending}>
-						{m.ch_lab_disconnect()}
+						{m.ch_disconnect()}
 					</Button>
 				) : null}
 			</div>

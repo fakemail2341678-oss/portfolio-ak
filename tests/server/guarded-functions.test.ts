@@ -505,6 +505,7 @@ const CHAAL_PUBLIC_FUNCTIONS: Record<string, ReadonlyArray<string>> = {
  */
 const CHAAL_FUNCTIONS: Record<string, ReadonlyArray<string>> = {
 	"chaal/connection.ts": ["getChaalConnection", "disconnectChaal"],
+	"chaal/preferences.ts": ["getChaalPreferences", "saveChaalPreferences", "importChaalPreferences"],
 };
 // chaal:end
 

@@ -2,24 +2,39 @@
 
 Chaal (चाल, "a move") is a chess app on the Lichess API at `/app/chaal`, run from `/admin/chaal`, built as a removable layer (`pnpm strip-demo`; decision 0254). The plan is [PLAN.md](../PLAN.md), section 13.
 
-**Where it stands: Tasks 71 and 72, the foundation and the look.** Chaal has no pages of its own yet (they start with Task 73). What exists: the look ("Diagram": tokens, board themes, pieces, sounds and fonts; see "The look" below), the Lichess client, its cache and fixtures, a fake Lichess for e2e, connecting a Lichess account (OAuth, the token vault), the event stream through our server, and the admin's lab at `/admin/chaal/lab`. `/admin/chaal` opens the lab until the overview arrives (Task 84).
+**Where it stands: Tasks 71–73, the foundation, the look and the shell.** Chaal has its own layout and frame at `/app/chaal` with a first home, settings (preferences and the Lichess connection), about, sign-in and sign-up, and its own 404 (see "The shell and pages" below). Underneath: the look ("Diagram": tokens, board themes, pieces, sounds and fonts), the Lichess client, its cache and fixtures, a fake Lichess for e2e, connecting a Lichess account (OAuth, the token vault), the event stream through our server, and the admin's lab at `/admin/chaal/lab`. `/admin/chaal` opens the lab until the overview arrives (Task 84). The board kit is next (Task 74).
 
 ## The layer
 
 | Part | Path |
 | --- | --- |
-| Feature (isomorphic) | `src/features/chaal/`: `brand.ts` (`CHAAL_NAME`), `links.ts` (the base path, the connect routes, `safeReturnPath`), `features.ts` (switches and scopes), `schema.ts` (what functions return), `keys.ts`, `queries.ts`, `live/` (ndjson, the event shapes), `admin/` (the lab) |
+| Feature (isomorphic) | `src/features/chaal/`: `brand.ts` (`CHAAL_NAME`, `CHAAL_BRAND`, `chaalTitle`, `chaalHead`), `links.ts` (the base path, `chaalLinks`, `CHAAL_PATHS`, `CHAAL_SITEMAP`, the connect routes, `safeReturnPath`), `search.ts` (URL contracts), `features.ts` (switches and scopes), `schema.ts` (what functions return), `keys.ts`, `queries.ts`, `shell/` (the frame, the account menu, the palette, the shortcuts, the notice), `connect/` (connecting and disconnecting from any page), `settings/` (preferences: schema, browser copy, hook, page), `board/` (`MiniBoard`, the FEN reader), `home/`, `about/`, `auth/`, `live/` (ndjson, the event shapes), `admin/` (the lab) |
+| Routes | `src/routes/_chaal/route.tsx` (the layout: brand, head, loader, 404) and `src/routes/_chaal/app/chaal/`: `index`, `about`, `settings`, `sign-in`, `sign-up`, `$` |
 | Server | `src/server/chaal/`: `lichess/` (client, lanes, cooldowns, counters, cache, schemas), `connect/` (OAuth, vault, repository, service), `controls.ts`, `context.ts`, `status.ts`, `stream.ts`, `guest-data.ts`, `store.ts` (the singletons), `admin/lab.ts` |
-| Functions | `src/functions/chaal/status.ts` (public: `withChaalPublic`), `src/functions/chaal/connection.ts` (personal: `requireChaalUser` → `withChaalServices`), `src/functions/chaal-admin/lab.ts` (`chaal:configure`) |
+| Functions | `src/functions/chaal/status.ts` (public: `withChaalPublic`), `src/functions/chaal/connection.ts` and `preferences.ts` (personal: `requireChaalUser` → `withChaalServices`), `src/functions/chaal-admin/lab.ts` (`chaal:configure`) |
 | Middleware | `src/middleware/chaal.ts` |
-| Nitro routes | `src/server/routes/chaal-oauth.ts` (`/api/chaal/oauth/{start,callback}`), `src/server/routes/chaal-stream.ts` (`/api/chaal/stream/events`), registered in `vite.config.ts` |
-| Schema | `src/server/db/schema/chaal/`: `ch_settings`, `ch_block`, `ch_connection` (migration `0039_chaal_foundation`) |
+| Nitro routes | `src/server/routes/chaal-oauth.ts` (`/api/chaal/oauth/{start,callback}`), `src/server/routes/chaal-stream.ts` (`/api/chaal/stream/events`), `src/server/routes/chaal-manifest.ts` (`/app/chaal/manifest.webmanifest` and the `/ne` one), registered in `vite.config.ts` |
+| Schema | `src/server/db/schema/chaal/`: `ch_settings`, `ch_block`, `ch_connection` (migration `0039_chaal_foundation`), `ch_preference` and `ch_settings.banner` (`0040_chaal_shell`) |
 | Admin | `src/routes/_admin/admin/chaal/` (`chaal:read` on the layout, `chaal:configure` on the lab) |
-| Tests | `tests/unit/chaal-lichess.test.ts`, `tests/unit/chaal-connect.test.ts`, `tests/server/chaal-connect.test.ts`, `tests/server/chaal-access.test.ts`, `e2e/flows/chaal.spec.ts` |
+| Tests | `tests/unit/chaal-lichess.test.ts`, `tests/unit/chaal-connect.test.ts`, `tests/unit/chaal-preferences.test.ts`, `tests/server/chaal-connect.test.ts`, `tests/server/chaal-access.test.ts`, `e2e/flows/chaal.spec.ts` |
 | Fixtures | `tests/fixtures/lichess/` (`pnpm lichess:record`), `e2e/harness/lichess.ts` (the fake Lichess) |
 | The look | `src/styles/chaal.css` (imported in `app.css` between `chaal:start` and `chaal:end`), `src/features/chaal/look/` (board themes, the "Chaal/Tokens" stories), `src/features/chaal/lib/fonts.ts`, `public/chaal/pieces/cburnett/`, `public/chaal/sounds/` (`pnpm chaal:sounds`), `tests/unit/chaal-tokens.test.ts`, `.storybook/mocks/chaal.tsx` (`withChaal`) |
 
 Nothing here imports from the portfolio, the apps, Taskline or Parda (0215). The server's LRU (`src/server/cache/lru.ts`) is core and shared with Parda (0255).
+
+## The shell and pages
+
+Decision 0259. `/_chaal` is a pathless layout: `staticData: { brand: CHAAL_BRAND }` puts `data-section="chaal"` on `<html>` (which scopes `chaal.css`), "system" follows the device, and the icons (`public/chaal/icon.svg` and the PNGs rendered from it with Playwright) and the manifest replace the app's. Its head adds `chaalFontPreloads(locale)` and noindex; indexable pages override it with `seo({ siteName: CHAAL_NAME })` and join `CHAAL_SITEMAP` and the route-SEO test's `INDEXABLE`. Private pages use `chaalHead(title)`.
+
+**The layout's loader** reads `chaalStatusQueryOptions` (switches, `connect`, the admin's `banner`) for everyone, and for a session `chaalConnectionQueryOptions` and `chaalPreferencesQueryOptions`. Pages read these with `useQuery` (they're in the cache); a page that needs more ensures its own in its loader.
+
+**The frame** (`shell/chaal-frame.tsx`): the top bar, the notice, the page (which renders its own `<main {...MAIN_CONTENT}>`), the footer, and the phone's tab bar. A new section is a row in `SECTIONS` (top bar and tab bar) added with its route, never before; "More" holds the rest. Shortcuts go through `useHotkeys` and get a row in `shell/shortcuts-dialog.tsx`; palette entries go in `shell/chaal-palette.tsx`.
+
+**Connecting from a page:** `useConnectLichess()` returns `connect(returnTo?)`: it starts a Chaal-scoped guest when there's no session, then sends the browser through the OAuth start route back to the page. `connectionState(connection)` is `ok`, `attention` (revoked, or missing an enabled feature's scope) or `none`, for the dot (`ConnectionDot`) and the buttons. `useDisconnectLichess()` asks first (it needs the section's `ConfirmProvider`).
+
+**Preferences:** `useChaalPreferences()` returns `{ preferences, save, where }`. With a session they're the account's (`ch_preference`, saved optimistically and put back on a refusal); without one, this browser's (`settings/local.ts`, keys under `chaal:`, read after hydration, so the server renders the defaults). The frame imports the browser's copy into a new session once (`useImportLocalPreferences`); a row already there wins. Read stored values with `readPreferences`, which falls back field by field. A new preference is a field in `chaalPreferencesSchema`, a default, a column (migration), and a control on the settings page.
+
+**`MiniBoard`** (`board/mini-board.tsx`): a static diagram from a FEN, drawn on the server, in a board theme, with marked squares (vermilion rings) and optional coordinates. Give it a `label` (one image to screen readers), or none when it's decoration beside its name. The real, interactive board is Task 74's.
 
 ## Settings, switches and blocks
 
@@ -27,6 +42,7 @@ Nothing here imports from the portfolio, the apps, Taskline or Parda (0215). The
 
 - `features`: `{ play: false }` turns a feature off; a feature not listed is on. The list and each feature's scopes are in `src/features/chaal/features.ts`. Each feature's server check arrives with the feature; `withToken(…, feature, …)` checks the switch for anything that uses a token.
 - `guests_may_connect`, `extra_scopes`, `cache_epoch`, and the public lane's cooldown.
+- `banner`: the admin's notice under the top bar, `{ en, ne }` (Nepali falls back to English), shown when its English isn't empty. Its form arrives with Task 79.
 
 `ch_block` holds a site user or a Lichess account (its lowercase id). A blocked user's personal calls are refused (`chaalUserOf`), and neither can connect. Their admin pages arrive with Task 79.
 
@@ -166,8 +182,19 @@ Chess words are Chaal's own messages, in both languages, and must read the same 
 | event stream | इभेन्ट स्ट्रिम | |
 | daily puzzle | दैनिक पजल | |
 | cooldown (Lichess asks us to wait) | पर्खाइ | |
+| settings | सेटिङ | Task 73 |
+| board, board theme | बोर्ड, बोर्डको थिम | The themes: डायग्राम, छाप, ढुङ्गा |
+| coordinates | निर्देशाङ्क | |
+| files, ranks | फाइल, र्‍याङ्क | |
+| premove | अग्रिम चाल | |
+| promote (to a queen) | (रानीमा) बढुवा | |
+| permissions (a connection's scopes, on the settings page) | अनुमतिहरू | The lab keeps स्कोप |
+| guest | अतिथि | |
 
 ## Pitfalls already solved
+
+- **A board theme for visitors appears after hydration:** without a session the preferences are in `localStorage`, which the server can't read, so the first paint uses the defaults and the theme swaps in (colours only, nothing moves). A session's are on the first paint.
+- **`MiniBoard` without a label is `aria-hidden`:** an element with `role="img"` and an empty name fails axe.
 
 - **Lichess's 401 isn't always "revoked":** only a call with a user's token becomes `LichessAuthError`. The explorer's 401 without a token means it needs one.
 - **A stream's timeout covers its headers only:** `AbortSignal.timeout` on the whole fetch would kill the stream after 8 s.

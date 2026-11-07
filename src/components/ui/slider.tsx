@@ -10,8 +10,12 @@ function Slider({
 	value,
 	min = 0,
 	max = 100,
+	thumbLabel,
 	...props
-}: React.ComponentProps<typeof SliderPrimitive.Root>) {
+}: React.ComponentProps<typeof SliderPrimitive.Root> & {
+	/** The thumb's accessible name: Radix gives the thumb `role="slider"`, so a label on the root doesn't reach it. */
+	thumbLabel?: string;
+}) {
 	const _values = React.useMemo(
 		() => (Array.isArray(value) ? value : Array.isArray(defaultValue) ? defaultValue : [min, max]),
 		[value, defaultValue, min, max],
@@ -46,6 +50,7 @@ function Slider({
 					data-slot="slider-thumb"
 					// biome-ignore lint/suspicious/noArrayIndexKey: thumbs are positional (one per value); they have no other identity.
 					key={index}
+					aria-label={thumbLabel}
 					className="block size-4 shrink-0 rounded-full border border-primary bg-white shadow-sm ring-ring/50 transition-[color,box-shadow] hover:ring-4 focus-visible:ring-4 focus-visible:outline-hidden disabled:pointer-events-none disabled:opacity-50"
 				/>
 			))}

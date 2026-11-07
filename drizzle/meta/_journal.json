@@ -281,6 +281,13 @@
 			"when": 1794070513093,
 			"tag": "0039_chaal_foundation",
 			"breakpoints": true
+		},
+		{
+			"idx": 40,
+			"version": "7",
+			"when": 1794082401892,
+			"tag": "0040_chaal_shell",
+			"breakpoints": true
 		}
 	]
 }

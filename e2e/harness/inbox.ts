@@ -468,8 +468,9 @@ export async function serveHarness(port: number, query: DemoQuery) {
 			// parda:end
 			// chaal:start
 			if (route === "DELETE /e2e/chaal-connections") {
-				// Task 71: every flow starts with no Lichess connected.
+				// Task 71: every flow starts with no Lichess connected; Task 73: and the default preferences.
 				await query(`delete from "ch_connection"`);
+				await query(`delete from "ch_preference"`);
 				return send(response, 200, { ok: true });
 			}
 			// chaal:end

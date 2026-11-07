@@ -8,5 +8,6 @@ export const getChaalStatus = fn(
 		features: Object.fromEntries(CHAAL_FEATURES.map((feature) => [feature, true])) as Record<ChaalFeature, boolean>,
 		connect: "on",
 		explorerForVisitors: true,
+		banner: null,
 	}),
 ).mockName("getChaalStatus");

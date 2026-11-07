@@ -2,12 +2,13 @@ import { sql } from "drizzle-orm";
 import { boolean, check, integer, jsonb, pgTable, text, timestamp, uniqueIndex, uuid } from "drizzle-orm/pg-core";
 import type { ChaalFeatureSwitches } from "@/features/chaal/features";
 import { user } from "../auth";
+import { localizedText } from "../columns";
 
 /**
  * Chaal's controls (PLAN 13.5, decision 0254): one settings row, read at most every 5 s per
  * process (src/server/chaal/controls.ts). Columns arrive with the feature that needs them;
  * Task 71 has the feature switches, the connecting rules, the cache epoch and the public
- * lane's cooldown. A missing row means the defaults.
+ * lane's cooldown; Task 73 the notice under the top bar. A missing row means the defaults.
  */
 export const chSettings = pgTable(
 	"ch_settings",
@@ -24,6 +25,8 @@ export const chSettings = pgTable(
 		/** The public lane's cooldown after a 429 (src/server/chaal/lichess/client.ts), and its length for doubling. */
 		publicCooldownUntil: timestamp({ withTimezone: true }),
 		publicCooldownMs: integer().notNull().default(0),
+		/** The admin's notice under Chaal's top bar, in both languages (its form arrives with Task 79). */
+		banner: localizedText(),
 		version: integer().notNull().default(1),
 		updatedAt: timestamp({ withTimezone: true })
 			.defaultNow()

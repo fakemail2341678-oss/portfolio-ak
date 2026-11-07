@@ -3,6 +3,8 @@
  * routes and the harness's fake Lichess, the account and scopes in the lab, the event
  * stream through our server, a token Lichess revoked, and disconnecting. In a production
  * build under the real CSP (the guard fails on any violation). CI never calls Lichess.
+ * Task 73 (decision 0259): the frame (palette, shortcuts, the phone's More), preferences in
+ * the browser and on the account, and connecting from the settings page as a visitor.
  */
 import type { Page } from "@playwright/test";
 import { E2E } from "../harness/config.ts";
@@ -136,5 +138,96 @@ test.describe("Chaal's lab as the admin", () => {
 			document.documentElement.clientWidth,
 		]);
 		expect(widths[0]).toBeLessThanOrEqual(widths[1] ?? 0);
+	});
+});
+
+/** The board theme the settings page has picked (its radio), and the diagram on the home. */
+const pickedTheme = (page: Page) => page.getByTestId("chaal-board-themes").getByRole("radio", { checked: true });
+
+test.describe("Chaal's pages for a visitor (Task 73)", () => {
+	test.describe.configure({ mode: "serial" });
+
+	test.beforeEach(async ({ harness }) => {
+		await harness.resetRateLimits();
+		await fetch(`${E2E.harnessURL}/e2e/lichess`, { method: "DELETE" });
+		await fetch(`${E2E.harnessURL}/e2e/chaal-connections`, { method: "DELETE" });
+	});
+
+	test("the frame: the palette (Ctrl K) goes to a page, and ? lists the shortcuts", async ({ page }) => {
+		await page.goto("/app/chaal", { waitUntil: "networkidle" });
+		await expect(page.getByTestId("chaal-home")).toBeVisible();
+		await page.keyboard.press("Control+k");
+		await page.getByTestId("command-input").fill("About");
+		await page.keyboard.press("Enter");
+		await expect(page).toHaveURL(/\/app\/chaal\/about$/);
+		await expect(page.getByRole("heading", { level: 1, name: "About Chaal" })).toBeVisible();
+		await page.keyboard.press("Shift+?");
+		await expect(page.getByTestId("chaal-shortcuts")).toBeVisible();
+	});
+
+	test("settings keep a visitor's board theme in this browser, and Delete this device's data forgets it", async ({
+		page,
+	}) => {
+		await page.goto("/app/chaal/settings", { waitUntil: "networkidle" });
+		await expect(page.getByText("Your choices are saved in this browser")).toBeVisible();
+		await page.getByTestId("chaal-board-print").click();
+		await page.reload({ waitUntil: "networkidle" });
+		await expect(pickedTheme(page)).toHaveAttribute("value", "print");
+		// The home's diagram follows it.
+		await page.goto("/app/chaal", { waitUntil: "networkidle" });
+		await expect(page.getByTestId("chaal-mini-board")).toHaveAttribute("data-ch-board", "print");
+
+		await page.goto("/app/chaal/settings", { waitUntil: "networkidle" });
+		await page.getByTestId("chaal-settings-clear-device").click();
+		await page.getByRole("alertdialog").getByRole("button", { name: "Delete this device's data" }).click();
+		await expect(pickedTheme(page)).toHaveAttribute("value", "diagram");
+	});
+
+	test("Connect Lichess from settings starts a guest, connects, brings the browser's preferences and disconnects", async ({
+		page,
+	}) => {
+		await page.goto("/app/chaal/settings", { waitUntil: "networkidle" });
+		await page.getByTestId("chaal-board-stone").click();
+		await expect(page.getByTestId("chaal-not-connected")).toBeVisible();
+		await page.getByTestId("chaal-settings-connect").click();
+		await expect(page.getByRole("heading", { name: "Authorize chaal-e2e" })).toBeVisible();
+		await page.getByRole("button", { name: "Approve" }).click();
+		await page.waitForURL(/\/app\/chaal\/settings\?lichess=connected$/);
+		await page.waitForLoadState("networkidle");
+
+		await expect(page.getByTestId("chaal-connect-result")).toContainText("Lichess is connected.");
+		await expect(page.getByTestId("chaal-connection-account")).toContainText("E2E_Player");
+		await expect(page.getByTestId("user-menu")).toContainText("E2E_Player");
+		// The guest's session took the browser's choice, and the page now saves to it.
+		await expect(page.getByText("Your choices are saved to your account")).toBeVisible();
+		await expect(pickedTheme(page)).toHaveAttribute("value", "stone");
+		expect(await page.content()).not.toMatch(/(?<![\w-])lio_[\w-]{10,}|\bv1\.[\w-]{8}\.[\w-]{16}\./);
+
+		await page.getByTestId("chaal-settings-disconnect").click();
+		await page.getByRole("alertdialog").getByRole("button", { name: "Disconnect" }).click();
+		await expect(page.getByTestId("chaal-not-connected")).toBeVisible();
+	});
+
+	test("on a phone, More opens the other pages", async ({ page }) => {
+		await page.setViewportSize({ width: 390, height: 844 });
+		await page.goto("/app/chaal", { waitUntil: "networkidle" });
+		await page.getByTestId("chaal-more").click();
+		await page.getByTestId("chaal-more-settings").click();
+		await expect(page).toHaveURL(/\/app\/chaal\/settings$/);
+		await expect(page.getByRole("heading", { level: 1, name: "Settings" })).toBeVisible();
+	});
+});
+
+test.describe("Chaal's settings for a member", () => {
+	test.use(signedIn("viewer"));
+
+	test("a member's preferences are saved to the account and survive a reload", async ({ page }) => {
+		await fetch(`${E2E.harnessURL}/e2e/chaal-connections`, { method: "DELETE" });
+		await page.goto("/app/chaal/settings", { waitUntil: "networkidle" });
+		await expect(page.getByText("Your choices are saved to your account")).toBeVisible();
+		await page.getByTestId("chaal-board-print").click();
+		await expect(page.getByText("Saved to your account.")).toBeAttached();
+		await page.reload({ waitUntil: "networkidle" });
+		await expect(pickedTheme(page)).toHaveAttribute("value", "print");
 	});
 });

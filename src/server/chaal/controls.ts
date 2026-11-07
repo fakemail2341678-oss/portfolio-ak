@@ -19,6 +19,7 @@ export const DEFAULT_CHAAL_SETTINGS: ChaalSettingsRow = {
 	cacheEpoch: 0,
 	publicCooldownUntil: null,
 	publicCooldownMs: 0,
+	banner: null,
 	version: 1,
 	updatedAt: new Date(0),
 };

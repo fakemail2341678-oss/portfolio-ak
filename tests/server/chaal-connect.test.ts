@@ -4,6 +4,7 @@ import { eq } from "drizzle-orm";
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 import type { ChaalEvent } from "@/features/chaal/live/events";
 import { ndjsonLines, parseLine } from "@/features/chaal/live/ndjson";
+import { DEFAULT_CHAAL_PREFERENCES } from "@/features/chaal/settings/preferences";
 import { openPending } from "@/server/chaal/connect/oauth";
 import * as connect from "@/server/chaal/connect/service";
 import { createVault, type Vault } from "@/server/chaal/connect/vault";
@@ -11,6 +12,7 @@ import { createChaalControls } from "@/server/chaal/controls";
 import { createChaalGuestData } from "@/server/chaal/guest-data";
 import { createLichess } from "@/server/chaal/lichess/client";
 import { accountAnswer } from "@/server/chaal/lichess/schemas";
+import { preferencesOf, savePreferences } from "@/server/chaal/preferences";
 import { eventStream } from "@/server/chaal/stream";
 import * as schema from "@/server/db/schema";
 import type { Db } from "@/server/db/types";
@@ -290,6 +292,21 @@ describe("the guest claim", () => {
 		expect(revoke).toHaveBeenCalledTimes(1);
 		const [sealed] = revoke.mock.calls[0] as unknown as [string];
 		expect(await vault.open(sealed, "token")).toBe("lio_player_2");
+	});
+
+	it("moves a guest's preferences to an account that has none", async () => {
+		await savePreferences(env.db, "g1", { ...DEFAULT_CHAAL_PREFERENCES, board: "stone" });
+		await env.db.transaction((tx) => createChaalGuestData(vi.fn()).claim(tx, "g1", "u1"));
+		expect((await preferencesOf(env.db, "u1"))?.board).toBe("stone");
+		expect(await preferencesOf(env.db, "g1")).toBeNull();
+	});
+
+	it("keeps the account's own preferences and drops the guest's", async () => {
+		await savePreferences(env.db, "u1", { ...DEFAULT_CHAAL_PREFERENCES, board: "print" });
+		await savePreferences(env.db, "g1", { ...DEFAULT_CHAAL_PREFERENCES, board: "stone" });
+		await env.db.transaction((tx) => createChaalGuestData(vi.fn()).claim(tx, "g1", "u1"));
+		expect((await preferencesOf(env.db, "u1"))?.board).toBe("print");
+		expect(await preferencesOf(env.db, "g1")).toBeNull();
 	});
 });
 

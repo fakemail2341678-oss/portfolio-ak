@@ -5,5 +5,6 @@ export const chaalKeys = {
 	all,
 	status: () => [...all, "status"] as const,
 	connection: () => [...all, "connection"] as const,
+	preferences: () => [...all, "preferences"] as const,
 	lab: () => [...all, "admin", "lab"] as const,
 };

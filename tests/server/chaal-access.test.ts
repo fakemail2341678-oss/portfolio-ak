@@ -1,4 +1,5 @@
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
+import { DEFAULT_CHAAL_PREFERENCES } from "@/features/chaal/settings/preferences";
 import type { Session } from "@/lib/session";
 import * as connect from "@/server/chaal/connect/service";
 import { createVault, type Vault } from "@/server/chaal/connect/vault";
@@ -6,6 +7,7 @@ import { type ChaalPublic, chaalUserOf } from "@/server/chaal/context";
 import { createChaalControls } from "@/server/chaal/controls";
 import { createChaalCache } from "@/server/chaal/lichess/cache";
 import { createLichess } from "@/server/chaal/lichess/client";
+import * as preferences from "@/server/chaal/preferences";
 import { chaalStatus } from "@/server/chaal/status";
 import * as schema from "@/server/db/schema";
 import { createTestDb } from "../utils/test-db";
@@ -63,6 +65,15 @@ const OPERATIONS: Record<string, (userId: string) => Promise<unknown>> = {
 	disconnectChaal: (userId) => connect.disconnect(deps(), userId),
 };
 
+/** Every preferences function's service call (src/functions/chaal/preferences.ts, Task 73). */
+const PREFERENCE_OPERATIONS: Record<string, (userId: string) => Promise<unknown>> = {
+	getChaalPreferences: (userId) => preferences.preferencesOf(env.db, userId),
+	saveChaalPreferences: (userId) =>
+		preferences.savePreferences(env.db, userId, { ...DEFAULT_CHAAL_PREFERENCES, board: "stone" }),
+	importChaalPreferences: (userId) =>
+		preferences.importPreferences(env.db, userId, { ...DEFAULT_CHAAL_PREFERENCES, board: "stone" }),
+};
+
 beforeAll(async () => {
 	env = await createTestDb("admin-1", async (db) => {
 		await db.insert(schema.user).values(
@@ -102,6 +113,14 @@ describe("Chaal's access matrix", () => {
 		expect((await connect.connectionView(deps(), "member"))?.lichessId).toBe("member_lichess");
 		expect(await connect.connectionView(deps(), "other")).toBeNull();
 		expect(fetcher).not.toHaveBeenCalled();
+	});
+
+	it.each(Object.keys(PREFERENCE_OPERATIONS))("%s acts on the caller's own preferences only", async (name) => {
+		const operation = PREFERENCE_OPERATIONS[name];
+		if (!operation) throw new Error(name);
+		await preferences.savePreferences(env.db, "member", { ...DEFAULT_CHAAL_PREFERENCES, board: "print" });
+		await operation("other");
+		expect((await preferences.preferencesOf(env.db, "member"))?.board).toBe("print");
 	});
 
 	it("a guest's connection works like a member's", async () => {

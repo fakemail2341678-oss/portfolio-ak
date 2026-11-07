@@ -263,6 +263,8 @@ Record every non-obvious choice here: **What**, **Why**, **Alternatives consider
 - [0256](#0256-lichess-tokens-are-sealed-and-never-leave-the-server): Lichess tokens are sealed and never leave the server
 - [0257](#0257-what-task-71s-spikes-found): What Task 71's spikes found
 - [0258](#0258-chaals-look-is-diagram-a-printed-chess-diagram-paper-and-ink-one-vermilion): Chaal's look is "Diagram": a printed chess diagram, paper and ink, one vermilion
+- [0259](#0259-chaals-shell-a-frame-of-its-own-preferences-on-the-account-or-in-the-browser-connecting-from-any-page): Chaal's shell: a frame of its own, preferences on the account or in the browser, connecting from any page
+- [0260](#0260-the-entry-budget-rises-to-290-kb-for-part-7s-routes): The entry budget rises to 290 kB for Part 7's routes
 </details>
 
 ---
@@ -3451,3 +3453,35 @@ Measured on the owner's Windows machine (Node 24.11, 12 threads, 11.7 GB), 2026-
 - **Bitmap specimen:** no bitmap face covers Devanagari.
 - **The category standard:** a dark slate app, indistinguishable from other chess sites by design.
 - **Pieces under CC BY-SA 3.0,** as the plan assumed: possible, but its share-alike terms are a worse fit than BSD for files shipped inside the app.
+
+## 0259: Chaal's shell: a frame of its own, preferences on the account or in the browser, connecting from any page
+
+**What** (Task 73, 2026-11-08):
+- **The layout:** `src/routes/_chaal/route.tsx` is a pathless layout with `CHAAL_BRAND` (`id: "chaal"`, which scopes `chaal.css`; no `defaultScheme`, so "system" follows the device; `themeColors` `#f3f2ee` and `#121211`; its own icons and manifest), `chaalFontPreloads`, noindex by default, and its own 404 (`$.tsx`). Its loader reads the status (switches, whether this visitor may connect, the admin's notice) and, for a session, the Lichess connection and the preferences, so the first paint is whole; none can fail the page.
+- **The frame** (`src/features/chaal/shell/`): a 58 px top bar ruled off with a 2 px ink line (the wordmark Chaal चाल, the sections, search, language from `lg`, theme, the account), the admin's notice (`ch_settings.banner`, new; its form is Task 79's), the footer ("Powered by Lichess, not affiliated", the about page, the credits, Stockfish's source), and on phones a tab bar with "More" (a sheet: settings, about, search, language). The palette (⌘K) and the shortcuts dialog (`?`) are copied from Taskline's; layers don't import each other (0215).
+- **Sections arrive with their routes** (PLAN 13.3): Home only in Task 73. Play, Analysis, Puzzles and Watch join the top bar and the tab bar with Tasks 75, 76, 80 and 82, and the home's entries grow the same way. Until then the tab bar is Home and More.
+- **The account button** is a menu with a dot for the connection (PLAN 13.6, "Instant"): ink when connected, an open ring when not, a ring in the danger colour when Lichess needs a reconnect. Its label is the Lichess username, else the member's name, else "Account". The menu connects or disconnects Lichess, opens the settings, switches theme and language, and signs in or out.
+- **Connecting from any page:** `useConnectLichess` starts a guest scoped to Chaal (`guest_scope=chaal`, which seeds nothing) when there is no session, then goes through `/api/chaal/oauth/start` back to the same page without its earlier `?lichess=` result. The settings page shows the result.
+- **Preferences** (`ch_preference`, migration `0040_chaal_shell`): one row per user, guests included, written on the first change; no row means the defaults (`DEFAULT_CHAAL_PREFERENCES`). Board theme, pieces, sounds, volume, auto-queen, premove, confirm moves, coordinates, notation, zen. Without a session they live in `localStorage` under `chaal:preferences` (every Chaal key starts with `chaal:`, which "Delete this device's data" removes). When a session appears, the frame imports the browser's copy once (`importChaalPreferences`: a row already there wins) and forgets it. Stored values are read field by field (`readPreferences`), so a removed board theme falls back to the default without losing the rest. The guest claim moves a guest's row unless the account has its own.
+- **The settings page** saves each change at once, to the account or the browser, with no Save button (one primary action per screen): board theme (three swatches drawn by `MiniBoard`), notation, coordinates, moves (auto-queen, premoves, confirm, zen), sound (on/off, volume, "Try it"), the Lichess connection (account, state, permissions, date; Connect, Reconnect, Disconnect; the result of a connect), and this device's data.
+- **`MiniBoard`** (`src/features/chaal/board/`, the kit's first piece) draws a FEN's placement on the server: HTML squares rather than SVG, so the board theme's tokens (a CSS pattern for the hatching) apply as they will on the real board, the double frame, coordinates outside it, and vermilion rings on marked squares. The home's hero shows the Ruy Lopez after 3.♗b5 in the player's board theme.
+- **The home, first version:** the heading, one primary action (Connect Lichess, else "Set up your board"), the diagram, and three entries (the connection, the board, about).
+
+**Why:**
+- A frame of its own, as Taskline's and Parda's, keeps Chaal removable and lets "Diagram" own the whole page.
+- Preferences must work for visitors (everything public works without an account, PLAN 13.2) but follow members across devices; importing once, with the server's row winning, never overwrites another device's choices.
+- Starting a guest only when someone connects keeps the guests table free of visitors who only look.
+
+**Alternatives considered:**
+- **A cookie for a visitor's board theme,** so the server draws it on the first paint: more machinery for one colour change after hydration, on a page whose layout doesn't move.
+- **The four product tabs now, linking to "coming soon" pages:** dead ends; PLAN 13.3 says links arrive with their routes.
+- **`MiniBoard` as SVG** (as PLAN 13.5 sketched): SVG can't take the CSS hatching pattern, so each theme would need a second drawing.
+
+## 0260: The entry budget rises to 290 kB for Part 7's routes
+
+**What** (Task 73): `ENTRY_BUDGET_KB` in `scripts/check-bundle.ts` goes from 285 to 290 kB. Chaal's layout and its six first routes add about 1.8 kB to every page's JavaScript (route definitions are in the entry, about 0.3 kB each, decision 0151), taking the entry built as CI builds it from 284.4 to 286.3 kB.
+
+**Why:** PLAN 13.4 foresaw it: Part 7 adds about twenty routes. Their definitions (path, search schema, loader and head) are what's in the entry; the pages themselves are split out. The headroom covers Tasks 74–84, and Task 85 measures and trims, as Task 70 did for Part 6.
+
+**Alternatives considered:**
+- **Moving weight out of the entry now:** the only candidates are the route definitions themselves. Merging Chaal's pages into fewer routes with parameters would save a few hundred bytes and make the URLs worse.
