@@ -1,0 +1,463 @@
+/*
+ * Fonts are self-hosted via Fontsource (no third-party requests).
+ * Each subset is split by unicode-range, so a browser only downloads the
+ * Devanagari file when a page actually renders Devanagari text.
+ * The two subsets we render first are preloaded from src/lib/fonts.ts.
+ */
+@import "@fontsource-variable/inter/wght.css";
+@import "@fontsource-variable/noto-sans-devanagari/wght.css";
+
+@import "tailwindcss";
+@import "tw-animate-css";
+/* portfolio:start */
+/* "Himal": scoped tokens and utilities of the portfolio at / (hm-*, under .himal). */
+@import "./himal.css";
+/* portfolio:end */
+/* parda:start */
+/* "Masking": Parda's tokens and utilities (pd-*, under html[data-section="parda"]). */
+@import "./parda.css";
+/* parda:end */
+@plugin "@tailwindcss/typography";
+
+@custom-variant dark (&:is(.dark *));
+
+/*
+ * Metric-matched fallback faces prevent layout shift while the web fonts swap in.
+ * Inter values are computed with @capsizecss/metrics against Arial (same formula
+ * as next/font). Devanagari matches Noto's vertical metrics (ascent 896,
+ * descent 408, UPM 1000) on common system Devanagari fonts. See docs/decisions.md.
+ */
+@font-face {
+	font-family: "Inter Fallback";
+	src: local("Arial"), local("ArialMT"), local("Helvetica Neue"), local("Helvetica");
+	size-adjust: 107.12%;
+	ascent-override: 90.44%;
+	descent-override: 22.52%;
+	line-gap-override: 0%;
+}
+
+@font-face {
+	font-family: "Noto Sans Devanagari Fallback";
+	src: local("Nirmala UI"), local("Kohinoor Devanagari"), local("Devanagari Sangam MN"), local("Mangal");
+	unicode-range: U+0900-097F, U+1CD0-1CF9, U+200C-200D, U+20A8, U+20B9, U+25CC, U+A830-A839, U+A8E0-A8FF;
+	ascent-override: 89.6%;
+	descent-override: 40.8%;
+	line-gap-override: 0%;
+}
+
+/*
+ * "Graphite": the design system of everything except the portfolio (admin, sign-in,
+ * account, /dev, the apps). docs/guides/design-system.md explains it; decision 0164.
+ *
+ * - Neutrals are a cool graphite (hue 265, almost no chroma). Dark mode is near-black,
+ *   never #000. Three layers: --background (the page), --surface-1 (sidebar, muted
+ *   panels), --surface-2 (cards, popovers, menus).
+ * - One accent, set on <html data-accent> (indigo by default). In dark mode it is lighter
+ *   with dark text on it, so it also passes as text on the dark background.
+ * - Radius (<html data-radius>) and density (<html data-density>) are presets too. The
+ *   server renders all three from the preference cookies, so nothing flashes.
+ * - Every text pair is 4.5:1 or more in every accent and theme:
+ *   tests/unit/design-tokens.test.ts parses this file and checks them. Change a value,
+ *   run that test.
+ */
+:root {
+	/* Native controls, scrollbars and form widgets follow the theme. */
+	color-scheme: light;
+
+	--background: oklch(0.995 0.0015 265);
+	--surface-1: oklch(0.978 0.003 265);
+	--surface-2: oklch(1 0 0);
+	--foreground: oklch(0.21 0.012 265);
+	--card: var(--surface-2);
+	--card-foreground: var(--foreground);
+	--popover: var(--surface-2);
+	--popover-foreground: var(--foreground);
+	--secondary: oklch(0.955 0.004 265);
+	--secondary-foreground: var(--foreground);
+	--muted: oklch(0.962 0.004 265);
+	--muted-foreground: oklch(0.49 0.014 265);
+	/* Hover and selected backgrounds (shadcn's "accent"); the brand colour is --primary. */
+	--accent: oklch(0.955 0.004 265);
+	--accent-foreground: var(--foreground);
+	--border: oklch(0.915 0.005 265);
+	--input: oklch(0.885 0.006 265);
+
+	/* The accent preset: indigo unless <html data-accent> picks another (below). */
+	--primary: oklch(0.51 0.21 277);
+	--primary-foreground: oklch(0.985 0.005 277);
+	--accent-subtle: oklch(0.955 0.03 277);
+	--ring: var(--primary);
+	--chart-1: var(--primary);
+	--chart-2: oklch(0.6 0.15 347);
+	--chart-3: oklch(0.6 0.15 67);
+	--chart-4: oklch(0.6 0.15 127);
+	--chart-5: oklch(0.6 0.15 207);
+
+	/*
+	 * Status colours. --x is the strong colour (text and icons on any surface, or a solid
+	 * fill), --x-foreground is text on that fill, --x-subtle a tinted background. Danger
+	 * is the destructive colour.
+	 */
+	--destructive: oklch(0.505 0.213 27.518);
+	--destructive-foreground: oklch(0.985 0.005 27.5);
+	--danger: var(--destructive);
+	--danger-foreground: var(--destructive-foreground);
+	--danger-subtle: oklch(0.96 0.03 27.5);
+	--success: oklch(0.5 0.12 152);
+	--success-foreground: oklch(0.985 0.005 152);
+	--success-subtle: oklch(0.96 0.03 152);
+	--warning: oklch(0.52 0.12 65);
+	--warning-foreground: oklch(0.985 0.005 65);
+	--warning-subtle: oklch(0.96 0.03 65);
+	--info: oklch(0.5 0.14 245);
+	--info-foreground: oklch(0.985 0.005 245);
+	--info-subtle: oklch(0.96 0.03 245);
+
+	--sidebar: var(--surface-1);
+	--sidebar-foreground: var(--foreground);
+	--sidebar-primary: var(--primary);
+	--sidebar-primary-foreground: var(--primary-foreground);
+	--sidebar-accent: oklch(0.945 0.005 265);
+	--sidebar-accent-foreground: var(--foreground);
+	--sidebar-border: var(--border);
+	--sidebar-ring: var(--ring);
+
+	/* Elevation: hairline-soft in light mode. */
+	--elevation-xs: 0 1px 1px oklch(0.21 0.012 265 / 4%);
+	--elevation-sm: 0 1px 2px oklch(0.21 0.012 265 / 6%), 0 1px 1px oklch(0.21 0.012 265 / 4%);
+	--elevation-md: 0 4px 12px -2px oklch(0.21 0.012 265 / 8%), 0 1px 2px oklch(0.21 0.012 265 / 6%);
+	--elevation-lg: 0 16px 40px -8px oklch(0.21 0.012 265 / 14%), 0 2px 6px oklch(0.21 0.012 265 / 6%);
+
+	/* Radius preset ("default"; see data-radius below). */
+	--radius: 0.5rem;
+	/* Density preset ("comfortable"; see data-density below): Button, Input and table rows. */
+	--control-height: 2.25rem;
+	--row-padding: 0.5rem;
+}
+
+.dark {
+	color-scheme: dark;
+
+	--background: oklch(0.165 0.005 265);
+	--surface-1: oklch(0.185 0.006 265);
+	--surface-2: oklch(0.215 0.007 265);
+	--foreground: oklch(0.965 0.003 265);
+	--secondary: oklch(0.26 0.007 265);
+	--muted: oklch(0.245 0.007 265);
+	--muted-foreground: oklch(0.715 0.012 265);
+	--accent: oklch(0.26 0.007 265);
+	--border: oklch(1 0 0 / 8%);
+	--input: oklch(1 0 0 / 13%);
+
+	--primary: oklch(0.7 0.14 277);
+	--primary-foreground: oklch(0.17 0.03 277);
+	--accent-subtle: oklch(0.27 0.05 277);
+	--chart-2: oklch(0.72 0.15 347);
+	--chart-3: oklch(0.72 0.15 67);
+	--chart-4: oklch(0.72 0.15 127);
+	--chart-5: oklch(0.72 0.15 207);
+
+	--destructive: oklch(0.704 0.191 22.216);
+	--destructive-foreground: oklch(0.18 0.03 27.5);
+	--danger-subtle: oklch(0.26 0.045 27.5);
+	--success: oklch(0.77 0.15 152);
+	--success-foreground: oklch(0.18 0.03 152);
+	--success-subtle: oklch(0.26 0.045 152);
+	--warning: oklch(0.82 0.14 65);
+	--warning-foreground: oklch(0.18 0.03 65);
+	--warning-subtle: oklch(0.26 0.045 65);
+	--info: oklch(0.76 0.12 245);
+	--info-foreground: oklch(0.18 0.03 245);
+	--info-subtle: oklch(0.26 0.045 245);
+
+	--sidebar-accent: oklch(0.24 0.007 265);
+
+	/* Shadows barely show on near-black: a darker drop plus a faint top highlight. */
+	--elevation-xs: 0 1px 1px oklch(0 0 0 / 30%);
+	--elevation-sm: 0 1px 2px oklch(0 0 0 / 40%), inset 0 1px 0 oklch(1 0 0 / 4%);
+	--elevation-md: 0 4px 12px -2px oklch(0 0 0 / 50%), inset 0 1px 0 oklch(1 0 0 / 5%);
+	--elevation-lg: 0 16px 40px -8px oklch(0 0 0 / 60%), inset 0 1px 0 oklch(1 0 0 / 6%);
+}
+
+/*
+ * Accent presets. They match any element, not only <html>, so a swatch can show another
+ * accent (<span data-accent="rose" class="bg-primary">). Only tokens set here change in
+ * such a scope: --ring and --sidebar-primary are resolved once, on <html>.
+ * Indigo repeats the defaults above for that reason.
+ */
+[data-accent="indigo"] {
+	--primary: oklch(0.51 0.21 277);
+	--primary-foreground: oklch(0.985 0.005 277);
+	--accent-subtle: oklch(0.955 0.03 277);
+	--chart-2: oklch(0.6 0.15 347);
+	--chart-3: oklch(0.6 0.15 67);
+	--chart-4: oklch(0.6 0.15 127);
+	--chart-5: oklch(0.6 0.15 207);
+}
+.dark[data-accent="indigo"],
+.dark [data-accent="indigo"] {
+	--primary: oklch(0.7 0.14 277);
+	--primary-foreground: oklch(0.17 0.03 277);
+	--accent-subtle: oklch(0.27 0.05 277);
+	--chart-2: oklch(0.72 0.15 347);
+	--chart-3: oklch(0.72 0.15 67);
+	--chart-4: oklch(0.72 0.15 127);
+	--chart-5: oklch(0.72 0.15 207);
+}
+[data-accent="violet"] {
+	--primary: oklch(0.52 0.22 293);
+	--primary-foreground: oklch(0.985 0.005 293);
+	--accent-subtle: oklch(0.955 0.03 293);
+	--chart-2: oklch(0.6 0.15 3);
+	--chart-3: oklch(0.6 0.15 83);
+	--chart-4: oklch(0.6 0.15 143);
+	--chart-5: oklch(0.6 0.15 223);
+}
+.dark[data-accent="violet"],
+.dark [data-accent="violet"] {
+	--primary: oklch(0.72 0.15 293);
+	--primary-foreground: oklch(0.17 0.03 293);
+	--accent-subtle: oklch(0.27 0.05 293);
+	--chart-2: oklch(0.72 0.15 3);
+	--chart-3: oklch(0.72 0.15 83);
+	--chart-4: oklch(0.72 0.15 143);
+	--chart-5: oklch(0.72 0.15 223);
+}
+[data-accent="emerald"] {
+	--primary: oklch(0.5 0.11 163);
+	--primary-foreground: oklch(0.985 0.005 163);
+	--accent-subtle: oklch(0.955 0.03 163);
+	--chart-2: oklch(0.6 0.15 233);
+	--chart-3: oklch(0.6 0.15 313);
+	--chart-4: oklch(0.6 0.15 13);
+	--chart-5: oklch(0.6 0.15 93);
+}
+.dark[data-accent="emerald"],
+.dark [data-accent="emerald"] {
+	--primary: oklch(0.76 0.14 163);
+	--primary-foreground: oklch(0.17 0.03 163);
+	--accent-subtle: oklch(0.27 0.05 163);
+	--chart-2: oklch(0.72 0.15 233);
+	--chart-3: oklch(0.72 0.15 313);
+	--chart-4: oklch(0.72 0.15 13);
+	--chart-5: oklch(0.72 0.15 93);
+}
+[data-accent="amber"] {
+	--primary: oklch(0.52 0.12 62);
+	--primary-foreground: oklch(0.985 0.005 62);
+	--accent-subtle: oklch(0.955 0.03 62);
+	--chart-2: oklch(0.6 0.15 132);
+	--chart-3: oklch(0.6 0.15 212);
+	--chart-4: oklch(0.6 0.15 272);
+	--chart-5: oklch(0.6 0.15 352);
+}
+.dark[data-accent="amber"],
+.dark [data-accent="amber"] {
+	--primary: oklch(0.81 0.14 62);
+	--primary-foreground: oklch(0.17 0.03 62);
+	--accent-subtle: oklch(0.27 0.05 62);
+	--chart-2: oklch(0.72 0.15 132);
+	--chart-3: oklch(0.72 0.15 212);
+	--chart-4: oklch(0.72 0.15 272);
+	--chart-5: oklch(0.72 0.15 352);
+}
+[data-accent="rose"] {
+	--primary: oklch(0.53 0.2 12);
+	--primary-foreground: oklch(0.985 0.005 12);
+	--accent-subtle: oklch(0.955 0.03 12);
+	--chart-2: oklch(0.6 0.15 82);
+	--chart-3: oklch(0.6 0.15 162);
+	--chart-4: oklch(0.6 0.15 222);
+	--chart-5: oklch(0.6 0.15 302);
+}
+.dark[data-accent="rose"],
+.dark [data-accent="rose"] {
+	--primary: oklch(0.72 0.16 12);
+	--primary-foreground: oklch(0.17 0.03 12);
+	--accent-subtle: oklch(0.27 0.05 12);
+	--chart-2: oklch(0.72 0.15 82);
+	--chart-3: oklch(0.72 0.15 162);
+	--chart-4: oklch(0.72 0.15 222);
+	--chart-5: oklch(0.72 0.15 302);
+}
+
+/* Radius presets: about 4, 8 (the default above) and 14 px. */
+html[data-radius="sharp"] {
+	--radius: 0.25rem;
+}
+html[data-radius="round"] {
+	--radius: 0.875rem;
+}
+
+/* Density preset ("comfortable" is the default above). */
+html[data-density="compact"] {
+	--control-height: 2rem;
+	--row-padding: 0.3125rem;
+}
+
+/* The type scale: text-display, text-title, text-heading, text-body, text-caption. */
+@theme {
+	--text-display: 1.875rem;
+	--text-display--line-height: 2.25rem;
+	--text-display--letter-spacing: -0.022em;
+	--text-display--font-weight: 600;
+	--text-title: 1.375rem;
+	--text-title--line-height: 1.75rem;
+	--text-title--letter-spacing: -0.018em;
+	--text-title--font-weight: 600;
+	--text-heading: 0.9375rem;
+	--text-heading--line-height: 1.375rem;
+	--text-heading--letter-spacing: -0.006em;
+	--text-heading--font-weight: 600;
+	--text-body: 0.875rem;
+	--text-body--line-height: 1.375rem;
+	--text-caption: 0.75rem;
+	--text-caption--line-height: 1rem;
+}
+
+@theme inline {
+	--font-sans:
+		"Inter Variable", "Noto Sans Devanagari Variable", "Inter Fallback", "Noto Sans Devanagari Fallback", ui-sans-serif,
+		system-ui, sans-serif;
+	--color-background: var(--background);
+	--color-foreground: var(--foreground);
+	--color-surface-1: var(--surface-1);
+	--color-surface-2: var(--surface-2);
+	--color-card: var(--card);
+	--color-card-foreground: var(--card-foreground);
+	--color-popover: var(--popover);
+	--color-popover-foreground: var(--popover-foreground);
+	--color-primary: var(--primary);
+	--color-primary-foreground: var(--primary-foreground);
+	--color-accent-subtle: var(--accent-subtle);
+	--color-secondary: var(--secondary);
+	--color-secondary-foreground: var(--secondary-foreground);
+	--color-muted: var(--muted);
+	--color-muted-foreground: var(--muted-foreground);
+	--color-accent: var(--accent);
+	--color-accent-foreground: var(--accent-foreground);
+	--color-destructive: var(--destructive);
+	--color-destructive-foreground: var(--destructive-foreground);
+	--color-danger: var(--danger);
+	--color-danger-foreground: var(--danger-foreground);
+	--color-danger-subtle: var(--danger-subtle);
+	--color-success: var(--success);
+	--color-success-foreground: var(--success-foreground);
+	--color-success-subtle: var(--success-subtle);
+	--color-warning: var(--warning);
+	--color-warning-foreground: var(--warning-foreground);
+	--color-warning-subtle: var(--warning-subtle);
+	--color-info: var(--info);
+	--color-info-foreground: var(--info-foreground);
+	--color-info-subtle: var(--info-subtle);
+	--color-border: var(--border);
+	--color-input: var(--input);
+	--color-ring: var(--ring);
+	--color-chart-1: var(--chart-1);
+	--color-chart-2: var(--chart-2);
+	--color-chart-3: var(--chart-3);
+	--color-chart-4: var(--chart-4);
+	--color-chart-5: var(--chart-5);
+	/* Scaled from --radius, so the sharp preset never goes negative. */
+	--radius-sm: calc(var(--radius) * 0.5);
+	--radius-md: calc(var(--radius) * 0.75);
+	--radius-lg: var(--radius);
+	--radius-xl: calc(var(--radius) * 1.5);
+	--shadow-xs: var(--elevation-xs);
+	--shadow-sm: var(--elevation-sm);
+	--shadow-md: var(--elevation-md);
+	--shadow-lg: var(--elevation-lg);
+	--color-sidebar: var(--sidebar);
+	--color-sidebar-foreground: var(--sidebar-foreground);
+	--color-sidebar-primary: var(--sidebar-primary);
+	--color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+	--color-sidebar-accent: var(--sidebar-accent);
+	--color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+	--color-sidebar-border: var(--sidebar-border);
+	--color-sidebar-ring: var(--sidebar-ring);
+}
+
+@layer base {
+	* {
+		@apply border-border outline-ring/50;
+	}
+
+	html {
+		-webkit-text-size-adjust: 100%;
+		text-size-adjust: 100%;
+	}
+
+	body {
+		@apply min-h-dvh bg-background font-sans text-foreground antialiased;
+		/* Inter's single-storey "a" (cv11) and open digits (ss01): the Graphite voice. */
+		font-feature-settings: "cv11", "ss01";
+	}
+
+	/* Figures line up in columns: tables, and anything marked data-figures (stat cards). */
+	table,
+	[data-figures] {
+		font-variant-numeric: tabular-nums;
+	}
+
+	/* The skip link's target takes focus only to move the starting point; no ring around the page. */
+	#main-content:focus {
+		outline: none;
+	}
+}
+
+/*
+ * The navigation line (components/layout/navigation-progress.tsx): it grows toward
+ * the end while a page loads, slowing as it goes, and fills when the page is ready.
+ * Transform only. Under reduced motion the growth finishes at once (below).
+ */
+@keyframes nav-progress-grow {
+	from {
+		transform: scaleX(0.04);
+	}
+	to {
+		transform: scaleX(0.9);
+	}
+}
+
+.nav-progress[data-phase="loading"] {
+	animation: nav-progress-grow 10s cubic-bezier(0.08, 0.82, 0.17, 1) forwards;
+}
+
+.nav-progress[data-phase="done"] {
+	transform: scaleX(1);
+}
+
+/*
+ * Reduced motion (WCAG 2.3.3): animations and transitions finish at once instead
+ * of being removed, so code waiting for animationend/transitionend (Radix
+ * Presence, sonner) still runs. Sections that animate only under
+ * `no-preference` (the portfolio) are covered by it too (decision 0137).
+ */
+/* biome-ignore-start lint/complexity/noImportantStyles: the preference must beat component styles, inline ones included. */
+@media (prefers-reduced-motion: reduce) {
+	*,
+	*::before,
+	*::after {
+		animation-duration: 0.01ms !important;
+		animation-iteration-count: 1 !important;
+		animation-delay: 0ms !important;
+		transition-duration: 0.01ms !important;
+		transition-delay: 0ms !important;
+		scroll-behavior: auto !important;
+	}
+
+	::view-transition-group(*),
+	::view-transition-old(*),
+	::view-transition-new(*) {
+		animation: none !important;
+	}
+}
+/* biome-ignore-end lint/complexity/noImportantStyles: end of the reduced-motion overrides. */
+
+/* System Devanagari stack for isolated Devanagari words on non-Nepali pages
+   (e.g. the language switcher), so those pages never fetch the web font. */
+@utility font-devanagari-system {
+	font-family:
+		"Nirmala UI", "Kohinoor Devanagari", "Devanagari Sangam MN", "Noto Sans Devanagari", "Lohit Devanagari", Mangal,
+		sans-serif;
+}

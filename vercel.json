@@ -1,0 +1,10 @@
+{
+	"$schema": "https://openapi.vercel.sh/vercel.json",
+	"framework": "tanstack-start",
+	"crons": [
+		{ "path": "/api/cron/attachments", "schedule": "17 3 * * *" },
+		{ "path": "/api/cron/guests", "schedule": "41 3 * * *" },
+		{ "path": "/api/cron/taskline", "schedule": "15 1 * * *" },
+		{ "path": "/api/cron/parda", "schedule": "30 2 * * *" }
+	]
+}

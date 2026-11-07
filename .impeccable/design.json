@@ -1,0 +1,636 @@
+{
+	"schemaVersion": 2,
+	"generatedAt": "2026-10-29T12:00:00Z",
+	"title": "Design System: Himal",
+	"extensions": {
+		"colorMeta": {
+			"snow": {
+				"role": "neutral",
+				"displayName": "Snow",
+				"canonical": "oklch(0.975 0.006 235)",
+				"dark": "oklch(0.195 0.03 252)",
+				"token": "--hm-ground",
+				"tonalRamp": [
+					"oklch(0.15 0.006 235)",
+					"oklch(0.26 0.006 235)",
+					"oklch(0.37 0.006 235)",
+					"oklch(0.48 0.006 235)",
+					"oklch(0.59 0.006 235)",
+					"oklch(0.7 0.006 235)",
+					"oklch(0.82 0.006 235)",
+					"oklch(0.95 0.006 235)"
+				]
+			},
+			"snow-2": {
+				"role": "neutral",
+				"displayName": "Second Snow",
+				"canonical": "oklch(0.938 0.012 235)",
+				"dark": "oklch(0.24 0.032 252)",
+				"token": "--hm-ground-2 / hm-field-snow-2",
+				"tonalRamp": [
+					"oklch(0.15 0.012 235)",
+					"oklch(0.26 0.012 235)",
+					"oklch(0.37 0.012 235)",
+					"oklch(0.48 0.012 235)",
+					"oklch(0.59 0.012 235)",
+					"oklch(0.7 0.012 235)",
+					"oklch(0.82 0.012 235)",
+					"oklch(0.95 0.012 235)"
+				]
+			},
+			"granite-ink": {
+				"role": "neutral",
+				"displayName": "Granite Ink",
+				"canonical": "oklch(0.24 0.025 250)",
+				"dark": "oklch(0.95 0.012 235)",
+				"token": "--hm-ink",
+				"tonalRamp": [
+					"oklch(0.15 0.025 250)",
+					"oklch(0.26 0.025 250)",
+					"oklch(0.37 0.025 250)",
+					"oklch(0.48 0.025 250)",
+					"oklch(0.59 0.025 250)",
+					"oklch(0.7 0.025 250)",
+					"oklch(0.82 0.025 250)",
+					"oklch(0.95 0.025 250)"
+				]
+			},
+			"slate-muted": {
+				"role": "neutral",
+				"displayName": "Slate",
+				"canonical": "oklch(0.45 0.03 248)",
+				"dark": "oklch(0.79 0.03 245)",
+				"token": "--hm-muted",
+				"tonalRamp": [
+					"oklch(0.15 0.03 248)",
+					"oklch(0.26 0.03 248)",
+					"oklch(0.37 0.03 248)",
+					"oklch(0.48 0.03 248)",
+					"oklch(0.59 0.03 248)",
+					"oklch(0.7 0.03 248)",
+					"oklch(0.82 0.03 248)",
+					"oklch(0.95 0.03 248)"
+				]
+			},
+			"rhododendron": {
+				"role": "primary",
+				"displayName": "Rhododendron",
+				"canonical": "oklch(0.5 0.19 20)",
+				"dark": "oklch(0.77 0.12 18)",
+				"token": "--hm-accent / --hm-action / --hm-focus",
+				"tonalRamp": [
+					"oklch(0.15 0.19 20)",
+					"oklch(0.26 0.19 20)",
+					"oklch(0.37 0.19 20)",
+					"oklch(0.48 0.19 20)",
+					"oklch(0.59 0.19 20)",
+					"oklch(0.7 0.19 20)",
+					"oklch(0.82 0.19 20)",
+					"oklch(0.95 0.19 20)"
+				]
+			},
+			"on-action": {
+				"role": "neutral",
+				"displayName": "Text on Action",
+				"canonical": "oklch(0.985 0.004 235)",
+				"dark": "oklch(0.195 0.03 252)",
+				"token": "--hm-on-action",
+				"tonalRamp": [
+					"oklch(0.15 0.004 235)",
+					"oklch(0.26 0.004 235)",
+					"oklch(0.37 0.004 235)",
+					"oklch(0.48 0.004 235)",
+					"oklch(0.59 0.004 235)",
+					"oklch(0.7 0.004 235)",
+					"oklch(0.82 0.004 235)",
+					"oklch(0.95 0.004 235)"
+				]
+			},
+			"ridge": {
+				"role": "neutral",
+				"displayName": "Ridge Blue",
+				"canonical": "oklch(0.37 0.065 248)",
+				"dark": "oklch(0.31 0.055 248)",
+				"token": "hm-field-ridge",
+				"tonalRamp": [
+					"oklch(0.15 0.065 248)",
+					"oklch(0.26 0.065 248)",
+					"oklch(0.37 0.065 248)",
+					"oklch(0.48 0.065 248)",
+					"oklch(0.59 0.065 248)",
+					"oklch(0.7 0.065 248)",
+					"oklch(0.82 0.065 248)",
+					"oklch(0.95 0.065 248)"
+				]
+			},
+			"pine": {
+				"role": "neutral",
+				"displayName": "Pine",
+				"canonical": "oklch(0.34 0.05 168)",
+				"dark": "oklch(0.28 0.045 168)",
+				"token": "hm-field-pine",
+				"tonalRamp": [
+					"oklch(0.15 0.05 168)",
+					"oklch(0.26 0.05 168)",
+					"oklch(0.37 0.05 168)",
+					"oklch(0.48 0.05 168)",
+					"oklch(0.59 0.05 168)",
+					"oklch(0.7 0.05 168)",
+					"oklch(0.82 0.05 168)",
+					"oklch(0.95 0.05 168)"
+				]
+			},
+			"night": {
+				"role": "neutral",
+				"displayName": "Night",
+				"canonical": "oklch(0.2 0.03 255)",
+				"dark": "oklch(0.14 0.025 255)",
+				"token": "hm-field-night",
+				"tonalRamp": [
+					"oklch(0.15 0.03 255)",
+					"oklch(0.26 0.03 255)",
+					"oklch(0.37 0.03 255)",
+					"oklch(0.48 0.03 255)",
+					"oklch(0.59 0.03 255)",
+					"oklch(0.7 0.03 255)",
+					"oklch(0.82 0.03 255)",
+					"oklch(0.95 0.03 255)"
+				]
+			},
+			"rhododendron-field": {
+				"role": "primary",
+				"displayName": "Rhododendron Field",
+				"canonical": "oklch(0.47 0.18 20)",
+				"dark": "oklch(0.43 0.165 20)",
+				"token": "hm-field-rhodo",
+				"tonalRamp": [
+					"oklch(0.15 0.18 20)",
+					"oklch(0.26 0.18 20)",
+					"oklch(0.37 0.18 20)",
+					"oklch(0.48 0.18 20)",
+					"oklch(0.59 0.18 20)",
+					"oklch(0.7 0.18 20)",
+					"oklch(0.82 0.18 20)",
+					"oklch(0.95 0.18 20)"
+				]
+			},
+			"night-ridge": {
+				"role": "neutral",
+				"displayName": "Night on the Ridge",
+				"canonical": "oklch(0.195 0.03 252)",
+				"token": "--hm-ground (dark)",
+				"tonalRamp": [
+					"oklch(0.15 0.03 252)",
+					"oklch(0.26 0.03 252)",
+					"oklch(0.37 0.03 252)",
+					"oklch(0.48 0.03 252)",
+					"oklch(0.59 0.03 252)",
+					"oklch(0.7 0.03 252)",
+					"oklch(0.82 0.03 252)",
+					"oklch(0.95 0.03 252)"
+				]
+			},
+			"alt-0": {
+				"role": "art",
+				"displayName": "Pine Hills",
+				"canonical": "oklch(0.34 0.055 162)",
+				"dark": "oklch(0.27 0.045 165)",
+				"token": "--hm-alt-0",
+				"tonalRamp": [
+					"oklch(0.34 0.055 162)",
+					"oklch(0.42 0.05 178)",
+					"oklch(0.5 0.048 205)",
+					"oklch(0.58 0.045 228)",
+					"oklch(0.66 0.04 238)",
+					"oklch(0.75 0.032 240)",
+					"oklch(0.84 0.022 238)",
+					"oklch(0.975 0.005 235)"
+				]
+			},
+			"alt-1": {
+				"role": "art",
+				"displayName": "Forest",
+				"canonical": "oklch(0.42 0.05 178)",
+				"dark": "oklch(0.32 0.042 180)",
+				"token": "--hm-alt-1",
+				"tonalRamp": [
+					"oklch(0.34 0.055 162)",
+					"oklch(0.42 0.05 178)",
+					"oklch(0.5 0.048 205)",
+					"oklch(0.58 0.045 228)",
+					"oklch(0.66 0.04 238)",
+					"oklch(0.75 0.032 240)",
+					"oklch(0.84 0.022 238)",
+					"oklch(0.975 0.005 235)"
+				]
+			},
+			"alt-2": {
+				"role": "art",
+				"displayName": "Teal Rock",
+				"canonical": "oklch(0.5 0.048 205)",
+				"dark": "oklch(0.37 0.042 205)",
+				"token": "--hm-alt-2",
+				"tonalRamp": [
+					"oklch(0.34 0.055 162)",
+					"oklch(0.42 0.05 178)",
+					"oklch(0.5 0.048 205)",
+					"oklch(0.58 0.045 228)",
+					"oklch(0.66 0.04 238)",
+					"oklch(0.75 0.032 240)",
+					"oklch(0.84 0.022 238)",
+					"oklch(0.975 0.005 235)"
+				]
+			},
+			"alt-3": {
+				"role": "art",
+				"displayName": "Blue Rock",
+				"canonical": "oklch(0.58 0.045 228)",
+				"dark": "oklch(0.43 0.042 228)",
+				"token": "--hm-alt-3",
+				"tonalRamp": [
+					"oklch(0.34 0.055 162)",
+					"oklch(0.42 0.05 178)",
+					"oklch(0.5 0.048 205)",
+					"oklch(0.58 0.045 228)",
+					"oklch(0.66 0.04 238)",
+					"oklch(0.75 0.032 240)",
+					"oklch(0.84 0.022 238)",
+					"oklch(0.975 0.005 235)"
+				]
+			},
+			"alt-4": {
+				"role": "art",
+				"displayName": "High Rock",
+				"canonical": "oklch(0.66 0.04 238)",
+				"dark": "oklch(0.5 0.04 238)",
+				"token": "--hm-alt-4",
+				"tonalRamp": [
+					"oklch(0.34 0.055 162)",
+					"oklch(0.42 0.05 178)",
+					"oklch(0.5 0.048 205)",
+					"oklch(0.58 0.045 228)",
+					"oklch(0.66 0.04 238)",
+					"oklch(0.75 0.032 240)",
+					"oklch(0.84 0.022 238)",
+					"oklch(0.975 0.005 235)"
+				]
+			},
+			"alt-5": {
+				"role": "art",
+				"displayName": "Ice",
+				"canonical": "oklch(0.75 0.032 240)",
+				"dark": "oklch(0.58 0.034 240)",
+				"token": "--hm-alt-5",
+				"tonalRamp": [
+					"oklch(0.34 0.055 162)",
+					"oklch(0.42 0.05 178)",
+					"oklch(0.5 0.048 205)",
+					"oklch(0.58 0.045 228)",
+					"oklch(0.66 0.04 238)",
+					"oklch(0.75 0.032 240)",
+					"oklch(0.84 0.022 238)",
+					"oklch(0.975 0.005 235)"
+				]
+			},
+			"alt-6": {
+				"role": "art",
+				"displayName": "Glacier",
+				"canonical": "oklch(0.84 0.022 238)",
+				"dark": "oklch(0.67 0.026 238)",
+				"token": "--hm-alt-6",
+				"tonalRamp": [
+					"oklch(0.34 0.055 162)",
+					"oklch(0.42 0.05 178)",
+					"oklch(0.5 0.048 205)",
+					"oklch(0.58 0.045 228)",
+					"oklch(0.66 0.04 238)",
+					"oklch(0.75 0.032 240)",
+					"oklch(0.84 0.022 238)",
+					"oklch(0.975 0.005 235)"
+				]
+			},
+			"alt-7": {
+				"role": "art",
+				"displayName": "Snowfield",
+				"canonical": "oklch(0.915 0.012 236)",
+				"dark": "oklch(0.77 0.018 236)",
+				"token": "--hm-alt-7",
+				"tonalRamp": [
+					"oklch(0.34 0.055 162)",
+					"oklch(0.42 0.05 178)",
+					"oklch(0.5 0.048 205)",
+					"oklch(0.58 0.045 228)",
+					"oklch(0.66 0.04 238)",
+					"oklch(0.75 0.032 240)",
+					"oklch(0.84 0.022 238)",
+					"oklch(0.975 0.005 235)"
+				]
+			},
+			"alt-8": {
+				"role": "art",
+				"displayName": "Summit Snow",
+				"canonical": "oklch(0.975 0.005 235)",
+				"dark": "oklch(0.87 0.01 236)",
+				"token": "--hm-alt-8",
+				"tonalRamp": [
+					"oklch(0.34 0.055 162)",
+					"oklch(0.42 0.05 178)",
+					"oklch(0.5 0.048 205)",
+					"oklch(0.58 0.045 228)",
+					"oklch(0.66 0.04 238)",
+					"oklch(0.75 0.032 240)",
+					"oklch(0.84 0.022 238)",
+					"oklch(0.975 0.005 235)"
+				]
+			},
+			"alpenglow": {
+				"role": "art",
+				"displayName": "Alpenglow",
+				"canonical": "oklch(0.8 0.12 45)",
+				"dark": "oklch(0.72 0.11 42)",
+				"token": "--hm-alpenglow",
+				"tonalRamp": [
+					"oklch(0.15 0.12 45)",
+					"oklch(0.26 0.12 45)",
+					"oklch(0.37 0.12 45)",
+					"oklch(0.48 0.12 45)",
+					"oklch(0.59 0.12 45)",
+					"oklch(0.7 0.12 45)",
+					"oklch(0.82 0.12 45)",
+					"oklch(0.95 0.12 45)"
+				]
+			}
+		},
+		"fields": {
+			"snow-2": { "light": "oklch(0.938 0.012 235)", "dark": "oklch(0.24 0.032 252)", "action": "rhododendron" },
+			"ridge": {
+				"light": "oklch(0.37 0.065 248)",
+				"dark": "oklch(0.31 0.055 248)",
+				"ink": "oklch(0.975 0.006 235)",
+				"action": "snow (oklch(0.975 0.006 235))",
+				"accent": "oklch(0.85 0.085 25)"
+			},
+			"pine": {
+				"light": "oklch(0.34 0.05 168)",
+				"dark": "oklch(0.28 0.045 168)",
+				"ink": "oklch(0.975 0.006 235)",
+				"action": "snow (oklch(0.975 0.006 235))",
+				"accent": "oklch(0.86 0.08 25)"
+			},
+			"night": {
+				"light": "oklch(0.2 0.03 255)",
+				"dark": "oklch(0.14 0.025 255)",
+				"ink": "oklch(0.95 0.01 235)",
+				"action": "oklch(0.77 0.12 18)"
+			},
+			"rhodo": {
+				"light": "oklch(0.47 0.18 20)",
+				"dark": "oklch(0.43 0.165 20)",
+				"ink": "oklch(0.985 0.005 20)",
+				"action": "oklch(0.985 0.005 20)",
+				"duotone": ["oklch(0.93 0.035 20)", "oklch(0.36 0.15 20)"]
+			},
+			"homeSequence": ["snow", "snow-2", "ridge", "snow", "pine", "snow-2", "night", "snow", "rhodo", "footer: night"]
+		},
+		"skyPhases": {
+			"day": {
+				"light": ["oklch(0.83 0.06 238)", "oklch(0.875 0.05 235)", "oklch(0.915 0.035 230)"],
+				"dark": ["oklch(0.34 0.05 248)", "oklch(0.39 0.05 245)", "oklch(0.44 0.045 240)"]
+			},
+			"dawn": {
+				"light": ["oklch(0.62 0.06 255)", "oklch(0.79 0.07 32)", "oklch(0.88 0.08 68)"],
+				"dark": ["oklch(0.27 0.05 258)", "oklch(0.43 0.07 30)", "oklch(0.56 0.08 55)"]
+			},
+			"dusk": {
+				"light": ["oklch(0.5 0.07 258)", "oklch(0.7 0.1 30)", "oklch(0.82 0.1 55)"],
+				"dark": ["oklch(0.24 0.05 260)", "oklch(0.39 0.08 28)", "oklch(0.5 0.09 48)"]
+			},
+			"night": {
+				"light": ["oklch(0.24 0.045 262)", "oklch(0.29 0.05 258)", "oklch(0.34 0.05 252)"],
+				"dark": ["oklch(0.12 0.03 262)", "oklch(0.15 0.032 258)", "oklch(0.18 0.035 254)"]
+			},
+			"extras": {
+				"moonlight": "oklch(0.26 0.05 258)",
+				"sun": "oklch(0.95 0.09 85)",
+				"star": "oklch(0.97 0.01 240)",
+				"duoLight": "oklch(0.95 0.012 235)",
+				"duoDark": "oklch(0.3 0.06 250)"
+			}
+		},
+		"art": {
+			"snowLine": "0.62 of the levels (the top 38% take alt-7, and alt-8 from 0.85)",
+			"engine": "heightField (seeded peaks + simplex noise) -> contourLevels (marching squares, smoothed rings) -> relief (each level lifted one step, filled flat), with bleed past the frame and a minArea speck filter",
+			"uses": [
+				"hero range (9 levels under the sky)",
+				"each project's mountain (motif + seed + glyph)",
+				"/work panorama board (one summit per project)"
+			]
+		},
+		"typographyMeta": {
+			"name": {
+				"displayName": "Fitted Name",
+				"purpose": "The owner's name in the hero and footer, sized from its length to run margin to margin; never wraps from 48rem. Nepali ceiling 12vw (19vw on phones)."
+			},
+			"title": { "displayName": "Title", "purpose": "Page titles and the next project." },
+			"head": {
+				"displayName": "Head",
+				"purpose": "Section headings. Nepali starts at 1.875rem on phones: clamp(1.875rem, 0.845rem + 4.24vw, 4.5rem)."
+			},
+			"statement": { "displayName": "Statement", "purpose": "Quotations and large running statements, in Eczar 500." },
+			"lead": { "displayName": "Lead", "purpose": "One intro sentence under a heading, figure lines, contact lines." },
+			"body": { "displayName": "Body", "purpose": "Running text at 66ch." },
+			"small": { "displayName": "Small", "purpose": "Metadata and captions, muted, sentence case." },
+			"code": { "displayName": "Code", "purpose": "Code blocks only." }
+		},
+		"shadows": [],
+		"motion": [
+			{
+				"name": "ease-out",
+				"value": "cubic-bezier(0.16, 1, 0.3, 1)",
+				"purpose": "The one ease for every transition and animation."
+			},
+			{ "name": "dur-1", "value": "160ms", "purpose": "Hover colour and underline changes, button press." },
+			{ "name": "dur-2", "value": "420ms", "purpose": "Medium transitions." },
+			{ "name": "dur-3", "value": "900ms", "purpose": "The name rising in, picture zoom on hover." },
+			{
+				"name": "hm-lift",
+				"value": "translateY(--hm-lift) -> 0, 1.3s, delay depth * 160ms + 120ms",
+				"purpose": "The range lifts from the flat map into relief on load, in three altitude bands, transform only."
+			},
+			{
+				"name": "hm-spread",
+				"value": "scroll(root), 0 to 100vh",
+				"purpose": "Scrolling past the hero spreads the sheets apart."
+			},
+			{
+				"name": "drift",
+				"value": "translate depth * 7px / 3px, 700ms",
+				"purpose": "Cursor drift on fine pointers, after hydration."
+			},
+			{
+				"name": "hm-rise-in",
+				"value": "clip-path inset + translateY(1.25rem), view()",
+				"purpose": "Section parts rise into view, staggered by --hm-i."
+			},
+			{
+				"name": "hm-zoom-settle",
+				"value": "scale(1.08) -> 1, view()",
+				"purpose": "Archival pictures settle while scrolling past."
+			},
+			{ "name": "view-transition", "value": "650ms", "purpose": "A project's mountain morphs into its case study." },
+			{
+				"name": "hm-progress",
+				"value": "scaleX 0 -> 1, scroll(root)",
+				"purpose": "The article's ink reading line, 4px, across the top."
+			},
+			{
+				"name": "reduced-motion",
+				"value": "prefers-reduced-motion: reduce",
+				"purpose": "All of the above off; content is visible and at rest by default."
+			}
+		],
+		"breakpoints": [{ "name": "sm", "value": "40rem" }, { "name": "md", "value": "48rem" }]
+	},
+	"components": [
+		{
+			"name": "Primary Button",
+			"kind": "button",
+			"refersTo": "button-primary",
+			"description": "The one button shape: square, filled, 48px. Get in touch, send, open an app.",
+			"html": "<a class=\"ds-btn-primary\" href=\"#\">Get in touch</a>",
+			"css": ".ds-btn-primary { display: inline-flex; align-items: center; justify-content: center; gap: 0.6rem; min-height: 3rem; padding: 0 1.5rem; background: oklch(0.5 0.19 20); color: oklch(0.985 0.004 235); font-family: 'Inter Variable', system-ui, sans-serif; font-weight: 600; font-size: 1.0625rem; line-height: 1.2; text-decoration: none; border: 0; border-radius: 0; transition: background-color 160ms, transform 160ms cubic-bezier(0.16, 1, 0.3, 1); } .ds-btn-primary:hover { background: color-mix(in oklch, oklch(0.5 0.19 20) 86%, oklch(0.24 0.025 250)); } .ds-btn-primary:active { transform: scale(0.98); } .ds-btn-primary:focus-visible { outline: 2px solid oklch(0.5 0.19 20); outline-offset: 3px; }"
+		},
+		{
+			"name": "Compact Button",
+			"kind": "button",
+			"refersTo": "button-compact",
+			"description": "The copy-email control: 44px, a 14px line icon, on the rhododendron field.",
+			"html": "<div class=\"ds-field-rhodo\"><button class=\"ds-btn-compact\" type=\"button\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><rect width=\"14\" height=\"14\" x=\"8\" y=\"8\" rx=\"2\" ry=\"2\"/><path d=\"M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2\"/></svg>Copy</button></div>",
+			"css": ".ds-field-rhodo { background: oklch(0.47 0.18 20); padding: 1.5rem; } .ds-btn-compact { display: inline-flex; align-items: center; gap: 0.5rem; min-height: 2.75rem; padding: 0 1rem; background: oklch(0.985 0.005 20); color: oklch(0.42 0.17 20); font-family: 'Inter Variable', system-ui, sans-serif; font-weight: 600; border: 0; border-radius: 0; cursor: pointer; transition: transform 160ms cubic-bezier(0.16, 1, 0.3, 1); } .ds-btn-compact:active { transform: scale(0.98); } .ds-btn-compact:focus-visible { outline: 2px solid oklch(0.985 0.005 20); outline-offset: 4px; }"
+		},
+		{
+			"name": "Text Link",
+			"kind": "custom",
+			"refersTo": "link",
+			"description": "Links in running text: underlined; the line turns rhododendron and thickens on hover and focus.",
+			"html": "<p class=\"ds-text\">Read the <a class=\"ds-link\" href=\"#\">full case study</a> or take the résumé.</p>",
+			"css": ".ds-text { font-family: 'Inter Variable', system-ui, sans-serif; font-size: 1.0625rem; line-height: 1.6; color: oklch(0.24 0.025 250); } .ds-link { color: inherit; font-weight: 500; text-decoration-line: underline; text-decoration-thickness: 0.06em; text-underline-offset: 0.2em; text-decoration-color: color-mix(in oklch, currentColor 50%, transparent); transition: text-decoration-color 160ms, text-decoration-thickness 160ms; } .ds-link:hover, .ds-link:focus-visible { text-decoration-color: oklch(0.5 0.19 20); text-decoration-thickness: 0.12em; } .ds-link:focus-visible { outline: 2px solid oklch(0.5 0.19 20); outline-offset: 4px; }"
+		},
+		{
+			"name": "Filter Link",
+			"kind": "chip",
+			"refersTo": "filter-link",
+			"description": "The work index's discipline filters; the current one is ink, never red.",
+			"html": "<ul class=\"ds-filters\"><li><a class=\"ds-filter\" href=\"#\" aria-current=\"page\">All</a></li><li><a class=\"ds-filter\" href=\"#\">Frontend</a></li><li><a class=\"ds-filter\" href=\"#\">Backend</a></li></ul>",
+			"css": ".ds-filters { display: flex; flex-wrap: wrap; gap: 0.5rem; list-style: none; margin: 0; padding: 0; } .ds-filter { display: inline-flex; align-items: center; min-height: 2.75rem; padding: 0 1rem; background: oklch(0.938 0.012 235); color: oklch(0.24 0.025 250); font-family: 'Inter Variable', system-ui, sans-serif; font-weight: 500; text-decoration: none; text-decoration-thickness: 0.06em; text-underline-offset: 0.2em; border-radius: 0; transition: background-color 160ms, color 160ms; } .ds-filter:hover { text-decoration-line: underline; } .ds-filter[aria-current=page] { background: oklch(0.24 0.025 250); color: oklch(0.975 0.006 235); } .ds-filter:focus-visible { outline: 2px solid oklch(0.5 0.19 20); outline-offset: 4px; }"
+		},
+		{
+			"name": "Text Input",
+			"kind": "input",
+			"refersTo": "input",
+			"description": "Contact form field: second-snow fill, square, a 2px bottom stroke on hover, focus and error.",
+			"html": "<label class=\"ds-label\">Your email<input class=\"ds-input\" type=\"email\" placeholder=\"you@example.com\"></label>",
+			"css": ".ds-label { display: flex; flex-direction: column; gap: 0.5rem; font-family: 'Inter Variable', system-ui, sans-serif; font-weight: 500; color: oklch(0.24 0.025 250); } .ds-input { width: 100%; padding: 0.75rem 1rem; background: oklch(0.938 0.012 235); color: oklch(0.24 0.025 250); font: inherit; font-weight: 400; font-size: 1.0625rem; border: 0; border-bottom: 2px solid transparent; border-radius: 0; outline: none; transition: border-color 160ms; } .ds-input:hover { border-bottom-color: oklch(0.45 0.03 248); } .ds-input:focus-visible { border-bottom-color: oklch(0.24 0.025 250); outline: 2px solid oklch(0.5 0.19 20); outline-offset: 4px; } .ds-input[aria-invalid=true] { border-bottom-color: oklch(0.5 0.19 20); }"
+		},
+		{
+			"name": "Navigation",
+			"kind": "nav",
+			"refersTo": "nav-link",
+			"description": "The portfolio bar: initials in Eczar, four plain links, the current one ink and underlined.",
+			"html": "<header class=\"ds-nav\"><a class=\"ds-wordmark\" href=\"#\"><span>AS</span> Aarav Shrestha</a><ul><li><a href=\"#\" aria-current=\"page\">Work</a></li><li><a href=\"#\">About</a></li><li><a href=\"#\">Journal</a></li><li><a href=\"#\">Contact</a></li></ul></header>",
+			"css": ".ds-nav { display: flex; align-items: center; gap: 1.5rem; height: 4.5rem; padding: 0 1.5rem; background: oklch(0.975 0.006 235); font-family: 'Inter Variable', system-ui, sans-serif; } .ds-wordmark { display: flex; align-items: baseline; gap: 0.75rem; color: oklch(0.24 0.025 250); font-weight: 500; text-decoration: none; } .ds-wordmark span { font-family: 'Eczar Variable', Georgia, serif; font-weight: 700; font-size: 1.75rem; line-height: 1; letter-spacing: -0.03em; } .ds-nav ul { display: flex; gap: 1.75rem; margin: 0 0 0 auto; padding: 0; list-style: none; } .ds-nav ul a { padding: 0.5rem 0; color: oklch(0.45 0.03 248); font-weight: 500; text-decoration: none; text-decoration-thickness: 2px; text-underline-offset: 0.6em; transition: color 160ms; } .ds-nav ul a:hover { color: oklch(0.24 0.025 250); } .ds-nav ul a[aria-current=page] { color: oklch(0.24 0.025 250); text-decoration-line: underline; } .ds-nav a:focus-visible { outline: 2px solid oklch(0.5 0.19 20); outline-offset: 4px; }"
+		},
+		{
+			"name": "Section on a Field",
+			"kind": "card",
+			"refersTo": "field",
+			"description": "Not a card: a section owns a whole field, with a display heading and one lead sentence.",
+			"html": "<section class=\"ds-field-ridge\"><h2 class=\"ds-head\">Selected work</h2><p class=\"ds-lead\">Four projects, each with its own mountain.</p></section>",
+			"css": ".ds-field-ridge { background: oklch(0.37 0.065 248); color: oklch(0.975 0.006 235); padding: 4rem 1.5rem; } .ds-head { margin: 0 0 1.25rem; font-family: 'Eczar Variable', Georgia, serif; font-weight: 650; font-size: clamp(2.25rem, 1.35rem + 3.6vw, 4.5rem); line-height: 1.02; letter-spacing: -0.025em; text-wrap: balance; } .ds-lead { margin: 0; max-width: 66ch; font-family: 'Inter Variable', system-ui, sans-serif; font-size: clamp(1.25rem, 1.05rem + 0.75vw, 1.75rem); line-height: 1.38; color: oklch(0.86 0.03 240); }"
+		},
+		{
+			"name": "Printed Relief",
+			"kind": "custom",
+			"refersTo": "relief",
+			"description": "The signature: flat altitude sheets, each lifted one step, snow above the snow line, under flat sky bands.",
+			"html": "<svg class=\"ds-relief\" viewBox=\"0 0 400 200\" aria-hidden=\"true\"><rect width=\"400\" height=\"60\" fill=\"oklch(0.83 0.06 238)\"/><rect y=\"60\" width=\"400\" height=\"50\" fill=\"oklch(0.875 0.05 235)\"/><rect y=\"110\" width=\"400\" height=\"90\" fill=\"oklch(0.915 0.035 230)\"/><path d=\"M-20 200 L-20 160 Q60 120 120 140 Q200 90 280 130 Q350 110 420 150 L420 200 Z\" fill=\"oklch(0.34 0.055 162)\"/><path d=\"M20 200 L30 150 Q90 105 140 125 Q200 70 260 112 Q320 95 390 140 L400 200 Z\" fill=\"oklch(0.5 0.048 205)\"/><path d=\"M80 200 Q120 120 160 108 Q200 55 240 95 Q290 85 330 200 Z\" fill=\"oklch(0.66 0.04 238)\"/><path d=\"M150 120 Q185 70 200 48 Q220 60 245 90 Q205 82 150 120 Z\" fill=\"oklch(0.915 0.012 236)\"/><path d=\"M182 72 Q195 50 200 42 Q210 50 220 66 Q200 62 182 72 Z\" fill=\"oklch(0.975 0.005 235)\"/></svg>",
+			"css": ".ds-relief { display: block; width: 100%; height: auto; }"
+		}
+	],
+	"narrative": {
+		"northStar": "The Range at This Hour",
+		"overview": "The site has one picture: the Himalaya seen from Kathmandu, printed like a multi-block woodblock print. Each altitude is one flat sheet of colour, lifted one step above the one below, under a sky of flat bands lit for the real hour in Kathmandu. Everything else stays quiet so that picture and the type can carry the page.\n\nPages are long and spacious. Sections sit far apart and each one owns a whole field of colour: snow, a second snow, ridge blue, pine, night or rhododendron. Nothing is a card and nothing floats above the page at rest. Type does the structural work: Eczar display headings in both scripts, a fitted name that runs margin to margin, and plain text in Inter and Noto Sans Devanagari.\n\nThe system lives under `.himal` with `hm-` utilities (`src/styles/himal.css`), so the admin's Graphite system is untouched. Implementation detail, budgets and pitfalls live in docs/guides/portfolio.md (\"Design system: Himal\") and decisions 0179 to 0184.",
+		"keyCharacteristics": [
+			"Flat altitude sheets as the one picture, generated from a seed, the same markup on server and browser.",
+			"Whole-section colour fields; no cards, gradients, shadows at rest or hairline rules.",
+			"One red, for what can be acted on.",
+			"Eczar display in Latin and Devanagari; five type sizes.",
+			"Square, filled buttons.",
+			"Motion that moves only transform, clip-path and colour, and switches off under reduced motion."
+		],
+		"rules": [
+			{
+				"name": "The One Red Rule",
+				"body": "Rhododendron marks only what can be acted on, plus the contact field. Active states, selection, quote marks, list markers and the reading line use ink or muted. There are no status colours.",
+				"section": "colors"
+			},
+			{
+				"name": "The Whole Field Rule",
+				"body": "A section takes one whole ground and the inks that read on it (`hm-field-*`). Neighbouring sections never share a field. Fields are never cards, insets or tinted boxes.",
+				"section": "colors"
+			},
+			{
+				"name": "The Contrast Floor Rule",
+				"body": "Every text pair is at least 4.5:1 on its ground and its second ground, in both themes, on every field and on the art (`tests/unit/himal-tokens.test.ts`). Text on a new colour adds a pair there.",
+				"section": "colors"
+			},
+			{
+				"name": "The Five Sizes Rule",
+				"body": "Small, body, lead, head and title do all the work; the fitted name is the only exception. No other sizes enter a page.",
+				"section": "typography"
+			},
+			{
+				"name": "The Figures Are Facts Rule",
+				"body": "A number is set at its sentence's size, in Eczar semibold beside the sentence it belongs to. It is never a headline or a big stat.",
+				"section": "typography"
+			},
+			{
+				"name": "The Devanagari Rule",
+				"body": "Nepali display type drops the negative tracking and opens the leading. Nepali headings start at 30px on phones and reach the English size on wide screens. The name gets a lower ceiling.",
+				"section": "typography"
+			},
+			{
+				"name": "The Sentence Case Rule",
+				"body": "No uppercase labels, no letter-spaced small caps, no eyebrows above headings.",
+				"section": "typography"
+			},
+			{
+				"name": "The Flat Print Rule",
+				"body": "Every surface is a flat fill. Depth belongs to the art, made of stacked sheets, never to the interface.",
+				"section": "elevation"
+			}
+		],
+		"dos": [
+			"Do give each section one whole field (`hm-field-*`) and never repeat a neighbour's field.",
+			"Do reserve rhododendron for actions, link hover, focus and errors, plus the contact field.",
+			"Do use ink or muted for active states, selection, quote marks, list markers and the reading line.",
+			"Do set display type in Eczar in both scripts, and text in Inter and Noto Sans Devanagari.",
+			"Do keep to the five sizes, and set figures at their sentence's size.",
+			"Do keep buttons square, filled and 48px tall.",
+			"Do draw new art with the terrain engine: flat altitude sheets, lifted one step, with the snow line and the bleed.",
+			"Do animate only transform, translate, clip-path and colour, and switch it all off under reduced motion.",
+			"Do credit every archival picture and record its provenance beside the file."
+		],
+		"donts": [
+			"Don't use gradients, including in the sky.",
+			"Don't add shadows at rest, blur or floating surfaces.",
+			"Don't draw hairline rules or borders to divide content; change the field instead.",
+			"Don't put content in cards.",
+			"Don't add eyebrows, index numbers or uppercase labels.",
+			"Don't round corners on interface elements.",
+			"Don't use JetBrains Mono outside code blocks.",
+			"Don't set a figure as a headline-sized stat.",
+			"Don't add status colours."
+		]
+	}
+}

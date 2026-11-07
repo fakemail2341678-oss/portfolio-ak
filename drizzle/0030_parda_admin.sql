@@ -1,0 +1,1 @@
+CREATE UNIQUE INDEX "pd_blocked_title_unique" ON "pd_blocked_title" USING btree ("media","tmdb_id");

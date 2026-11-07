@@ -1,0 +1,32 @@
+{
+	"include": ["**/*.ts", "**/*.tsx"],
+	"exclude": ["node_modules", "dist", ".output", ".vercel", ".nitro", ".tanstack"],
+	"compilerOptions": {
+		"target": "ES2022",
+		"jsx": "react-jsx",
+		"module": "ESNext",
+		"lib": ["ES2022", "DOM", "DOM.Iterable"],
+		"types": ["vite/client", "node"],
+		"paths": {
+			"@/*": ["./src/*"]
+		},
+
+		"moduleResolution": "bundler",
+		"allowImportingTsExtensions": true,
+		"verbatimModuleSyntax": true,
+		"isolatedModules": true,
+		"resolveJsonModule": true,
+		"noEmit": true,
+		"skipLibCheck": true,
+
+		"strict": true,
+		"noUncheckedIndexedAccess": true,
+		"noImplicitOverride": true,
+		"noImplicitReturns": true,
+		"noUnusedLocals": true,
+		"noUnusedParameters": true,
+		"noFallthroughCasesInSwitch": true,
+		"noUncheckedSideEffectImports": true,
+		"forceConsistentCasingInFileNames": true
+	}
+}

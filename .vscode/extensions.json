@@ -1,0 +1,9 @@
+{
+	"recommendations": [
+		"biomejs.biome",
+		"bradlc.vscode-tailwindcss",
+		"inlang.vs-code-extension",
+		"vitest.explorer",
+		"ms-playwright.playwright"
+	]
+}

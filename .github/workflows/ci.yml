@@ -1,0 +1,164 @@
+# The gates from CLAUDE.md on every pull request and every push to main.
+# Each job installs on its own so they run in parallel; pnpm's store is cached.
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+env:
+  # Builds inline only the public variables (server env is validated at boot, decision 0011).
+  VITE_APP_TITLE: Start Template
+  VITE_SITE_URL: http://localhost:3000
+  # drizzle-kit validates the URL but never connects for generate/check.
+  DATABASE_URL: postgresql://ci:ci@localhost:5432/ci
+
+jobs:
+  static:
+    name: Typecheck, lint, knip, migrations
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v5
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm typecheck
+      - run: pnpm check
+      - run: pnpm knip
+      - name: Migrations match the schema
+        run: |
+          pnpm exec drizzle-kit generate
+          git diff --exit-code -- drizzle || (echo "::error::Schema changed without a migration: run pnpm db:generate and commit drizzle/." && exit 1)
+          test -z "$(git status --porcelain -- drizzle)" || (echo "::error::Untracked migration files: run pnpm db:generate and commit drizzle/." && exit 1)
+          pnpm db:check
+
+  test:
+    name: Unit, server and component tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v5
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm test
+
+  storybook:
+    name: Storybook build and story tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v5
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      # Story tests use the installed Chrome (channel "chrome" in vitest.config.ts);
+      # GitHub's Ubuntu runners ship it, so no Playwright browser download is needed.
+      - run: pnpm test:storybook
+      - run: pnpm build-storybook
+
+  e2e:
+    name: E2E and browser review (${{ matrix.shard }}/5)
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [1, 2, 3, 4, 5]
+    # A real Postgres here; locally the harness uses in-memory PGlite (decision 0121).
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_USER: e2e
+          POSTGRES_PASSWORD: e2e
+          POSTGRES_DB: e2e
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U e2e" --health-interval 5s --health-timeout 5s --health-retries 10
+    env:
+      E2E_DATABASE_URL: postgresql://e2e:e2e@localhost:5432/e2e
+    steps:
+      - uses: actions/checkout@v5
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v5
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      # Builds, migrates, seeds and starts the production server itself (e2e/harness/server.ts).
+      # Uses the runner's installed Chrome, like the story tests.
+      - run: pnpm test:e2e --shard=${{ matrix.shard }}/5
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: playwright-report-${{ matrix.shard }}
+          path: playwright-report/
+          retention-days: 14
+
+  # strip-demo:start (the template's own check: a new project loses it with the script)
+  template:
+    name: Template (strip-demo ${{ matrix.keep || 'all layers' }}, new:feature, gates)
+    runs-on: ubuntu-latest
+    # The promise of decisions 0163 and 0175: a fresh clone, stripped of any of its layers,
+    # plus scaffolded features (plain, and with --public --localized), passes every gate with
+    # no manual edits. Runs the scripts the way a new project would.
+    strategy:
+      fail-fast: false
+      matrix:
+        keep: ["", "--keep-apps", "--keep-portfolio", "--keep-taskline", "--keep-parda"]
+    steps:
+      - uses: actions/checkout@v5
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v5
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm strip-demo --no-build ${{ matrix.keep }}
+      # new:feature refuses uncommitted changes (it restores the tree with git when it fails).
+      - run: git add -A && git -c user.name=ci -c user.email=ci@example.com commit -qm "strip-demo"
+      - run: pnpm new:feature ci-sample --title "Samples" --title-ne "नमूनाहरू" --no-build
+      - run: git add -A && git -c user.name=ci -c user.email=ci@example.com commit -qm "new:feature ci-sample"
+      # Every flag: public pages (seo, sitemap) and fields in both languages (decision 0175).
+      - run: pnpm new:feature ci-pages --title "Pages" --title-ne "पृष्ठहरू" --public --localized
+      - run: pnpm typecheck
+      - run: pnpm check
+      - run: pnpm knip
+      - run: pnpm test
+      - name: The scaffolded migration matches the schema
+        run: |
+          pnpm exec drizzle-kit generate | tee drizzle-generate.log
+          grep -q "No schema changes" drizzle-generate.log
+          pnpm db:check
+  # strip-demo:end
+
+  build:
+    name: Production build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v5
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm build
+      # Fails when every page's JavaScript or a preloaded font goes over budget (decision 0151).
+      - run: node scripts/check-bundle.ts
+      - run: pnpm i18n:check

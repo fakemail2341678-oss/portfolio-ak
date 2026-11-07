@@ -1,0 +1,26 @@
+{
+	"$schema": "https://unpkg.com/knip@6/schema.json",
+	"entry": [
+		"tests/**/*.{ts,tsx}",
+		"scripts/**/*.{mjs,mts,ts}",
+		"project.inlang/paraglide.config.ts",
+		"src/server/plugins/*.ts",
+		"src/server/routes/*.ts",
+		"src/server/email/preview.ts",
+		"src/lib/zod.ts",
+		"vite.config.ts",
+		".storybook/mocks/**/*.ts"
+	],
+	"project": [
+		"src/**/*.{ts,tsx,css}",
+		"tests/**/*.{ts,tsx}",
+		"scripts/**/*.{mjs,mts,ts}",
+		"e2e/**/*.ts",
+		".storybook/**/*.{ts,tsx}",
+		"vite/**/*.ts"
+	],
+	"ignore": ["src/components/ui/**"],
+	"vite": false,
+	"ignoreExportsUsedInFile": true,
+	"ignoreDependencies": ["@inlang/plugin-m-function-matcher", "@inlang/plugin-message-format"]
+}

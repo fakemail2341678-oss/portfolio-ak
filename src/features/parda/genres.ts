@@ -1,0 +1,32 @@
+import { m } from "@/paraglide/messages";
+
+/** TMDB's genre ids, named by our own messages: its Nepali genre names are null (PLAN 12.4). */
+export const GENRE_LABELS: Readonly<Record<number, () => string>> = {
+	12: m.pd_genre_adventure,
+	14: m.pd_genre_fantasy,
+	16: m.pd_genre_animation,
+	18: m.pd_genre_drama,
+	27: m.pd_genre_horror,
+	28: m.pd_genre_action,
+	35: m.pd_genre_comedy,
+	36: m.pd_genre_history,
+	37: m.pd_genre_western,
+	53: m.pd_genre_thriller,
+	80: m.pd_genre_crime,
+	99: m.pd_genre_documentary,
+	878: m.pd_genre_science_fiction,
+	9648: m.pd_genre_mystery,
+	10402: m.pd_genre_music,
+	10749: m.pd_genre_romance,
+	10751: m.pd_genre_family,
+	10752: m.pd_genre_war,
+	10759: m.pd_genre_action_adventure,
+	10762: m.pd_genre_kids,
+	10763: m.pd_genre_news,
+	10764: m.pd_genre_reality,
+	10765: m.pd_genre_scifi_fantasy,
+	10766: m.pd_genre_soap,
+	10767: m.pd_genre_talk,
+	10768: m.pd_genre_war_politics,
+	10770: m.pd_genre_tv_movie,
+};

@@ -1,0 +1,38 @@
+{
+	"detector": {
+		"ignoreRules": [],
+		"ignoreFiles": [],
+		"ignoreValues": [
+			{
+				"rule": "design-system-font",
+				"value": "inter fallback",
+				"createdAt": "2026-10-30T19:18:38.273Z",
+				"reason": "Claude: metric-matched fallback face for Graphite (admin) text, decision 0007; DESIGN.md covers the portfolio only"
+			},
+			{
+				"rule": "design-system-font",
+				"value": "noto sans devanagari fallback",
+				"createdAt": "2026-10-30T19:18:38.525Z",
+				"reason": "Claude: metric-matched fallback face for Graphite Devanagari text, decision 0007; DESIGN.md covers the portfolio only"
+			},
+			{
+				"rule": "design-system-font",
+				"value": "anek display",
+				"createdAt": "2026-11-04T13:32:19.396Z",
+				"reason": "Claude: Parda's display face, from the Masking comp the owner picked (decision 0232); DESIGN.md covers the portfolio only"
+			},
+			{
+				"rule": "design-system-font",
+				"value": "anek fallback",
+				"createdAt": "2026-11-04T13:32:19.725Z",
+				"reason": "Claude: Parda's display face, from the Masking comp the owner picked (decision 0232); DESIGN.md covers the portfolio only"
+			},
+			{
+				"rule": "design-system-font",
+				"value": "anek devanagari fallback",
+				"createdAt": "2026-11-04T13:32:20.049Z",
+				"reason": "Claude: Parda's display face, from the Masking comp the owner picked (decision 0232); DESIGN.md covers the portfolio only"
+			}
+		]
+	}
+}

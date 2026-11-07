@@ -1,0 +1,940 @@
+/*
+ * "Himal": the design system of the portfolio at / (docs/guides/portfolio.md,
+ * decisions 0179–0184).
+ *
+ * The Himalaya seen from Kathmandu: a range printed in flat altitude layers
+ * (components/art), a cool snow ground, granite ink, ridge blues, a pine
+ * field and rhododendron red as the one accent that carries text. Sections own
+ * whole fields of colour; nothing is a card, nothing floats above the page at
+ * rest, and the sky is flat bands, never a gradient.
+ *
+ * Everything is scoped: tokens live under `.himal` (set by the `_site` layout)
+ * and utilities are prefixed `hm-`, so the admin's Graphite system is
+ * untouched. Eczar sets the display type in both scripts; the text face is the
+ * app's (Inter, Noto Sans Devanagari). @font-face is lazy: a face downloads only
+ * when a page renders text in it, and the layout preloads the first-paint ones.
+ */
+@import "@fontsource-variable/jetbrains-mono/wght.css";
+
+/*
+ * Eczar, declared here rather than through Fontsource's stylesheet, to override
+ * its vertical metrics (decision 0184). Eczar ships an ascent of 1.14 em and a
+ * descent of 0.63 em, room for Devanagari, so large type's text box spilled
+ * half an em past its line: the big mailto link caught clicks on the sentence
+ * above it. The overrides keep the box near the line; glyphs still paint in
+ * full. Same files and unicode ranges as Fontsource's.
+ */
+@font-face {
+	font-family: "Eczar Variable";
+	font-style: normal;
+	font-display: swap;
+	font-weight: 400 800;
+	src: url("../../node_modules/@fontsource-variable/eczar/files/eczar-latin-wght-normal.woff2")
+		format("woff2-variations");
+	unicode-range:
+		U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+	ascent-override: 88%;
+	descent-override: 24%;
+	line-gap-override: 0%;
+}
+
+@font-face {
+	font-family: "Eczar Variable";
+	font-style: normal;
+	font-display: swap;
+	font-weight: 400 800;
+	src: url("../../node_modules/@fontsource-variable/eczar/files/eczar-latin-ext-wght-normal.woff2")
+		format("woff2-variations");
+	unicode-range:
+		U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+	ascent-override: 88%;
+	descent-override: 24%;
+	line-gap-override: 0%;
+}
+
+/* Devanagari keeps more room above (vowel signs over the headline) and below (conjuncts). */
+@font-face {
+	font-family: "Eczar Variable";
+	font-style: normal;
+	font-display: swap;
+	font-weight: 400 800;
+	src: url("../../node_modules/@fontsource-variable/eczar/files/eczar-devanagari-wght-normal.woff2")
+		format("woff2-variations");
+	unicode-range:
+		U+0900-097F, U+1CD0-1CF9, U+200C-200D, U+20A8, U+20B9, U+20F0, U+25CC, U+A830-A839, U+A8E0-A8FF, U+11B00-11B09;
+	ascent-override: 100%;
+	descent-override: 36%;
+	line-gap-override: 0%;
+}
+
+/*
+ * Metric-matched fallbacks, measured in Chrome (decision 0184, the method of
+ * 0110): size-adjust is Eczar's advance width over the fallback's for a long
+ * sample at that weight; the ascent and descent are our Eczar overrides (0.88 /
+ * 0.24 em Latin, 1.0 / 0.36 em Devanagari)
+ * divided by it. Each weight in use gets a face, because Eczar widens as it
+ * gets bolder. Times New Roman is used because Liberation Serif (on Linux) has
+ * the same metrics, so the numbers hold there too.
+ */
+@font-face {
+	font-family: "Eczar Fallback";
+	src: local("Times New Roman"), local("TimesNewRomanPSMT"), local("Liberation Serif");
+	font-weight: 400;
+	size-adjust: 105.99%;
+	ascent-override: 83.03%;
+	descent-override: 22.64%;
+	line-gap-override: 0%;
+}
+
+@font-face {
+	font-family: "Eczar Fallback";
+	src: local("Times New Roman"), local("TimesNewRomanPSMT"), local("Liberation Serif");
+	font-weight: 500;
+	size-adjust: 109.56%;
+	ascent-override: 80.32%;
+	descent-override: 21.91%;
+	line-gap-override: 0%;
+}
+
+@font-face {
+	font-family: "Eczar Fallback";
+	src: local("Times New Roman Bold"), local("TimesNewRomanPS-BoldMT"), local("Liberation Serif Bold");
+	font-weight: 600 690;
+	/* Measured between 600 and 700 for the display weight in use, 650. */
+	size-adjust: 108.75%;
+	ascent-override: 80.92%;
+	descent-override: 22.07%;
+	line-gap-override: 0%;
+}
+
+@font-face {
+	font-family: "Eczar Fallback";
+	src: local("Times New Roman Bold"), local("TimesNewRomanPS-BoldMT"), local("Liberation Serif Bold");
+	font-weight: 700 800;
+	size-adjust: 110.44%;
+	ascent-override: 79.68%;
+	descent-override: 21.73%;
+	line-gap-override: 0%;
+}
+
+/* Devanagari: the same weights against Nirmala UI (the Windows Devanagari face). */
+@font-face {
+	font-family: "Eczar Devanagari Fallback";
+	src: local("Nirmala UI"), local("NirmalaUI"), local("Kohinoor Devanagari"), local("Devanagari Sangam MN");
+	font-weight: 400 500;
+	unicode-range: U+0900-097F, U+1CD0-1CF9, U+200C-200D, U+20A8, U+20B9, U+25CC, U+A830-A839, U+A8E0-A8FF;
+	size-adjust: 93.86%;
+	ascent-override: 106.54%;
+	descent-override: 38.36%;
+	line-gap-override: 0%;
+}
+
+@font-face {
+	font-family: "Eczar Devanagari Fallback";
+	src:
+		local("Nirmala UI Bold"), local("NirmalaUI-Bold"), local("Kohinoor Devanagari Bold"),
+		local("Devanagari Sangam MN Bold");
+	font-weight: 600 800;
+	unicode-range: U+0900-097F, U+1CD0-1CF9, U+200C-200D, U+20A8, U+20B9, U+25CC, U+A830-A839, U+A8E0-A8FF;
+	size-adjust: 93.28%;
+	ascent-override: 107.2%;
+	descent-override: 38.59%;
+	line-gap-override: 0%;
+}
+
+/* taste-skill-ignore: code blocks only (real code is monospace). */
+@font-face {
+	font-family: "JetBrains Mono Fallback";
+	src: local("Courier New"), local("CourierNewPSMT"), local("Courier");
+	size-adjust: 100%;
+	ascent-override: 102%;
+	descent-override: 30%;
+	line-gap-override: 0%;
+}
+
+/*
+ * Colour. Components use the semantic tokens (--hm-ground, --hm-ink, --hm-muted,
+ * --hm-accent, --hm-action, --hm-on-action, --hm-focus); a field class
+ * (`hm-field-ridge` …) reassigns them for its section. Every text pair is at
+ * least 4.5:1 on its ground and its ground-2, in both themes
+ * (tests/unit/himal-tokens.test.ts).
+ */
+.himal {
+	color-scheme: light;
+	/* Snow, the default field. */
+	--hm-ground: oklch(0.975 0.006 235);
+	--hm-ground-2: oklch(0.938 0.012 235);
+	--hm-ink: oklch(0.24 0.025 250);
+	--hm-muted: oklch(0.45 0.03 248);
+	--hm-accent: oklch(0.5 0.19 20);
+	--hm-action: oklch(0.5 0.19 20);
+	--hm-on-action: oklch(0.985 0.004 235);
+	--hm-focus: oklch(0.5 0.19 20);
+
+	/*
+	 * The altitude ramp of the printed relief, like the tints of a relief map and
+	 * Nepal's own belts: pine-dark hills (0), blue rock and ice, snow (8).
+	 */
+	--hm-alt-0: oklch(0.34 0.055 162);
+	--hm-alt-1: oklch(0.42 0.05 178);
+	--hm-alt-2: oklch(0.5 0.048 205);
+	--hm-alt-3: oklch(0.58 0.045 228);
+	--hm-alt-4: oklch(0.66 0.04 238);
+	--hm-alt-5: oklch(0.75 0.032 240);
+	--hm-alt-6: oklch(0.84 0.022 238);
+	--hm-alt-7: oklch(0.915 0.012 236);
+	--hm-alt-8: oklch(0.975 0.005 235);
+	/* Text set on the ramp itself (the architecture strata): dark on the high levels (5–8), light on the deep ones (0–2). */
+	--hm-on-high: oklch(0.2 0.025 250);
+	--hm-on-deep: oklch(0.985 0.004 235);
+	/* Text drawn on the art's daytime sky (a cover's glyph, the panorama's names). */
+	--hm-on-sky: oklch(0.24 0.025 250);
+	--hm-alpenglow: oklch(0.8 0.12 45);
+	--hm-moonlight: oklch(0.26 0.05 258);
+	--hm-sun: oklch(0.95 0.09 85);
+	--hm-star: oklch(0.97 0.01 240);
+
+	/* The sky, top band to horizon, by phase (components/art/sky.tsx sets data-phase). */
+	--hm-sky-day-1: oklch(0.83 0.06 238);
+	--hm-sky-day-2: oklch(0.875 0.05 235);
+	--hm-sky-day-3: oklch(0.915 0.035 230);
+	--hm-sky-dawn-1: oklch(0.62 0.06 255);
+	--hm-sky-dawn-2: oklch(0.79 0.07 32);
+	--hm-sky-dawn-3: oklch(0.88 0.08 68);
+	--hm-sky-dusk-1: oklch(0.5 0.07 258);
+	--hm-sky-dusk-2: oklch(0.7 0.1 30);
+	--hm-sky-dusk-3: oklch(0.82 0.1 55);
+	--hm-sky-night-1: oklch(0.24 0.045 262);
+	--hm-sky-night-2: oklch(0.29 0.05 258);
+	--hm-sky-night-3: oklch(0.34 0.05 252);
+
+	/* Archival pictures are printed in two inks (hm-duotone). */
+	--hm-duo-light: oklch(0.95 0.012 235);
+	--hm-duo-dark: oklch(0.3 0.06 250);
+
+	/* Layout and rhythm: one pair of tight outer margins everywhere, sections far apart. */
+	--hm-margin: clamp(1.125rem, 2.4vw, 2rem);
+	--hm-gutter: clamp(1rem, 2vw, 1.75rem);
+	--hm-space-section: clamp(6rem, 11vw, 12rem);
+	--hm-max: 100rem;
+	--hm-header-h: 4.5rem;
+
+	/* Motion. */
+	--hm-ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+	--hm-dur-1: 160ms;
+	--hm-dur-2: 420ms;
+	--hm-dur-3: 900ms;
+}
+
+/* Night on the ridge. */
+.dark .himal {
+	color-scheme: dark;
+	--hm-ground: oklch(0.195 0.03 252);
+	--hm-ground-2: oklch(0.24 0.032 252);
+	--hm-ink: oklch(0.95 0.012 235);
+	--hm-muted: oklch(0.79 0.03 245);
+	--hm-accent: oklch(0.77 0.12 18);
+	--hm-action: oklch(0.77 0.12 18);
+	--hm-on-action: oklch(0.195 0.03 252);
+	--hm-focus: oklch(0.77 0.12 18);
+
+	--hm-alt-0: oklch(0.27 0.045 165);
+	--hm-alt-1: oklch(0.32 0.042 180);
+	--hm-alt-2: oklch(0.37 0.042 205);
+	--hm-alt-3: oklch(0.43 0.042 228);
+	--hm-alt-4: oklch(0.5 0.04 238);
+	--hm-alt-5: oklch(0.58 0.034 240);
+	--hm-alt-6: oklch(0.67 0.026 238);
+	--hm-alt-7: oklch(0.77 0.018 236);
+	--hm-alt-8: oklch(0.87 0.01 236);
+	--hm-on-high: oklch(0.13 0.02 252);
+	--hm-on-sky: oklch(0.95 0.012 235);
+	--hm-alpenglow: oklch(0.72 0.11 42);
+	--hm-moonlight: oklch(0.16 0.035 260);
+	--hm-sun: oklch(0.88 0.09 80);
+
+	--hm-sky-day-1: oklch(0.34 0.05 248);
+	--hm-sky-day-2: oklch(0.39 0.05 245);
+	--hm-sky-day-3: oklch(0.44 0.045 240);
+	--hm-sky-dawn-1: oklch(0.27 0.05 258);
+	--hm-sky-dawn-2: oklch(0.43 0.07 30);
+	--hm-sky-dawn-3: oklch(0.56 0.08 55);
+	--hm-sky-dusk-1: oklch(0.24 0.05 260);
+	--hm-sky-dusk-2: oklch(0.39 0.08 28);
+	--hm-sky-dusk-3: oklch(0.5 0.09 48);
+	--hm-sky-night-1: oklch(0.12 0.03 262);
+	--hm-sky-night-2: oklch(0.15 0.032 258);
+	--hm-sky-night-3: oklch(0.18 0.035 254);
+
+	--hm-duo-light: oklch(0.82 0.02 240);
+	--hm-duo-dark: oklch(0.16 0.03 255);
+}
+
+/* Fields: a section takes one whole ground and the inks that read on it. */
+.himal .hm-field-snow-2 {
+	--hm-ground: oklch(0.938 0.012 235);
+	--hm-ground-2: oklch(0.975 0.006 235);
+}
+
+.himal .hm-field-ridge {
+	color-scheme: dark;
+	--hm-ground: oklch(0.37 0.065 248);
+	--hm-ground-2: oklch(0.42 0.065 248);
+	--hm-ink: oklch(0.975 0.006 235);
+	--hm-muted: oklch(0.86 0.03 240);
+	--hm-accent: oklch(0.85 0.085 25);
+	--hm-action: oklch(0.975 0.006 235);
+	--hm-on-action: oklch(0.33 0.065 248);
+	--hm-focus: oklch(0.975 0.006 235);
+}
+
+.himal .hm-field-pine {
+	color-scheme: dark;
+	--hm-ground: oklch(0.34 0.05 168);
+	--hm-ground-2: oklch(0.39 0.05 168);
+	--hm-ink: oklch(0.975 0.006 235);
+	--hm-muted: oklch(0.87 0.03 165);
+	--hm-accent: oklch(0.86 0.08 25);
+	--hm-action: oklch(0.975 0.006 235);
+	--hm-on-action: oklch(0.3 0.05 168);
+	--hm-focus: oklch(0.975 0.006 235);
+	--hm-duo-light: oklch(0.9 0.025 165);
+	--hm-duo-dark: oklch(0.25 0.045 168);
+}
+
+.himal .hm-field-night {
+	color-scheme: dark;
+	--hm-ground: oklch(0.2 0.03 255);
+	--hm-ground-2: oklch(0.25 0.032 255);
+	--hm-ink: oklch(0.95 0.01 235);
+	--hm-muted: oklch(0.79 0.025 245);
+	--hm-accent: oklch(0.77 0.12 18);
+	--hm-action: oklch(0.77 0.12 18);
+	--hm-on-action: oklch(0.2 0.03 255);
+	--hm-focus: oklch(0.77 0.12 18);
+}
+
+.himal .hm-field-rhodo {
+	color-scheme: dark;
+	--hm-ground: oklch(0.47 0.18 20);
+	--hm-ground-2: oklch(0.42 0.17 20);
+	--hm-ink: oklch(0.985 0.005 20);
+	--hm-muted: oklch(0.93 0.03 20);
+	--hm-accent: oklch(0.985 0.005 20);
+	--hm-action: oklch(0.985 0.005 20);
+	--hm-on-action: oklch(0.42 0.17 20);
+	--hm-focus: oklch(0.985 0.005 20);
+	/* The map of the valley, printed in the field's own reds. */
+	--hm-duo-light: oklch(0.93 0.035 20);
+	--hm-duo-dark: oklch(0.36 0.15 20);
+}
+
+.dark .himal .hm-field-snow-2 {
+	--hm-ground: oklch(0.24 0.032 252);
+	--hm-ground-2: oklch(0.195 0.03 252);
+}
+
+.dark .himal .hm-field-ridge {
+	--hm-ground: oklch(0.31 0.055 248);
+	--hm-ground-2: oklch(0.36 0.055 248);
+	--hm-ink: oklch(0.96 0.01 235);
+	--hm-muted: oklch(0.84 0.03 240);
+	--hm-accent: oklch(0.84 0.09 25);
+	--hm-action: oklch(0.96 0.01 235);
+	--hm-on-action: oklch(0.28 0.055 248);
+	--hm-focus: oklch(0.96 0.01 235);
+}
+
+.dark .himal .hm-field-pine {
+	--hm-ground: oklch(0.28 0.045 168);
+	--hm-ground-2: oklch(0.33 0.045 168);
+	--hm-ink: oklch(0.96 0.01 235);
+	--hm-muted: oklch(0.85 0.03 165);
+	--hm-accent: oklch(0.84 0.09 25);
+	--hm-action: oklch(0.96 0.01 235);
+	--hm-on-action: oklch(0.26 0.045 168);
+	--hm-focus: oklch(0.96 0.01 235);
+}
+
+.dark .himal .hm-field-night {
+	--hm-ground: oklch(0.14 0.025 255);
+	--hm-ground-2: oklch(0.19 0.028 255);
+	--hm-ink: oklch(0.95 0.01 235);
+	--hm-muted: oklch(0.77 0.025 245);
+	--hm-on-action: oklch(0.14 0.025 255);
+}
+
+.dark .himal .hm-field-rhodo {
+	--hm-ground: oklch(0.43 0.165 20);
+	--hm-ground-2: oklch(0.385 0.155 20);
+	--hm-on-action: oklch(0.385 0.155 20);
+}
+
+/* A field paints its ground and sets its ink (the classes above only set the tokens). */
+:is(.hm-field-snow-2, .hm-field-ridge, .hm-field-pine, .hm-field-night, .hm-field-rhodo) {
+	background-color: var(--hm-ground);
+	color: var(--hm-ink);
+}
+
+/* Selected text: the field's own ink and ground swapped (rhododendron is kept for actions). */
+.himal ::selection {
+	background-color: var(--hm-ink);
+	color: var(--hm-ground);
+}
+
+@theme inline {
+	--color-hm-ground: var(--hm-ground);
+	--color-hm-ground-2: var(--hm-ground-2);
+	--color-hm-ink: var(--hm-ink);
+	--color-hm-muted: var(--hm-muted);
+	--color-hm-accent: var(--hm-accent);
+	--color-hm-action: var(--hm-action);
+	--color-hm-on-action: var(--hm-on-action);
+
+	--font-hm-display: "Eczar Variable", "Eczar Fallback", "Eczar Devanagari Fallback", Georgia, "Times New Roman", serif;
+	--font-hm-mono:
+		"JetBrains Mono Variable", "JetBrains Mono Fallback", ui-monospace, monospace; /* taste-skill-ignore: code blocks only */
+
+	/* Five sizes do the work: small, body, lead, head and title (the hero name is fitted, hm-name). */
+	--text-hm-small: 0.9375rem;
+	--text-hm-small--line-height: 1.45;
+	--text-hm-body: clamp(1.0625rem, 1rem + 0.25vw, 1.1875rem);
+	--text-hm-body--line-height: 1.6;
+	--text-hm-lead: clamp(1.25rem, 1.05rem + 0.75vw, 1.75rem);
+	--text-hm-lead--line-height: 1.38;
+	--text-hm-head: clamp(2.25rem, 1.35rem + 3.6vw, 4.5rem);
+	--text-hm-head--line-height: 1.02;
+	--text-hm-title: clamp(2.5rem, 1.2rem + 7.5vw, 9.5rem);
+	--text-hm-title--line-height: 0.95;
+}
+
+/* The page canvas: snow, granite ink and the app's text face. */
+@utility hm-canvas {
+	background-color: var(--hm-ground);
+	color: var(--hm-ink);
+	font-family: var(--font-sans);
+	/* Long compound words and URLs never push the page sideways. */
+	overflow-wrap: break-word;
+	overflow-x: clip;
+}
+
+/* The content column: one pair of outer margins at every width. */
+@utility hm-container {
+	width: 100%;
+	max-width: var(--hm-max);
+	margin-inline: auto;
+	padding-inline: var(--hm-margin);
+}
+
+/* 4 columns on phones, 12 from tablets up. */
+@utility hm-grid {
+	display: grid;
+	grid-template-columns: repeat(4, minmax(0, 1fr));
+	column-gap: var(--hm-gutter);
+	@media (width >= 48rem) {
+		grid-template-columns: repeat(12, minmax(0, 1fr));
+	}
+}
+
+@utility hm-section {
+	padding-block: var(--hm-space-section);
+}
+
+/* Display type: Eczar, tight. Devanagari keeps its natural spacing and room for its vowel signs. */
+@utility hm-display {
+	font-family: var(--font-hm-display);
+	font-weight: 650;
+	letter-spacing: -0.025em;
+	text-wrap: balance;
+	&:lang(ne) {
+		letter-spacing: 0;
+		--tw-leading: 1.22;
+	}
+}
+
+/*
+ * Devanagari stands taller and runs about a quarter longer than the same words
+ * in Latin: Nepali headings start at 30px on phones (two lines, not three) and
+ * reach the same size as English on wide screens.
+ */
+@layer utilities {
+	.text-hm-head:lang(ne) {
+		font-size: clamp(1.875rem, 0.845rem + 4.24vw, 4.5rem);
+	}
+}
+
+/* Running text set large: statements and quotations (Eczar at its medium weight). */
+@utility hm-statement {
+	font-family: var(--font-hm-display);
+	font-weight: 500;
+	letter-spacing: -0.012em;
+	text-wrap: pretty;
+	&:lang(ne) {
+		letter-spacing: 0;
+		--tw-leading: 1.45;
+	}
+}
+
+/* Small text for metadata, in sentence case at a readable size (never uppercase). */
+@utility hm-meta {
+	font-size: var(--text-hm-small);
+	line-height: var(--text-hm-small--line-height);
+	font-weight: 500;
+	color: var(--hm-muted);
+}
+
+@utility hm-measure {
+	max-width: 66ch;
+}
+
+/* Links in running text: underlined; the line turns rhododendron and thickens on hover. */
+@utility hm-link {
+	text-decoration-line: underline;
+	text-decoration-thickness: 0.06em;
+	text-underline-offset: 0.2em;
+	text-decoration-color: color-mix(in oklch, currentColor 50%, transparent);
+	transition:
+		text-decoration-color var(--hm-dur-1),
+		text-decoration-thickness var(--hm-dur-1);
+	&:hover,
+	&:focus-visible {
+		text-decoration-color: var(--hm-accent);
+		text-decoration-thickness: 0.12em;
+	}
+}
+
+@utility hm-focus {
+	outline: none;
+	&:focus-visible {
+		outline: 2px solid var(--hm-focus);
+		outline-offset: 4px;
+	}
+}
+
+/* The one button shape: square, filled, 48px tall. */
+@utility hm-button {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: 0.6rem;
+	min-height: 3rem;
+	padding-inline: 1.5rem;
+	background-color: var(--hm-action);
+	color: var(--hm-on-action);
+	font-weight: 600;
+	font-size: var(--text-hm-body);
+	line-height: 1.2;
+	transition:
+		background-color var(--hm-dur-1),
+		transform var(--hm-dur-1) var(--hm-ease-out);
+	&:hover {
+		background-color: color-mix(in oklch, var(--hm-action) 86%, var(--hm-ink));
+	}
+	&:active {
+		transform: scale(0.98);
+	}
+	&:focus-visible {
+		outline: 2px solid var(--hm-focus);
+		outline-offset: 3px;
+	}
+}
+
+/*
+ * The name as a monument: sized from its length (FittedName sets --hm-fit, the
+ * name's width in em) to run margin to margin. On phones each word takes its
+ * own line, sized from the longest word (--hm-fit-word).
+ */
+@utility hm-name {
+	font-family: var(--font-hm-display);
+	font-weight: 700;
+	letter-spacing: -0.03em;
+	line-height: 0.92;
+	font-size: clamp(2.75rem, calc(100cqi / var(--hm-fit-word, 6)), var(--hm-name-max-phone, 24vw));
+	& > span {
+		display: block;
+	}
+	@media (width >= 48rem) {
+		font-size: clamp(3rem, calc(100cqi / var(--hm-fit, 8)), var(--hm-name-max, 22vw));
+		/* One line, always: while a fallback face stands in for Eczar it may run a little long, and a wrap would reflow the hero. */
+		white-space: nowrap;
+		& > span {
+			display: inline-block;
+		}
+	}
+	/* Devanagari stands taller than Latin at the same size: a lower ceiling keeps the first screen. */
+	&:lang(ne) {
+		letter-spacing: 0;
+		line-height: 1.2;
+		--hm-name-max: 12vw;
+		--hm-name-max-phone: 19vw;
+	}
+}
+
+/*
+ * A journal article's rich text (sanitized on the server, decision 0176): the
+ * editor's tags in the reading type. Code wraps instead of scrolling, so no
+ * unfocusable scroll region appears on phones.
+ */
+@utility hm-prose {
+	display: flex;
+	flex-direction: column;
+	gap: 1.5rem;
+	font-size: clamp(1.125rem, 1.05rem + 0.3vw, 1.25rem);
+	line-height: 1.65;
+	color: var(--hm-ink);
+	&:lang(ne) {
+		line-height: 1.8;
+	}
+	& h2,
+	& h3 {
+		margin-top: 1.75rem;
+		font-family: var(--font-hm-display);
+		font-weight: 650;
+		letter-spacing: -0.015em;
+		line-height: 1.15;
+		color: var(--hm-ink);
+	}
+	& h2 {
+		font-size: clamp(1.75rem, 1.4rem + 1.4vw, 2.5rem);
+	}
+	& h3 {
+		font-size: clamp(1.375rem, 1.2rem + 0.8vw, 1.75rem);
+	}
+	& :is(h2, h3):lang(ne) {
+		letter-spacing: 0;
+		line-height: 1.4;
+	}
+	& ul,
+	& ol {
+		display: flex;
+		flex-direction: column;
+		gap: 0.6rem;
+		padding-inline-start: 1.5rem;
+	}
+	& ul {
+		list-style: disc;
+	}
+	& ol {
+		list-style: decimal;
+	}
+	& li::marker {
+		color: var(--hm-muted);
+	}
+	& blockquote {
+		padding-inline-start: 1.25rem;
+		font-family: var(--font-hm-display);
+		font-size: 1.15em;
+		font-weight: 500;
+	}
+	/* The opening mark hangs in the margin. */
+	& blockquote > :first-child {
+		text-indent: -0.45em;
+		&::before {
+			content: "“";
+			color: var(--hm-muted);
+			font-weight: 700;
+		}
+	}
+	& pre {
+		background: var(--hm-ground-2);
+		padding: 1.25rem;
+		font-family: var(--font-hm-mono);
+		font-size: var(--text-hm-small);
+		line-height: 1.7;
+		white-space: pre-wrap;
+		overflow-wrap: anywhere;
+	}
+	& :not(pre) > code {
+		font-family: var(--font-hm-mono);
+		font-size: 0.88em;
+	}
+	& a {
+		text-decoration-line: underline;
+		text-decoration-thickness: 0.06em;
+		text-underline-offset: 0.2em;
+	}
+	& a:hover {
+		text-decoration-color: var(--hm-accent);
+	}
+	& hr {
+		border: 0;
+		height: 1.5rem;
+	}
+}
+
+/* Archival pictures in two inks: the picture's darks in ridge blue, its lights in snow. */
+@utility hm-duotone {
+	position: relative;
+	isolation: isolate;
+	overflow: clip;
+	background-color: var(--hm-duo-light);
+	& img {
+		display: block;
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+		filter: grayscale(1) contrast(1.06);
+		mix-blend-mode: multiply;
+	}
+	&::after {
+		content: "";
+		position: absolute;
+		inset: 0;
+		background-color: var(--hm-duo-dark);
+		mix-blend-mode: lighten;
+		pointer-events: none;
+	}
+}
+
+/* ---------------------------------------------------------------------------
+ * The art (components/art): the sky's flat bands, the printed relief, stars.
+ * ------------------------------------------------------------------------- */
+
+.hm-sky {
+	--hm-sky-1: var(--hm-sky-day-1);
+	--hm-sky-2: var(--hm-sky-day-2);
+	--hm-sky-3: var(--hm-sky-day-3);
+}
+
+.hm-sky[data-phase="dawn"] {
+	--hm-sky-1: var(--hm-sky-dawn-1);
+	--hm-sky-2: var(--hm-sky-dawn-2);
+	--hm-sky-3: var(--hm-sky-dawn-3);
+}
+
+.hm-sky[data-phase="dusk"] {
+	--hm-sky-1: var(--hm-sky-dusk-1);
+	--hm-sky-2: var(--hm-sky-dusk-2);
+	--hm-sky-3: var(--hm-sky-dusk-3);
+}
+
+.hm-sky[data-phase="night"] {
+	--hm-sky-1: var(--hm-sky-night-1);
+	--hm-sky-2: var(--hm-sky-night-2);
+	--hm-sky-3: var(--hm-sky-night-3);
+}
+
+/* One sheet of the relief, flat in its altitude colour, like one block of a print. */
+.hm-layer {
+	fill: var(--hm-fill);
+}
+
+/* First and last light: the highest sheets catch the alpenglow. */
+[data-glow] .hm-layer[data-summit] {
+	fill: color-mix(in oklch, var(--hm-fill) 52%, var(--hm-alpenglow));
+}
+
+/* Moonlight: the whole range in the night's blue. */
+[data-phase="night"] .hm-layer {
+	fill: color-mix(in oklch, var(--hm-fill) 62%, var(--hm-moonlight));
+}
+
+/* Frames that morph between pages (MountainFrame sets the name and this class). */
+[data-hm-frame] {
+	view-transition-class: hm-frame;
+}
+
+/* ---------------------------------------------------------------------------
+ * Motion. Progressive enhancement only: everything is visible and at rest by
+ * default; animations run on screens, where supported, for readers who haven't
+ * asked for reduced motion. Only transform, translate, clip-path and colour
+ * move, so nothing shifts the layout and axe never sees half-faded text
+ * (decision 0109).
+ * ------------------------------------------------------------------------- */
+
+/* From the flat map into relief: a band starts lowered to the foot, where all its sheets lay flat. */
+@keyframes hm-lift {
+	from {
+		transform: translateY(var(--hm-lift));
+	}
+}
+
+/*
+ * A pass of the pending page's print, one timeline per band of altitude (0 low land,
+ * 1 rock, 2 snow): each rises out of the ground (below the frame, which clips it),
+ * low land first; all hold; then they sink snow first. A band never stands higher than
+ * the band under it, so no sheet floats in the air.
+ */
+@keyframes hm-print-0 {
+	0% {
+		transform: translateY(calc(var(--hm-lift) + 45%));
+	}
+	28%,
+	88% {
+		transform: translateY(0);
+	}
+	100% {
+		transform: translateY(calc(var(--hm-lift) + 45%));
+	}
+}
+
+@keyframes hm-print-1 {
+	0%,
+	8% {
+		transform: translateY(calc(var(--hm-lift) + 45%));
+	}
+	38%,
+	80% {
+		transform: translateY(0);
+	}
+	94%,
+	100% {
+		transform: translateY(calc(var(--hm-lift) + 45%));
+	}
+}
+
+@keyframes hm-print-2 {
+	0%,
+	16% {
+		transform: translateY(calc(var(--hm-lift) + 45%));
+	}
+	48%,
+	72% {
+		transform: translateY(0);
+	}
+	86%,
+	100% {
+		transform: translateY(calc(var(--hm-lift) + 45%));
+	}
+}
+
+@keyframes hm-spread {
+	to {
+		transform: translateY(calc(var(--hm-depth) * var(--hm-spread) * -1));
+	}
+}
+
+@keyframes hm-rise-in {
+	from {
+		clip-path: inset(0 0 100% 0);
+		transform: translateY(1.25rem);
+	}
+}
+
+/* The name rises a little into its own line, never over the sentence under it. */
+@keyframes hm-name-in {
+	from {
+		clip-path: inset(0 0 100% 0);
+		transform: translateY(0.12em);
+	}
+}
+
+@keyframes hm-progress {
+	to {
+		transform: scaleX(1);
+	}
+}
+
+/* The reading line starts empty: where scroll timelines are missing or motion is reduced, it never shows. */
+.hm-progress {
+	transform: scaleX(0);
+}
+
+@keyframes hm-zoom-settle {
+	from {
+		transform: scale(1.08);
+	}
+}
+
+@media screen and (prefers-reduced-motion: no-preference) {
+	/*
+	 * The map rises once: each band of altitude lifts from the flat map into
+	 * relief, the low land first. Only transform moves, so the compositor
+	 * animates the bands without repainting the drawing (a clip-path per sheet
+	 * repainted it every frame: 0.7 s of blocking on a mid-range phone).
+	 */
+	.hm-relief[data-print] .hm-relief-band {
+		/* backwards, not both: a finished one-shot animation must not keep its layer (hit testing went stale). */
+		animation: hm-lift 1.3s var(--hm-ease-out) backwards;
+		animation-delay: calc(var(--hm-depth) * 160ms + 120ms);
+	}
+
+	/*
+	 * The pending page's range (chrome/portfolio-pending.tsx): printed again and again
+	 * while a page loads (keyframes hm-print-0…2 above). Transform only (decision 0201).
+	 */
+	.hm-printing .hm-relief-band {
+		animation: hm-print-0 3.6s cubic-bezier(0.45, 0, 0.2, 1) infinite;
+	}
+
+	.hm-printing .hm-relief-band:nth-child(2) {
+		animation-name: hm-print-1;
+	}
+
+	.hm-printing .hm-relief-band:nth-child(3) {
+		animation-name: hm-print-2;
+	}
+
+	.hm-name-in {
+		animation: hm-name-in var(--hm-dur-3) var(--hm-ease-out) backwards;
+		animation-delay: calc(var(--hm-i, 0) * 90ms + 500ms);
+	}
+
+	/* The cursor moves the sheets by depth (components/art/drift.ts sets --hm-px / --hm-py). */
+	.hm-relief-depth {
+		translate: calc(var(--hm-px, 0) * var(--hm-depth) * 7px) calc(var(--hm-py, 0) * var(--hm-depth) * 3px);
+		transition: translate 700ms var(--hm-ease-out);
+	}
+
+	.hm-zoom > * {
+		transition: transform var(--hm-dur-3) var(--hm-ease-out);
+	}
+
+	.hm-zoom:hover > *,
+	:hover > .hm-zoom > *,
+	:focus-visible > .hm-zoom > * {
+		transform: scale(1.035);
+	}
+
+	@supports (animation-timeline: scroll()) {
+		/* Scrolling past the hero spreads the sheets apart: the range rises toward you. */
+		.hm-relief-depth {
+			animation: hm-spread linear both;
+			animation-timeline: scroll(root);
+			animation-range: 0 100vh;
+		}
+
+		/* Article reading progress, as a line of ink across the top. */
+		.hm-progress {
+			animation: hm-progress linear both;
+			animation-timeline: scroll(root);
+		}
+	}
+
+	@supports (animation-timeline: view()) {
+		/* Parts of a section rise into view one after another (--hm-i staggers them). */
+		.hm-reveal {
+			animation: hm-rise-in linear both;
+			animation-timeline: view();
+			animation-range: entry calc(4% + var(--hm-i, 0) * 5%) cover calc(26% + var(--hm-i, 0) * 5%);
+		}
+
+		/* The same, for each child of a block whose children aren't ours to mark (an article's rich text, a details column). */
+		.hm-reveal-each > * {
+			animation: hm-rise-in linear both;
+			animation-timeline: view();
+			animation-range: entry 4% cover 24%;
+		}
+
+		/* Pictures settle from a slight zoom while scrolling past. */
+		.hm-settle {
+			animation: hm-zoom-settle linear both;
+			animation-timeline: view();
+			animation-range: entry 0% cover 55%;
+		}
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	::view-transition-group(*.hm-frame),
+	::view-transition-old(*.hm-frame),
+	::view-transition-new(*.hm-frame) {
+		animation: none;
+	}
+}
+
+/* A project's mountain morphing from the index into its case study (MountainFrame + <Link viewTransition>). */
+::view-transition-group(*.hm-frame) {
+	animation-duration: 650ms;
+	animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+}

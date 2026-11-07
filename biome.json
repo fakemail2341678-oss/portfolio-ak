@@ -1,0 +1,106 @@
+{
+	"$schema": "./node_modules/@biomejs/biome/configuration_schema.json",
+	"vcs": {
+		"enabled": true,
+		"clientKind": "git",
+		"useIgnoreFile": true
+	},
+	"files": {
+		"ignoreUnknown": true,
+		"includes": [
+			"**",
+			"!**/src/routeTree.gen.ts",
+			"!**/pnpm-lock.yaml",
+			"!**/.claude",
+			"!**/storybook-static",
+			"!**/tests/fixtures/tmdb"
+		]
+	},
+	"formatter": {
+		"enabled": true,
+		"indentStyle": "tab",
+		"lineWidth": 120
+	},
+	"assist": {
+		"actions": {
+			"source": {
+				"organizeImports": "on"
+			}
+		}
+	},
+	"linter": {
+		"enabled": true,
+		"domains": {
+			"react": "recommended",
+			"test": "recommended",
+			"playwright": "recommended"
+		},
+		"rules": {
+			"recommended": true,
+			"suspicious": {
+				"noExplicitAny": "error"
+			},
+			"style": {
+				"noRestrictedImports": {
+					"level": "error",
+					"options": {
+						"paths": {
+							"zod/v4": "Import \"zod\": it resolves to src/lib/zod.ts, which turns off Zod's eval probe for the CSP (decision 0086).",
+							"zod/mini": "Import \"zod\": it resolves to src/lib/zod.ts, which turns off Zod's eval probe for the CSP (decision 0086)."
+						}
+					}
+				}
+			}
+		}
+	},
+	"overrides": [
+		{
+			"includes": ["src/components/**", "src/features/**/components/**", "src/hooks/**"],
+			"linter": {
+				"rules": {
+					"style": {
+						"noRestrictedImports": {
+							"level": "error",
+							"options": {
+								"paths": {
+									"zod/v4": "Import \"zod\": it resolves to src/lib/zod.ts, which turns off Zod's eval probe for the CSP (decision 0086).",
+									"zod/mini": "Import \"zod\": it resolves to src/lib/zod.ts, which turns off Zod's eval probe for the CSP (decision 0086)."
+								},
+								"patterns": [
+									{
+										"group": ["@/server/**", "**/server/**"],
+										"message": "Components run in the browser: call a server function (src/functions) instead of importing src/server."
+									},
+									{
+										"group": ["@/lib/start/**"],
+										"message": "src/lib/start needs the Start runtime, which Storybook doesn't have: use it from routes or server code only."
+									}
+								]
+							}
+						}
+					}
+				}
+			}
+		},
+		{
+			"includes": ["src/lib/zod.ts"],
+			"linter": {
+				"rules": {
+					"style": {
+						"noRestrictedImports": "off"
+					}
+				}
+			}
+		}
+	],
+	"javascript": {
+		"formatter": {
+			"quoteStyle": "double"
+		}
+	},
+	"css": {
+		"parser": {
+			"tailwindDirectives": true
+		}
+	}
+}

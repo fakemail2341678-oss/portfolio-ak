@@ -1,0 +1,22 @@
+# Git hooks (https://lefthook.dev). Installed by `pnpm install` (the `prepare` script).
+# CI runs the full gates; these catch the cheap mistakes before they leave the machine.
+# Skip once with LEFTHOOK=0 git commit … (CI still checks).
+
+pre-commit:
+  commands:
+    biome:
+      glob: "*.{js,mjs,cjs,ts,mts,tsx,json,jsonc,css}"
+      # Fixes what it can and re-stages it; anything left (lint errors, warnings) blocks the commit.
+      # --staged lets Biome read the staged files from git: passing them as arguments breaks on
+      # Windows once a commit touches a few hundred files ("The command line is too long").
+      run: pnpm exec biome check --write --error-on-warnings --no-errors-on-unmatched --files-ignore-unknown=true --staged
+      stage_fixed: true
+
+pre-push:
+  # parallel: true
+  commands:
+    typecheck:
+      run: pnpm typecheck
+    # Unused dependencies only: unused exports can be work in progress; CI runs full knip.
+    knip:
+      run: pnpm exec knip --dependencies

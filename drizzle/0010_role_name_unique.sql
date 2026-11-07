@@ -1,0 +1,1 @@
+CREATE UNIQUE INDEX "role_name_lower_unique" ON "role" USING btree (lower("name"));

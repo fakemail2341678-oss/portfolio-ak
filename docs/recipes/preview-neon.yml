@@ -1,0 +1,75 @@
+# Recipe (docs/guides/recipes.md, "Preview deploys"; decision 0150): a Neon branch
+# per pull request, migrated, then a Vercel preview deploy that uses it; the branch
+# is deleted when the PR closes. Copy to .github/workflows/preview.yml to use it.
+#
+# Needs: repository variable NEON_PROJECT_ID; secrets NEON_API_KEY, VERCEL_TOKEN,
+# VERCEL_ORG_ID, VERCEL_PROJECT_ID, BETTER_AUTH_SECRET. Turn off Vercel's own Git
+# deploys for previews (or this deploys twice). Check the actions' current major
+# versions before adopting (neondatabase/create-branch-action, delete-branch-action).
+name: Preview
+
+on:
+  pull_request:
+    types: [opened, reopened, synchronize, closed]
+
+concurrency:
+  group: preview-${{ github.event.number }}
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    if: github.event.action != 'closed'
+    runs-on: ubuntu-latest
+    environment: preview
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+
+      # One database branch per PR, copied from the parent (schema and data).
+      - id: branch
+        uses: neondatabase/create-branch-action@v6
+        with:
+          project_id: ${{ vars.NEON_PROJECT_ID }}
+          branch_name: preview/pr-${{ github.event.number }}
+          api_key: ${{ secrets.NEON_API_KEY }}
+
+      # The PR's migrations, on its own branch only.
+      - run: pnpm db:migrate
+        env:
+          DATABASE_URL: ${{ steps.branch.outputs.db_url_pooled }}
+          DATABASE_URL_UNPOOLED: ${{ steps.branch.outputs.db_url }}
+
+      - run: pnpm dlx vercel@latest pull --yes --environment=preview --token=${{ secrets.VERCEL_TOKEN }}
+        env:
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+      - run: pnpm dlx vercel@latest build --token=${{ secrets.VERCEL_TOKEN }}
+        env:
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+      - id: deploy
+        run: |
+          url=$(pnpm dlx vercel@latest deploy --prebuilt --token=${{ secrets.VERCEL_TOKEN }} \
+            --env DATABASE_URL="${{ steps.branch.outputs.db_url_pooled }}" \
+            --env DATABASE_URL_UNPOOLED="${{ steps.branch.outputs.db_url }}" \
+            --env BETTER_AUTH_SECRET="${{ secrets.BETTER_AUTH_SECRET }}")
+          echo "url=$url" >> "$GITHUB_OUTPUT"
+        env:
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+      - run: echo "Preview at ${{ steps.deploy.outputs.url }}" >> "$GITHUB_STEP_SUMMARY"
+
+  cleanup:
+    if: github.event.action == 'closed'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: neondatabase/delete-branch-action@v3
+        with:
+          project_id: ${{ vars.NEON_PROJECT_ID }}
+          branch: preview/pr-${{ github.event.number }}
+          api_key: ${{ secrets.NEON_API_KEY }}

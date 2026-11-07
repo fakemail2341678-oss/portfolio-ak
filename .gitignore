@@ -1,0 +1,44 @@
+# dependencies
+node_modules
+
+# build output
+dist
+dist-ssr
+.output
+.vercel
+.nitro
+.playwright-mcp
+.tanstack
+.wrangler
+.vinxi
+storybook-static
+coverage
+# pnpm dev:local database (scripts/dev-local.ts)
+.data
+test-results
+playwright-report
+e2e/.auth
+
+# env (keep .env.example)
+.env
+.env.*
+!.env.example
+*.local
+
+# generated
+src/paraglide
+
+# os / editor
+.DS_Store
+Thumbs.db
+__unconfig*
+
+# design tools' working files (taste-skill, impeccable); PRODUCT.md, DESIGN.md,
+# .impeccable/surfaces and .impeccable/design.json are committed
+.taste-skill/
+.impeccable/review/
+.impeccable/mocks/
+.impeccable/build/
+.impeccable/live/
+.impeccable/config.local.json
+.impeccable/*.cache.json

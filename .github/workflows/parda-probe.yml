@@ -1,0 +1,46 @@
+# Parda's daily source probe (scripts/probe-sources.ts, decision 0238): plays each enabled
+# source in real Chrome on the most popular movie, series and anime, and posts what it saw
+# to the deployed app. Not part of CI: it never runs on a pull request.
+#
+# Needs, in the repo's settings:
+# - the Actions variable PARDA_PROBE_URL (the deployed app, e.g. https://example.com);
+# - the Actions secret PARDA_PROBE_SECRET (the same value as the app's env).
+# Without the variable the job is skipped.
+#
+# Cost: about a minute per source and title, so 4 sources take about 12 minutes a day,
+# roughly 360 Actions minutes a month. Check that against the repo's allowance; if it
+# doesn't fit, run every other day ("40 1 */2 * *") or lower --seconds.
+name: Parda probe
+
+on:
+  schedule:
+    # Before the daily rollup (/api/cron/parda at 02:30 UTC, vercel.json).
+    - cron: "40 1 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: parda-probe
+  cancel-in-progress: false
+
+jobs:
+  probe:
+    name: Probe Parda's sources
+    if: vars.PARDA_PROBE_URL != ''
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v5
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v5
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      # GitHub's runners ship Google Chrome, which the probe drives (channel "chrome").
+      - run: pnpm parda:probe
+        env:
+          PARDA_PROBE_URL: ${{ vars.PARDA_PROBE_URL }}
+          PARDA_PROBE_SECRET: ${{ secrets.PARDA_PROBE_SECRET }}
