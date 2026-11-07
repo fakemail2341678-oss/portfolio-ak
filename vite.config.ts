@@ -52,6 +52,12 @@ export default defineConfig(async ({ command, mode }) => {
 
 	return {
 		resolve: { tsconfigPaths: true, alias: [zodAlias] },
+		// Vercel Web Analytics loads /_vercel/insights/script.js, which only Vercel serves.
+		// Elsewhere (dev, local builds, e2e) it would 404 and fail the browser review's
+		// console check, so the root layout renders it only in builds made on Vercel.
+		define: {
+			"import.meta.env.VITE_VERCEL_ANALYTICS": JSON.stringify(process.env.VERCEL ? "true" : ""),
+		},
 		server: {
 			// Transform the entry and the layouts while the dev server starts, so the
 			// first page doesn't wait for them (decision 0155).

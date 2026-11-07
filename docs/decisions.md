@@ -257,6 +257,7 @@ Record every non-obvious choice here: **What**, **Why**, **Alternatives consider
 - [0250](#0250-a-resting-mouse-holds-the-billboard-only-over-its-lower-mask): A resting mouse holds the billboard only over its lower mask
 - [0251](#0251-the-database-pool-listens-for-dropped-idle-connections): The database pool listens for dropped idle connections
 - [0252](#0252-the-vercel-deployment-opens-on-parda): The Vercel deployment opens on Parda
+- [0253](#0253-vercel-web-analytics-renders-only-in-vercel-builds): Vercel Web Analytics renders only in Vercel builds
 </details>
 
 ---
@@ -3342,3 +3343,15 @@ Measured on the owner's Windows machine (Node 24.11, 12 threads, 11.7 GB), 2026-
 - A redirect in the portfolio's route (`beforeLoad`): it would apply in dev and e2e too, or need an env check in app code.
 - Matching only the production host: every preview deployment would show the portfolio, which isn't the deployed app now.
 - An env variable to turn it on: one more setting to remember; `VERCEL` already says where the build runs.
+
+## 0253: Vercel Web Analytics renders only in Vercel builds
+
+**What:** The root layout renders `<Analytics />` from `@vercel/analytics/react` when `import.meta.env.VITE_VERCEL_ANALYTICS === "true"`. `vite.config.ts` defines that value from `VERCEL`, which Vercel sets at build time. It needs no consent and no CSP change (observability.md, "Vercel Web Analytics").
+
+**Why:** The component injects `/_vercel/insights/script.js`, which only Vercel serves. In dev, local production builds and e2e the request 404s, and the browser review fails any page with a console error. The `next` entry point the Vercel docs show is for Next.js; this app uses the framework-neutral React one.
+
+**Alternatives considered:**
+
+- Always render it: every page in the browser review would log the 404.
+- A `VITE_` variable set in the Vercel dashboard: one more setting to remember; `VERCEL` already says where the build runs (as in 0252).
+- Its `mode` prop: `"development"` swaps the script for a debug one from Vercel's CDN (`va.vercel-scripts.com`) that logs every event; it still loads a script.

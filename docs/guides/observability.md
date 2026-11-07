@@ -29,6 +29,13 @@ All optional except the logs. Without their variables, Sentry and PostHog are of
 - **In features:** call `track("event", props)` freely; it does nothing without consent.
 - **Web Vitals (0138):** after consent, `src/lib/observability/web-vitals.ts` sends a `web_vital` event per CLS, LCP and INP measurement (`metric`, `value`, `rating`, `navigation_type`, `path`). Watch the production CLS rule with a trend insight on `web_vital` filtered to `metric = CLS`, aggregated as the 75th percentile of `value`, broken down by `path`: it should stay at or below 0.01 (and LCP under 2,500 ms, INP under 200 ms). Values cover a whole document visit, client-side navigations included.
 
+## Vercel Web Analytics (0253)
+
+- **Where:** `<Analytics />` from `@vercel/analytics/react` in the root layout (`src/routes/__root.tsx`), so every page counts, client-side navigations included. Not `@vercel/analytics/next`: this app isn't Next.js.
+- **Vercel builds only:** `vite.config.ts` defines `import.meta.env.VITE_VERCEL_ANALYTICS` as `"true"` when `VERCEL` is set at build time. Dev, local builds and e2e render nothing, because `/_vercel/insights/script.js` exists only on Vercel and its 404 would fail the browser review's console check.
+- **Turn it on** in the Vercel project (Analytics tab); until then the deployed script 404s and logs one line.
+- **No consent needed:** it sets no cookies and stores no personal data, unlike PostHog above. The CSP allows it as is: the script is same-origin and injected by the nonce'd bundle (`'strict-dynamic'`), and it reports to `/_vercel/insights/*` (`connect-src 'self'`).
+
 ## Feature flags
 
 - **Evaluated on the server** in a loader (`src/functions/feature-flags.ts`) and SSR'd through the Query cache, so the server and browser render the same thing and the browser makes no flag request.

@@ -3,6 +3,7 @@ import { FormDevtoolsPanel } from "@tanstack/react-form-devtools";
 import { ReactQueryDevtoolsPanel } from "@tanstack/react-query-devtools";
 import { ClientOnly, createRootRouteWithContext, HeadContent, Scripts } from "@tanstack/react-router";
 import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
+import { Analytics } from "@vercel/analytics/react";
 import { lazy, type ReactNode, Suspense } from "react";
 import { ErrorPage } from "@/components/errors/error-page";
 import { NotFoundPage } from "@/components/errors/not-found-page";
@@ -114,6 +115,8 @@ function RootDocument({ children }: { children: ReactNode }) {
 				<ThemeSync theme={theme} />
 				<ObservabilitySync />
 				<ConsentBanner />
+				{/* Vercel builds only (vite.config.ts `define`): elsewhere its script would 404. */}
+				{import.meta.env.VITE_VERCEL_ANALYTICS === "true" && <Analytics />}
 				<ClientOnly>
 					<Suspense>
 						<Toaster theme={theme} />
