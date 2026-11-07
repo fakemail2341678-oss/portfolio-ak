@@ -3,7 +3,7 @@
 Record every non-obvious choice here: **What**, **Why**, **Alternatives considered**. Newest entries at the bottom.
 
 <details>
-<summary>Index (238 entries)</summary>
+<summary>Index (239 entries)</summary>
 
 - [0001](#0001-project-has-its-own-git-repository): Project has its own git repository
 - [0002](#0002-default-deployment-target-is-vercel-assumption): Default deployment target is Vercel (assumption)
@@ -262,6 +262,7 @@ Record every non-obvious choice here: **What**, **Why**, **Alternatives consider
 - [0255](#0255-one-lichess-client-with-lanes-cooldowns-and-a-shared-cache): One Lichess client with lanes, cooldowns and a shared cache
 - [0256](#0256-lichess-tokens-are-sealed-and-never-leave-the-server): Lichess tokens are sealed and never leave the server
 - [0257](#0257-what-task-71s-spikes-found): What Task 71's spikes found
+- [0258](#0258-chaals-look-is-diagram-a-printed-chess-diagram-paper-and-ink-one-vermilion): Chaal's look is "Diagram": a printed chess diagram, paper and ink, one vermilion
 </details>
 
 ---
@@ -3425,3 +3426,28 @@ Measured on the owner's Windows machine (Node 24.11, 12 threads, 11.7 GB), 2026-
 **Why recorded:** the plan left these for Task 71 to check (PLAN 13.4, "Not checked yet").
 
 **Alternatives considered:** none; these are measurements.
+
+## 0258: Chaal's look is "Diagram": a printed chess diagram, paper and ink, one vermilion
+
+**What** (Task 72, 2026-11-08):
+- **The direction:** the board is a printed chess diagram, with hatched dark squares in a heavy double frame and coordinates outside it. Everything around it uses the annotator's symbols (!, ?, !?, ±) in one spot colour, vermilion. Paper and ink: a warm paper ground with white plates in light; in dark, the same print reversed (an ink-black ground, not a tinted slate). **The board stays paper in both themes**, dimmed a step in dark. Rules are heavy (2px) at section heads and hairline between rows; corners are square; no cards, shadows or gradients. The contract is `.impeccable/surfaces/src-routes-chaal-route-tsx.md`; the approved comps are in `.impeccable/mocks/chaal/` (gitignored).
+- **How it was chosen:** impeccable's direction round (seed `7b6902aa010a546e`) assigned "Airmail" (correspondence postcards). It dealt Bitmap specimen and Score staff as competitive challengers, plus four declined ones; our own top candidate, "Diagram", was the pick card. The owner chose Diagram from sketches of the live game screen, then approved full comps of Home, a live game, Analysis and a puzzle at 390 and 1280, in light and dark. Interview answers (owner, 2026-11-08): follow the device for light and dark, Nepal stays quiet (the name चाल and real Devanagari type only), phone and laptop weigh equally.
+- **Vermilion has five jobs only:** the last move's ring, annotation symbols, the current move's underline, check, and engine arrows. The primary action is ink: ink fill with paper text in light, paper fill with ink text in dark.
+- **Tokens:** `src/styles/chaal.css`, under `html[data-section="chaal"]` (`.dark` for the dark values). It redefines Graphite's tokens so the shared kit follows, squares the radius, and adds the `ch-*` utilities (`ch-display`, `ch-figures`, `ch-rule`, `ch-hairline`, `ch-sq-light`, `ch-sq-dark`, `ch-frame`) and the motion rules.
+- **Board themes:** "diagram" (the default, hatched), "print" (flat greys) and "stone" (warm taupe), chosen by `data-ch-board` on the board's container (`src/features/chaal/look/board-themes.ts`). Vermilion falls under 3:1 on stone's dark square, so stone's marks are ink. A legal-move dot is ink with a paper halo, so it reads on hatching.
+- **Pieces:** cburnett, the 12 original SVGs from Wikimedia Commons in `public/chaal/pieces/cburnett/`. The author offers them under GFDL 1.2+, CC BY-SA 3.0, GPL v2+ or the 3-clause BSD licence, "the license of your choice". **We use BSD 3-clause:** it is permissive and has no share-alike to carry into the app. Attribution and the licence text are in `LICENSE.txt` beside them, and the about page credits them (Task 73).
+- **Sounds:** our own, synthesized by `scripts/chaal-sounds.ts` (`pnpm chaal:sounds`, deterministic): move, capture, check, start, end, low time, notify, correct, wrong. They are 22.05 kHz mono WAV, 3 to 22 kB each, in `public/chaal/sounds/`. They play only after the first interaction (Task 74).
+- **Type:** Mukta 800 (Ek Type, OFL, `@fontsource/mukta`) for clocks, headings and the wordmark, in both scripts, as "Chaal Display". The Latin cut is 21 kB and the Devanagari cut 101 kB. Vertical metrics are overridden (92/28% Latin, 100/40% Devanagari; Mukta ships 1.13/0.53 em). Metric-matched fallbacks were measured in Chrome: size-adjust 91.09% on Arial Bold and 86.06% on Nirmala UI Bold. Text stays Inter and Noto Sans Devanagari. `chaalFontPreloads` preloads two files per locale in production.
+- **Motion:** one ease, `cubic-bezier(0.2, 0, 0, 1)`. A piece slides in 150 ms and the interface answers in 120 ms. Only transform and opacity move, and nothing moves under reduced motion.
+
+**Why:**
+- Every chess player has learned from printed diagrams, so the board reads at once. The world lends type, palette, density and one signature move (the hatched plate and the symbols) without dressing the working screens as a book.
+- Paper and ink keep the chrome quiet, so the board is the loudest thing on screen, which is the brief's "board first, quiet chrome".
+- It shares nothing with Lichess's or chess.com's looks (their two-tone wood, green or blue boards on slate), as PLAN 13.6 requires.
+
+**Alternatives considered:**
+- **Airmail** (the roll): its chevron turn band was the strongest signature, but postal nostalgia reads slow on a blitz screen.
+- **Score staff:** think time shown as block height is genuinely new, but its reading order is unfamiliar. It can come back as an analysis view.
+- **Bitmap specimen:** no bitmap face covers Devanagari.
+- **The category standard:** a dark slate app, indistinguishable from other chess sites by design.
+- **Pieces under CC BY-SA 3.0,** as the plan assumed: possible, but its share-alike terms are a worse fit than BSD for files shipped inside the app.

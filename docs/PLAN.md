@@ -2862,7 +2862,7 @@ As 12.1, with these differences:
 | Engine | **Stockfish (WASM) in a Web Worker,** the single-threaded lite build. GPL-3.0, shipped unmodified as separate files with its licence and source linked, and loaded only when needed |
 | Board | **Our own board on Graphite + chess.js** (BSD-2) for the rules. No chessground or chessops (GPL-3.0) |
 | Admin | **Admin controls for everything that needs them:** feature switches, limits, OAuth scopes, defaults, connections and blocks, API health, curation, overview |
-| Look | **Very good and clean UI/UX:** our own brand on Graphite, board first, quiet chrome. The owner picks a comp in Task 72. Never imitates Lichess or chess.com |
+| Look | **Very good and clean UI/UX:** our own brand on Graphite, board first, quiet chrome. The owner picked "Diagram" in Task 72 (decision 0258). Never imitates Lichess or chess.com |
 | Fair play | Lichess's rules are product rules: no engine, cloud eval or explorer for a game the user is playing; one request at a time; attribution and "not affiliated" |
 | Git | As Part 5 |
 
@@ -2871,7 +2871,7 @@ As 12.1, with these differences:
 | Task | Name | Effort | Status |
 | --- | --- | --- | --- |
 | 71 | Foundation: the `chaal` layer, the Lichess client and cache, fixtures and the fake Lichess, connecting (OAuth, vault), spikes | xhigh | Done (decisions 0254–0257) |
-| 72 | Design direction: comps (the owner picks), tokens, boards, pieces, sounds | high | Planned |
+| 72 | Design direction: comps (the owner picks), tokens, boards, pieces, sounds | high | Done (decision 0258) |
 | 73 | Shell, brand, home, auth pages, settings, about | high | Planned |
 | 74 | The board kit and the game model | xhigh | Planned |
 | 75 | Analysis board and the engine | xhigh | Planned |
@@ -2955,7 +2955,7 @@ As 12.1, with these differences:
   - the dnd-kit model in `src/features/taskline/calendar/calendar.tsx` (`useDraggable`, `useDroppable`, `Accessibility.configure`);
   - `enforceRateLimit` (`src/server/http/rate-limit.ts`);
   - env in `src/server/env.ts`, plus the dev-offline `OFF` list, `tests/setup/env.ts`, the harness `APP_ENV` regex and `tests/unit/env.test.ts`.
-- **Bundle:** the entry was 283.7 of 285 kB after Part 6 and 284.4 after Task 71 (built without Sentry or PostHog keys, as CI builds), and each route definition adds about 0.3 kB (0217). Task 73's routes will need room: raise the budget with a decision, or move weight out of the entry.
+- **Bundle:** the entry was 283.7 of 285 kB after Part 6 and 284.4 after Tasks 71 and 72 (built without Sentry or PostHog keys, as CI builds), and each route definition adds about 0.3 kB (0217). Task 73's routes will need room: raise the budget with a decision, or move weight out of the entry.
 
 ### 13.5 Architecture (every task follows it)
 
@@ -3077,9 +3077,9 @@ As 12.1, with these differences:
   - moves are spoken in words in both languages ("Knight to f3, check"), through one polite live region.
 - **Notation:** figurine SAN on screen (it reads the same in both languages); letters in PGN.
 - **Pieces, boards and sounds:**
-  - the cburnett pieces (CC BY-SA 3.0, attributed; check the licence);
-  - 3–4 board colour themes as token sets;
-  - CC0 or our own sounds, silent until the first interaction.
+  - the cburnett pieces (multi-licensed by the author; used under the 3-clause BSD licence, attributed: Task 72, decision 0258);
+  - board colour themes as token sets: "diagram" (hatched, the default), "print" and "stone" (Task 72);
+  - our own sounds (`pnpm chaal:sounds`), silent until the first interaction.
 - **Kit:** `Board`, `MiniBoard` (static SVG drawn on the server), `MoveList`, `Clock`, `PlayerStrip`, `EvalBar`, `EvalGraph` (Recharts, lazy), `Material`, `GameControls`, `OpeningName`, `PromotionPicker`, `ResultBanner`, and skeletons. Every piece has a story.
 
 **Data model** (each table arrives in the task that first needs it):
@@ -3202,26 +3202,37 @@ As 12.1, with these differences:
 - To try connecting on the deployment: set `CHAAL_TOKEN_KEY` (`openssl rand -base64 32`) in Vercel, and optionally `LICHESS_CLIENT_ID` (your domain) and `LICHESS_APP_TOKEN` (a personal token with no scopes, for the explorer). Then open `/admin/chaal/lab`, connect, and time the event stream there (spike 1 on Vercel).
 - With `LICHESS_APP_TOKEN` in `.env`, run `pnpm lichess:record` once to add the explorer's recordings.
 
-### Task 72: Design direction (planned)
+### Task 72: Design direction (done)
 
-- **`impeccable` shape:**
-  - the contract in `.impeccable/surfaces/chaal.md`;
-  - comps of Home, a live game, Analysis and a puzzle at 390 and 1280, dark and light;
-  - fed by `ui-ux-pro-max`, `taste-skill` (its app-screens run) and `frontend-design`.
-- **The owner picks a comp.**
-- **Then:**
-  - `chaal.css` for both themes;
-  - 3–4 board themes and the piece set, with the licence checked;
-  - the sounds;
-  - one display face for Latin and Devanagari, at most two preloads;
-  - the motion rules;
-  - `tests/unit/chaal-tokens.test.ts`: text at 4.5:1, square highlights at 3:1;
-  - a "Chaal/Tokens" story.
-- **Decision:** the look.
+**Done** (decision 0258; the guide's "The look"; the contract is [.impeccable/surfaces/src-routes-chaal-route-tsx.md](../.impeccable/surfaces/src-routes-chaal-route-tsx.md)).
+
+**What changed:**
+- **Direction:** the owner answered the interview (follow the device for light and dark; Nepal quiet; phone and laptop equal). Impeccable's direction round put five sketches of the live game screen on its decision page: Airmail (the roll), Diagram (the pick), Score staff and Bitmap specimen (competitive challengers), and the category standard. Four declined worlds were shown demoted. **The owner picked Diagram:** the board is a printed chess diagram, paper and ink, one vermilion. The owner then approved full comps of Home, a live game, Analysis and a puzzle at 390 and 1280, in light and dark (`.impeccable/mocks/chaal/board.html`, gitignored).
+- **`src/styles/chaal.css`:** both themes under `html[data-section="chaal"]`. It redefines Graphite's tokens so the shared kit follows, squares the radius, and adds the `ch-*` utilities, the board tokens and the motion rules. It is imported in `app.css` between `chaal:start` and `chaal:end`.
+- **Boards:** three themes as token sets, `diagram` (hatched, the default), `print` and `stone` (`CHAAL_BOARD_THEMES`, chosen by `data-ch-board`).
+- **Pieces:** the 12 cburnett SVGs, unmodified from Wikimedia Commons, in `public/chaal/pieces/cburnett/`, with `LICENSE.txt`.
+- **Sounds:** nine of our own, from `scripts/chaal-sounds.ts` (`pnpm chaal:sounds`), in `public/chaal/sounds/`.
+- **Type:** Mukta 800 (`@fontsource/mukta`) as "Chaal Display", with metric overrides and fallbacks measured in Chrome. `chaalFontPreloads` preloads two files per locale.
+- **Tests:** `tests/unit/chaal-tokens.test.ts` checks text at 4.5:1 and square marks at 3:1 on every board theme in both themes. It also checks the motion rules, the preloads, the pieces and the sounds. The "Chaal/Tokens" stories (Colours, Type, Boards) check the real cascade against a rose accent and a round radius; they use `withChaal` in `.storybook/mocks/chaal.tsx`.
+- **strip-demo:** the new files and `chaal:sounds` are in `SPECS.chaal`.
+
+**Deviations (0258):**
+- **The contract's path** is `.impeccable/surfaces/src-routes-chaal-route-tsx.md`, the name impeccable's CLI derives from the target, not `chaal.md`.
+- **The comps were made with impeccable alone.** `ui-ux-pro-max`, `taste-skill` and `frontend-design` weren't run: impeccable's round already covered the direction, the interview and the comp discipline.
+- **Fewer full comps than Parda's.** The owner picked from first-viewport sketches of one screen, and only the chosen world was comped in full. As in Parda, there was no image generator, so the comps are HTML captured with Playwright.
+- **Three board themes, not four.** A fourth high-contrast theme can't give one mark colour 3:1 against both a white and a dark square.
+- **The pieces are under BSD 3-clause, not CC BY-SA 3.0.** The author offers both; BSD has no share-alike.
+- **The sounds are WAV,** 3 to 22 kB each, so no encoder is needed. They load only on first use.
+- **Nothing renders on a Chaal page yet.** `CHAAL_BRAND` and the section arrive with `_chaal` in Task 73, so the tokens are exercised only by the stories and the test, and Task 73 wires in `chaalFontPreloads`.
+
+**Numbers:** entry 284.4 of 285 kB, unchanged: the look adds CSS and public files, no JavaScript. Built as CI builds, without the Sentry and PostHog keys; with the keys in `.env` the entry is 299.3 kB. Preloads (wired in Task 73): Mukta Latin 21.0 kB, Devanagari 100.6 kB. Pieces 14.4 kB, sounds 111.9 kB in all. Run, per the changed-files rule: `tests/unit/chaal-tokens.test.ts` (7) and `tests/unit/strip-markers.test.ts`; the "Chaal/Tokens" stories in en/light and ne/dark (6 of 6, axe included); `typecheck`, `check`, `knip`, `build` and the bundle check. No page changed, so no e2e run.
+
+**Left for the owner:** nothing.
 
 ### Task 73: Shell, brand, home, auth pages, settings and about (planned)
 
 - **Layout and brand:** the `_chaal` layout, `CHAAL_BRAND`, `chaalLinks`, the manifest, `public/chaal`, and the `· Chaal` suffix.
+  - From Task 72 (0258): `CHAAL_BRAND` has `id: "chaal"` (which scopes `chaal.css`), follows the device for light and dark, and has `themeColors` `#f3f2ee` and `#121211`. The head adds `chaalFontPreloads(locale)`. The settings offer `CHAAL_BOARD_THEMES`. The about page credits the cburnett pieces (BSD 3-clause, Colin M.L. Burnett) and says the sounds are our own. Build to the contract in `.impeccable/surfaces/src-routes-chaal-route-tsx.md` and the comps in `.impeccable/mocks/chaal/`.
 - **Shell:**
   - a top bar on desktop and a phone tab bar (Play, Puzzles, Analysis, Watch, More);
   - the user menu (connection status, Connect or Disconnect, settings, language, theme, Admin);

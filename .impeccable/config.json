@@ -32,6 +32,48 @@
 				"value": "anek devanagari fallback",
 				"createdAt": "2026-11-04T13:32:20.049Z",
 				"reason": "Claude: Parda's display face, from the Masking comp the owner picked (decision 0232); DESIGN.md covers the portfolio only"
+			},
+			{
+				"rule": "design-system-font",
+				"value": "mukta display",
+				"createdAt": "2026-11-07T19:34:18.056Z",
+				"reason": "Claude: Chaal's display face, from the Diagram direction the owner picked 2026-11-08 (Task 72); DESIGN.md covers the portfolio only"
+			},
+			{
+				"rule": "design-system-font",
+				"value": "inter",
+				"createdAt": "2026-11-07T19:34:18.292Z",
+				"reason": "Claude: the app's text face (Graphite, design-system.md); DESIGN.md covers the portfolio only"
+			},
+			{
+				"rule": "design-system-font",
+				"value": "noto sans devanagari",
+				"createdAt": "2026-11-07T19:34:18.526Z",
+				"reason": "Claude: the app's Devanagari text face (Graphite, design-system.md); DESIGN.md covers the portfolio only"
+			},
+			{
+				"rule": "design-system-font",
+				"value": "chaal display",
+				"createdAt": "2026-11-07T19:49:56.978Z",
+				"reason": "Claude: Chaal's display face (Mukta) and its metric-matched fallbacks, from the Diagram direction the owner picked 2026-11-08 (decision 0258); DESIGN.md covers the portfolio only"
+			},
+			{
+				"rule": "design-system-font",
+				"value": "chaal fallback",
+				"createdAt": "2026-11-07T19:49:57.203Z",
+				"reason": "Claude: Chaal's display face (Mukta) and its metric-matched fallbacks, from the Diagram direction the owner picked 2026-11-08 (decision 0258); DESIGN.md covers the portfolio only"
+			},
+			{
+				"rule": "design-system-font",
+				"value": "chaal devanagari fallback",
+				"createdAt": "2026-11-07T19:49:57.425Z",
+				"reason": "Claude: Chaal's display face (Mukta) and its metric-matched fallbacks, from the Diagram direction the owner picked 2026-11-08 (decision 0258); DESIGN.md covers the portfolio only"
+			},
+			{
+				"rule": "overused-font",
+				"value": "inter",
+				"createdAt": "2026-11-07T20:01:48.745Z",
+				"reason": "Claude: Inter is the whole app's established text face (Graphite, decision 0007, design-system.md); Chaal's own voice is its display face, Mukta (decision 0258)"
 			}
 		]
 	}

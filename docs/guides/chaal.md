@@ -2,7 +2,7 @@
 
 Chaal (चाल, "a move") is a chess app on the Lichess API at `/app/chaal`, run from `/admin/chaal`, built as a removable layer (`pnpm strip-demo`; decision 0254). The plan is [PLAN.md](../PLAN.md), section 13.
 
-**Where it stands: Task 71, the foundation.** Chaal has no pages of its own yet (they start with Task 73). What exists: the Lichess client, its cache and fixtures, a fake Lichess for e2e, connecting a Lichess account (OAuth, the token vault), the event stream through our server, and the admin's lab at `/admin/chaal/lab`. `/admin/chaal` opens the lab until the overview arrives (Task 84).
+**Where it stands: Tasks 71 and 72, the foundation and the look.** Chaal has no pages of its own yet (they start with Task 73). What exists: the look ("Diagram": tokens, board themes, pieces, sounds and fonts; see "The look" below), the Lichess client, its cache and fixtures, a fake Lichess for e2e, connecting a Lichess account (OAuth, the token vault), the event stream through our server, and the admin's lab at `/admin/chaal/lab`. `/admin/chaal` opens the lab until the overview arrives (Task 84).
 
 ## The layer
 
@@ -17,6 +17,7 @@ Chaal (चाल, "a move") is a chess app on the Lichess API at `/app/chaal`, r
 | Admin | `src/routes/_admin/admin/chaal/` (`chaal:read` on the layout, `chaal:configure` on the lab) |
 | Tests | `tests/unit/chaal-lichess.test.ts`, `tests/unit/chaal-connect.test.ts`, `tests/server/chaal-connect.test.ts`, `tests/server/chaal-access.test.ts`, `e2e/flows/chaal.spec.ts` |
 | Fixtures | `tests/fixtures/lichess/` (`pnpm lichess:record`), `e2e/harness/lichess.ts` (the fake Lichess) |
+| The look | `src/styles/chaal.css` (imported in `app.css` between `chaal:start` and `chaal:end`), `src/features/chaal/look/` (board themes, the "Chaal/Tokens" stories), `src/features/chaal/lib/fonts.ts`, `public/chaal/pieces/cburnett/`, `public/chaal/sounds/` (`pnpm chaal:sounds`), `tests/unit/chaal-tokens.test.ts`, `.storybook/mocks/chaal.tsx` (`withChaal`) |
 
 Nothing here imports from the portfolio, the apps, Taskline or Parda (0215). The server's LRU (`src/server/cache/lru.ts`) is core and shared with Parda (0255).
 
@@ -112,6 +113,43 @@ Read it with `ndjsonLines` (`src/features/chaal/live/ndjson.ts`), which the serv
 4. **Board API seeks, chat and endings:** not run (they need a live account); Task 77 checks them with the lab on the owner's account.
 5. **Payloads:** the TV feed is `{"t":"featured","d":{…}}` then `{"t":"fen","d":{fen, lm, wc, bc}}`; a spectated game sends its info, then every position so far, then live ones; a broadcast round streams plain PGN with `[%eval]` and `[%clk]`.
 6. **CORS:** every public stream answers `access-control-allow-origin: *`; preflights allow `Authorization`.
+
+## The look: "Diagram" (Task 72, decision 0258)
+
+The board is a printed chess diagram: hatched dark squares in a heavy double frame, coordinates outside it, and the annotator's symbols beside the moves. Paper and ink, one vermilion. The contract is `.impeccable/surfaces/src-routes-chaal-route-tsx.md`; read it before any Chaal UI work. The approved comps are `.impeccable/mocks/chaal/board.html`, which is gitignored, so it exists on the owner's machine only.
+
+**Tokens** (`src/styles/chaal.css`, under `html[data-section="chaal"]`, `.dark` for the dark values; Tailwind names them `bg-ch-ground`, `text-ch-ink` and so on):
+
+| Token | Use |
+| --- | --- |
+| `--ch-ground` | The page: warm paper in light, ink-black in dark |
+| `--ch-plate` | Raised surfaces: menus, dialogs, inputs (Graphite's `--card`, `--popover`, `--muted`) |
+| `--ch-ink`, `--ch-on-ink` | Text and rules; the primary action is an ink fill with on-ink text |
+| `--ch-muted` | Secondary text: ratings, captions, the clock of the side not to move |
+| `--ch-hair` | Hairlines between rows; borders |
+| `--ch-mark` | Vermilion as text: annotation symbols, the current move's underline |
+| `--ch-danger` | Destructive (Graphite's `--destructive`) |
+| `--ch-paper` | The board's paper: white, dimmed a step in dark |
+| `--ch-sq-light`, `--ch-sq-dark`, `--ch-sq-pattern`, `--ch-sq-hatch` | Squares; the pattern is the hatching in "diagram" and `none` in the others |
+| `--ch-sq-mark` | Marks on squares: the last move's ring, selection, check, arrows (vermilion; ink on "stone") |
+| `--ch-sq-dot` | Legal-move dots: ink, drawn with a `--ch-paper` halo so they read on hatching |
+| `--ch-frame` | The plate's heavy frame |
+
+- **Vermilion has five jobs only:** the last move's ring, annotation symbols, the current move's underline, check, and engine arrows. It is never a button, a link or a badge.
+- **The board stays paper in both themes.** Dark mode reverses the chrome, not the diagram.
+- **Board themes:** `CHAAL_BOARD_THEMES` (`diagram`, `print`, `stone`) in `src/features/chaal/look/board-themes.ts`. Put `data-ch-board="print"` (or `"stone"`) on the board's container; "diagram" needs no attribute. A new theme is a rule in `chaal.css` plus an entry in the list, and the token test checks its marks at 3:1.
+- **Utilities:**
+  - `ch-display`: Mukta 800, tight; Nepali opens the leading.
+  - `ch-figures`: tabular numbers, for clocks.
+  - `ch-rule`: the heavy 2px section rule. `ch-hairline`: the hairline between rows.
+  - `ch-sq-light` and `ch-sq-dark`: a square in the current board theme.
+  - `ch-frame`: the plate's double frame.
+  - Sizes: `text-ch-clock` (40 to 52px), `text-ch-title` (34 to 44px), `text-ch-head` (24px).
+- **Type:** Mukta 800, as "Chaal Display", sets clocks, headings and the wordmark only; text stays Inter and Noto Sans Devanagari. `chaalFontPreloads(locale)` (two files per locale, production only) goes in the `_chaal` layout's head (Task 73). Notation on screen is figurine SAN.
+- **Motion:** `ch-move` (a piece's slide: transform, 150 ms), `ch-fade` (opacity, 120 ms) and `ch-press`, all on one ease, `--ch-ease`. Nothing else may animate, and nothing moves under reduced motion (the token test checks both).
+- **Pieces:** `/chaal/pieces/cburnett/{w,b}{K,Q,R,B,N,P}.svg`, under the 3-clause BSD licence (`LICENSE.txt` beside them). The about page credits Colin M.L. Burnett (Task 73).
+- **Sounds:** `/chaal/sounds/{move,capture,check,start,end,low-time,notify,correct,wrong}.wav`, our own, made by `pnpm chaal:sounds`. Play them only after the player's first interaction.
+- **Stories:** wrap Chaal stories in `withChaal` (`.storybook/mocks/chaal.tsx`). It sets the section with a rose accent and a round radius, which the tokens must outrank.
 
 ## Glossary (en/ne)
 

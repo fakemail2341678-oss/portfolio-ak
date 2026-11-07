@@ -1,0 +1,287 @@
+/*
+ * "Diagram": the design system of Chaal at /app/chaal (docs/guides/chaal.md, "The look";
+ * decision 0258; the direction contract in .impeccable/surfaces/src-routes-chaal-route-tsx.md).
+ *
+ * The board is a printed chess diagram: hatched dark squares in a heavy double frame,
+ * coordinates outside it. Paper and ink, one vermilion (the annotator's pencil: the last
+ * move, annotation symbols, the current move, check, engine arrows). Rules are heavy at
+ * section heads and hairline between rows; corners are square; no cards or shadows.
+ * Dark is the same print reversed, and the board stays paper in both themes.
+ *
+ * Everything is scoped to html[data-section="chaal"], which the root sets from the
+ * section's brand (src/lib/section-brand.ts, Task 73), so the admin's Graphite and the
+ * other layers are untouched. The rules also redefine Graphite's tokens, so the shared
+ * kit (buttons, menus, dialogs, which portal to <body>) takes this look.
+ *
+ * tests/unit/chaal-tokens.test.ts checks every text pair at 4.5:1 in both themes and
+ * every square mark at 3:1 against both squares of every board theme. Change a value,
+ * run that test.
+ */
+
+/*
+ * Mukta (Ek Type, OFL) sets display type in both scripts: one weight, 800, a static cut
+ * per script (Latin 21 kB, Devanagari 101 kB). Declared here rather than through
+ * Fontsource's stylesheet, to override the vertical metrics: Mukta ships 1.13 / 0.53 em,
+ * so a clock's text box would spill far past its line (the problem of decision 0184).
+ * Latin glyphs reach 0.72 / 0.27 em, Devanagari 0.90 / 0.28 em (measured in Chrome).
+ */
+@font-face {
+	font-family: "Chaal Display";
+	font-style: normal;
+	font-display: swap;
+	font-weight: 800;
+	src: url("../../node_modules/@fontsource/mukta/files/mukta-latin-800-normal.woff2") format("woff2");
+	unicode-range:
+		U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+	ascent-override: 92%;
+	descent-override: 28%;
+	line-gap-override: 0%;
+}
+
+@font-face {
+	font-family: "Chaal Display";
+	font-style: normal;
+	font-display: swap;
+	font-weight: 800;
+	src: url("../../node_modules/@fontsource/mukta/files/mukta-latin-ext-800-normal.woff2") format("woff2");
+	unicode-range:
+		U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+	ascent-override: 92%;
+	descent-override: 28%;
+	line-gap-override: 0%;
+}
+
+@font-face {
+	font-family: "Chaal Display";
+	font-style: normal;
+	font-display: swap;
+	font-weight: 800;
+	src: url("../../node_modules/@fontsource/mukta/files/mukta-devanagari-800-normal.woff2") format("woff2");
+	unicode-range:
+		U+0900-097F, U+1CD0-1CF9, U+200C-200D, U+20A8, U+20B9, U+20F0, U+25CC, U+A830-A839, U+A8E0-A8FF, U+11B00-11B09;
+	ascent-override: 100%;
+	descent-override: 40%;
+	line-gap-override: 0%;
+}
+
+/*
+ * Metric-matched fallbacks, measured in Chrome (decisions 0110 and 0184): size-adjust
+ * is Mukta 800's advance width over the fallback's for a long sample; the ascent and
+ * descent are our overrides divided by it.
+ */
+@font-face {
+	font-family: "Chaal Fallback";
+	src: local("Arial Bold"), local("Arial-BoldMT"), local("Liberation Sans Bold"), local("Helvetica Bold");
+	font-weight: 800;
+	size-adjust: 91.09%;
+	ascent-override: 101%;
+	descent-override: 30.74%;
+	line-gap-override: 0%;
+}
+
+@font-face {
+	font-family: "Chaal Devanagari Fallback";
+	src:
+		local("Nirmala UI Bold"), local("NirmalaUI-Bold"), local("Kohinoor Devanagari Bold"),
+		local("Devanagari Sangam MN Bold");
+	font-weight: 800;
+	unicode-range: U+0900-097F, U+1CD0-1CF9, U+200C-200D, U+20A8, U+20B9, U+25CC, U+A830-A839, U+A8E0-A8FF;
+	size-adjust: 86.06%;
+	ascent-override: 116.2%;
+	descent-override: 46.48%;
+	line-gap-override: 0%;
+}
+
+html[data-section="chaal"] {
+	--ch-ground: oklch(0.9608 0.0054 95.1);
+	--ch-plate: oklch(1 0 0);
+	--ch-ink: oklch(0.1957 0 0);
+	--ch-muted: oklch(0.4669 0.008 97.5);
+	--ch-hair: oklch(0.8788 0.0097 93.6);
+	/* The annotator's pencil, as text: annotation symbols, the current move's underline. */
+	--ch-mark: oklch(0.5443 0.1796 33.6);
+	--ch-on-ink: oklch(0.9608 0.0054 95.1);
+	--ch-danger: oklch(0.4723 0.1624 30.1);
+
+	/*
+	 * The board, the same in both themes except the diagram's paper, which dims in dark.
+	 * "Diagram" is the default: white squares and dark squares hatched in ink.
+	 */
+	--ch-paper: oklch(1 0 0);
+	--ch-sq-light: var(--ch-paper);
+	--ch-sq-dark: var(--ch-paper);
+	--ch-sq-hatch: oklch(0.1957 0 0);
+	--ch-sq-pattern: repeating-linear-gradient(135deg, var(--ch-sq-hatch) 0 1px, transparent 1px 5.5px);
+	/* Marks on squares: the last move's ring, the selection, check, legal-move dots, arrows. */
+	--ch-sq-mark: oklch(0.5443 0.1796 33.6);
+	--ch-sq-dot: oklch(0.1957 0 0);
+	--ch-frame: oklch(0.1957 0 0);
+
+	/* One ease; a piece slides in 150 ms, the interface answers in 120 ms (the block at the end). */
+	--ch-ease: cubic-bezier(0.2, 0, 0, 1);
+	--ch-duration-move: 150ms;
+	--ch-duration-quick: 120ms;
+
+	/* Graphite's tokens, so the shared kit follows. */
+	--background: var(--ch-ground);
+	--surface-1: var(--ch-plate);
+	--surface-2: var(--ch-ground);
+	--foreground: var(--ch-ink);
+	--card: var(--ch-plate);
+	--card-foreground: var(--ch-ink);
+	--popover: var(--ch-plate);
+	--popover-foreground: var(--ch-ink);
+	--secondary: var(--ch-plate);
+	--secondary-foreground: var(--ch-ink);
+	--muted: var(--ch-plate);
+	--muted-foreground: var(--ch-muted);
+	--accent: var(--ch-hair);
+	--accent-foreground: var(--ch-ink);
+	--border: var(--ch-hair);
+	--input: oklch(0.1957 0 0 / 40%);
+	--primary: var(--ch-ink);
+	--primary-foreground: var(--ch-on-ink);
+	--accent-subtle: var(--ch-hair);
+	--ring: var(--ch-ink);
+	--destructive: var(--ch-danger);
+
+	scrollbar-color: var(--ch-muted) var(--ch-ground);
+}
+
+/* Square whatever radius the visitor picked for the admin area (html[data-radius] comes later, so this outranks it). */
+html[data-section="chaal"]:root {
+	--radius: 0rem;
+}
+
+html[data-section="chaal"].dark {
+	--ch-ground: oklch(0.1818 0.002 106.6);
+	--ch-plate: oklch(0.2174 0.0019 106.6);
+	--ch-ink: oklch(0.9397 0.0096 93.6);
+	--ch-muted: oklch(0.7118 0.0103 93.6);
+	--ch-hair: oklch(0.3081 0.0053 106.7);
+	--ch-mark: oklch(0.7092 0.1856 34.8);
+	--ch-on-ink: oklch(0.1818 0.002 106.6);
+	--ch-danger: oklch(0.7594 0.1435 26.1);
+	--ch-paper: oklch(0.9276 0.0096 93.6);
+
+	--input: oklch(0.9397 0.0096 93.6 / 40%);
+	/* Repeated: `.dark[data-accent]` outranks the rule above. */
+	--primary: var(--ch-ink);
+	--primary-foreground: var(--ch-on-ink);
+	--accent-subtle: var(--ch-hair);
+	--ring: var(--ch-ink);
+}
+
+/* The other board themes (the player's choice, Task 73's settings), on the board's container. */
+html[data-section="chaal"] [data-ch-board="print"] {
+	--ch-sq-light: oklch(0.9635 0.0067 97.4);
+	--ch-sq-dark: oklch(0.829 0.0112 95.2);
+	--ch-sq-pattern: none;
+	--ch-sq-mark: oklch(0.5443 0.1796 33.6);
+	--ch-sq-dot: oklch(0.1957 0 0);
+}
+
+html[data-section="chaal"] [data-ch-board="stone"] {
+	--ch-sq-light: oklch(0.9192 0.0141 88.7);
+	--ch-sq-dark: oklch(0.7397 0.0268 86.9);
+	--ch-sq-pattern: none;
+	/* Vermilion falls under 3:1 on the taupe square, so marks are ink here. */
+	--ch-sq-mark: oklch(0.1957 0 0);
+	--ch-sq-dot: oklch(0.1957 0 0);
+}
+
+/* Native checkboxes, radios and ranges take ink, not the browser's blue. */
+html[data-section="chaal"] {
+	accent-color: var(--ch-ink);
+}
+
+html[data-section="chaal"] ::selection {
+	background: var(--ch-ink);
+	color: var(--ch-on-ink);
+}
+
+@theme inline {
+	--color-ch-ground: var(--ch-ground);
+	--color-ch-plate: var(--ch-plate);
+	--color-ch-ink: var(--ch-ink);
+	--color-ch-muted: var(--ch-muted);
+	--color-ch-hair: var(--ch-hair);
+	--color-ch-mark: var(--ch-mark);
+	--color-ch-on-ink: var(--ch-on-ink);
+	--color-ch-paper: var(--ch-paper);
+	--color-ch-sq-light: var(--ch-sq-light);
+	--color-ch-sq-dark: var(--ch-sq-dark);
+	--color-ch-sq-mark: var(--ch-sq-mark);
+	--color-ch-sq-dot: var(--ch-sq-dot);
+	--color-ch-frame: var(--ch-frame);
+
+	--font-ch-display: "Chaal Display", "Chaal Fallback", "Chaal Devanagari Fallback", Arial, "Nirmala UI", sans-serif;
+
+	/* Display sizes: the clocks (40px at 390, 52px at 1280), a page title (34 to 44), a section head. */
+	--text-ch-clock: clamp(2.5rem, 2.17rem + 1.35vw, 3.25rem);
+	--text-ch-title: clamp(2.125rem, 1.85rem + 1.12vw, 2.75rem);
+	--text-ch-head: 1.5rem;
+}
+
+/* Display type: Mukta 800, tight. Nepali drops the negative tracking and opens the leading. */
+@utility ch-display {
+	font-family: var(--font-ch-display);
+	font-weight: 800;
+	line-height: 1;
+	letter-spacing: -0.01em;
+
+	&:lang(ne) {
+		letter-spacing: 0;
+		line-height: 1.2;
+	}
+}
+
+/* Clocks and other figures that change in place: tabular, so they never shift. */
+@utility ch-figures {
+	font-variant-numeric: tabular-nums;
+}
+
+/* A section head's heavy rule, and the hairline between rows. */
+@utility ch-rule {
+	border-top: 2px solid var(--ch-ink);
+}
+
+@utility ch-hairline {
+	border-bottom: 1px solid var(--ch-hair);
+}
+
+/* Squares: a light square, and a dark one with the board theme's pattern (hatching in "Diagram"). */
+@utility ch-sq-light {
+	background-color: var(--ch-sq-light);
+}
+
+@utility ch-sq-dark {
+	background-color: var(--ch-sq-dark);
+	background-image: var(--ch-sq-pattern);
+}
+
+/* The diagram's heavy double frame. */
+@utility ch-frame {
+	border: 5px solid var(--ch-frame);
+	outline: 1px solid var(--ch-ink);
+	outline-offset: 4px;
+}
+
+/* The motion rules: transform and opacity only, one ease, and nothing under reduced motion. */
+@media (prefers-reduced-motion: no-preference) {
+	html[data-section="chaal"] .ch-move {
+		transition: transform var(--ch-duration-move) var(--ch-ease);
+	}
+
+	html[data-section="chaal"] .ch-fade {
+		transition: opacity var(--ch-duration-quick) var(--ch-ease);
+	}
+
+	html[data-section="chaal"] .ch-press {
+		transition: transform var(--ch-duration-quick) var(--ch-ease);
+	}
+
+	html[data-section="chaal"] .ch-press:active {
+		transform: scale(0.98);
+	}
+}
