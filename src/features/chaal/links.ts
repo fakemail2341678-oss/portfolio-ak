@@ -13,6 +13,9 @@ export const CHAAL_BASE = "/app/chaal";
  */
 export const chaalLinks = {
 	home: () => linkOptions({ to: "/app/chaal" }),
+	/** The analysis board (Task 75): empty, at a position, or a saved analysis. */
+	analysis: (search: { fen?: string; moves?: string; id?: string } = {}) =>
+		linkOptions({ to: "/app/chaal/analysis", search }),
 	/** Preferences, the Lichess connection, this browser's data (noindex). `hash` opens a section. */
 	settings: (hash?: "connection" | "board" | "device") =>
 		linkOptions({ to: "/app/chaal/settings", ...(hash ? { hash } : {}) }),
@@ -24,12 +27,13 @@ export const chaalLinks = {
 /** De-localized paths for redirects, `?redirect=` targets, heads and the sitemap. */
 export const CHAAL_PATHS = {
 	home: CHAAL_BASE,
+	analysis: `${CHAAL_BASE}/analysis`,
 	about: `${CHAAL_BASE}/about`,
 	settings: `${CHAAL_BASE}/settings`,
 } as const;
 
 /** Chaal's indexable pages (PLAN 13.5, "SEO"): each joins with its route. */
-export const CHAAL_SITEMAP: ReadonlyArray<string> = [CHAAL_PATHS.home, CHAAL_PATHS.about];
+export const CHAAL_SITEMAP: ReadonlyArray<string> = [CHAAL_PATHS.home, CHAAL_PATHS.analysis, CHAAL_PATHS.about];
 
 /** The admin's Chaal: connecting from the lab returns there. */
 const CHAAL_ADMIN = "/admin/chaal";

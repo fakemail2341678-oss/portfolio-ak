@@ -144,6 +144,8 @@ const app = spawn(process.execPath, [".output/server/index.mjs"], {
 		LICHESS_EXPLORER_BASE: `${E2E.harnessURL}/lichess-explorer`,
 		LICHESS_TABLEBASE_BASE: `${E2E.harnessURL}/lichess-tablebase`,
 		LICHESS_CLIENT_ID: "chaal-e2e",
+		// Task 75: the explorer needs a token; the fake accepts any (a visitor's calls carry this one).
+		LICHESS_APP_TOKEN: "lip_e2e_app",
 		CHAAL_TOKEN_KEY: E2E.chaalTokenKey,
 		// chaal:end
 	},

@@ -12,7 +12,8 @@
  *   events (tests/fixtures/lichess/events.ndjson), then sends a keepalive every second.
  *   One stream per token, as Lichess: a new one closes the previous.
  * - Everything else answers from tests/fixtures/lichess (`pnpm lichess:record`), by
- *   `lichessFixtureName`; the explorer asks for a token, as the real one does.
+ *   `lichessFixtureName`; the explorer asks for a token, as the real one does. A recorded
+ *   stream (`.ndjson`: the player explorer, Task 75) is sent as ndjson and ends.
  *
  * Test controls: `POST /e2e/lichess/revoke` (every token of `{ account }`), `POST
  * /e2e/lichess/event` (`{ account, event }` to its open streams), `DELETE /e2e/lichess`.
@@ -267,12 +268,18 @@ export async function serveLichess(url: URL, request: IncomingMessage, response:
 		json(response, 401, { error: "Unauthorized" });
 		return true;
 	}
-	const body = readLichessFixture(lichessFixtureName(host, pathname, url.searchParams));
-	if (body === undefined) {
+	const name = lichessFixtureName(host, pathname, url.searchParams);
+	const body = readLichessFixture(name);
+	// A stream's recording (the player explorer) is ndjson: its lines, then the end.
+	const stream = body === undefined ? readLichessFixture(name.replace(/\.json$/, ".ndjson")) : undefined;
+	if (body === undefined && stream === undefined) {
 		json(response, 404, { error: "Not recorded" });
 		return true;
 	}
-	response.writeHead(200, { "content-type": "application/json", "access-control-allow-origin": "*" });
-	response.end(body);
+	response.writeHead(200, {
+		"content-type": stream === undefined ? "application/json" : "application/x-ndjson",
+		"access-control-allow-origin": "*",
+	});
+	response.end(body ?? stream);
 	return true;
 }

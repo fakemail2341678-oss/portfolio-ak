@@ -7,6 +7,7 @@ import { tanstackStart } from "@tanstack/react-start/plugin/vite";
 import viteReact, { reactCompilerPreset } from "@vitejs/plugin-react";
 import { nitro } from "nitro/vite";
 import { defineConfig, loadEnv } from "vite";
+import { chaalEngine } from "./scripts/engine-copy.ts"; // @chaal
 import { STATIC_SECURITY_HEADERS } from "./src/lib/http/csp.ts";
 import { emailPreviewPlugin } from "./vite/email-preview-plugin.ts";
 import { zodAlias } from "./vite/zod-alias.ts";
@@ -18,6 +19,14 @@ import { zodAlias } from "./vite/zod-alias.ts";
  * is meaningless here (no RSC), so only that exact warning from node_modules is
  * dropped. Nitro's own ignore list is kept because this handler replaces its default.
  */
+// chaal:start
+/** The engine's files: immutable, and the worker's own CSP allows its WebAssembly (decision 0257). */
+const ENGINE_HEADERS = {
+	"cache-control": "public, max-age=31536000, immutable",
+	"content-security-policy": "default-src 'none'; script-src 'self' 'wasm-unsafe-eval'; connect-src 'self'",
+} as const;
+// chaal:end
+
 const NITRO_IGNORED_CODES = new Set(["EVAL", "CIRCULAR_DEPENDENCY", "THIS_IS_UNDEFINED", "EMPTY_BUNDLE"]);
 
 const isDependencyUseClientWarning = (code: string | undefined, message: string) =>
@@ -105,6 +114,8 @@ export default defineConfig(async ({ command, mode }) => {
 			}),
 			// Dev server only (apply: "serve"): /dev/emails. Never part of a build.
 			emailPreviewPlugin(),
+			// Chaal's engine: copied from the stockfish package into public/chaal/engine/ (decision 0263).
+			chaalEngine(), // @chaal
 			devtools(),
 			nitro({
 				// Validates server env at boot. See the file for why this is a Nitro plugin.
@@ -147,6 +158,11 @@ export default defineConfig(async ({ command, mode }) => {
 					"/**": { headers: STATIC_SECURITY_HEADERS },
 					// Parda's placeholder player is framed by this app's own pages (decision 0230).
 					"/parda/api/**": { headers: { "x-frame-options": "SAMEORIGIN" } }, // @parda
+					// chaal:start
+					// Chaal's engine (decisions 0257 and 0263): hashed names, so a year's cache; a dedicated worker
+					// follows its own response's CSP, so only these files may compile WebAssembly.
+					"/chaal/engine/**": { headers: ENGINE_HEADERS },
+					// chaal:end
 					// parda:start
 					// For now the Vercel deployment is Parda alone: its home redirects there (decision 0252).
 					// Vercel sets VERCEL=1 at build time; local builds, dev and e2e keep the portfolio at /.

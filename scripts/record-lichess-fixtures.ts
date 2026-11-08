@@ -4,17 +4,19 @@
  * (decision 0255). Tests and the e2e stand-in (e2e/harness/lichess.ts) read these files,
  * and neither ever calls Lichess. One request at a time, a second apart, as Lichess asks.
  *
- * It records the public answers Chaal reads so far (the daily puzzle, the TV channels, a
- * cloud eval, a tablebase position) and the first lines of the TV feed. The opening
- * explorer refuses calls without a token: with LICHESS_APP_TOKEN in .env (a personal
- * token with no scopes) it records the masters and Lichess databases too; without it,
- * it keeps the files already there. `events.ndjson` (the event stream's opening lines) is
+ * It records the public answers Chaal reads so far: the daily puzzle, the TV channels, cloud
+ * evals of the start and of 1. e4, a tablebase position, the first lines of the TV feed,
+ * and the daily puzzle's game as importing it into analysis reads it (Task 75). The
+ * opening explorer refuses calls without a token: with LICHESS_APP_TOKEN in .env (a
+ * personal token with no scopes) it records the masters and Lichess databases at the start
+ * and after 1. e4, and a player's games (the stream's last line); without it, it keeps the
+ * files already there. `events.ndjson` (the event stream's opening lines) is
  * written by hand from the API's examples: recording it needs a connected account.
  *
  * Files are named by `lichessFixtureName` (e2e/harness/lichess.ts). Tests read ids from
  * the files, so recording again changes no test.
  */
-import { mkdirSync, readdirSync, writeFileSync } from "node:fs";
+import { mkdirSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { type LichessHost, lichessFixtureName } from "../e2e/harness/lichess.ts";
 
@@ -47,13 +49,29 @@ async function record(host: LichessHost, pathname: string, params: Record<string
 	await pause();
 }
 
-/** The first `lines` lines of an ndjson stream, then it's closed. */
-async function recordStream(pathname: string, file: string, lines: number, maxMs: number) {
+type StreamRecording = {
+	host?: LichessHost;
+	pathname: string;
+	params?: Record<string, string>;
+	token?: string;
+	/** The file, or the fixture name with `.ndjson` when absent (a stream's answer, as the fake Lichess serves it). */
+	file?: string;
+	lines: number;
+	/** The stream's first lines (TV: it never ends), or its last (the player explorer: each line restates the numbers). */
+	keep: "first" | "last";
+	maxMs: number;
+};
+
+/** An ndjson stream's lines, until it ends, `maxMs` passes or (keeping the first) enough came. */
+async function recordStream({ host = "api", pathname, params = {}, token, file, lines, keep, maxMs }: StreamRecording) {
 	const controller = new AbortController();
 	const timer = setTimeout(() => controller.abort(), maxMs);
 	const kept: string[] = [];
+	const url = new URL(`${BASES[host]}${pathname}`);
+	for (const [key, value] of Object.entries(params)) url.searchParams.set(key, value);
 	try {
-		const response = await fetch(`${BASES.api}${pathname}`, { headers: HEADERS, signal: controller.signal });
+		const headers = token ? { ...HEADERS, authorization: `Bearer ${token}` } : HEADERS;
+		const response = await fetch(url, { headers, signal: controller.signal });
 		if (!response.ok || !response.body) throw new Error(`${pathname}: ${response.status}`);
 		const decoder = new TextDecoder();
 		let buffer = "";
@@ -62,29 +80,66 @@ async function recordStream(pathname: string, file: string, lines: number, maxMs
 			const parts = buffer.split("\n");
 			buffer = parts.pop() ?? "";
 			kept.push(...parts.filter((line) => line.trim()));
-			if (kept.length >= lines) break;
+			if (keep === "first" && kept.length >= lines) break;
 		}
+		if (buffer.trim()) kept.push(buffer.trim());
 	} catch (error) {
 		if (!controller.signal.aborted) throw error;
 	} finally {
 		clearTimeout(timer);
 		controller.abort();
 	}
-	writeFileSync(path.join(OUT, file), `${kept.slice(0, lines).join("\n")}\n`);
-	console.log(`  ${file} (${Math.min(kept.length, lines)} lines)`);
+	const name = file ?? lichessFixtureName(host, pathname, Object.entries(params)).replace(/\.json$/, ".ndjson");
+	const chosen = keep === "first" ? kept.slice(0, lines) : kept.slice(-lines);
+	writeFileSync(path.join(OUT, name), `${chosen.join("\n")}\n`);
+	console.log(`  ${name} (${chosen.length} of ${kept.length} lines)`);
 	await pause();
 }
+
+// The parameters below are the ones Chaal sends (src/server/chaal/analysis/lichess.ts): the
+// fake Lichess finds a recording by them, so a change there is a change here (Task 75).
+const START_FEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
+/** A player whose games the explorer has indexed, for the player tab. */
+const EXPLORER_PLAYER = "thibault";
+/** The game-export parameters importing a game sends. */
+const GAME_EXPORT = { pgnInJson: "true", clocks: "true", evals: "true", opening: "true", literate: "false" };
 
 mkdirSync(OUT, { recursive: true });
 console.log("record-lichess-fixtures:");
 await record("api", "/api/puzzle/daily");
 await record("api", "/api/tv/channels");
-await record("api", "/api/cloud-eval", { fen: SAMPLE_FEN, multiPv: "3" });
+for (const fen of [START_FEN, SAMPLE_FEN]) await record("api", "/api/cloud-eval", { fen, multiPv: "3" });
 await record("tablebase", "/standard", { fen: TABLEBASE_FEN });
-await recordStream("/api/tv/feed", "api_tv_feed.ndjson", 6, 20_000);
+await recordStream({ pathname: "/api/tv/feed", file: "api_tv_feed.ndjson", lines: 6, keep: "first", maxMs: 20_000 });
+// A finished game to import into analysis: the daily puzzle's (its id is in the puzzle's recording).
+const daily = JSON.parse(readFileSync(path.join(OUT, "api_puzzle_daily.json"), "utf8")) as { game: { id: string } };
+await record("api", `/game/export/${daily.game.id}`, GAME_EXPORT);
 if (APP_TOKEN) {
-	await record("explorer", "/masters", { fen: SAMPLE_FEN }, APP_TOKEN);
-	await record("explorer", "/lichess", { variant: "standard", fen: SAMPLE_FEN }, APP_TOKEN);
+	for (const fen of [START_FEN, SAMPLE_FEN]) {
+		await record("explorer", "/masters", { fen, topGames: "4", moves: "12" }, APP_TOKEN);
+		await record(
+			"explorer",
+			"/lichess",
+			{ variant: "standard", fen, topGames: "4", recentGames: "0", moves: "12" },
+			APP_TOKEN,
+		);
+	}
+	await recordStream({
+		host: "explorer",
+		pathname: "/player",
+		params: {
+			variant: "standard",
+			fen: START_FEN,
+			player: EXPLORER_PLAYER,
+			color: "white",
+			recentGames: "4",
+			moves: "12",
+		},
+		token: APP_TOKEN,
+		lines: 1,
+		keep: "last",
+		maxMs: 60_000,
+	});
 } else {
 	console.log("  (the explorer needs LICHESS_APP_TOKEN: kept what's there)");
 }

@@ -64,7 +64,13 @@ describe("reading PGN", () => {
 		expect(d6.children.map((id) => nodeOf(game.tree, id).san)).toEqual(["d4", "Bc4"]);
 		expect(nodeOf(game.tree, d4.children[0] as string).nags).toEqual([6]);
 		expect(moves[4]?.nags).toEqual([1]);
-		expect(moves[11]).toMatchObject({ san: "Bb4+", nags: [5], comments: ["Sharper than it looks. [%cal Gb4e1]"] });
+		// Arrows are read into the move's shapes (Task 75); the rest of the comment stays text.
+		expect(moves[11]).toMatchObject({
+			san: "Bb4+",
+			nags: [5],
+			comments: ["Sharper than it looks."],
+			shapes: [{ from: "b4", to: "e1", brush: "ink" }],
+		});
 		expect(moves[15]?.nags).toEqual([2]);
 	});
 
@@ -126,7 +132,7 @@ describe("writing PGN", () => {
 			"{ A quiet Italian. } 1. e4 { [%eval 0.30] [%clk 0:10:00] } 1... e5 { [%clk 0:10:00] } 2. Nf3 Nc6",
 		);
 		expect(moves).toContain("(2... d6 3. d4 (3. Bc4 Be7) 3... exd4 $6) 3. Bc4 $1 Bc5");
-		expect(moves).toContain("6. cxd4 Bb4+ $5 { Sharper than it looks. [%cal Gb4e1] } 7. Bd2");
+		expect(moves).toContain("6. cxd4 Bb4+ $5 { [%cal Gb4e1] Sharper than it looks. } 7. Bd2");
 		expect(moves.endsWith("10. Qb3 1-0")).toBe(true);
 		for (const row of text.split("\n")) expect(row.length).toBeLessThanOrEqual(80);
 	});

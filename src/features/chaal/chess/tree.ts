@@ -1,5 +1,5 @@
 import type { Score } from "./eval";
-import { type MoveInput, type PlayedMove, play, START_FEN } from "./rules";
+import { checkFen, type MoveInput, type PlayedMove, play, type Square, START_FEN } from "./rules";
 
 /**
  * Chaal's game tree (PLAN 13.5, `tree.ts`; decision 0261): a game with its variations, as
@@ -9,6 +9,9 @@ import { type MoveInput, type PlayedMove, play, START_FEN } from "./rules";
  *
  * The functions never mutate a tree they're given; each returns a new one.
  */
+/** An arrow (`to`) or a circle drawn on a position: vermilion ("mark") or ink (PGN's `[%cal]`, `[%csl]`). */
+export type NodeShape = { from: Square; to?: Square; brush?: "mark" | "ink" };
+
 export type TreeNode = {
 	id: string;
 	parent: string | null;
@@ -24,6 +27,8 @@ export type TreeNode = {
 	eval?: Score;
 	/** The mover's clock after the move, in ms (PGN's `[%clk]`). */
 	clock?: number;
+	/** Arrows and circles drawn on this position (Task 75). */
+	shapes?: NodeShape[];
 };
 
 export type GameTree = { root: string; nodes: Record<string, TreeNode>; next: number };
@@ -55,7 +60,7 @@ export function nodeOf(tree: GameTree, id: string): TreeNode {
 	return node;
 }
 
-type Extra = Partial<Pick<TreeNode, "comments" | "nags" | "eval" | "clock">>;
+type Extra = Partial<Pick<TreeNode, "comments" | "nags" | "eval" | "clock" | "shapes">>;
 
 /**
  * Adds a played move after `parentId`, as a new last child (a variation, or the main line
@@ -188,3 +193,84 @@ export function deleteFrom(tree: GameTree, id: string): GameTree {
 
 /** How many moves a tree holds, variations included (PGN imports are capped, PLAN 13.5). */
 export const sizeOf = (tree: GameTree) => Object.keys(tree.nodes).length - 1;
+
+// --- Editing (Task 75): each returns a new tree ------------------------------------------
+
+/** Changes one node's annotations (comments, NAGs, eval, clock, shapes). */
+export function annotate(tree: GameTree, id: string, change: Extra): GameTree {
+	const node = nodeOf(tree, id);
+	return { ...tree, nodes: { ...tree.nodes, [id]: { ...node, ...change } } };
+}
+
+/**
+ * The annotator's move symbols (`!`, `?`, `!!`, `??`, `!?`, `?!`: NAGs 1–6) and position
+ * symbols (`=`, `∞`, `⩲`, `±`, `+−`…: NAGs 10–19) are one each per move: toggling one
+ * replaces another of its kind, and toggling it again removes it. Other NAGs stay.
+ */
+export function toggleNag(tree: GameTree, id: string, nag: number): GameTree {
+	const node = nodeOf(tree, id);
+	if (node.nags.includes(nag)) return annotate(tree, id, { nags: node.nags.filter((value) => value !== nag) });
+	const kind = (value: number) => (value >= 1 && value <= 6 ? "move" : value >= 10 && value <= 19 ? "position" : value);
+	const kept = node.nags.filter((value) => kind(value) !== kind(nag));
+	return annotate(tree, id, { nags: [...kept, nag].sort((a, b) => a - b) });
+}
+
+/** Sets a node's comment (one text; an empty one removes it). */
+export const setComment = (tree: GameTree, id: string, text: string): GameTree =>
+	annotate(tree, id, { comments: text.trim() ? [text.trim()] : [] });
+
+/** Sets the arrows and circles on a node's position. */
+export const setShapes = (tree: GameTree, id: string, shapes: ReadonlyArray<NodeShape>): GameTree =>
+	annotate(tree, id, { shapes: [...shapes] });
+
+/**
+ * Moves the line through `id` one step up: at the nearest branch above it where it isn't
+ * the first child, it becomes the first (Lichess's "promote variation"; `promoteLine`
+ * makes it the main line at every branch).
+ */
+export function promoteVariation(tree: GameTree, id: string): GameTree {
+	const path = pathTo(tree, id);
+	for (let index = path.length - 1; index > 0; index -= 1) {
+		const node = path[index] as TreeNode;
+		const parent = nodeOf(tree, node.parent as string);
+		if (parent.children[0] === node.id) continue;
+		const children = [node.id, ...parent.children.filter((child) => child !== node.id)];
+		return { ...tree, nodes: { ...tree.nodes, [parent.id]: { ...parent, children } } };
+	}
+	return tree;
+}
+
+export type TreeCheck = { ok: true; tree: GameTree } | { ok: false; reason: string };
+
+/**
+ * Checks a tree that came from outside (a saved analysis, before it's written): every node
+ * reachable once from the root, ids and links that agree, each move legal from its
+ * parent's position with the FEN and SAN it claims, and at most `maxMoves`. A tree that
+ * passes is safe to show and replay.
+ */
+export function verifyTree(tree: GameTree, maxMoves: number): TreeCheck {
+	const root = tree.nodes[tree.root];
+	if (!root || root.parent !== null || !checkFen(root.fen).ok) return { ok: false, reason: "root" };
+	const ids = Object.keys(tree.nodes);
+	if (ids.length - 1 > maxMoves) return { ok: false, reason: "too-long" };
+	const seen = new Set<string>([root.id]);
+	const queue = [root];
+	while (queue.length > 0) {
+		const parent = queue.shift() as TreeNode;
+		for (const childId of parent.children) {
+			const child = tree.nodes[childId];
+			if (!child || seen.has(childId) || child.id !== childId || child.parent !== parent.id) {
+				return { ok: false, reason: "links" };
+			}
+			const move = child.uci ? play(parent.fen, child.uci) : null;
+			if (!move || move.fen !== child.fen || move.san !== child.san || child.ply !== parent.ply + 1) {
+				return { ok: false, reason: "move" };
+			}
+			seen.add(childId);
+			queue.push(child);
+		}
+	}
+	if (seen.size !== ids.length) return { ok: false, reason: "links" };
+	if (ids.some((id) => !/^\d+$/.test(id) || Number(id) >= tree.next)) return { ok: false, reason: "ids" };
+	return { ok: true, tree };
+}

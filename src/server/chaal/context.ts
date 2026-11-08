@@ -26,6 +26,8 @@ export type ChaalPublic = {
 	appToken: string | null;
 	/** CHAAL_TOKEN_KEY is set: connecting Lichess is possible. */
 	connectConfigured: boolean;
+	/** The connection service's dependencies, for a public read that may use the visitor's own token (the explorer). */
+	connectDeps: () => Promise<ConnectDeps>;
 };
 
 /**
@@ -51,6 +53,7 @@ export async function chaalPublic(session: Session | null): Promise<ChaalPublic>
 		settings: await chaalControls.settings(),
 		appToken: serverEnv.LICHESS_APP_TOKEN ?? null,
 		connectConfigured: Boolean(serverEnv.CHAAL_TOKEN_KEY),
+		connectDeps: chaalConnectDeps,
 	};
 }
 

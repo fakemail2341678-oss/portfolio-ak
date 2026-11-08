@@ -231,3 +231,118 @@ test.describe("Chaal's settings for a member", () => {
 		await expect(pickedTheme(page)).toHaveAttribute("value", "print");
 	});
 });
+
+test.describe("Chaal's analysis board (Task 75)", () => {
+	test.describe.configure({ mode: "serial" });
+
+	test.beforeEach(async ({ harness }) => {
+		await harness.resetRateLimits();
+		await fetch(`${E2E.harnessURL}/e2e/lichess`, { method: "DELETE" });
+		await fetch(`${E2E.harnessURL}/e2e/chaal-connections`, { method: "DELETE" });
+	});
+
+	const square = (page: Page, name: string) =>
+		page.getByTestId("chaal-analysis-board").locator(`[data-square="${name}"]`);
+	const play = async (page: Page, from: string, to: string) => {
+		await square(page, from).click();
+		await square(page, to).click();
+	};
+	const menu = async (page: Page, item: string) => {
+		await page.getByTestId("chaal-analysis-menu").click();
+		await page.getByTestId(item).click();
+	};
+
+	test("moves on the board follow into the URL, and a link opens that board drawn on the server", async ({ page }) => {
+		await page.goto("/app/chaal/analysis", { waitUntil: "networkidle" });
+		await play(page, "e2", "e4");
+		await play(page, "c7", "c5");
+		await expect(page).toHaveURL(/\?moves=e2e4_c7c5$/);
+		await expect(page.getByTestId("chaal-moves")).toContainText("c5");
+		await page.getByRole("button", { name: "Previous move" }).click();
+		await expect(page).toHaveURL(/moves=e2e4_c7c5&ply=1$/);
+
+		const html = await (await page.request.get("/app/chaal/analysis?moves=e2e4_c7c5_g1f3&orientation=black")).text();
+		expect(html).toContain('data-at="f3"');
+		expect(html).toContain('<link rel="canonical" href="');
+	});
+
+	test("imports a PGN, annotates a move and exports it back", async ({ page }) => {
+		await page.goto("/app/chaal/analysis", { waitUntil: "networkidle" });
+		await menu(page, "chaal-import");
+		await page
+			.getByTestId("chaal-import-text")
+			.fill('[White "Tal"]\n[Black "Botvinnik"]\n\n1. e4 e5 2. Nf3 Nc6 3. Bb5 *');
+		await page.getByTestId("chaal-import-submit").click();
+		await expect(page.getByTestId("chaal-moves")).toContainText("b5");
+		await page.getByTestId("chaal-nag-1").click();
+		await menu(page, "chaal-export-open");
+		await expect(page.getByTestId("chaal-export-pgn")).toHaveValue(/\[White "Tal"\][\s\S]*3\. Bb5 \$1/);
+		await expect(page.getByTestId("chaal-export-link")).toHaveValue(
+			/\/app\/chaal\/analysis\?moves=e2e4_e7e5_g1f3_b8c6_f1b5$/,
+		);
+	});
+
+	test("opens a finished Lichess game from its address, and refuses a game that isn't there", async ({ page }) => {
+		const { readFileSync } = await import("node:fs");
+		const daily = JSON.parse(readFileSync("tests/fixtures/lichess/api_puzzle_daily.json", "utf8")) as {
+			game: { id: string };
+		};
+		await page.goto("/app/chaal/analysis", { waitUntil: "networkidle" });
+		await menu(page, "chaal-import");
+		await page.getByTestId("chaal-import-text").fill("https://lichess.org/Missing1");
+		await page.getByTestId("chaal-import-submit").click();
+		await expect(page.getByRole("alert")).toContainText("Lichess has no game with that address.");
+		await page.getByTestId("chaal-import-text").fill(`https://lichess.org/${daily.game.id}`);
+		await page.getByTestId("chaal-import-submit").click();
+		await expect(page.getByTestId("chaal-import-form")).toBeHidden();
+		await expect(page).toHaveURL(/moves=(?:[a-h1-8qrbn]{4,5}_){10,}/);
+	});
+
+	test("the explorer: masters after 1.e4, the opening's name, and a move from it played", async ({ page }) => {
+		await page.goto("/app/chaal/analysis?moves=e2e4", { waitUntil: "networkidle" });
+		await expect(page.getByTestId("chaal-opening")).toContainText("B00");
+		await page.getByTestId("chaal-tab-explorer").click();
+		const moves = page.getByTestId("chaal-explorer-move");
+		await expect(moves.first()).toBeVisible();
+		expect(await moves.count()).toBeGreaterThan(3);
+		await moves.first().click();
+		await expect(page).toHaveURL(/moves=e2e4_[a-h][1-8][a-h][1-8]$/);
+	});
+
+	test("the tablebase knows an ending of seven pieces or fewer", async ({ page }) => {
+		await page.goto(`/app/chaal/analysis?fen=${encodeURIComponent("4k3/6KP/8/8/8/8/7p/8 w - - 0 1")}`, {
+			waitUntil: "networkidle",
+		});
+		await page.getByTestId("chaal-tab-tablebase").click();
+		await expect(page.getByTestId("chaal-tablebase")).toContainText("Win");
+		await page.getByTestId("chaal-tablebase").getByRole("button").first().click();
+		await expect(page).toHaveURL(/moves=h7h8q/);
+	});
+
+	test("saving as a visitor starts a guest, and My analyses opens it again", async ({ page }) => {
+		await page.goto("/app/chaal/analysis?moves=e2e4_e7e5", { waitUntil: "networkidle" });
+		await page.getByTestId("chaal-save").click();
+		await page.getByTestId("chaal-save-name").fill("Open game");
+		await page.getByTestId("chaal-save-submit").click();
+		await expect(page.getByText("Saved as “Open game”.")).toBeVisible();
+		await expect(page).toHaveURL(/\?id=[0-9a-f-]{36}$/);
+		await page.reload({ waitUntil: "networkidle" });
+		await expect(page.getByTestId("chaal-analysis-status")).toContainText("Open game: saved");
+		await expect(page.getByTestId("chaal-moves")).toContainText("e5");
+		await menu(page, "chaal-analyses-open");
+		await expect(page.getByTestId("chaal-analysis-open")).toContainText("Open game");
+	});
+
+	test("Stockfish runs in the browser under the CSP, at a low depth", async ({ page }) => {
+		// No cloud eval is recorded for this position, so the engine on this device answers.
+		await page.goto("/app/chaal/analysis?moves=e2e4_c7c5_g1f3", { waitUntil: "networkidle" });
+		await page.getByTestId("chaal-engine-switch").click();
+		await expect(page.getByTestId("chaal-engine-lines").locator("li").first()).toBeVisible({ timeout: 30_000 });
+		await expect(page.getByTestId("chaal-engine-where")).toHaveText(/depth ([5-9]|\d\d) · this device/, {
+			timeout: 30_000,
+		});
+		await expect(page.getByTestId("chaal-engine-score")).toHaveText(/^(?:[+−-]?\d|#)/);
+		await page.getByTestId("chaal-engine-switch").click();
+		await expect(page.getByTestId("chaal-engine-lines")).toBeHidden();
+	});
+});

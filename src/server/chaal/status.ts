@@ -1,4 +1,5 @@
 import "@tanstack/react-start/server-only";
+import { readEngineLimits } from "@/features/chaal/engine/limits";
 import { CHAAL_FEATURES, type ChaalFeature, featureOn } from "@/features/chaal/features";
 import type { ChaalStatus } from "@/features/chaal/schema";
 import type { Session } from "@/lib/session";
@@ -14,5 +15,6 @@ export function chaalStatus(chaal: ChaalPublic, session: Session | null): ChaalS
 		connect: chaal.connectConfigured && !guestRefused ? "on" : "off",
 		explorerForVisitors: chaal.appToken !== null,
 		banner: chaal.settings.banner?.en.trim() ? chaal.settings.banner : null,
+		engine: readEngineLimits(chaal.settings.engine),
 	};
 }

@@ -1,6 +1,8 @@
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
+import { createTree } from "@/features/chaal/chess/tree";
 import { DEFAULT_CHAAL_PREFERENCES } from "@/features/chaal/settings/preferences";
 import type { Session } from "@/lib/session";
+import * as analyses from "@/server/chaal/analysis/service";
 import * as connect from "@/server/chaal/connect/service";
 import { createVault, type Vault } from "@/server/chaal/connect/vault";
 import { type ChaalPublic, chaalUserOf } from "@/server/chaal/context";
@@ -18,7 +20,7 @@ import { createTestDb } from "../utils/test-db";
  * requireChaalUser then withChaalServices) is checked by
  * tests/server/guarded-functions.test.ts; here are the rules behind it: no session, a
  * guest, a member, a blocked user, a feature that's off, a missing scope, a revoked token,
- * and another user's connection. Games and analyses join with their tasks.
+ * another user's connection, and another user's analysis (Task 75). Games join with their tasks.
  */
 let env: Awaited<ReturnType<typeof createTestDb>>;
 let vault: Vault;
@@ -74,6 +76,15 @@ const PREFERENCE_OPERATIONS: Record<string, (userId: string) => Promise<unknown>
 		preferences.importPreferences(env.db, userId, { ...DEFAULT_CHAAL_PREFERENCES, board: "stone" }),
 };
 
+/** Every "My analyses" function's service call (src/functions/chaal/analyses.ts, Task 75), on the member's analysis. */
+const ANALYSIS_OPERATIONS: Record<string, (userId: string, id: string) => Promise<unknown>> = {
+	listChaalAnalyses: (userId) => analyses.listAnalyses(env.db, userId),
+	getChaalAnalysis: (userId, id) => analyses.getAnalysis(env.db, userId, id),
+	saveChaalAnalysis: (userId, id) =>
+		analyses.saveAnalysis(env.db, userId, { id, title: "Taken", tree: createTree(), tags: {}, orientation: "white" }),
+	deleteChaalAnalysis: (userId, id) => analyses.deleteAnalysis(env.db, userId, id),
+};
+
 beforeAll(async () => {
 	env = await createTestDb("admin-1", async (db) => {
 		await db.insert(schema.user).values(
@@ -123,6 +134,22 @@ describe("Chaal's access matrix", () => {
 		expect((await preferences.preferencesOf(env.db, "member"))?.board).toBe("print");
 	});
 
+	it.each(Object.keys(ANALYSIS_OPERATIONS))("%s acts on the caller's own analyses only", async (name) => {
+		const operation = ANALYSIS_OPERATIONS[name];
+		if (!operation) throw new Error(name);
+		const saved = await analyses.saveAnalysis(env.db, "member", {
+			title: "Mine",
+			tree: createTree(),
+			tags: {},
+			orientation: "white",
+		});
+		// Another player's id is not found (or not listed), and the member's analysis is untouched.
+		const result = await operation("other", saved.id).catch((error: unknown) => error);
+		if (name === "listChaalAnalyses") expect(result).toEqual([]);
+		else expect(result).toMatchObject({ code: "NOT_FOUND" });
+		expect((await analyses.getAnalysis(env.db, "member", saved.id)).title).toBe("Mine");
+	});
+
 	it("a guest's connection works like a member's", async () => {
 		await connected("guest", "guest_lichess", PLAY);
 		expect((await connect.connectionView(deps(), "guest"))?.username).toBe("guest_lichess");
@@ -146,6 +173,7 @@ describe("Chaal's access matrix", () => {
 			settings,
 			appToken: null,
 			connectConfigured: true,
+			connectDeps: async () => deps(),
 		} satisfies ChaalPublic;
 		expect(chaalStatus(chaal, null).features.play).toBe(false);
 		expect(chaalStatus(chaal, null).features.puzzles).toBe(true);
@@ -184,6 +212,7 @@ describe("Chaal's access matrix", () => {
 			settings: await createChaalControls(env.db).settings(),
 			appToken: null,
 			connectConfigured: true,
+			connectDeps: async () => deps(),
 		};
 		expect(chaalStatus(chaal, session("guest", true)).connect).toBe("off");
 		expect(chaalStatus(chaal, session("member")).connect).toBe("on");

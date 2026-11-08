@@ -1,4 +1,5 @@
 import "@tanstack/react-start/server-only";
+import { DEFAULT_ENGINE_LIMITS } from "@/features/chaal/engine/limits";
 import { chBlock, chSettings } from "@/server/db/schema";
 import type { Db } from "@/server/db/types";
 
@@ -20,6 +21,7 @@ export const DEFAULT_CHAAL_SETTINGS: ChaalSettingsRow = {
 	publicCooldownUntil: null,
 	publicCooldownMs: 0,
 	banner: null,
+	engine: DEFAULT_ENGINE_LIMITS,
 	version: 1,
 	updatedAt: new Date(0),
 };

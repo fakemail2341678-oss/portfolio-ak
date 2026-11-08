@@ -27,6 +27,8 @@ e2e/.auth
 
 # generated
 src/paraglide
+# Chaal's engine, copied from the stockfish package (pnpm engine:copy, decision 0263)
+public/chaal/engine
 
 # os / editor
 .DS_Store

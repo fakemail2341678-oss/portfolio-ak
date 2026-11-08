@@ -44,6 +44,11 @@ const PARDA_PAGE = /^(?:\/ne)?\/(?:app|admin)\/parda(?:\/|$)/;
 const PARDA_LAB = /^(?:\/ne)?\/admin\/parda\/player-lab(?:\/|$)/;
 // parda:end
 
+// chaal:start
+/** Chaal's pages may start its engine, a worker from this origin (decisions 0257 and 0263). */
+const CHAAL_PAGE = /^(?:\/ne)?\/app\/chaal(?:\/|$)/;
+// chaal:end
+
 const createNonce = () => {
 	const bytes = new Uint8Array(16);
 	crypto.getRandomValues(bytes);
@@ -67,7 +72,7 @@ export const securityHeadersMiddleware = createMiddleware().server(async ({ next
 		const [cloudinary, frameOrigins] = await Promise.all([loadCloudinaryOrigins(), loadTurnstileOrigins()]);
 		const reportUrl = new URL(CSP_REPORT_PATH, request.url).href;
 		// What one section's pages add: other pages keep the strict policy.
-		const section = { embed: [] as string[], img: [] as string[], connect: [] as string[] };
+		const section = { embed: [] as string[], img: [] as string[], connect: [] as string[], worker: [] as string[] };
 		// parda:start
 		const { pathname } = new URL(request.url);
 		if (PARDA_PAGE.test(pathname)) {
@@ -75,6 +80,9 @@ export const securityHeadersMiddleware = createMiddleware().server(async ({ next
 			Object.assign(section, await pardaCspOrigins({ includeDisabled: PARDA_LAB.test(pathname) }));
 		}
 		// parda:end
+		// chaal:start
+		if (CHAAL_PAGE.test(new URL(request.url).pathname)) section.worker.push("'self'");
+		// chaal:end
 		result.response.headers.set("reporting-endpoints", reportingEndpoints(reportUrl));
 		result.response.headers.set(
 			"content-security-policy",
@@ -84,6 +92,7 @@ export const securityHeadersMiddleware = createMiddleware().server(async ({ next
 				imgOrigins: [...cloudinary.img, ...section.img],
 				frameOrigins,
 				embedOrigins: section.embed,
+				workerOrigins: section.worker,
 				upgradeInsecureRequests: true,
 				reportUrl,
 			}),

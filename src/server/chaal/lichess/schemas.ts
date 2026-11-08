@@ -1,6 +1,15 @@
 import "@tanstack/react-start/server-only";
 import { z } from "zod";
 import type { ChaalEvent, ChaalEventChallenge, ChaalEventGame, ChaalEventPlayer } from "@/features/chaal/live/events";
+import type {
+	ChaalCloudEval,
+	ChaalExplorer,
+	ChaalExplorerGame,
+	ChaalExplorerMove,
+	ChaalTablebase,
+	ExplorerDatabase,
+	TablebaseResult,
+} from "@/features/chaal/schema";
 
 /**
  * Lichess's answers, kept lean (PLAN 13.5): each schema reads only the fields Chaal uses
@@ -161,3 +170,188 @@ export function mapStreamEvent(value: unknown): ChaalEvent | null {
 export const dailyPuzzleAnswer = z
 	.object({ puzzle: z.object({ id: z.string(), rating: z.number().nullish() }) })
 	.transform((answer) => ({ id: answer.puzzle.id, rating: answer.puzzle.rating ?? null }));
+
+// --- Analysis (Task 75, decision 0264) -------------------------------------------------------
+
+/** GET /api/cloud-eval: Lichess's cached evaluation, scores from White's side. */
+export const cloudEvalAnswer = z
+	.object({
+		depth: z.number(),
+		knodes: z.number(),
+		pvs: z.array(z.object({ moves: z.string(), cp: z.number().nullish(), mate: z.number().nullish() })),
+	})
+	.transform(
+		(answer): ChaalCloudEval => ({
+			depth: answer.depth,
+			knodes: answer.knodes,
+			lines: answer.pvs.flatMap((pv) => {
+				const score =
+					typeof pv.mate === "number" ? { mate: pv.mate } : typeof pv.cp === "number" ? { cp: pv.cp } : null;
+				return score ? [{ score, moves: pv.moves.split(" ").filter(Boolean) }] : [];
+			}),
+		}),
+	);
+
+/** The explorer's games keep only what a row shows; at most this many. */
+const EXPLORER_GAMES = 4;
+
+const explorerPlayer = z.object({ name: z.string(), rating: z.number().nullish() });
+const explorerGame = z
+	.object({
+		uci: z.string().nullish(),
+		// It becomes a lichess.org link: a game's id, nothing else.
+		id: z.string().regex(/^[A-Za-z0-9]{8}$/),
+		winner: z.enum(["white", "black"]).nullish(),
+		white: explorerPlayer,
+		black: explorerPlayer,
+		year: z.number().nullish(),
+	})
+	.transform(
+		(game): ChaalExplorerGame => ({
+			id: game.id,
+			white: { name: game.white.name, rating: game.white.rating ?? null },
+			black: { name: game.black.name, rating: game.black.rating ?? null },
+			winner: game.winner ?? null,
+			year: game.year ?? null,
+			uci: game.uci ?? null,
+		}),
+	);
+
+const explorerMove = z
+	.object({
+		uci: z.string(),
+		san: z.string(),
+		white: z.number(),
+		draws: z.number(),
+		black: z.number(),
+		averageRating: z.number().nullish(),
+		averageOpponentRating: z.number().nullish(),
+	})
+	.transform(
+		(move): ChaalExplorerMove => ({
+			uci: move.uci,
+			san: move.san,
+			white: move.white,
+			draws: move.draws,
+			black: move.black,
+			rating: move.averageRating ?? move.averageOpponentRating ?? null,
+		}),
+	);
+
+/** explorer.lichess.org/masters, /lichess and each line of /player (ndjson). */
+export const explorerAnswer = (database: ExplorerDatabase) =>
+	z
+		.object({
+			opening: z.object({ eco: z.string(), name: z.string() }).nullish(),
+			white: z.number(),
+			draws: z.number(),
+			black: z.number(),
+			moves: z.array(explorerMove),
+			// A game that doesn't read is dropped, not the whole answer.
+			topGames: z.array(explorerGame.nullable().catch(null)).nullish(),
+			recentGames: z.array(explorerGame.nullable().catch(null)).nullish(),
+			queuePosition: z.number().nullish(),
+		})
+		.transform(
+			(answer): ChaalExplorer => ({
+				database,
+				opening: answer.opening ?? null,
+				white: answer.white,
+				draws: answer.draws,
+				black: answer.black,
+				moves: answer.moves,
+				games: ((database === "player" ? answer.recentGames : answer.topGames) ?? [])
+					.filter((game): game is ChaalExplorerGame => game !== null)
+					.slice(0, EXPLORER_GAMES),
+				indexing: false,
+			}),
+		);
+
+/**
+ * The tablebase's categories are from the side to move's view; a move's is from the
+ * side that moves next. Chaal reads them as wins, draws and losses, with Syzygy's own
+ * kinds folded in ("syzygy-win" is a win known by DTZ only).
+ */
+const TABLEBASE_CATEGORY: Readonly<Record<string, TablebaseResult>> = {
+	win: "win",
+	"syzygy-win": "win",
+	"maybe-win": "maybe-win",
+	"cursed-win": "cursed-win",
+	draw: "draw",
+	"blessed-loss": "blessed-loss",
+	"maybe-loss": "maybe-loss",
+	"syzygy-loss": "loss",
+	loss: "loss",
+	unknown: "unknown",
+};
+/** The same result seen by the other side. */
+const OTHER_SIDE: Readonly<Record<TablebaseResult, TablebaseResult>> = {
+	win: "loss",
+	"maybe-win": "maybe-loss",
+	"cursed-win": "blessed-loss",
+	draw: "draw",
+	"blessed-loss": "cursed-win",
+	"maybe-loss": "maybe-win",
+	loss: "win",
+	unknown: "unknown",
+};
+const categoryOf = (value: string | null | undefined): TablebaseResult =>
+	TABLEBASE_CATEGORY[value ?? "unknown"] ?? "unknown";
+const distance = z.number().nullish();
+
+/** tablebase.lichess.org/standard: the position's result and each move's, for the side that plays it. */
+export const tablebaseAnswer = z
+	.object({
+		category: z.string().nullish(),
+		dtz: distance,
+		precise_dtz: distance,
+		dtm: distance,
+		checkmate: z.boolean().nullish(),
+		stalemate: z.boolean().nullish(),
+		insufficient_material: z.boolean().nullish(),
+		moves: z
+			.array(
+				z.object({
+					uci: z.string(),
+					san: z.string(),
+					category: z.string().nullish(),
+					dtz: distance,
+					dtm: distance,
+				}),
+			)
+			.nullish(),
+	})
+	.transform(
+		(answer): ChaalTablebase => ({
+			result: categoryOf(answer.category),
+			dtz: answer.dtz ?? null,
+			dtm: answer.dtm ?? null,
+			checkmate: answer.checkmate === true,
+			stalemate: answer.stalemate === true,
+			insufficientMaterial: answer.insufficient_material === true,
+			// Lichess lists the best first; the result is turned to the mover's side.
+			moves: (answer.moves ?? []).map((move) => ({
+				uci: move.uci,
+				san: move.san,
+				result: OTHER_SIDE[categoryOf(move.category)],
+				dtz: typeof move.dtz === "number" ? -move.dtz : null,
+				dtm: typeof move.dtm === "number" ? -move.dtm : null,
+			})),
+		}),
+	);
+
+/** GET /game/export/{id} as JSON with `pgnInJson`: what importing a game needs. */
+export const gameExportAnswer = z
+	.object({
+		id: z.string(),
+		variant: z.string(),
+		status: z.string(),
+		pgn: z.string(),
+	})
+	.transform((game) => ({
+		id: game.id,
+		standard: game.variant === "standard" || game.variant === "fromPosition",
+		// Lichess's statuses for a game that hasn't ended yet.
+		finished: game.status !== "created" && game.status !== "started",
+		pgn: game.pgn,
+	}));

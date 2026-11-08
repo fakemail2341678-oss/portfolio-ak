@@ -1,6 +1,6 @@
-{"t":"featured","d":{"id":"ybip9OHY","orientation":"white","players":[{"color":"white","user":{"name":"See-Hear-Feel","id":"see-hear-feel"},"rating":3039,"seconds":60},{"color":"black","user":{"name":"Peko1234","title":"FM","id":"peko1234"},"rating":2955,"seconds":60}],"fen":"2r2r2/pb1n1pk1/1p1Nq2p/2p1P3/3P1R2/1P6/PB1Q2PP/5RK1 b - - 1 28"}}
-{"t":"fen","d":{"fen":"2r2r2/pb1n1pk1/1p1Nq2p/4P3/3p1R2/1P6/PB1Q2PP/5RK1 w - - 0 29","lm":"c5d4","wc":29,"bc":35}}
-{"t":"fen","d":{"fen":"2r2r2/pN1n1pk1/1p2q2p/4P3/3p1R2/1P6/PB1Q2PP/5RK1 b - - 0 29","lm":"d6b7","wc":27,"bc":35}}
-{"t":"fen","d":{"fen":"2r2r2/pN1n1pk1/1p4qp/4P3/3p1R2/1P6/PB1Q2PP/5RK1 w - - 1 30","lm":"e6g6","wc":27,"bc":27}}
-{"t":"fen","d":{"fen":"2r2r2/pN1n1pk1/1p4qp/4P3/3Q1R2/1P6/PB4PP/5RK1 b - - 0 30","lm":"d2d4","wc":25,"bc":27}}
-{"t":"fen","d":{"fen":"5r2/pN1n1pk1/1p4qp/4P3/3Q1R2/1P6/PBr3PP/5RK1 w - - 1 31","lm":"c8c2","wc":25,"bc":26}}
+{"t":"featured","d":{"id":"afiRBWkD","orientation":"white","players":[{"color":"white","user":{"name":"Princec7","title":"IM","flair":"symbols.dizzy","id":"princec7"},"rating":2780,"seconds":58},{"color":"black","user":{"name":"Sanjay_Noob","id":"sanjay_noob"},"rating":2714,"seconds":58}],"fen":"8/7p/6p1/5p2/5B2/3k1QK1/7P/8 b - - 2 55"}}
+{"t":"featured","d":{"id":"h4yHqKKA","orientation":"white","players":[{"color":"white","user":{"name":"ChessMindAI","title":"GM","flair":"smileys.beaming-face-with-smiling-eyes","id":"chessmindai"},"rating":3013,"seconds":35},{"color":"black","user":{"name":"jake_jortles","id":"jake_jortles"},"rating":2751,"seconds":35}],"fen":"r2q1r2/1p4k1/3p1np1/p1n1p2p/2P1P3/1PN1Q3/P3BRPP/5RK1 b - - 0 1"}}
+{"t":"fen","d":{"fen":"r4r2/1p2q1k1/3p1np1/p1n1p2p/2P1P3/1PN1Q3/P3BRPP/5RK1 w - - 1 22","lm":"d8e7","wc":35,"bc":31}}
+{"t":"fen","d":{"fen":"r4r2/1p2q1k1/3p1np1/p1n1p2p/2P1P3/1PN1QR2/P3B1PP/5RK1 b - - 2 22","lm":"f2f3","wc":32,"bc":31}}
+{"t":"fen","d":{"fen":"r7/1p2qrk1/3p1np1/p1n1p2p/2P1P3/1PN1QR2/P3B1PP/5RK1 w - - 3 23","lm":"f8f7","wc":32,"bc":30}}
+{"t":"fen","d":{"fen":"r7/1p2qrk1/3p1np1/p1n1p1Qp/2P1P3/1PN2R2/P3B1PP/5RK1 b - - 4 23","lm":"e3g5","wc":29,"bc":30}}

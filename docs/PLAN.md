@@ -2874,7 +2874,7 @@ As 12.1, with these differences:
 | 72 | Design direction: comps (the owner picks), tokens, boards, pieces, sounds | high | Done (decision 0258) |
 | 73 | Shell, brand, home, auth pages, settings, about | high | Done (decisions 0259, 0260) |
 | 74 | The board kit and the game model | xhigh | Done (decisions 0261, 0262) |
-| 75 | Analysis board and the engine | xhigh | Planned |
+| 75 | Analysis board and the engine | xhigh | Done (decisions 0263, 0264) |
 | 76 | Play offline: the computer and over the board | high | Planned |
 | 77 | Play online I: streams, challenges, the Lichess AI, the live game | xhigh | Planned |
 | 78 | Play online II: quick pairing, correspondence, notifications | high | Planned |
@@ -2950,12 +2950,12 @@ As 12.1, with these differences:
 - **Outbound HTTP:**
   - clients take `fetcher = fetch` (`createCloudinary`);
   - Part 6 adds `createTmdb` (8 s timeout, retries, 429), an LRU cache (`src/server/parda/tmdb/cache.ts`), `UPSTREAM_UNAVAILABLE`, `guest_scope`, `SectionBrand.id`/`data-section`, and an e2e stand-in server (`e2e/harness/tmdb.ts`).
-- **Not in `src` yet:** no SSE, ndjson or streaming code, no Web Worker, no WASM. Nitro routes are registered in `vite.config.ts` (`nitro({ routes })`, `defineHandler`).
+- **Not in `src` before Part 7:** no SSE, ndjson or streaming code, no Web Worker, no WASM (Task 71 added the streams, Task 75 the engine's worker). Nitro routes are registered in `vite.config.ts` (`nitro({ routes })`, `defineHandler`).
 - **To reuse:**
   - the dnd-kit model in `src/features/taskline/calendar/calendar.tsx` (`useDraggable`, `useDroppable`, `Accessibility.configure`);
   - `enforceRateLimit` (`src/server/http/rate-limit.ts`);
   - env in `src/server/env.ts`, plus the dev-offline `OFF` list, `tests/setup/env.ts`, the harness `APP_ENV` regex and `tests/unit/env.test.ts`.
-- **Bundle:** the entry was 283.7 kB after Part 6, 284.4 after Tasks 71 and 72 and 286.3 after Task 73 (built as CI builds, without Sentry or PostHog keys); each route definition adds about 0.3 kB (0217). Task 73 raised the budget to 290 kB for Part 7's routes (0260); Task 85 measures and trims.
+- **Bundle:** the entry was 283.7 kB after Part 6, 284.4 after Tasks 71 and 72, 286.3 after Task 73 and 286.9 after Task 75 (built as CI builds, without Sentry or PostHog keys); each route definition adds about 0.3 kB (0217). Task 73 raised the budget to 290 kB for Part 7's routes (0260); Task 85 measures and trims.
 
 ### 13.5 Architecture (every task follows it)
 
@@ -3090,7 +3090,7 @@ As 12.1, with these differences:
 | `ch_connection` | user (the primary key, cascade), Lichess id (unique), username, title, sealed token, scopes, expiry, connected and last used, `cooldown_until` and `cooldown_ms`, `revoked_at` | 71 |
 | `ch_block` | a site user or a Lichess username, reason, by, at | 71 |
 | `ch_preference` | per user: board, pieces, sounds, volume, auto-queen, premove, confirm moves, coordinates, notation, zen. Without a session these live in localStorage, imported once | 73 |
-| `ch_analysis` | owner, title, the tree (jsonb), start FEN, updated | 75 |
+| `ch_analysis` | owner, title, the tree (jsonb), start FEN, PGN tags, orientation, move count, updated (Task 75) | 75 |
 | `ch_local_game` | owner, mode (engine or board), level, colour, clock, PGN, result, status, times | 76 |
 | `ch_activity` | user (`set null`), kind (game started by mode, puzzle, analysis, connect), at. Pruned after 90 days | 77 |
 | `ch_api_stat`, `ch_api_error` | hourly calls, errors, 429s and ms per endpoint class (instance counters flushed with `waitUntil`); the last 500 errors, never a token | 79 |
@@ -3283,28 +3283,47 @@ As 12.1, with these differences:
 
 **Left for the owner:** have a Nepali speaker read the board's words (the guide's glossary, `ch_piece_*`, `ch_say_*`, `ch_board_*`); no migration.
 
-### Task 75: Analysis board and the engine (planned)
+### Task 75: Analysis board and the engine (done)
 
-- **`/analysis`:**
-  - the URL holds `fen`, `moves`, `ply` and `orientation`;
-  - import FEN, PGN, or a Lichess game URL or id; export PGN, FEN and a share link.
-- **The engine:**
-  - `engine:copy`, the worker client;
-  - multi-PV lines and depth, the eval bar and graph, the best-move arrow.
-- **Lichess data:**
-  - cloud eval first when it's cached;
-  - the explorer: masters, Lichess (speeds, ratings) and a player;
-  - the opening name and ECO code;
-  - the tablebase at 7 pieces or fewer.
-- **Tree editing:** add, promote and delete variations, comments, NAGs, arrows.
-- **"My analyses"** (`ch_analysis`).
-- **Also:**
-  - the fair-play hook and banner (fed by Task 77);
-  - the CSP from the spike.
-- **Tests:**
-  - the engine client against a fake worker;
-  - one e2e run of the real engine at low depth;
-  - the tree operations, the DTOs, saving and claiming.
+**Done** (decisions 0263 and 0264; the guide's "The engine" and "The analysis board").
+
+**What changed:**
+- **The engine:** `stockfish` 19.0.1 as a devDependency; `pnpm engine:copy` (`scripts/engine-copy.ts`) copies the lite single-threaded `.js` and `.wasm`, unmodified, with `COPYING.txt`, into `public/chaal/engine/` (gitignored) under names hashed over both files, refusing a package whose hash isn't `ENGINE_HASH`; the `chaalEngine()` Vite plugin runs it before dev and build. The files are served immutable with their own CSP; Chaal's pages get `worker-src 'self'` (`buildCsp`'s `workerOrigins`). The worker client (`createEngine`: UCI over postMessage, multi-PV lines with scores from White's side, levels 1–8 for Task 76, one search at a time, download progress) and the page hook (`useEngine`: on demand, paused when hidden, held back by a cloud answer or fair play, ended on leave). Limits in `ch_settings.engine`, sent with the status.
+- **Lichess's data** (`src/server/chaal/analysis/lichess.ts`, public `src/functions/chaal/analysis.ts`): cloud eval, the explorer (masters, Lichess by speed and rating, a player's ndjson stream), the tablebase and importing a finished game, through the client and the cache with PLAN 13.5's TTLs (the shared LRU's TTL may depend on the answer now). The explorer uses the connected user's token, else `LICHESS_APP_TOKEN`, else asks the visitor to connect.
+- **`/app/chaal/analysis`** (indexable, in the sitemap and the route-SEO test): the board with the eval bar, controls, the move input, the opening's name (`OpeningName`, the kit's last piece), the engine's lines with the best move as a vermilion arrow, and tabs for the move tree (with the move tools and the eval graph), the explorer and the tablebase. The URL holds `fen`, `moves`, `ply` and `orientation` (or a saved analysis's `id`) and is drawn on the server. Import (PGN, FEN, a Lichess game), export (PGN, FEN, a share link), Save and "My analyses" in the board's menu.
+- **Tree editing:** move and position symbols, comments, arrows and circles per move (read from and written to PGN's `[%cal]` and `[%csl]`), promote a variation (one step, or to the main line), delete with Undo.
+- **"My analyses":** `ch_analysis` (migration `0041_chaal_analysis`, with `ch_settings.engine`), `src/functions/chaal/analyses.ts` (list, open, save, delete), saving as a visitor starts a Chaal guest, the server checks the tree's shape and every move, 200 per player, the guest claim moves them.
+- **Fair play:** `useFairPlay()` and `setLiveGames()` (`live/fair-play.ts`), and `FairPlayBanner` in the frame; locked, the engine waits and Lichess's data isn't asked. Task 77 feeds it.
+- **The frame and pages:** Analysis in the top bar, the tab bar, the palette and the home's entries; the about page links the licence shipped with the engine.
+- **Fixtures:** `pnpm lichess:record` now records cloud evals of the start and of 1. e4, the explorer (masters and Lichess at both, a player's stream) and the daily puzzle's game export, recorded with the owner's `LICHESS_APP_TOKEN`; the fake Lichess serves `.ndjson` recordings as streams, and e2e's server has an app token.
+- **Messages:** 141 new keys in en and ne, the glossary's analysis words.
+- **Stories:** "Chaal/Analysis" (the engine's states, the explorer, the tablebase, the move tools, fair play) and "Chaal/Kit" → Opening.
+- **Tests:** `tests/unit/chaal-engine.test.ts` (the client against a fake worker), `tests/unit/chaal-analysis.test.ts` (tree editing, PGN shapes, the URL, import, lines, limits, Lichess's answers from the recordings), `tests/components/chaal/analysis.test.tsx` (the engine hook, fair play, the panels), `tests/server/chaal-analysis.test.ts` (the data service and its token, saving, the cap, another player's rows, the claim), the access matrix's analyses rows, the CSP's `worker-src`, and the e2e flows (the board and the URL, import and export, a Lichess game, the explorer, the tablebase, saving as a guest, and Stockfish running in the browser under the production CSP).
+
+**Deviations:**
+- **Fair play is enforced in the browser for now:** the store, the banner and the lock on the board are built; the event stream that knows a real-time game is running, and any check on the server, arrive with Task 77. Importing refuses a game still being played.
+- **The URL also takes `id`** (a saved analysis), and variations aren't in it (0264).
+- **`ch_analysis` has more than the plan's columns:** the PGN tags, the orientation and the move count, for the list and the export.
+- **`[%cal]` and `[%csl]` are read into the tree now** (Task 74 kept them as comment text); their four colours become Chaal's two brushes (red the vermilion mark, the others ink).
+- **The opening's name comes from the explorer only** (no bundled openings list), so a position the explorer isn't asked about keeps the last named one on its path.
+- **Cloud eval is asked only while the engine is on and for the first 40 plies**, and a player's explorer stream is read for 5 s at most ("still counting" otherwise).
+- **No admin controls yet:** the engine's limits are a column with defaults; their form is Task 79's (PLAN 13.6).
+- **The phone's engine speed wasn't measured:** there's no real phone here (CDP throttling doesn't slow workers, 0257).
+- **Design flow:** Playwright screenshots against the approved comps (Analysis at 390 and 1280, light and dark, en and ne); `ui-ux-pro-max` and impeccable's critique weren't run, as in Tasks 73 and 74 (the finish review is Task 85's).
+
+**Numbers:**
+- **Size:** the entry is 286.9 kB (286.3 before; budget 290 kB), built by the e2e harness as CI builds (no Sentry or PostHog keys). The analysis route's chunk is 155.5 / 51.2 kB gzipped (chess.js, the board kit and the panels); the engine client is its own lazy chunk, 3.5 / 1.6 kB; the worker's files are outside the bundle (28 KB and 1.85 MB, once).
+- **Tests:** 60 new (`chaal-engine` 14, `chaal-analysis` 20, the components' `analysis` 8, the server's `chaal-analysis` 13, 4 access-matrix rows, 1 CSP). `pnpm test`: 172 files, 1,911 tests, of which 2 failed (copied English in Nepali for names and abbreviations, and forms without `method`); both were fixed and their files, the i18n tests and every Chaal test pass again. The full suite's rerun after the fixes was stopped by the session for low memory, so it wasn't repeated whole.
+- **Storybook:** the Chaal stories in both passes, 58 of 58 after fixing the engine panel's landmark name (axe `landmark-unique` with six panels in one story); `pnpm build-storybook`.
+- **e2e:** `e2e/flows/chaal.spec.ts` 21 of 21 (7 new, the real engine included); with the browser review of every `/app/chaal` page, 177 of 177 on the final build.
+- **Gates:** `typecheck`, `check`, `knip`, `i18n:check`, `build` and the bundle check, `build-storybook`.
+- **Design check:** Playwright screenshots of the board at 1280 and 390, light and dark, en and ne, against the comps; they found the engine's lines wrapping under their score and a phone's typed-move field pushing the engine down (both fixed: a score column, the best line only on a phone, the field from 640 px).
+
+**Left for the owner:**
+- Run `pnpm db:migrate` on Neon (`0041_chaal_analysis`).
+- Set `LICHESS_APP_TOKEN` in Vercel too, so visitors who haven't connected get the explorer.
+- Open the analysis board on a mid-range phone, turn Stockfish on, and note how long depth 18 takes; lower `ch_settings.engine.maxDepth` if it's slow.
+- Have a Nepali speaker read the analysis words (the glossary's Task 75 rows, `ch_analysis_*`, `ch_engine_*`, `ch_explorer_*`, `ch_tablebase_*`, `ch_nag_*`).
 
 ### Task 76: Play offline: the computer and over the board (planned)
 

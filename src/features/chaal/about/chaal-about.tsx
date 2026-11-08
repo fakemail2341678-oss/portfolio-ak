@@ -2,6 +2,7 @@ import { ExternalLinkIcon } from "lucide-react";
 import type { ReactNode } from "react";
 import { MAIN_CONTENT } from "@/components/layout/skip-link";
 import { m } from "@/paraglide/messages";
+import { ENGINE_LICENCE } from "../engine/files";
 
 function Section({ id, title, children }: { id: string; title: string; children: ReactNode }) {
 	const headingId = `${id}-title`;
@@ -108,6 +109,12 @@ export function ChaalAbout() {
 						</li>
 						<li>
 							<External href="https://www.gnu.org/licenses/gpl-3.0.html">{m.ch_about_stockfish_licence()}</External>
+						</li>
+						<li>
+							{/* The copy shipped beside the engine's files (pnpm engine:copy, decision 0263). */}
+							<a href={ENGINE_LICENCE} className="underline underline-offset-4">
+								{m.ch_about_stockfish_copying()}
+							</a>
 						</li>
 					</ul>
 				</Section>

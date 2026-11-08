@@ -1,4 +1,5 @@
 import { fn } from "storybook/test";
+import { DEFAULT_ENGINE_LIMITS } from "../../../../src/features/chaal/engine/limits";
 import { CHAAL_FEATURES, type ChaalFeature } from "../../../../src/features/chaal/features";
 import type { ChaalStatus } from "../../../../src/features/chaal/schema";
 
@@ -9,5 +10,6 @@ export const getChaalStatus = fn(
 		connect: "on",
 		explorerForVisitors: true,
 		banner: null,
+		engine: DEFAULT_ENGINE_LIMITS,
 	}),
 ).mockName("getChaalStatus");

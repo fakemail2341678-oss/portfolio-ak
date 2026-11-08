@@ -138,6 +138,7 @@ import { Route as AppsAppsNotesNoteIdRouteImport } from './routes/_apps/apps/not
 import { Route as ChaalAppChaalIndexRouteImport } from './routes/_chaal/app/chaal/index'
 import { Route as ChaalAppChaalSplatRouteImport } from './routes/_chaal/app/chaal/$'
 import { Route as ChaalAppChaalAboutRouteImport } from './routes/_chaal/app/chaal/about'
+import { Route as ChaalAppChaalAnalysisRouteImport } from './routes/_chaal/app/chaal/analysis'
 import { Route as ChaalAppChaalSettingsRouteImport } from './routes/_chaal/app/chaal/settings'
 import { Route as ChaalAppChaalSignInRouteImport } from './routes/_chaal/app/chaal/sign-in'
 import { Route as ChaalAppChaalSignUpRouteImport } from './routes/_chaal/app/chaal/sign-up'
@@ -893,6 +894,11 @@ const ChaalAppChaalAboutRoute = ChaalAppChaalAboutRouteImport.update({
   path: '/app/chaal/about',
   getParentRoute: () => ChaalRouteRoute,
 } as any)
+const ChaalAppChaalAnalysisRoute = ChaalAppChaalAnalysisRouteImport.update({
+  id: '/app/chaal/analysis',
+  path: '/app/chaal/analysis',
+  getParentRoute: () => ChaalRouteRoute,
+} as any)
 const ChaalAppChaalSettingsRoute = ChaalAppChaalSettingsRouteImport.update({
   id: '/app/chaal/settings',
   path: '/app/chaal/settings',
@@ -1520,6 +1526,7 @@ export interface FileRoutesByFullPath {
   '/apps/notes/$noteId': typeof AppsAppsNotesNoteIdRoute
   '/app/chaal/$': typeof ChaalAppChaalSplatRoute
   '/app/chaal/about': typeof ChaalAppChaalAboutRoute
+  '/app/chaal/analysis': typeof ChaalAppChaalAnalysisRoute
   '/app/chaal/settings': typeof ChaalAppChaalSettingsRoute
   '/app/chaal/sign-in': typeof ChaalAppChaalSignInRoute
   '/app/chaal/sign-up': typeof ChaalAppChaalSignUpRoute
@@ -1712,6 +1719,7 @@ export interface FileRoutesByTo {
   '/apps/notes/$noteId': typeof AppsAppsNotesNoteIdRoute
   '/app/chaal/$': typeof ChaalAppChaalSplatRoute
   '/app/chaal/about': typeof ChaalAppChaalAboutRoute
+  '/app/chaal/analysis': typeof ChaalAppChaalAnalysisRoute
   '/app/chaal/settings': typeof ChaalAppChaalSettingsRoute
   '/app/chaal/sign-in': typeof ChaalAppChaalSignInRoute
   '/app/chaal/sign-up': typeof ChaalAppChaalSignUpRoute
@@ -1929,6 +1937,7 @@ export interface FileRoutesById {
   '/_apps/apps/notes/$noteId': typeof AppsAppsNotesNoteIdRoute
   '/_chaal/app/chaal/$': typeof ChaalAppChaalSplatRoute
   '/_chaal/app/chaal/about': typeof ChaalAppChaalAboutRoute
+  '/_chaal/app/chaal/analysis': typeof ChaalAppChaalAnalysisRoute
   '/_chaal/app/chaal/settings': typeof ChaalAppChaalSettingsRoute
   '/_chaal/app/chaal/sign-in': typeof ChaalAppChaalSignInRoute
   '/_chaal/app/chaal/sign-up': typeof ChaalAppChaalSignUpRoute
@@ -2143,6 +2152,7 @@ export interface FileRouteTypes {
     | '/apps/notes/$noteId'
     | '/app/chaal/$'
     | '/app/chaal/about'
+    | '/app/chaal/analysis'
     | '/app/chaal/settings'
     | '/app/chaal/sign-in'
     | '/app/chaal/sign-up'
@@ -2335,6 +2345,7 @@ export interface FileRouteTypes {
     | '/apps/notes/$noteId'
     | '/app/chaal/$'
     | '/app/chaal/about'
+    | '/app/chaal/analysis'
     | '/app/chaal/settings'
     | '/app/chaal/sign-in'
     | '/app/chaal/sign-up'
@@ -2551,6 +2562,7 @@ export interface FileRouteTypes {
     | '/_apps/apps/notes/$noteId'
     | '/_chaal/app/chaal/$'
     | '/_chaal/app/chaal/about'
+    | '/_chaal/app/chaal/analysis'
     | '/_chaal/app/chaal/settings'
     | '/_chaal/app/chaal/sign-in'
     | '/_chaal/app/chaal/sign-up'
@@ -3581,6 +3593,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ChaalAppChaalAboutRouteImport
       parentRoute: typeof ChaalRouteRoute
     }
+    '/_chaal/app/chaal/analysis': {
+      id: '/_chaal/app/chaal/analysis'
+      path: '/app/chaal/analysis'
+      fullPath: '/app/chaal/analysis'
+      preLoaderRoute: typeof ChaalAppChaalAnalysisRouteImport
+      parentRoute: typeof ChaalRouteRoute
+    }
     '/_chaal/app/chaal/settings': {
       id: '/_chaal/app/chaal/settings'
       path: '/app/chaal/settings'
@@ -4217,6 +4236,7 @@ declare module '@tanstack/react-router' {
 interface ChaalRouteRouteChildren {
   ChaalAppChaalSplatRoute: typeof ChaalAppChaalSplatRoute
   ChaalAppChaalAboutRoute: typeof ChaalAppChaalAboutRoute
+  ChaalAppChaalAnalysisRoute: typeof ChaalAppChaalAnalysisRoute
   ChaalAppChaalSettingsRoute: typeof ChaalAppChaalSettingsRoute
   ChaalAppChaalSignInRoute: typeof ChaalAppChaalSignInRoute
   ChaalAppChaalSignUpRoute: typeof ChaalAppChaalSignUpRoute
@@ -4226,6 +4246,7 @@ interface ChaalRouteRouteChildren {
 const ChaalRouteRouteChildren: ChaalRouteRouteChildren = {
   ChaalAppChaalSplatRoute: ChaalAppChaalSplatRoute,
   ChaalAppChaalAboutRoute: ChaalAppChaalAboutRoute,
+  ChaalAppChaalAnalysisRoute: ChaalAppChaalAnalysisRoute,
   ChaalAppChaalSettingsRoute: ChaalAppChaalSettingsRoute,
   ChaalAppChaalSignInRoute: ChaalAppChaalSignInRoute,
   ChaalAppChaalSignUpRoute: ChaalAppChaalSignUpRoute,

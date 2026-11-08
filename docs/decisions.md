@@ -267,6 +267,8 @@ Record every non-obvious choice here: **What**, **Why**, **Alternatives consider
 - [0260](#0260-the-entry-budget-rises-to-290-kb-for-part-7s-routes): The entry budget rises to 290 kB for Part 7's routes
 - [0261](#0261-chaals-game-model-chessjs-behind-fen-functions-a-flat-tree-our-own-pgn): Chaal's game model: chess.js behind FEN functions, a flat tree, our own PGN
 - [0262](#0262-chaals-board-our-own-pointer-handling-a-keyboard-grid-html-squares): Chaal's board: our own pointer handling, a keyboard grid, HTML squares
+- [0263](#0263-chaals-engine-a-hashed-copy-of-the-lite-build-a-worker-client-with-one-search-at-a-time-started-on-demand): Chaal's engine: a hashed copy of the lite build, a worker client with one search at a time, started on demand
+- [0264](#0264-chaals-analysis-board-the-url-is-the-line-lichesss-data-through-our-server-a-checked-tree-saved-as-jsonb): Chaal's analysis board: the URL is the line, Lichess's data through our server, a checked tree saved as jsonb
 </details>
 
 ---
@@ -3536,3 +3538,48 @@ Measured on the owner's Windows machine (Node 24.11, 12 threads, 11.7 GB), 2026-
 - **`OpeningName`** (PLAN 13.5's kit) waits for the explorer's names in Task 75; a skeleton for the board isn't needed, because the board renders on the server at its final size.
 
 **Numbers** (esbuild, minified / gzipped): chess.js 36.2 / 12.8 kB; the game model 14.1 / 6.3 kB; the board kit 26.6 / 9.7 kB; the board with the model and chess.js 50.6 / 18.4 kB; everything 75.6 / 27.3 kB. None of it is in the entry or any page yet: the pages that show a board (Task 75 on) load it.
+
+## 0263: Chaal's engine: a hashed copy of the lite build, a worker client with one search at a time, started on demand
+
+**What** (Task 75, 2026-11-08; `src/features/chaal/engine/`, `scripts/engine-copy.ts`):
+- **The files:** `stockfish` 19.0.1 (GPL-3.0) is a devDependency; `pnpm engine:copy` copies only `stockfish-19-lite-single.js` and `.wasm`, unmodified, plus `Copying.txt` as `COPYING.txt`, into `public/chaal/engine/` (gitignored). The copies are named with the first 12 hex characters of a SHA-256 over both files (`stockfish-19-lite-single.38f7c90e0576.js`), and `ENGINE_HASH` in `files.ts` must match: a different package version is refused until the constant changes. The worker finds its `.wasm` from its own name, so both share the hash.
+- **When it runs:** a Vite plugin (`chaalEngine()`, `// @chaal` in `vite.config.ts`) runs the copy in its `config` hook, before `vite dev` and `vite build`, so a checkout, CI, e2e and Vercel need no extra step. It does nothing when the files are there.
+- **Headers:** `/chaal/engine/**` is served `public, max-age=31536000, immutable`, with its own CSP `default-src 'none'; script-src 'self' 'wasm-unsafe-eval'; connect-src 'self'` (routeRules). Chaal's pages add `worker-src 'self'` (`buildCsp`'s new `workerOrigins`, set in the security-headers middleware for `/app/chaal`); no page gets `'wasm-unsafe-eval'` (decision 0257).
+- **The client** (`engine.ts`): `createEngine({ createWorker, onProgress, hashMb })` speaks UCI over postMessage: the handshake (`uci`, `Hash`, `isready`, 30 s to answer), `analyse(fen, { multiPv, depth | movetime }, onInfo)` streaming each line's depth, multi-PV rank, score and line, `bestMove(fen, { level })` (levels 1–8 as Skill Level, a depth and a time per move, for Task 76), `stop` and `quit`. One search at a time: a new search stops the running one, waits for its `bestmove`, and replaces any waiting one, which ends `stopped`. Options are sent only when they change. Scores are turned to White's side (`uci.ts`), like every score in Chaal. The download's progress comes from stockfish.js's own `progressPort` (a `MessageChannel`).
+- **On a page** (`use-engine.ts`): one engine per page, created on the first "on" (a lazy `import()`, so a page that never starts it never loads it), analysing the position shown to `ch_settings.engine.maxDepth` with its `multiPv`, flushing lines to React at most every 120 ms, paused while the tab is hidden, held back by `skip` (a cloud answer, fair play), and quit when the page goes.
+- **Limits** (`limits.ts`): `ch_settings.engine` (`{ maxDepth: 22, multiPv: 3, hashMb: 16 }`, migration `0041_chaal_analysis`), sent with the status and clamped by `readEngineLimits` (depth 8–30, lines 1–5, hash 1–64 MB). Its admin form is Task 79's.
+
+**Why:**
+- **Hashed names, not the package's:** the files are served for a year without a version in the path; a name that changes with the bytes is the only safe immutable URL. Checking the hash also means an unexpected package (a compromised or bumped release) never ships silently.
+- **A Vite plugin over a `prebuild` script:** `pnpm build`, `vite build` (the e2e harness), `pnpm dev` and Vercel all go through Vite's config, and `strip-demo` removes a marked line and the script without editing `package.json`'s `build`.
+- **One search at a time in the client:** UCI engines answer one `go` at a time and the analysis board changes position faster than a search ends; queuing in the client keeps the page's code to "analyse this", and a replaced search can't paint its lines over the new position.
+- **Download progress from the worker:** the worker fetches its own `.wasm`; prefetching it from the page to measure would download it twice when the HTTP cache misses.
+
+**Alternatives considered:**
+- **Committing the two files:** simplest, but 1.9 MB of a GPL binary in the history for every update, against PLAN 13.5's "copied, gitignored".
+- **The multi-threaded build:** needs `SharedArrayBuffer`, so COOP and COEP on Chaal's pages, which would block Lichess's images and any embed. The lite single-threaded build reaches depth 18 in about a second on a desktop (0257).
+
+**Numbers:** the client (`engine.ts` with `uci.ts` and `files.ts`, esbuild) is 3.6 kB minified, 1.7 kB gzipped, loaded only when the engine is first turned on; the worker's files are outside the bundle (28 KB and 1.85 MB, downloaded once, then cached for a year). The phone measurement PLAN 13.4 left for this task needs a real phone; it's left for the owner (PLAN Task 75, "Left for the owner").
+
+## 0264: Chaal's analysis board: the URL is the line, Lichess's data through our server, a checked tree saved as jsonb
+
+**What** (Task 75; `src/features/chaal/analysis/`, `src/server/chaal/analysis/`, `/app/chaal/analysis`):
+- **The URL** (`url.ts`, `analysisSearch`): `fen` (only when not the usual start), `moves` (one line in UCI joined by `_`, no escaping needed), `ply` (only when not at the line's end), `orientation` (only when Black is at the bottom), or `id` (a saved analysis). The board follows into the URL with `replace` after 250 ms; a link opens the same board drawn on the server. Variations aren't in the URL: the PGN and saving keep them. A saved analysis's URL is its `id`; the share link is always the position form.
+- **Lichess's data** (`server/chaal/analysis/lichess.ts`, public functions in `functions/chaal/analysis.ts`): cloud eval (`engine` switch; asked only while the engine is on and the position is 40 plies deep at most), the explorer (masters, Lichess with speeds and ratings, a player) and the tablebase (`explorer` switch), and importing a finished standard game (`analysis` switch). All go through the client's lanes and the cache with PLAN 13.5's TTLs; a position the cloud hasn't evaluated is kept an hour, a player still being indexed a minute (the shared LRU's TTL may now depend on the answer, `Ttl<T>`). The explorer needs a token: a connected user's own on their lane, else `LICHESS_APP_TOKEN` on the public lane; a token Lichess refuses falls back to the app's; with neither the answer is `{ ok: false, reason: "token" }`, never cached. A player's explorer is an ndjson stream read for at most 5 s inside the lane; its last line is the answer, marked `indexing` when it hadn't ended. Explorer games keep a valid game id only (each becomes a lichess.org link).
+- **The opening's name** (`OpeningName`, the kit's last piece) is the explorer's: it's read for the position shown while the explorer's tab is open or for the first 30 plies, and the nearest named position on the path is shown.
+- **The tablebase's results** are turned to the side that plays each move, with Syzygy's own kinds folded in (`syzygy-win` is a win), and DTZ and DTM shown as half-moves ("DTM 17").
+- **Tree editing** (`tree.ts`): `annotate`, `toggleNag` (one move symbol of 1–6 and one position symbol of 10–19 at a time), `setComment`, `setShapes`, `promoteVariation` (one branch up; `promoteLine` makes it the main line), `deleteFrom` with an Undo toast. Arrows and circles are a node's `shapes`, read from and written to PGN's `[%cal]` and `[%csl]` (red is the vermilion "mark", the other colours ink; written back as R and G).
+- **"My analyses"** (`ch_analysis`: owner, title, the tree as jsonb, start FEN, PGN tags, orientation, move count): a session is needed (saving starts a Chaal guest first, `useEnsureChaalSession`); each call acts on the caller's own rows, another's id is NOT_FOUND; 200 per player (CONFLICT beyond); the tree is checked by its Zod shape (`gameTreeSchema`: sizes, squares, NAGs) and then move by move (`verifyTree`: links, ids, each move legal with the FEN and SAN it claims, at most 2,000 moves) before it's written. The guest claim moves a guest's analyses to the account.
+- **Fair play** (`live/fair-play.ts`): a store of the player's real-time games in progress (`setLiveGames`, fed by Task 77's event stream) and `useFairPlay()`. While locked, the engine is held (it resumes after), cloud eval, the explorer and the tablebase aren't asked, and `FairPlayBanner` in the frame says why on every page. Importing refuses a game still being played.
+
+**Why:**
+- **The line in the URL, not the tree:** a shared link must open the same position on the server (SEO and no-JS), and a line is short and readable; a tree with variations would need an encoding nobody reads, and saving already keeps it.
+- **Lichess's data through our server, not from the browser:** the explorer needs a token (0257) that must never reach the browser, and the cache shares one answer between every visitor (masters for a week). Cloud eval and the tablebase follow for one path and one cache.
+- **The user's own token for the explorer when connected:** their calls count against their own limits on their own lane, not the shared public one.
+- **Checking the tree on the server:** a saved analysis must always open; a forged tree would crash the board on load, and replaying 2,000 moves costs a few milliseconds on a write.
+- **The fair-play lock in the browser for now:** the event stream that knows a game is running arrives with Task 77; the store and the banner are its interface, so Task 77 only calls `setLiveGames`.
+
+**Alternatives considered:**
+- **Lichess's own opening names (lichess-org/chess-openings, CC0) bundled:** about 3,500 lines; in the page it's weight, on the server another lookup. The explorer already names the position it's asked about.
+- **Path ids in the URL** (as Lichess's analysis has): see 0261; the URL carries UCI moves instead.
+- **Autosaving:** quieter, but a guest session would be started by just looking at a position; saving stays an action, with "changes not saved yet" beside the board.

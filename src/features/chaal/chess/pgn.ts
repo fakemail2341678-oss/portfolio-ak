@@ -1,13 +1,13 @@
 import type { Score } from "./eval";
 import { SUFFIX_NAGS } from "./notation";
-import { checkFen, type GameResult, type PlayedMove, play, START_FEN } from "./rules";
-import { createTree, type GameTree, nodeOf, type TreeNode } from "./tree";
+import { checkFen, type GameResult, type PlayedMove, play, type Square, START_FEN } from "./rules";
+import { createTree, type GameTree, type NodeShape, nodeOf, type TreeNode } from "./tree";
 
 /**
  * PGN in and out (PLAN 13.5, "PGN"; decision 0261): our own reader and writer, with
- * variations, comments, NAGs and the move suffixes (`!`, `?!` …), and Lichess's comment
- * commands `[%clk]` and `[%eval]` read into the tree. Other commands (`[%cal]`, `[%csl]`)
- * stay in the comment's text, so a round trip keeps them. Moves are read with chess.js's
+ * variations, comments, NAGs and the move suffixes (`!`, `?!` …), and the comment commands
+ * `[%clk]`, `[%eval]`, `[%cal]` and `[%csl]` (arrows and circles, Task 75) read into the
+ * tree. Other commands stay in the comment's text, so a round trip keeps them. Moves are read with chess.js's
  * lenient SAN; a move that isn't legal stops the import with its place.
  *
  * Imports are capped at 500 KB and 2,000 moves, variations included. Only the first game
@@ -35,11 +35,40 @@ const NAG = /\$\d+/y;
 const CLOCK = /\[%clk\s+(\d+):(\d{1,2}):(\d{1,2}(?:\.\d+)?)\s*\]/;
 const EVAL = /\[%eval\s+(#?)([+-]?\d+(?:\.\d+)?)(?:,\d+)?\s*\]/;
 const STANDARD = new Set(["standard", "from position"]);
+/** Arrows and circles: `[%cal Ge2e4,Rd1d8]`, `[%csl Gd4]` (G, R, Y, B: green, red, yellow, blue). */
+const ARROWS = /\[%cal\s+([^\]]*)\]/;
+const CIRCLES = /\[%csl\s+([^\]]*)\]/;
+const SHAPE = /^([GRYB])([a-h][1-8])([a-h][1-8])?$/;
 
-/** `[%clk]` and `[%eval]` out of a comment, and the text that's left. */
-function readComment(raw: string): { text: string; clock?: number; eval?: Score } {
+type Comment = { text: string; clock?: number; eval?: Score; shapes?: NodeShape[] };
+
+/**
+ * Shapes in Chaal's two brushes: red is the annotator's vermilion ("mark"), the others
+ * ink (decision 0264). Written back, "mark" is red and "ink" green.
+ */
+function readShapes(list: string, kind: "arrow" | "circle"): NodeShape[] {
+	return list.split(",").flatMap((entry) => {
+		const match = SHAPE.exec(entry.trim());
+		if (!match || (kind === "arrow") !== Boolean(match[3])) return [];
+		const brush = match[1] === "R" ? "mark" : "ink";
+		const from = match[2] as Square;
+		return [match[3] ? { from, to: match[3] as Square, brush } : { from, brush }];
+	});
+}
+
+/** `[%clk]`, `[%eval]`, `[%cal]` and `[%csl]` out of a comment, and the text that's left. */
+function readComment(raw: string): Comment {
 	let text = raw;
-	const out: { text: string; clock?: number; eval?: Score } = { text: "" };
+	const out: Comment = { text: "" };
+	for (const [pattern, kind] of [
+		[ARROWS, "arrow"],
+		[CIRCLES, "circle"],
+	] as const) {
+		const found = pattern.exec(text);
+		if (!found) continue;
+		out.shapes = [...(out.shapes ?? []), ...readShapes(found[1] ?? "", kind)];
+		text = text.replace(pattern, "");
+	}
 	const clock = CLOCK.exec(text);
 	if (clock) {
 		out.clock = Math.round((Number(clock[1]) * 3600 + Number(clock[2]) * 60 + Number(clock[3])) * 1000);
@@ -143,14 +172,20 @@ export function readPgn(text: string): PgnRead {
 			const raw = body.slice(index + 1, end === -1 ? body.length : end);
 			index = end === -1 ? body.length : end + 1;
 			const comment = readComment(raw);
+			const shapes = comment.shapes?.length ? comment.shapes : null;
 			if (line.last) {
 				const target = node(line.last);
 				annotate(line.last, {
 					...(comment.text ? { comments: [...target.comments, comment.text] } : {}),
 					...(comment.clock !== undefined ? { clock: comment.clock } : {}),
 					...(comment.eval ? { eval: comment.eval } : {}),
+					...(shapes ? { shapes: [...(target.shapes ?? []), ...shapes] } : {}),
 				});
-			} else if (comment.text) {
+			} else if (shapes && line.parent === tree.root && stack.length === 0) {
+				// Shapes before the first move are drawn on the start position.
+				annotate(tree.root, { shapes: [...(node(tree.root).shapes ?? []), ...shapes] });
+			}
+			if (!line.last && comment.text) {
 				// Before a line's first move: the game's comment at the root, else the next move's.
 				if (line.parent === tree.root && stack.length === 0) {
 					annotate(tree.root, { comments: [...node(tree.root).comments, comment.text] });
@@ -223,11 +258,24 @@ function formatClockTag(ms: number): string {
 
 const formatEvalTag = (score: Score) => ("mate" in score ? `#${score.mate}` : (score.cp / 100).toFixed(2));
 
+const shapeTag = (shape: NodeShape) => `${shape.brush === "mark" ? "R" : "G"}${shape.from}${shape.to ?? ""}`;
+
+/** `[%cal …]` and `[%csl …]` for a node's arrows and circles. */
+function shapeTags(shapes: ReadonlyArray<NodeShape> = []): string[] {
+	const arrows = shapes.filter((shape) => shape.to);
+	const circles = shapes.filter((shape) => !shape.to);
+	return [
+		...(arrows.length > 0 ? [`[%cal ${arrows.map(shapeTag).join(",")}]`] : []),
+		...(circles.length > 0 ? [`[%csl ${circles.map(shapeTag).join(",")}]`] : []),
+	];
+}
+
 /** A comment as PGN writes it: commands first, then the text (braces can't nest, so they're replaced). */
 function commentOf(node: TreeNode): string | null {
 	const parts = [
 		...(node.eval ? [`[%eval ${formatEvalTag(node.eval)}]`] : []),
 		...(node.clock !== undefined ? [`[%clk ${formatClockTag(node.clock)}]`] : []),
+		...shapeTags(node.shapes),
 		...node.comments.map((comment) => comment.replace(/[{}]/g, (brace) => (brace === "{" ? "(" : ")"))),
 	];
 	return parts.length > 0 ? `{ ${parts.join(" ")} }` : null;

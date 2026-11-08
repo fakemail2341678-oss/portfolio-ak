@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { Link, type LinkOptions } from "@tanstack/react-router";
-import { InfoIcon, LinkIcon, type LucideIcon, PaletteIcon } from "lucide-react";
+import { ChartSplineIcon, InfoIcon, LinkIcon, type LucideIcon, PaletteIcon } from "lucide-react";
 import { MAIN_CONTENT } from "@/components/layout/skip-link";
 import { Button } from "@/components/ui/button";
 import { sessionQueryOptions } from "@/features/auth/queries";
@@ -21,7 +21,7 @@ const HERO = {
 
 const focusRing = "outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50";
 
-/** An entry into Chaal: a ruled tile with an icon, a title and a line. They grow with the pages (Play from Task 76). */
+/** An entry into Chaal: a ruled tile with an icon, a title and a line. They grow with the pages (Analysis from Task 75, Play from 76). */
 function Entry({
 	link,
 	icon: Icon,
@@ -113,7 +113,14 @@ export function ChaalHome() {
 				<h2 id="chaal-start" className="ch-display ch-rule pt-4 text-ch-head">
 					{m.ch_home_start()}
 				</h2>
-				<ul className="mt-6 grid gap-3 md:grid-cols-3">
+				<ul className="mt-6 grid gap-3 md:grid-cols-2 lg:grid-cols-4">
+					<Entry
+						link={chaalLinks.analysis()}
+						icon={ChartSplineIcon}
+						title={m.ch_home_entry_analysis()}
+						body={m.ch_home_entry_analysis_body()}
+						testId="chaal-entry-analysis"
+					/>
 					<Entry
 						link={chaalLinks.settings("connection")}
 						icon={LinkIcon}

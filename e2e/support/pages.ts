@@ -396,6 +396,14 @@ export const REVIEWED_PAGES: ReadonlyArray<ReviewedPage> = [
 	{ route: "/app/chaal" },
 	{ route: "/app/chaal", as: "viewer", label: "viewer" },
 	{ route: "/app/chaal/about" },
+	// The analysis board (Task 75): empty, at a position (drawn on the server), and the tablebase's.
+	{ route: "/app/chaal/analysis" },
+	{
+		route: "/app/chaal/analysis",
+		path: "/app/chaal/analysis?moves=e2e4_c7c5_g1f3&orientation=black",
+		label: "a position",
+	},
+	{ route: "/app/chaal/analysis", as: "viewer", label: "viewer" },
 	{ route: "/app/chaal/settings", label: "signed out" },
 	{ route: "/app/chaal/settings", as: "viewer", label: "viewer" },
 	{ route: "/app/chaal/settings", path: "/app/chaal/settings?lichess=denied", label: "connect result" },

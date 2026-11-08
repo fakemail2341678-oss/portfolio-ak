@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { useNavigate, useRouterState } from "@tanstack/react-router";
 import {
+	ChartSplineIcon,
 	HouseIcon,
 	InfoIcon,
 	KeyboardIcon,
@@ -81,6 +82,14 @@ export function ChaalPalette({
 					>
 						<HouseIcon aria-hidden />
 						<span>{m.ch_nav_home()}</span>
+					</CommandItem>
+					<CommandItem
+						value="go analysis"
+						keywords={[m.ch_nav_analysis(), m.ch_analysis_title()]}
+						onSelect={() => go(() => navigate(chaalLinks.analysis()))}
+					>
+						<ChartSplineIcon aria-hidden />
+						<span>{m.ch_analysis_title()}</span>
 					</CommandItem>
 					<CommandItem
 						value="go settings"

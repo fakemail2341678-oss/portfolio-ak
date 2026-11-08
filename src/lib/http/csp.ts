@@ -28,6 +28,11 @@ export type CspOptions = {
 	frameOrigins?: ReadonlyArray<string>;
 	/** Origins that may only be framed: frame-src, never script-src or connect-src (a section's embedded players). */
 	embedOrigins?: ReadonlyArray<string>;
+	/**
+	 * Where dedicated workers may load from (worker-src): none unless a section needs one
+	 * (Chaal's engine, `'self'`). A worker runs under its own response's CSP (decision 0257).
+	 */
+	workerOrigins?: ReadonlyArray<string>;
 	/** Adds upgrade-insecure-requests (production only; it would break http://localhost). */
 	upgradeInsecureRequests?: boolean;
 	/**
@@ -52,6 +57,7 @@ export function buildCsp({
 	imgOrigins = [],
 	frameOrigins = [],
 	embedOrigins = [],
+	workerOrigins = [],
 	upgradeInsecureRequests = false,
 	reportUrl,
 }: CspOptions): string {
@@ -65,6 +71,7 @@ export function buildCsp({
 		"font-src": ["'self'"],
 		"connect-src": ["'self'", ...connectOrigins],
 		...(framed.length > 0 ? { "frame-src": framed } : {}),
+		...(workerOrigins.length > 0 ? { "worker-src": workerOrigins } : {}),
 		"object-src": ["'none'"],
 		"base-uri": ["'self'"],
 		"form-action": ["'self'"],

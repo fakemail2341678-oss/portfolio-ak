@@ -7,4 +7,11 @@ export const chaalKeys = {
 	connection: () => [...all, "connection"] as const,
 	preferences: () => [...all, "preferences"] as const,
 	lab: () => [...all, "admin", "lab"] as const,
+	/** Lichess's analysis data, by position (Task 75). */
+	cloudEval: (fen: string, multiPv: number) => [...all, "cloud-eval", fen, multiPv] as const,
+	explorer: (query: Readonly<Record<string, unknown>>) => [...all, "explorer", query] as const,
+	tablebase: (fen: string) => [...all, "tablebase", fen] as const,
+	/** "My analyses" (Task 75). */
+	analyses: () => [...all, "analyses"] as const,
+	analysis: (id: string) => [...all, "analyses", id] as const,
 };

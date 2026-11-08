@@ -43,6 +43,13 @@ describe("buildCsp", () => {
 		expect(csp["frame-ancestors"]).toEqual(["'none'"]);
 	});
 
+	it("allows workers only where a section asks (Chaal's engine: 'self'), never wasm on the page", () => {
+		expect(directives(buildCsp({ nonce: "n" }))["worker-src"]).toBeUndefined();
+		const csp = directives(buildCsp({ nonce: "n", workerOrigins: ["'self'"] }));
+		expect(csp["worker-src"]).toEqual(["'self'"]);
+		expect(csp["script-src"]).not.toContain("'wasm-unsafe-eval'");
+	});
+
 	it("reports violations only when given a report URL, with report-to and report-uri", () => {
 		expect(buildCsp({ nonce: "n" })).not.toMatch(/report-(?:to|uri)/);
 		const csp = directives(buildCsp({ nonce: "n", reportUrl: "https://app.example/api/csp-report" }));

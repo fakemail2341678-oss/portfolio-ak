@@ -496,6 +496,7 @@ const PARDA_FUNCTIONS: Record<string, ReadonlyArray<string>> = {
  */
 const CHAAL_PUBLIC_FUNCTIONS: Record<string, ReadonlyArray<string>> = {
 	"chaal/status.ts": ["getChaalStatus"],
+	"chaal/analysis.ts": ["getChaalCloudEval", "getChaalExplorer", "getChaalTablebase", "importChaalGame"],
 };
 
 /**
@@ -506,6 +507,7 @@ const CHAAL_PUBLIC_FUNCTIONS: Record<string, ReadonlyArray<string>> = {
 const CHAAL_FUNCTIONS: Record<string, ReadonlyArray<string>> = {
 	"chaal/connection.ts": ["getChaalConnection", "disconnectChaal"],
 	"chaal/preferences.ts": ["getChaalPreferences", "saveChaalPreferences", "importChaalPreferences"],
+	"chaal/analyses.ts": ["listChaalAnalyses", "getChaalAnalysis", "saveChaalAnalysis", "deleteChaalAnalysis"],
 };
 // chaal:end
 

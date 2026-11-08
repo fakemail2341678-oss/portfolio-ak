@@ -10,12 +10,15 @@ import { errorFields, log } from "@/server/log";
 
 type Entry = { value: unknown; freshUntil: number; staleUntil: number };
 
+/** How long an answer stays fresh: a fixed time, or one chosen by the answer (Chaal keeps "not found" shorter). */
+export type Ttl<T> = number | ((value: T) => number);
+
 export type LruCache = {
 	/**
 	 * The value for `key`: fresh from the map; stale (within a second TTL) from the map while
 	 * `load` refreshes it in the background; otherwise from `load`, awaited.
 	 */
-	read: <T>(key: string, ttlMs: number, load: () => Promise<T>) => Promise<T>;
+	read: <T>(key: string, ttlMs: Ttl<T>, load: () => Promise<T>) => Promise<T>;
 	/** Whatever the map holds for `key`, however old (null when nothing): what a caller serves when it can't call upstream. */
 	peek: <T>(key: string) => T | null;
 	size: () => number;
@@ -32,11 +35,12 @@ export function createLruCache({ max = 2_000, now = Date.now, label = "cache" }:
 	const entries = new Map<string, Entry>();
 	const inFlight = new Map<string, Promise<unknown>>();
 
-	const refresh = <T>(key: string, ttlMs: number, load: () => Promise<T>): Promise<T> => {
+	const refresh = <T>(key: string, ttl: Ttl<T>, load: () => Promise<T>): Promise<T> => {
 		const running = inFlight.get(key);
 		if (running) return running as Promise<T>;
 		const started = load()
 			.then((value) => {
+				const ttlMs = typeof ttl === "function" ? ttl(value) : ttl;
 				entries.delete(key);
 				entries.set(key, { value, freshUntil: now() + ttlMs, staleUntil: now() + 2 * ttlMs });
 				for (const oldest of entries.keys()) {
@@ -53,7 +57,7 @@ export function createLruCache({ max = 2_000, now = Date.now, label = "cache" }:
 	return {
 		size: () => entries.size,
 		peek: <T>(key: string) => (entries.has(key) ? (entries.get(key)?.value as T) : null),
-		read: async <T>(key: string, ttlMs: number, load: () => Promise<T>) => {
+		read: async <T>(key: string, ttlMs: Ttl<T>, load: () => Promise<T>) => {
 			const entry = entries.get(key);
 			if (entry && now() < entry.staleUntil) {
 				// Reinserted: a Map iterates in insertion order, so its first key is the least recently used.

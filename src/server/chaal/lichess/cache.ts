@@ -1,6 +1,6 @@
 import "@tanstack/react-start/server-only";
 import { isAppError } from "@/lib/errors";
-import { createLruCache, type LruOptions } from "@/server/cache/lru";
+import { createLruCache, type LruOptions, type Ttl } from "@/server/cache/lru";
 
 /**
  * Chaal's cache of Lichess answers (PLAN 13.5, decision 0255), on the shared LRU
@@ -44,7 +44,8 @@ export const chaalCacheKey = ({ endpoint, path, params = {}, epoch, owner }: Cha
 	]);
 
 export type ChaalCache = {
-	read: <T>(key: ChaalCacheKey, ttlMs: number, load: () => Promise<T>) => Promise<T>;
+	/** `ttlMs` may depend on the answer: a position Lichess hasn't evaluated is asked again sooner. */
+	read: <T>(key: ChaalCacheKey, ttlMs: Ttl<T>, load: () => Promise<T>) => Promise<T>;
 	size: () => number;
 };
 

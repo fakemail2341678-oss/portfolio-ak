@@ -1,5 +1,13 @@
 import { Link, type LinkOptions } from "@tanstack/react-router";
-import { HouseIcon, InfoIcon, type LucideIcon, MenuIcon, SearchIcon, SettingsIcon } from "lucide-react";
+import {
+	ChartSplineIcon,
+	HouseIcon,
+	InfoIcon,
+	type LucideIcon,
+	MenuIcon,
+	SearchIcon,
+	SettingsIcon,
+} from "lucide-react";
 import { type ReactNode, useState } from "react";
 import { LanguageSwitcher } from "@/components/layout/language-switcher";
 import { NavigationProgress } from "@/components/layout/navigation-progress";
@@ -15,13 +23,14 @@ import { useImportLocalPreferences } from "../settings/use-preferences";
 import { ChaalWordmark } from "./chaal-mark";
 import { ChaalPalette } from "./chaal-palette";
 import { ChaalUserMenu } from "./chaal-user-menu";
+import { FairPlayBanner } from "./fair-play-banner";
 import { ChaalNoticeBanner } from "./notice-banner";
 import { ChaalShortcutsDialog } from "./shortcuts-dialog";
 
 /**
  * Chaal's sections: the top bar's links on wide screens, the tab bar on phones (PLAN Task
  * 73: Play, Puzzles, Analysis, Watch, More). A link arrives with its route (PLAN 13.3):
- * Home now, Play with Task 76, Analysis with 75, Puzzles with 80, Watch with 82.
+ * Home and Analysis (Task 75) now, Play with Task 76, Puzzles with 80, Watch with 82.
  */
 const SECTIONS: ReadonlyArray<{
 	link: LinkOptions;
@@ -29,7 +38,10 @@ const SECTIONS: ReadonlyArray<{
 	icon: LucideIcon;
 	exact?: boolean;
 	testId: string;
-}> = [{ link: chaalLinks.home(), label: m.ch_nav_home, icon: HouseIcon, exact: true, testId: "chaal-nav-home" }];
+}> = [
+	{ link: chaalLinks.home(), label: m.ch_nav_home, icon: HouseIcon, exact: true, testId: "chaal-nav-home" },
+	{ link: chaalLinks.analysis(), label: m.ch_nav_analysis, icon: ChartSplineIcon, testId: "chaal-nav-analysis" },
+];
 
 const focusRing = "outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50";
 
@@ -241,6 +253,7 @@ export function ChaalFrame({ children }: { children: ReactNode }) {
 			<NavigationProgress />
 			<ChaalHeader onOpenPalette={openPalette} />
 			<ChaalNoticeBanner />
+			<FairPlayBanner />
 			<div className="flex flex-1 flex-col">{children}</div>
 			<ChaalFooter />
 			<ChaalTabBar onOpenPalette={openPalette} />

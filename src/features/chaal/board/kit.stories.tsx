@@ -11,6 +11,7 @@ import { EvalGraph } from "./eval-graph";
 import { GameControls } from "./game-controls";
 import { Material } from "./material";
 import { MoveList } from "./move-list";
+import { OpeningName } from "./opening-name";
 import { PlayerStrip } from "./player-strip";
 import { ResultBanner } from "./result-banner";
 
@@ -133,6 +134,25 @@ export const Evaluation: Story = {
 				</div>
 			</Frame>
 		);
+	},
+};
+
+/** The opening's name and ECO code, as the explorer gives them (Task 75); its line stays while one arrives. */
+export const Opening: Story = {
+	render: () => (
+		<Frame>
+			<div className="flex flex-col gap-2">
+				<OpeningName opening={{ eco: "C65", name: "Ruy Lopez: Berlin Defense" }} />
+				<OpeningName opening={{ eco: "B90", name: "Sicilian Defense: Najdorf Variation, English Attack" }} />
+				<OpeningName opening={null} />
+				<OpeningName opening={null} pending />
+			</div>
+		</Frame>
+	),
+	play: async ({ canvasElement }) => {
+		const names = canvasElement.querySelectorAll('[data-testid="chaal-opening"]');
+		await expect(names).toHaveLength(4);
+		await expect(names[0]?.querySelector("[lang=en]")?.textContent).toBe("Ruy Lopez: Berlin Defense");
 	},
 };
 

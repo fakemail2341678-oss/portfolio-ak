@@ -1,5 +1,6 @@
 import { sql } from "drizzle-orm";
 import { boolean, check, integer, jsonb, pgTable, text, timestamp, uniqueIndex, uuid } from "drizzle-orm/pg-core";
+import type { EngineLimits } from "@/features/chaal/engine/limits";
 import type { ChaalFeatureSwitches } from "@/features/chaal/features";
 import { user } from "../auth";
 import { localizedText } from "../columns";
@@ -27,6 +28,8 @@ export const chSettings = pgTable(
 		publicCooldownMs: integer().notNull().default(0),
 		/** The admin's notice under Chaal's top bar, in both languages (its form arrives with Task 79). */
 		banner: localizedText(),
+		/** The engine's limits in the browser (Task 75, decision 0263): depth, lines and hash. Its form arrives with Task 79. */
+		engine: jsonb().$type<EngineLimits>().notNull().default({ maxDepth: 22, multiPv: 3, hashMb: 16 }),
 		version: integer().notNull().default(1),
 		updatedAt: timestamp({ withTimezone: true })
 			.defaultNow()
