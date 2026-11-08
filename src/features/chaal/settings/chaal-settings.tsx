@@ -57,6 +57,7 @@ const RESULT_TEXT: Readonly<Record<ConnectResult, () => string>> = {
 
 const FEATURE_NAMES: Readonly<Record<ChaalFeature, () => string>> = {
 	play: m.ch_feature_play,
+	local: m.ch_feature_local,
 	puzzles: m.ch_feature_puzzles,
 	analysis: m.ch_feature_analysis,
 	engine: m.ch_feature_engine,

@@ -6,6 +6,8 @@
  */
 export const CHAAL_FEATURES = [
 	"play",
+	/** Games in the browser: against the computer and over the board (Task 76). Needs no scope. */
+	"local",
 	"puzzles",
 	"analysis",
 	"engine",

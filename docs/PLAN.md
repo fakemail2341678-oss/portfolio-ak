@@ -2875,7 +2875,7 @@ As 12.1, with these differences:
 | 73 | Shell, brand, home, auth pages, settings, about | high | Done (decisions 0259, 0260) |
 | 74 | The board kit and the game model | xhigh | Done (decisions 0261, 0262) |
 | 75 | Analysis board and the engine | xhigh | Done (decisions 0263, 0264) |
-| 76 | Play offline: the computer and over the board | high | Planned |
+| 76 | Play offline: the computer and over the board | high | Done (decision 0265) |
 | 77 | Play online I: streams, challenges, the Lichess AI, the live game | xhigh | Planned |
 | 78 | Play online II: quick pairing, correspondence, notifications | high | Planned |
 | 79 | Admin I: settings, connections and blocks, API health | high | Planned |
@@ -2955,7 +2955,7 @@ As 12.1, with these differences:
   - the dnd-kit model in `src/features/taskline/calendar/calendar.tsx` (`useDraggable`, `useDroppable`, `Accessibility.configure`);
   - `enforceRateLimit` (`src/server/http/rate-limit.ts`);
   - env in `src/server/env.ts`, plus the dev-offline `OFF` list, `tests/setup/env.ts`, the harness `APP_ENV` regex and `tests/unit/env.test.ts`.
-- **Bundle:** the entry was 283.7 kB after Part 6, 284.4 after Tasks 71 and 72, 286.3 after Task 73 and 286.9 after Task 75 (built as CI builds, without Sentry or PostHog keys); each route definition adds about 0.3 kB (0217). Task 73 raised the budget to 290 kB for Part 7's routes (0260); Task 85 measures and trims.
+- **Bundle:** the entry was 283.7 kB after Part 6, 284.4 after Tasks 71 and 72, 286.3 after Task 73, 286.9 after Task 75 and 287.7 after Task 76 (built as CI builds, without Sentry or PostHog keys); each route definition adds about 0.3 kB (0217). Task 73 raised the budget to 290 kB for Part 7's routes (0260); Task 85 measures and trims.
 
 ### 13.5 Architecture (every task follows it)
 
@@ -3091,7 +3091,7 @@ As 12.1, with these differences:
 | `ch_block` | a site user or a Lichess username, reason, by, at | 71 |
 | `ch_preference` | per user: board, pieces, sounds, volume, auto-queen, premove, confirm moves, coordinates, notation, zen. Without a session these live in localStorage, imported once | 73 |
 | `ch_analysis` | owner, title, the tree (jsonb), start FEN, PGN tags, orientation, move count, updated (Task 75) | 75 |
-| `ch_local_game` | owner, mode (engine or board), level, colour, clock, PGN, result, status, times | 76 |
+| `ch_local_game` | owner, mode (engine or board), level, colour, clock, PGN, result, status, times; also the layout, the clocks left, the reason and the move count (Task 76) | 76 |
 | `ch_activity` | user (`set null`), kind (game started by mode, puzzle, analysis, connect), at. Pruned after 90 days | 77 |
 | `ch_api_stat`, `ch_api_error` | hourly calls, errors, 429s and ms per endpoint class (instance counters flushed with `waitUntil`); the last 500 errors, never a token | 79 |
 | `ch_puzzle_attempt` | owner, puzzle, won, ms, themes, rating, synced to Lichess | 80 |
@@ -3325,20 +3325,41 @@ As 12.1, with these differences:
 - Open the analysis board on a mid-range phone, turn Stockfish on, and note how long depth 18 takes; lower `ch_settings.engine.maxDepth` if it's slow.
 - Have a Nepali speaker read the analysis words (the glossary's Task 75 rows, `ch_analysis_*`, `ch_engine_*`, `ch_explorer_*`, `ch_tablebase_*`, `ch_nag_*`).
 
-### Task 76: Play offline: the computer and over the board (planned)
+### Task 76: Play offline: the computer and over the board (done)
 
-- **`/play` hub, first version.**
-- **Against the computer:**
-  - levels 1–8, colour, an optional clock;
-  - takebacks and resign;
-  - no engine hints until the game ends.
-- **Over the board:**
-  - clocks with increment;
-  - flipping after each move, or a tablet mode with the far side rotated.
-- **Saving and history:**
-  - `ch_local_game`, saved per move (debounced), with resume, a history list, export, and "Analyse";
-  - works in localStorage without a session and is imported when one starts.
-- **Tests.**
+**Done** (decision 0265; the guide's "Local games").
+
+**What changed:**
+- **The model** (`src/features/chaal/local/game.ts`, types in `types.ts`): a `LocalGame` (mode, level and side or layout, the time control, the moves with each mover's clock, the clocks left, result and reason), moves that end the game on the board, takebacks (one ply over the board, back to the player's turn against the computer, clocks put back from the moves), resigning, agreed and claimed draws, flags with FIDE 6.9's "can't mate" draw, the record with its PGN (`toRecord`, `fromRecord`, `localGamePgn`) and the analysis line. `GameEndReason` in `chess/rules.ts`; `ResultBanner` says resignation, time, agreement and the claims.
+- **Playing** (`use-local-game.ts`): two clocks on `performance.now()` from the first move with the increment, Pause and Continue (a reopened game with a clock starts paused), the flag checked every 100 ms; the computer is Stockfish through Task 75's client, loaded with the page, asked for `bestMove` at the level whenever it's its turn (350 ms at least), held while paused or while fair play locks the engine, never showing a score.
+- **Saving:** without a session, to this browser at once (`browser.ts`, `chaal:game:<id>`, inside "Delete this device's data"); with one, to `ch_local_game` (migration `0042_chaal_local_game`) 700 ms after the moves settle and at once on the end or when the page is hidden, falling back to the browser. The frame imports the browser's games when a session appears (`useImportLocalGames`); the guest claim moves a guest's games; 100 kept per player.
+- **Server** (`src/server/chaal/local/service.ts`, `src/functions/chaal/local-games.ts`: list, get, save, delete, import): the Zod shape, then the PGN move by move; the upsert writes only the caller's own unfinished row (another's id is NOT_FOUND, a finished game stays as it ended); imports skip what doesn't read. A new feature switch, `local`, separate from online `play`.
+- **`/app/chaal/play`** (indexable, in the sitemap and the route-SEO test): "Against the computer" (level 1–8, White, Random or Black, no clock or six time controls) and "Over the board" (a clock with increment, Flip or Face to face), as ruled radio rows (`Choice`), then "Your games" (the account's, read by the loader, or this browser's), each opening the game, with a bin.
+- **`/app/chaal/local/$id`** (noindex): the board between the two players' strips (material, clocks; face to face, the far strip upside down; flipping, the board turns with the move), the step buttons with Take back, a draw (agree over the board, claim when allowed), Pause or Continue, Resign (confirmed); looking back through the moves; when it ends, the result, Analyse (the analysis board with `?moves=`), Export (PGN, FEN, a link) and Play again. A session's game is drawn on the server; a browser's holds a board-sized place until read, and a missing one is said in that place.
+- **The frame:** Play in the top bar, the tab bar, the palette and the home's entries.
+- **Messages:** 68 new keys in en and ne (the glossary's Task 76 rows).
+- **Stories:** "Chaal/Play" (the hub, a game against the computer, face to face with clocks, a finished game).
+- **Tests:** `tests/unit/chaal-local.test.ts` (7: starting, endings, takebacks and clocks, resigning and claims, flags, the record and PGN, what's refused), `tests/server/chaal-local.test.ts` (8: saving, a finished game, another player's id, the PGN check, the cap, importing, the switch, the claim), `tests/components/chaal/local-game.test.tsx` (5: the computer's reply and the browser's copy, fair play, clocks and a flag, paused on reopening, endings), the access matrix's 5 local-game rows, the guard test, and e2e (Stockfish at level 1 in the browser with a reload and Analyse, over the board with the turning board, the clock and a takeback, and a browser's game moving to a member's account).
+
+**Deviations:**
+- **A feature switch of its own** (`local`), not `play`: online play's switch (Lichess scopes) shouldn't take away the computer.
+- **`ch_local_game` has more than the plan's columns:** the layout, the clocks left, the reason and the move count; "times" are `started_at` and `played_at` as the browser saw them.
+- **A reopened game with a clock starts paused,** and clocks can be paused: offline there's nobody to be unfair to (0265).
+- **No premoves and no names to type:** the strips say You and Stockfish, or White and Black; premoves arrive with online play.
+- **Stored games carry no names;** an export writes them in the reader's language.
+- **Design flow:** Playwright screenshots of the hub at 1280 and the game at 1280 (light, en), 390 (dark, ne) and face to face at 768; they found the top strip touching the top bar below `lg` (fixed) and one Nepali phrase (reworded). `ui-ux-pro-max` and impeccable's critique weren't run, as in Tasks 73–75 (the finish review is Task 85's).
+
+**Numbers:**
+- **Size:** the entry is 287.7 kB (286.9 before; budget 290 kB), built by the e2e harness as CI builds. The hub's chunk is 18.5 / 7.0 kB gzipped; the game page's 32.3 / 12.0 kB, beside the board kit and chess.js it shares with the analysis board; Stockfish stays outside the bundle.
+- **Tests:** 25 new (`chaal-local` 7 and 8, the components' `local-game` 5, 5 access-matrix rows) plus 3 e2e flows; the targeted run (every Chaal test, the guard, route-SEO, CSP, i18n, form-method and strip-marker tests) is 23 files and 370 tests, all passing.
+- **Storybook:** "Chaal/Play" and "Chaal/Kit" in both passes, 26 of 26; `pnpm build-storybook`.
+- **e2e:** `e2e/flows/chaal.spec.ts` 24 of 24 (3 new, the real engine included); the browser review of every `/app/chaal` page, 180 of 180.
+- **Gates:** `typecheck`, `check`, `knip`, `i18n:check`, `build` and the bundle check, `build-storybook`.
+
+**Left for the owner:**
+- Run `pnpm db:migrate` on Neon (`0042_chaal_local_game`).
+- Have a Nepali speaker read the play words (the glossary's Task 76 rows, `ch_play_*`, `ch_local_*`, `ch_history_*`, the new `ch_reason_*`).
+- `pnpm dev:offline` fails here before this task's code: its `OFF` list blanks `SENTRY_AUTH_TOKEN` but not `SENTRY_ORG` and `SENTRY_PROJECT`, which the env check wants together. `pnpm dev:local` works.
 
 ### Task 77: Play online I: streams, challenges, the Lichess AI and the live game (planned)
 

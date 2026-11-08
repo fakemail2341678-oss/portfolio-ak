@@ -148,6 +148,20 @@ export type BoardEnd = {
 	reason: "checkmate" | "stalemate" | "insufficient" | "fivefold" | "seventy-five";
 };
 
+/**
+ * Every way a game can end: the board's own, and those a player or a clock decides (the
+ * local games, Task 76; Lichess's own reasons join with online play).
+ */
+export type GameEndReason =
+	| BoardEnd["reason"]
+	| "resign"
+	| "timeout"
+	/** A flag fell, but the other side can't mate: a draw (FIDE 6.9). */
+	| "timeout-draw"
+	| "agreement"
+	| "threefold"
+	| "fifty";
+
 export type GameState = {
 	turn: Color;
 	check: boolean;

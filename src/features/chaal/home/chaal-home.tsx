@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { Link, type LinkOptions } from "@tanstack/react-router";
-import { ChartSplineIcon, InfoIcon, LinkIcon, type LucideIcon, PaletteIcon } from "lucide-react";
+import { ChartSplineIcon, InfoIcon, LinkIcon, type LucideIcon, PaletteIcon, SwordsIcon } from "lucide-react";
 import { MAIN_CONTENT } from "@/components/layout/skip-link";
 import { Button } from "@/components/ui/button";
 import { sessionQueryOptions } from "@/features/auth/queries";
@@ -113,7 +113,14 @@ export function ChaalHome() {
 				<h2 id="chaal-start" className="ch-display ch-rule pt-4 text-ch-head">
 					{m.ch_home_start()}
 				</h2>
-				<ul className="mt-6 grid gap-3 md:grid-cols-2 lg:grid-cols-4">
+				<ul className="mt-6 grid gap-3 md:grid-cols-2 lg:grid-cols-5">
+					<Entry
+						link={chaalLinks.play()}
+						icon={SwordsIcon}
+						title={m.ch_home_entry_play()}
+						body={m.ch_home_entry_play_body()}
+						testId="chaal-entry-play"
+					/>
 					<Entry
 						link={chaalLinks.analysis()}
 						icon={ChartSplineIcon}

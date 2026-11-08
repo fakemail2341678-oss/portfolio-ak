@@ -1,5 +1,6 @@
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 import { createTree } from "@/features/chaal/chess/tree";
+import { newLocalGame, toRecord } from "@/features/chaal/local/game";
 import { DEFAULT_CHAAL_PREFERENCES } from "@/features/chaal/settings/preferences";
 import type { Session } from "@/lib/session";
 import * as analyses from "@/server/chaal/analysis/service";
@@ -9,6 +10,7 @@ import { type ChaalPublic, chaalUserOf } from "@/server/chaal/context";
 import { createChaalControls } from "@/server/chaal/controls";
 import { createChaalCache } from "@/server/chaal/lichess/cache";
 import { createLichess } from "@/server/chaal/lichess/client";
+import * as local from "@/server/chaal/local/service";
 import * as preferences from "@/server/chaal/preferences";
 import { chaalStatus } from "@/server/chaal/status";
 import * as schema from "@/server/db/schema";
@@ -20,7 +22,8 @@ import { createTestDb } from "../utils/test-db";
  * requireChaalUser then withChaalServices) is checked by
  * tests/server/guarded-functions.test.ts; here are the rules behind it: no session, a
  * guest, a member, a blocked user, a feature that's off, a missing scope, a revoked token,
- * another user's connection, and another user's analysis (Task 75). Games join with their tasks.
+ * another user's connection, another user's analysis (Task 75) and another user's local
+ * game (Task 76). Online games join with their tasks.
  */
 let env: Awaited<ReturnType<typeof createTestDb>>;
 let vault: Vault;
@@ -83,6 +86,21 @@ const ANALYSIS_OPERATIONS: Record<string, (userId: string, id: string) => Promis
 	saveChaalAnalysis: (userId, id) =>
 		analyses.saveAnalysis(env.db, userId, { id, title: "Taken", tree: createTree(), tags: {}, orientation: "white" }),
 	deleteChaalAnalysis: (userId, id) => analyses.deleteAnalysis(env.db, userId, id),
+};
+
+/** A local game of the member's, as the browser sends it. */
+const localRecord = (id: string) =>
+	toRecord(newLocalGame({ mode: "board", clock: null, layout: "flip" }, id, new Date("2026-11-09T10:00:00.000Z")));
+
+/** Every local games function's service call (src/functions/chaal/local-games.ts, Task 76), on the member's game. */
+const LOCAL_OPERATIONS: Record<string, (userId: string, id: string) => Promise<unknown>> = {
+	listChaalLocalGames: (userId) => local.listLocalGames(env.db, userId),
+	getChaalLocalGame: (userId, id) => local.getLocalGame(env.db, userId, id),
+	saveChaalLocalGame: (userId, id) =>
+		local.saveLocalGame({ db: env.db, controls: createChaalControls(env.db, () => 0) }, userId, localRecord(id)),
+	deleteChaalLocalGame: (userId, id) => local.deleteLocalGame(env.db, userId, id),
+	importChaalLocalGames: (userId, id) =>
+		local.importLocalGames({ db: env.db, controls: createChaalControls(env.db, () => 0) }, userId, [localRecord(id)]),
 };
 
 beforeAll(async () => {
@@ -148,6 +166,24 @@ describe("Chaal's access matrix", () => {
 		if (name === "listChaalAnalyses") expect(result).toEqual([]);
 		else expect(result).toMatchObject({ code: "NOT_FOUND" });
 		expect((await analyses.getAnalysis(env.db, "member", saved.id)).title).toBe("Mine");
+	});
+
+	it.each(Object.keys(LOCAL_OPERATIONS))("%s acts on the caller's own local games only", async (name) => {
+		const operation = LOCAL_OPERATIONS[name];
+		if (!operation) throw new Error(name);
+		const id = "5a6b7c8d-9e0f-4a1b-8c2d-3e4f5a6b7c8d";
+		await local.saveLocalGame(
+			{ db: env.db, controls: createChaalControls(env.db, () => 0) },
+			"member",
+			localRecord(id),
+		);
+		// Another player's id is not found, not listed, never written over or imported.
+		const result = await operation("other", id).catch((error: unknown) => error);
+		if (name === "listChaalLocalGames") expect(result).toEqual([]);
+		else if (name === "importChaalLocalGames") expect(result).toEqual({ imported: [] });
+		else expect(result).toMatchObject({ code: "NOT_FOUND" });
+		expect((await local.getLocalGame(env.db, "member", id)).id).toBe(id);
+		expect(await local.listLocalGames(env.db, "other")).toEqual([]);
 	});
 
 	it("a guest's connection works like a member's", async () => {

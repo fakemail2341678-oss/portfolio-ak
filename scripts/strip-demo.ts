@@ -307,6 +307,9 @@ const SPECS: Record<Layer, LayerSpec> = {
 			"tests/unit/chaal-engine.test.ts",
 			"tests/unit/chaal-analysis.test.ts",
 			"tests/server/chaal-analysis.test.ts",
+			// Local games: against the computer and over the board (Task 76, decision 0265).
+			"tests/unit/chaal-local.test.ts",
+			"tests/server/chaal-local.test.ts",
 		],
 		packageScripts: ["lichess:record", "chaal:sounds", "engine:copy"],
 		crons: [],

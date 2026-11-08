@@ -508,6 +508,13 @@ const CHAAL_FUNCTIONS: Record<string, ReadonlyArray<string>> = {
 	"chaal/connection.ts": ["getChaalConnection", "disconnectChaal"],
 	"chaal/preferences.ts": ["getChaalPreferences", "saveChaalPreferences", "importChaalPreferences"],
 	"chaal/analyses.ts": ["listChaalAnalyses", "getChaalAnalysis", "saveChaalAnalysis", "deleteChaalAnalysis"],
+	"chaal/local-games.ts": [
+		"listChaalLocalGames",
+		"getChaalLocalGame",
+		"saveChaalLocalGame",
+		"deleteChaalLocalGame",
+		"importChaalLocalGames",
+	],
 };
 // chaal:end
 

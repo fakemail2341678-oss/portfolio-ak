@@ -14,4 +14,7 @@ export const chaalKeys = {
 	/** "My analyses" (Task 75). */
 	analyses: () => [...all, "analyses"] as const,
 	analysis: (id: string) => [...all, "analyses", id] as const,
+	/** Local games on the account (Task 76). */
+	localGames: () => [...all, "local-games"] as const,
+	localGame: (id: string) => [...all, "local-games", id] as const,
 };

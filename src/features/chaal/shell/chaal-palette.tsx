@@ -10,6 +10,7 @@ import {
 	LogInIcon,
 	LogOutIcon,
 	SettingsIcon,
+	SwordsIcon,
 } from "lucide-react";
 import { THEME_ICONS, THEME_LABELS } from "@/components/layout/theme";
 import {
@@ -82,6 +83,14 @@ export function ChaalPalette({
 					>
 						<HouseIcon aria-hidden />
 						<span>{m.ch_nav_home()}</span>
+					</CommandItem>
+					<CommandItem
+						value="go play"
+						keywords={[m.ch_nav_play(), m.ch_local_vs_computer(), m.ch_local_over_board()]}
+						onSelect={() => go(() => navigate(chaalLinks.play()))}
+					>
+						<SwordsIcon aria-hidden />
+						<span>{m.ch_play_title()}</span>
 					</CommandItem>
 					<CommandItem
 						value="go analysis"

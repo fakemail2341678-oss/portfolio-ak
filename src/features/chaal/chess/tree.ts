@@ -70,7 +70,8 @@ type Extra = Partial<Pick<TreeNode, "comments" | "nags" | "eval" | "clock" | "sh
 export function addMove(
 	tree: GameTree,
 	parentId: string,
-	move: PlayedMove,
+	/** Only what the node keeps: a move read back from storage needs no more. */
+	move: Pick<PlayedMove, "uci" | "san" | "fen">,
 	extra: Extra = {},
 ): { tree: GameTree; id: string } {
 	const parent = nodeOf(tree, parentId);

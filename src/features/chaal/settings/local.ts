@@ -3,16 +3,18 @@ import { type ChaalPreferences, readPreferences } from "./preferences";
 /**
  * What this browser keeps for Chaal without a session (decision 0259): the preferences,
  * under keys that start with `chaal:` so "Delete this device's data" finds them all
- * (later tasks keep local games and the like under the same prefix). Every access is
+ * (local games, Task 76, are under `chaal:game:`). Every access is
  * wrapped: storage can be full, off or refused.
  */
 const PREFIX = "chaal:";
 const PREFERENCES_KEY = `${PREFIX}preferences`;
 
 const listeners = new Set<() => void>();
-const notify = () => {
+/** Tells this tab's readers that something under the prefix changed (other tabs hear the storage event). */
+export const notifyLocal = () => {
 	for (const listener of listeners) listener();
 };
+const notify = notifyLocal;
 
 /** For useSyncExternalStore: this tab's writes, and other tabs' through the storage event. */
 export function subscribeLocal(listener: () => void): () => void {

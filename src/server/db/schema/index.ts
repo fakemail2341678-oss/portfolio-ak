@@ -27,6 +27,7 @@ export * from "./audit";
 export * from "./auth";
 export * from "./chaal/analysis"; // @chaal
 export * from "./chaal/connection"; // @chaal
+export * from "./chaal/local-game"; // @chaal
 export * from "./chaal/preference"; // @chaal
 export * from "./chaal/settings"; // @chaal
 export * from "./parda/alerts"; // @parda

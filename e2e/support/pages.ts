@@ -404,6 +404,13 @@ export const REVIEWED_PAGES: ReadonlyArray<ReviewedPage> = [
 		label: "a position",
 	},
 	{ route: "/app/chaal/analysis", as: "viewer", label: "viewer" },
+	{ route: "/app/chaal/play" },
+	{ route: "/app/chaal/play", as: "viewer", label: "viewer" },
+	{
+		route: "/app/chaal/local/$id",
+		path: "/app/chaal/local/00000000-0000-4000-8000-000000000000",
+		label: "a game not in this browser",
+	},
 	{ route: "/app/chaal/settings", label: "signed out" },
 	{ route: "/app/chaal/settings", as: "viewer", label: "viewer" },
 	{ route: "/app/chaal/settings", path: "/app/chaal/settings?lichess=denied", label: "connect result" },

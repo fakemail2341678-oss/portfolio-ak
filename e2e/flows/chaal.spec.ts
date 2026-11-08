@@ -5,6 +5,8 @@
  * build under the real CSP (the guard fails on any violation). CI never calls Lichess.
  * Task 73 (decision 0259): the frame (palette, shortcuts, the phone's More), preferences in
  * the browser and on the account, and connecting from the settings page as a visitor.
+ * Task 76 (decision 0265): local games against Stockfish and over the board, kept in the
+ * browser, and moved to the account when a session opens Chaal.
  */
 import type { Page } from "@playwright/test";
 import { E2E } from "../harness/config.ts";
@@ -344,5 +346,103 @@ test.describe("Chaal's analysis board (Task 75)", () => {
 		await expect(page.getByTestId("chaal-engine-score")).toHaveText(/^(?:[+−-]?\d|#)/);
 		await page.getByTestId("chaal-engine-switch").click();
 		await expect(page.getByTestId("chaal-engine-lines")).toBeHidden();
+	});
+});
+
+test.describe("Chaal's local games (Task 76)", () => {
+	test.describe.configure({ mode: "serial" });
+
+	test.beforeEach(async ({ harness }) => {
+		await harness.resetRateLimits();
+	});
+
+	const board = (page: Page) => page.getByTestId("chaal-local-board");
+	const play = async (page: Page, from: string, to: string) => {
+		await board(page).locator(`[data-square="${from}"]`).click();
+		await board(page).locator(`[data-square="${to}"]`).click();
+	};
+	const moves = (page: Page) => page.getByTestId("chaal-moves").filter({ visible: true }).locator("[data-node]");
+	const choose = (page: Page, group: string, value: string) =>
+		page.getByTestId(group).locator(`label:has(input[value="${value}"])`).click();
+
+	test("plays Stockfish at level 1 in the browser, goes on after a reload, resigns and analyses", async ({ page }) => {
+		await page.goto("/app/chaal/play", { waitUntil: "networkidle" });
+		await choose(page, "chaal-play-level", "1");
+		await choose(page, "chaal-play-side", "white");
+		await page.getByTestId("chaal-play-computer-start").click();
+		await expect(page).toHaveURL(/\/app\/chaal\/local\/[0-9a-f-]{36}$/);
+		await play(page, "e2", "e4");
+		// The real engine, in its worker under the production CSP, answers.
+		await expect(moves(page)).toHaveCount(2, { timeout: 30_000 });
+		await page.reload({ waitUntil: "networkidle" });
+		await expect(moves(page)).toHaveCount(2);
+		await page.getByTestId("chaal-local-resign").click();
+		await page.getByRole("alertdialog").getByRole("button", { name: "Resign" }).click();
+		await expect(page.getByTestId("chaal-result")).toContainText("Black wins");
+		await page.getByTestId("chaal-local-analyse").click();
+		await expect(page).toHaveURL(/\/app\/chaal\/analysis\?moves=e2e4_[a-h][1-8][a-h][1-8]$/);
+	});
+
+	test("over the board: the board turns, the clock runs, a takeback, and the history keeps the game", async ({
+		page,
+	}) => {
+		await page.goto("/app/chaal/play", { waitUntil: "networkidle" });
+		await choose(page, "chaal-play-board-clock", "300+3");
+		await choose(page, "chaal-play-layout", "flip");
+		await page.getByTestId("chaal-play-board-start").click();
+		await expect(page).toHaveURL(/\/app\/chaal\/local\//);
+		const firstSquare = () => board(page).locator("[data-square]").first();
+		await expect(firstSquare()).toHaveAttribute("data-square", "a8");
+		await play(page, "e2", "e4");
+		// Black to move: Black at the bottom, Black's clock running.
+		await expect(firstSquare()).toHaveAttribute("data-square", "h1");
+		await expect(page.locator('[role="timer"][data-running]')).toHaveCount(1);
+		await play(page, "e7", "e5");
+		await expect(moves(page)).toHaveCount(2);
+		await page.getByTestId("chaal-local-takeback").click();
+		await expect(moves(page)).toHaveCount(1);
+		await page.getByRole("link", { name: "Back to Play" }).click();
+		await expect(page.getByTestId("chaal-history-row").first()).toHaveAttribute("data-status", "playing");
+		await expect(page.getByTestId("chaal-history-row")).toHaveCount(1);
+	});
+});
+
+test.describe("Chaal's local games for a member (Task 76)", () => {
+	test.use(signedIn("viewer"));
+
+	test("a browser's games move to the account when a session opens Chaal", async ({ page }) => {
+		const id = "6d5c4b3a-2f1e-4d0c-8b9a-7f6e5d4c3b2a";
+		const at = new Date().toISOString();
+		const record = {
+			id,
+			mode: "board",
+			level: null,
+			color: null,
+			clock: null,
+			layout: "tablet",
+			pgn: '[Event "?"]\n[Site "Chaal"]\n[Date "2026.11.09"]\n[Round "?"]\n[White "?"]\n[Black "?"]\n[Result "*"]\n\n1. d4 d5 *\n',
+			clocks: null,
+			result: null,
+			reason: null,
+			status: "playing",
+			createdAt: at,
+			updatedAt: at,
+		};
+		await page.addInitScript(
+			([key, value]: [string, string]) => {
+				if (!sessionStorage.getItem("seeded")) {
+					localStorage.setItem(key, value);
+					sessionStorage.setItem("seeded", "1");
+				}
+			},
+			[`chaal:game:${id}`, JSON.stringify(record)] as [string, string],
+		);
+		await page.goto("/app/chaal/play", { waitUntil: "networkidle" });
+		await expect.poll(() => page.evaluate((key) => localStorage.getItem(key), `chaal:game:${id}`)).toBeNull();
+		await page.reload({ waitUntil: "networkidle" });
+		await expect(page.locator(`a[href$="/local/${id}"]`)).toBeVisible();
+		// Drawn on the server from the account now.
+		const html = await (await page.request.get(`/app/chaal/local/${id}`)).text();
+		expect(html).toContain('data-at="d5"');
 	});
 });

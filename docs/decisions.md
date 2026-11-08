@@ -269,6 +269,7 @@ Record every non-obvious choice here: **What**, **Why**, **Alternatives consider
 - [0262](#0262-chaals-board-our-own-pointer-handling-a-keyboard-grid-html-squares): Chaal's board: our own pointer handling, a keyboard grid, HTML squares
 - [0263](#0263-chaals-engine-a-hashed-copy-of-the-lite-build-a-worker-client-with-one-search-at-a-time-started-on-demand): Chaal's engine: a hashed copy of the lite build, a worker client with one search at a time, started on demand
 - [0264](#0264-chaals-analysis-board-the-url-is-the-line-lichesss-data-through-our-server-a-checked-tree-saved-as-jsonb): Chaal's analysis board: the URL is the line, Lichess's data through our server, a checked tree saved as jsonb
+- [0265](#0265-chaals-local-games-played-in-the-browser-kept-where-the-player-is-pgn-checked-on-the-server): Chaal's local games: played in the browser, kept where the player is, PGN checked on the server
 </details>
 
 ---
@@ -3583,3 +3584,30 @@ Measured on the owner's Windows machine (Node 24.11, 12 threads, 11.7 GB), 2026-
 - **Lichess's own opening names (lichess-org/chess-openings, CC0) bundled:** about 3,500 lines; in the page it's weight, on the server another lookup. The explorer already names the position it's asked about.
 - **Path ids in the URL** (as Lichess's analysis has): see 0261; the URL carries UCI moves instead.
 - **Autosaving:** quieter, but a guest session would be started by just looking at a position; saving stays an action, with "changes not saved yet" beside the board.
+
+## 0265: Chaal's local games: played in the browser, kept where the player is, PGN checked on the server
+
+**What** (Task 76, 2026-11-09; `src/features/chaal/local/`, `src/server/chaal/local/`, `/app/chaal/play` and `/app/chaal/local/$id`):
+- **The model** (`game.ts`, pure): a `LocalGame` holds its settings (mode `engine` or `board`, the computer's level 1–8 and the player's side, or the board's layout `flip` or `tablet`; a time control or none), the moves as `{ uci, san, fen, clock }` and each side's time left. Positions and the game's state are computed (`stateOf`, the repetition rules over the whole history). Endings: the board's own (mate, stalemate, dead material, fivefold, 75 moves) end it as the move is added; resigning, a draw agreed (over the board only) or claimed (threefold, fifty moves, on the claimant's turn), and a flag. A flag is a win unless the other side can't mate (FIDE 6.9), read as most servers do: a lone king never mates, and a king with one minor piece mates only when the flagged side has more than its king. `GameEndReason` in `chess/rules.ts` names them all, and `ResultBanner` says each.
+- **Takebacks:** over the board one move; against the computer back to the player's turn (the computer's first move as White can't be taken back). Each side's clock goes back to what it had after its last move left, from the moves' own clocks.
+- **Clocks:** two clocks on `performance.now()` (Task 74's `ClockState`), from the first move (a side's increment is added after each of its moves, the first included), stopped by the end or "Pause". A game opened again with a clock starts paused, and "Continue" starts the side to move: offline, nobody loses time to a closed tab.
+- **The computer:** Stockfish through Task 75's client, loaded when an engine game's page opens and quit when it goes, asked for `bestMove` at the game's level whenever it's its turn, with at least 350 ms before its move shows. It never shows a score or an arrow during the game; "Analyse" opens the finished game on the analysis board (`?moves=`). Fair play's lock holds it like the analysis engine.
+- **Storage:** a `LocalGameRecord` is the game with its moves as PGN (seven tags, `TimeControl`, `Termination`, `[%clk]` per move) and the clocks left as a field. With a session, `ch_local_game` (migration `0042_chaal_local_game`), written 700 ms after the moves settle and at once when the game ends or the page is hidden; without one, this browser (`chaal:game:<id>`, one key per game, inside "Delete this device's data"). A failed account write falls back to the browser. The id is made in the browser (`crypto.randomUUID()`), so a game keeps it when it moves.
+- **Moving to a session:** the frame imports this browser's games when a session appears (`useImportLocalGames`), and forgets the ones the server took; the guest claim moves a guest's games to the account. A player keeps the 100 most recently played games, in both places (`LOCAL_GAMES_MAX`); older ones go when a new one is written.
+- **The server's checks:** every write's PGN is read move by move (`fromRecord`: one line, no variations, legal, not an unfinished game on a finished board) after its Zod shape (`localGameRecordSchema`, with the mode's fields, the result, reason and status, and the clocks agreeing). The upsert updates only the caller's own row that's still being played: another player's id is NOT_FOUND and never written over, and a finished game stays as it ended (a late write is ignored). Imports skip what doesn't read instead of failing the rest.
+- **The switch:** a new feature, `local` ("games against the computer and over the board"), needs no scope; off, the hub says so and saving and importing are FORBIDDEN. It's separate from `play`, which is online play's (Lichess scopes).
+- **Pages:** `/play` is indexable (the hub: the two setups and "Your games"); `/local/$id` is noindex. With a session its loader reads the game, so it renders on the server; without one the page holds a board-sized place until the browser's copy is read, and a missing game is said in that same place (the review's layout-shift check).
+
+**Why:**
+- **The browser first:** PLAN 13.2 has local games open to visitors, and starting a guest session to play the computer would create accounts for nothing. Saving moves without asking matches how a game is played (nobody presses Save between moves), unlike an analysis (0264).
+- **PGN as the stored form:** it's the format every export and import already speaks, the clocks fit in `[%clk]`, and `readPgn` already checks every move; a list of UCI moves would need a second checker and a second writer.
+- **The upsert's owner and status guard:** browser-made ids could collide with another player's on purpose; the guard turns that into NOT_FOUND without a read first. A finished game is history: a stale tab's write mustn't reopen it.
+- **Paused on reopening:** a clock that ran while the page was closed would flag a player who only switched apps; offline there's nobody to be unfair to.
+- **A switch of its own:** turning online play off (Lichess trouble, abuse) shouldn't take away the computer, which costs the server nothing.
+
+**Alternatives considered:**
+- **Keeping the game in the URL** like the analysis board: a clock and a result don't belong in a link, and a resumed game needs its clocks.
+- **Saving every move at once:** a request per move on a fast game; 700 ms debounce plus a flush on hide and at the end loses nothing a player would notice.
+- **Lichess's own `insufficientMaterial`-for-a-side rules in full** (bishops of one colour and the like): more code for positions that almost never meet a flag; the simple reading never calls a possible mate a draw.
+
+**Numbers:** the hub's chunk is 18.5 kB (7.0 gzipped), the game page's 32.3 kB (12.0 gzipped) beside the board kit and chess.js it shares with the analysis board; the entry rose 0.8 kB to 287.7 kB (two route definitions and the frame's import hook, which needs neither chess.js nor the functions until a session has games to import).

@@ -6,6 +6,7 @@ import type { GuestData } from "@/server/guests/data";
 import { log } from "@/server/log";
 import { moveAnalyses } from "./analysis/service";
 import { connectionOf, deleteConnection, moveConnection } from "./connect/repository";
+import { moveLocalGames } from "./local/service";
 
 /** Revokes a sealed token at Lichess, best effort (connect/service.ts's `revokeSealed`, with the app's services). */
 type Revoke = (sealed: string, userId: string) => Promise<void>;
@@ -22,8 +23,8 @@ const revokeWithStore: Revoke = async (sealed, userId) => {
  * guest's token is revoked at Lichess outside the claim's transaction, not awaited (a
  * network call doesn't belong inside it; if the claim rolls back, that guest reconnects).
  * Preferences move the same way, the account's own winning (Task 73), and saved analyses
- * join the account's (Task 75). Local games and puzzle attempts join the claim with their
- * tables (Tasks 76 and 80).
+ * join the account's (Task 75), and so do local games (Task 76, the account keeping its
+ * LOCAL_GAMES_MAX most recent). Puzzle attempts join the claim with their table (Task 80).
  */
 export function createChaalGuestData(revoke: Revoke = revokeWithStore): GuestData {
 	return {
@@ -33,6 +34,7 @@ export function createChaalGuestData(revoke: Revoke = revokeWithStore): GuestDat
 		claim: async (tx: Tx, fromUserId: string, toUserId: string) => {
 			await claimPreferences(tx, fromUserId, toUserId);
 			await moveAnalyses(tx, fromUserId, toUserId);
+			await moveLocalGames(tx, fromUserId, toUserId);
 			const guest = await connectionOf(tx, fromUserId);
 			if (!guest) return;
 			if (!(await connectionOf(tx, toUserId))) {

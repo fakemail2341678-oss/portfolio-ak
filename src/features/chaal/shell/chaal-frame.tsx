@@ -7,6 +7,7 @@ import {
 	MenuIcon,
 	SearchIcon,
 	SettingsIcon,
+	SwordsIcon,
 } from "lucide-react";
 import { type ReactNode, useState } from "react";
 import { LanguageSwitcher } from "@/components/layout/language-switcher";
@@ -19,6 +20,7 @@ import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTr
 import { useHotkeyLabel, useHotkeys } from "@/hooks/use-hotkeys";
 import { m } from "@/paraglide/messages";
 import { chaalLinks } from "../links";
+import { useImportLocalGames } from "../local/use-local-games";
 import { useImportLocalPreferences } from "../settings/use-preferences";
 import { ChaalWordmark } from "./chaal-mark";
 import { ChaalPalette } from "./chaal-palette";
@@ -30,7 +32,7 @@ import { ChaalShortcutsDialog } from "./shortcuts-dialog";
 /**
  * Chaal's sections: the top bar's links on wide screens, the tab bar on phones (PLAN Task
  * 73: Play, Puzzles, Analysis, Watch, More). A link arrives with its route (PLAN 13.3):
- * Home and Analysis (Task 75) now, Play with Task 76, Puzzles with 80, Watch with 82.
+ * Home, Play (Task 76) and Analysis (Task 75) now, Puzzles with 80, Watch with 82.
  */
 const SECTIONS: ReadonlyArray<{
 	link: LinkOptions;
@@ -40,6 +42,7 @@ const SECTIONS: ReadonlyArray<{
 	testId: string;
 }> = [
 	{ link: chaalLinks.home(), label: m.ch_nav_home, icon: HouseIcon, exact: true, testId: "chaal-nav-home" },
+	{ link: chaalLinks.play(), label: m.ch_nav_play, icon: SwordsIcon, testId: "chaal-nav-play" },
 	{ link: chaalLinks.analysis(), label: m.ch_nav_analysis, icon: ChartSplineIcon, testId: "chaal-nav-analysis" },
 ];
 
@@ -240,6 +243,7 @@ export function ChaalFrame({ children }: { children: ReactNode }) {
 	const [paletteOpen, setPaletteOpen] = useState(false);
 	const [shortcutsOpen, setShortcutsOpen] = useState(false);
 	useImportLocalPreferences();
+	useImportLocalGames();
 	useHotkeys({
 		"mod+k": () => setPaletteOpen((open) => !open),
 		"shift+?": () => setShortcutsOpen(true),
