@@ -2,13 +2,13 @@
 
 Chaal (चाल, "a move") is a chess app on the Lichess API at `/app/chaal`, run from `/admin/chaal`, built as a removable layer (`pnpm strip-demo`; decision 0254). The plan is [PLAN.md](../PLAN.md), section 13.
 
-**Where it stands: Tasks 71–73, the foundation, the look and the shell.** Chaal has its own layout and frame at `/app/chaal` with a first home, settings (preferences and the Lichess connection), about, sign-in and sign-up, and its own 404 (see "The shell and pages" below). Underneath: the look ("Diagram": tokens, board themes, pieces, sounds and fonts), the Lichess client, its cache and fixtures, a fake Lichess for e2e, connecting a Lichess account (OAuth, the token vault), the event stream through our server, and the admin's lab at `/admin/chaal/lab`. `/admin/chaal` opens the lab until the overview arrives (Task 84). The board kit is next (Task 74).
+**Where it stands: Tasks 71–74, the foundation, the look, the shell and the board kit.** Chaal has its own layout and frame at `/app/chaal` with a first home, settings (preferences and the Lichess connection), about, sign-in and sign-up, and its own 404 (see "The shell and pages" below). Underneath: the look ("Diagram": tokens, board themes, pieces, sounds and fonts), the Lichess client, its cache and fixtures, a fake Lichess for e2e, connecting a Lichess account (OAuth, the token vault), the event stream through our server, and the admin's lab at `/admin/chaal/lab`. `/admin/chaal` opens the lab until the overview arrives (Task 84). The game model and the board kit (Task 74) are built and in Storybook; the first page to use them is analysis (Task 75), which is next.
 
 ## The layer
 
 | Part | Path |
 | --- | --- |
-| Feature (isomorphic) | `src/features/chaal/`: `brand.ts` (`CHAAL_NAME`, `CHAAL_BRAND`, `chaalTitle`, `chaalHead`), `links.ts` (the base path, `chaalLinks`, `CHAAL_PATHS`, `CHAAL_SITEMAP`, the connect routes, `safeReturnPath`), `search.ts` (URL contracts), `features.ts` (switches and scopes), `schema.ts` (what functions return), `keys.ts`, `queries.ts`, `shell/` (the frame, the account menu, the palette, the shortcuts, the notice), `connect/` (connecting and disconnecting from any page), `settings/` (preferences: schema, browser copy, hook, page), `board/` (`MiniBoard`, the FEN reader), `home/`, `about/`, `auth/`, `live/` (ndjson, the event shapes), `admin/` (the lab) |
+| Feature (isomorphic) | `src/features/chaal/`: `brand.ts` (`CHAAL_NAME`, `CHAAL_BRAND`, `chaalTitle`, `chaalHead`), `links.ts` (the base path, `chaalLinks`, `CHAAL_PATHS`, `CHAAL_SITEMAP`, the connect routes, `safeReturnPath`), `search.ts` (URL contracts), `features.ts` (switches and scopes), `schema.ts` (what functions return), `keys.ts`, `queries.ts`, `shell/` (the frame, the account menu, the palette, the shortcuts, the notice), `connect/` (connecting and disconnecting from any page), `settings/` (preferences: schema, browser copy, hook, page), `chess/` (the game model: rules over chess.js, the tree, PGN, notation, spoken moves, clocks, evals), `board/` (the kit: `Board`, `MiniBoard`, the plate, `MoveList`, `MoveInput`, `Clock`, `PlayerStrip`, `Material`, `EvalBar`, `EvalGraph`, `GameControls`, `ResultBanner`, sounds, the FEN reader), `home/`, `about/`, `auth/`, `live/` (ndjson, the event shapes), `admin/` (the lab) |
 | Routes | `src/routes/_chaal/route.tsx` (the layout: brand, head, loader, 404) and `src/routes/_chaal/app/chaal/`: `index`, `about`, `settings`, `sign-in`, `sign-up`, `$` |
 | Server | `src/server/chaal/`: `lichess/` (client, lanes, cooldowns, counters, cache, schemas), `connect/` (OAuth, vault, repository, service), `controls.ts`, `context.ts`, `status.ts`, `stream.ts`, `guest-data.ts`, `store.ts` (the singletons), `admin/lab.ts` |
 | Functions | `src/functions/chaal/status.ts` (public: `withChaalPublic`), `src/functions/chaal/connection.ts` and `preferences.ts` (personal: `requireChaalUser` → `withChaalServices`), `src/functions/chaal-admin/lab.ts` (`chaal:configure`) |
@@ -16,7 +16,7 @@ Chaal (चाल, "a move") is a chess app on the Lichess API at `/app/chaal`, r
 | Nitro routes | `src/server/routes/chaal-oauth.ts` (`/api/chaal/oauth/{start,callback}`), `src/server/routes/chaal-stream.ts` (`/api/chaal/stream/events`), `src/server/routes/chaal-manifest.ts` (`/app/chaal/manifest.webmanifest` and the `/ne` one), registered in `vite.config.ts` |
 | Schema | `src/server/db/schema/chaal/`: `ch_settings`, `ch_block`, `ch_connection` (migration `0039_chaal_foundation`), `ch_preference` and `ch_settings.banner` (`0040_chaal_shell`) |
 | Admin | `src/routes/_admin/admin/chaal/` (`chaal:read` on the layout, `chaal:configure` on the lab) |
-| Tests | `tests/unit/chaal-lichess.test.ts`, `tests/unit/chaal-connect.test.ts`, `tests/unit/chaal-preferences.test.ts`, `tests/server/chaal-connect.test.ts`, `tests/server/chaal-access.test.ts`, `e2e/flows/chaal.spec.ts` |
+| Tests | `tests/unit/chaal-chess.test.ts` and `chaal-pgn.test.ts` (the model), `tests/components/chaal/` (the kit), `tests/unit/chaal-lichess.test.ts`, `tests/unit/chaal-connect.test.ts`, `tests/unit/chaal-preferences.test.ts`, `tests/server/chaal-connect.test.ts`, `tests/server/chaal-access.test.ts`, `e2e/flows/chaal.spec.ts` |
 | Fixtures | `tests/fixtures/lichess/` (`pnpm lichess:record`), `e2e/harness/lichess.ts` (the fake Lichess) |
 | The look | `src/styles/chaal.css` (imported in `app.css` between `chaal:start` and `chaal:end`), `src/features/chaal/look/` (board themes, the "Chaal/Tokens" stories), `src/features/chaal/lib/fonts.ts`, `public/chaal/pieces/cburnett/`, `public/chaal/sounds/` (`pnpm chaal:sounds`), `tests/unit/chaal-tokens.test.ts`, `.storybook/mocks/chaal.tsx` (`withChaal`) |
 
@@ -34,7 +34,32 @@ Decision 0259. `/_chaal` is a pathless layout: `staticData: { brand: CHAAL_BRAND
 
 **Preferences:** `useChaalPreferences()` returns `{ preferences, save, where }`. With a session they're the account's (`ch_preference`, saved optimistically and put back on a refusal); without one, this browser's (`settings/local.ts`, keys under `chaal:`, read after hydration, so the server renders the defaults). The frame imports the browser's copy into a new session once (`useImportLocalPreferences`); a row already there wins. Read stored values with `readPreferences`, which falls back field by field. A new preference is a field in `chaalPreferencesSchema`, a default, a column (migration), and a control on the settings page.
 
-**`MiniBoard`** (`board/mini-board.tsx`): a static diagram from a FEN, drawn on the server, in a board theme, with marked squares (vermilion rings) and optional coordinates. Give it a `label` (one image to screen readers), or none when it's decoration beside its name. The real, interactive board is Task 74's.
+**`MiniBoard`** (`board/mini-board.tsx`): a static diagram from a FEN, drawn on the server, in a board theme, with marked squares (vermilion rings) and optional coordinates. Give it a `label` (one image to screen readers), or none when it's decoration beside its name. It shares the plate (`board/plate.tsx`) with the interactive `Board` (below).
+
+## The game model and the board kit (Task 74, decisions 0261 and 0262)
+
+**The game model** (`src/features/chaal/chess/`, isomorphic and pure; only pages that show a board import it):
+
+| File | Gives |
+| --- | --- |
+| `rules.ts` | chess.js behind FEN functions: `play(fen, move)` (squares, UCI or lenient SAN; null when illegal) returns a `PlayedMove` (SAN, UCI, piece, capture, check, mate, the FEN after); `legalDests`, `isPromotion`, `checkSquare`, `turnOf`, `checkFen` (`kings`, `check`, `format`), `gameState(fen, history)`, `materialBalance`, `premoveDests` |
+| `tree.ts` | The game tree: flat nodes by id, `children[0]` the main line. `createTree`, `addMove`, `playOn`, `pathTo`, `fensTo`, `lineFrom`, `mainline`, `stepFrom`, `isMainline`, `promoteLine`, `deleteFrom`, `sizeOf`. Never mutates |
+| `pgn.ts` | `readPgn` (the first game; variations, comments, NAGs and suffixes, `[%clk]`, `[%eval]`; 500 KB and 2,000 moves at most; refuses variants, bad FENs, null and illegal moves, naming the move) and `writePgn` |
+| `notation.ts` | `figurine`, `showSan(san, notation)`, `nagSymbol`, `readTypedMove` and `moveSuggestions` for the move input |
+| `speech.ts` | `spokenMove(san)`, `spokenTurn(san, color)`, `pieceWord`, `sideName`: words from SAN alone, at render time |
+| `clock.ts` | `formatClock` (tenths under 10 s), `speedOf`, `formatTimeControl`, and two clocks on a monotonic time: `remaining`, `pressClock`, `flagged` |
+| `eval.ts` | `winChance` (Lichess's curve) and `formatScore` |
+
+- **A game's state is computed, not stored:** `gameState(node.fen, fensTo(tree, node.id))`. `end` is checkmate, stalemate, dead material, fivefold or 75 moves; `claim` is threefold or fifty moves, which play goes on through until someone claims (the play tasks decide).
+- **Hold FENs, never chess.js instances,** in state, queries or rows.
+
+**The board** (`board/board.tsx`) is controlled. Pass `fen`, `lastMove` (`{ uci, san }`: ringed, spoken and sounded when it changes), `movable` (`"white"`, `"black"`, `"both"` or `"none"`) and `onMove`, which gets the move already played; put `move.fen` back in the same render. Options: `orientation`, `autoQueen`, `coordinates`, `theme`, `pieces`, `sound` (a volume or `false`), `label` (the grid's name), `premove` with `onPremove`, `shapes` with `onShapesChange` (right-drag draws). Pass the player's preferences (`useChaalPreferences`) into it; the kit itself reads none.
+- **Size:** the board is as wide as its container and square; the page sizes the container (board first: `min(container, 100dvh − chrome)`).
+- **Input:** a press on a movable piece selects it, a drag of 4 px moves it, a click on a target plays; Escape or a second click puts it back. Keyboard: the grid is one tab stop (`aria-activedescendant`), arrows move the cursor, Enter or Space picks up and puts down. `MoveInput` beside it takes typed moves (`/`).
+- **What it says:** one polite live region per board: moves as they arrive ("Black: Knight to f6"), pick-ups, put-backs, illegal moves. Each square names itself.
+- **Tests and stories** find squares by `data-square`, pieces by `data-at` and `data-piece`, marks by `data-mark` (`dot`, `capture`, `selected`, `premove`, `check`). A story's play function must not use English names, because the second pass is Nepali.
+
+**The rest of the kit:** `MoveList` (`layout`: `table`, `strip` or `tree`; `current`, `onSelect`, `notation`), `Clock` (`ms` left at `since`, a `performance.now()` time; `running`; `low`), `PlayerStrip` (name, title, rating, `active`, `note`, `material`, the clock as children; a Lichess link is `nofollow ugc`), `Material`, `EvalBar` (`direction`), `EvalGraph` (`scores` by move, `current`, `onSelect`), `GameControls` with `useBoardKeys` (←/→, Home, End, `f`), `ResultBanner` (add new reasons to `REASONS` with their task), `PromotionPicker` (inside the board). Sounds: `playSound(name, volume)` and `soundOfSan`. The stories are "Chaal/Board" and "Chaal/Kit" (with the comps' game screen put together from the kit).
 
 ## Settings, switches and blocks
 
@@ -169,7 +194,7 @@ The board is a printed chess diagram: hatched dark squares in a heavy double fra
 
 ## Glossary (en/ne)
 
-Chess words are Chaal's own messages, in both languages, and must read the same everywhere. Task 71's words; the board's (pieces, moves, check, mate and the rest) join with Task 74, checked by a Nepali speaker.
+Chess words are Chaal's own messages, in both languages, and must read the same everywhere. The board's words (Task 74) still need a Nepali speaker's check (left for the owner).
 
 | English | नेपाली | Note |
 | --- | --- | --- |
@@ -190,8 +215,26 @@ Chess words are Chaal's own messages, in both languages, and must read the same 
 | promote (to a queen) | (रानीमा) बढुवा | |
 | permissions (a connection's scopes, on the settings page) | अनुमतिहरू | The lab keeps स्कोप |
 | guest | अतिथि | |
+| king, queen, rook, bishop, knight, pawn | राजा, रानी, हात्ती, ऊँट, घोडा, प्यादा | Task 74 |
+| piece (on the board) | गोटी | |
+| square | कोठा | |
+| White, Black | सेतो, कालो | |
+| to (a square): "Knight to f3" | "{piece} {square} मा": घोडा f3 मा | Spoken moves |
+| takes: "Bishop takes e5" | "{piece}ले {square} काट्छ": ऊँटले e5 काट्छ | |
+| castles kingside, queenside | राजातर्फ क्यासलिङ, रानीतर्फ क्यासलिङ | |
+| check, checkmate, stalemate | चेक, चेकमेट, स्टेलमेट | Loanwords, as players say them |
+| draw | बराबरी | |
+| move, moves | चाल, चालहरू | |
+| legal (move) | नियमअनुसारको (चाल) | |
+| clock | घडी | |
+| evaluation | मूल्याङ्कन | |
+| flip the board | बोर्ड पल्टाउनु | |
 
 ## Pitfalls already solved
+
+- **user-event clicks carry no coordinates:** Storybook's `userEvent.click` sends `clientX` 0, so the board takes the square from the pressed cell (`data-square`) and uses the point only while a drag holds the pointer. jsdom tests fire pointer events with coordinates on the grid instead.
+- **A move button's name must contain what it shows** (axe's `label-content-name-mismatch`): an `aria-label` of "Knight to f3" on a button showing "♘f3" fails. The board speaks moves in words; the buttons are named by their text.
+- **`aria-hidden` on an SVG** needs the value (`aria-hidden="true"`) for Biome's `noSvgWithoutTitle`.
 
 - **A board theme for visitors appears after hydration:** without a session the preferences are in `localStorage`, which the server can't read, so the first paint uses the defaults and the theme swaps in (colours only, nothing moves). A session's are on the first paint.
 - **`MiniBoard` without a label is `aria-hidden`:** an element with `role="img"` and an empty name fails axe.

@@ -265,6 +265,8 @@ Record every non-obvious choice here: **What**, **Why**, **Alternatives consider
 - [0258](#0258-chaals-look-is-diagram-a-printed-chess-diagram-paper-and-ink-one-vermilion): Chaal's look is "Diagram": a printed chess diagram, paper and ink, one vermilion
 - [0259](#0259-chaals-shell-a-frame-of-its-own-preferences-on-the-account-or-in-the-browser-connecting-from-any-page): Chaal's shell: a frame of its own, preferences on the account or in the browser, connecting from any page
 - [0260](#0260-the-entry-budget-rises-to-290-kb-for-part-7s-routes): The entry budget rises to 290 kB for Part 7's routes
+- [0261](#0261-chaals-game-model-chessjs-behind-fen-functions-a-flat-tree-our-own-pgn): Chaal's game model: chess.js behind FEN functions, a flat tree, our own PGN
+- [0262](#0262-chaals-board-our-own-pointer-handling-a-keyboard-grid-html-squares): Chaal's board: our own pointer handling, a keyboard grid, HTML squares
 </details>
 
 ---
@@ -3485,3 +3487,52 @@ Measured on the owner's Windows machine (Node 24.11, 12 threads, 11.7 GB), 2026-
 
 **Alternatives considered:**
 - **Moving weight out of the entry now:** the only candidates are the route definitions themselves. Merging Chaal's pages into fewer routes with parameters would save a few hundred bytes and make the URLs worse.
+
+## 0261: Chaal's game model: chess.js behind FEN functions, a flat tree, our own PGN
+
+**What** (Task 74, 2026-11-08; `src/features/chaal/chess/`):
+- **Rules** (`rules.ts`): chess.js 1.4.0 (BSD-2) for legality, SAN, FEN and the draw rules, behind functions that take and return FEN strings (`play`, `legalDests`, `isPromotion`, `checkSquare`, `gameState`, `materialBalance`, `premoveDests`, `checkFen`). Nothing outside this file holds a chess.js instance, so the tree, the board, the server and stored rows deal in plain strings.
+- **A game's state** (`gameState(fen, history)`): checkmate first, then stalemate and dead material (chess.js's insufficient-material test), then FIDE 9.6's automatic draws (a position five times, 75 moves without a capture or pawn move), then the claims of 9.2 and 9.3 (three times, 50 moves) as `claim`, which the game goes on through until someone claims. Repetitions are counted over the FENs of the game's path (placement, turn, castling and en passant; chess.js names an en passant square only when a capture is legal), so a tree, not a chess.js history, is the record.
+- **FEN checks** name why a FEN is refused: `kings` (not one a side), `check` (the side not to move is in check, which chess.js doesn't test), or `format`. A FEN of four fields gets "0 1".
+- **The tree** (`tree.ts`): flat, nodes by id with `parent` and ordered `children` (the first is the main line), each with ply, UCI, SAN, FEN, comments, NAGs, an eval and a clock. Immutable functions: `addMove` (a move already there is reused), `playOn`, `pathTo`, `fensTo`, `lineFrom`, `mainline`, `stepFrom` (←, →, Home, End), `isMainline`, `promoteLine`, `deleteFrom`, `sizeOf`. Ids are counters, not paths.
+- **PGN** (`pgn.ts`): our own reader and writer. It reads tags, the movetext with nested variations, `{}` and `;` comments, NAGs and the suffixes (`!?` → `$5`), move numbers in any spacing, `0-0`, figurines, and Lichess's `[%clk]` and `[%eval]` into the node; other commands (`[%cal]`, `[%csl]`) stay in the comment's text. It reads the first game only, refuses variants, a bad FEN, null moves and illegal moves (naming the move), and caps input at 500 KB and 2,000 moves including variations. Sticky regexes keep it linear in the text's size. The writer puts the seven tags first ("?" where unknown), numbers moves after a variation or a comment (`3... exd4`), writes NAGs as `$n`, and wraps at 80 characters; a read-write-read round trip gives the same tree and the same text.
+- **Notation** (`notation.ts`): figurine SAN on screen, letters in PGN, the annotator's symbols for the NAGs Chaal shows, and the move input's reader: exact SAN first ("bxc5" is the pawn), then any case, then SAN with less in it ("ne5" for Nxe5, "nd2" when one knight can go), "ambiguous" when the text fits two moves.
+- **Spoken moves** (`speech.ts`) are read from SAN alone, so a list, a stream or a PGN can be spoken without replaying: "Knight to f3, check", "घोडा f3 मा, चेक".
+- **Clocks** (`clock.ts`): display (tenths under ten seconds), Lichess's speed names (start + 40 × increment), fractional controls ("½+0"), and two clocks on a monotonic time (`remaining`, `pressClock`, `flagged`).
+- **Evals** (`eval.ts`): Lichess's published win-chance curve for bars and graphs, and "+0.35", "#−2".
+
+**Why:**
+- **chess.js** is the rules library PLAN 13.2 picked (BSD-2; chessops is GPL). Hiding it behind FEN functions keeps a later swap to one file and keeps class instances out of React state and query caches.
+- **A flat tree** copies one or two nodes per change (React state stays cheap), is jsonb as it is (Task 75 stores analyses), and looks a node up by id without walking.
+- **Our own PGN over `@mliebelt/pgn-parser`** (Apache-2.0, which PLAN 13.5 asked this task to check): its generated parser is about 600 KB unpacked and returns its own tree, which we would walk again to build ours and replay through chess.js anyway; writing PGN isn't part of it. chess.js's `loadPgn` drops variations. Ours is about 6 kB gzipped with the rest of the model, reads straight into our tree, and writes back what it reads.
+- **Draws as FIDE has them:** the play tasks decide what to do with a claim (Lichess's own games are judged by Lichess); the model only says which rule applies.
+
+**Alternatives considered:**
+- **Keeping a chess.js instance per game:** its history is one line, so variations would need one instance per line, and repetition would be counted per instance.
+- **Path ids** (each id the moves from the root, as Lichess's analysis has): stable without a counter, but a 2,000-move import would carry ids thousands of characters long.
+
+## 0262: Chaal's board: our own pointer handling, a keyboard grid, HTML squares
+
+**What** (Task 74; `src/features/chaal/board/`):
+- **The board** (`board.tsx`) is controlled: it shows `fen`, and `onMove` gets a legal move already played (SAN, UCI, the FEN after). Squares are HTML on the diagram plate (`plate.tsx`, which `MiniBoard` now shares), pieces are the cburnett images positioned with transforms, and marks are layers: under the pieces the last move's ring, the selection, a dashed premove and a ring round a checked king; over them the targets (ink dots, rings on captures, each with a paper halo so it reads on hatching); then arrows and circles (SVG, vermilion for the engine and the annotator, ink for the player's own).
+- **Pointer:** Pointer Events with pointer capture. A press on a movable piece selects it and shows its targets; moving 4 px starts a drag, and the piece follows the pointer; the square under the release is the target. A press elsewhere is a click: a target plays, another own piece is selected, anything else clears. The square comes from the cell pressed, or from the board's box while a drag holds the pointer. Right-drag draws an arrow and a right-click a circle when the page lets the player draw.
+- **Keyboard and screen readers:** the board is one tab stop, an ARIA grid of rows and cells with `aria-activedescendant` on the cursor's square. Arrows move the cursor as the board is drawn, Enter or Space picks up and puts down, Escape puts back. Each cell names itself ("e2, White Pawn, picked up", "f3, can move here", "e8, Black King, in check"). One polite live region says what happened: a move as it arrives ("Black: Knight to f6"), a pick-up, a put-back, "Not a legal move". `MoveInput` takes typed moves, with `/` to focus it.
+- **Promotion** opens a picker of four squares stacked from the promotion square, over a veil that cancels; focus starts on the queen. `autoQueen` skips it.
+- **Premoves:** when only the other side may move now and the page passes `onPremove`, the player's pieces get targets by geometry (`premoveDests`); the premove shows dashed.
+- **Motion:** a moved piece keeps its React key (`keyPieces` matches it to the nearest piece of its kind that left), so it slides on `ch-move`; both halves of castling slide; flipping remounts the layer so nothing slides across. Nothing moves under reduced motion.
+- **Sound:** `sounds.ts` plays the move's sound when `lastMove` changes, at the page's volume, only after the visitor has interacted (`navigator.userActivation`). The settings page's "Try it" uses it too.
+- **The rest of the kit:** `MoveList` (`table` for play, `strip` for a phone's live game, `tree` for analysis with comments and variations breaking into the main line's rows), `Clock` (counts down from a time taken at a monotonic moment; the side to move in ink, low time an ink block), `PlayerStrip`, `Material`, `EvalBar` (a meter; paper and ink, upright or a band), `EvalGraph` (a slider), `GameControls` with `useBoardKeys` (←/→, Home, End, `f`), `ResultBanner`, `PromotionPicker`. The shortcuts dialog lists the board's keys.
+
+**Why:**
+- **Our own pointer handling, not `@dnd-kit/react`** (PLAN 13.5 named it, copying Taskline's calendar): a board's target is pure geometry (which eighth of the box), so dnd-kit's collision detection and overlays add nothing; its keyboard sensor would duplicate the grid, and its accessibility announcements would compete with the board's live region. Pointer Events cover mouse, touch and pen in about 60 lines.
+- **HTML squares, not one SVG** (PLAN 13.5 said SVG): the board themes are CSS (a pattern for the hatching, decision 0258), which SVG fills can't take; `MiniBoard` made the same choice (0259). Arrows and circles are SVG over the squares.
+- **A grid with `aria-activedescendant`:** one tab stop for 64 squares; the grid keeps focus while the cursor moves, so the screen reader reads each square as it's reached.
+- **`EvalGraph` is our own SVG, not Recharts** (PLAN 13.5 said Recharts, lazy): the comps draw one ink line, an even line and a vermilion mark; a chart library for that is weight with nothing to do.
+- **Move buttons are named by what they show** (♘f3!), not in words: axe's label-in-name rule (WCAG 2.5.3) fails a name that doesn't contain the visible text, and speech-input users say what they see. The board speaks the move in words when it's shown.
+
+**Alternatives considered:**
+- **Roving tabindex over 64 focusable cells:** the same keyboard behaviour with 64 elements in the focus order's bookkeeping, and a focus ring that must follow drags.
+- **A text input as the only keyboard path:** typing SAN is fast for players who know it, not for everyone; both are offered.
+- **`OpeningName`** (PLAN 13.5's kit) waits for the explorer's names in Task 75; a skeleton for the board isn't needed, because the board renders on the server at its final size.
+
+**Numbers** (esbuild, minified / gzipped): chess.js 36.2 / 12.8 kB; the game model 14.1 / 6.3 kB; the board kit 26.6 / 9.7 kB; the board with the model and chess.js 50.6 / 18.4 kB; everything 75.6 / 27.3 kB. None of it is in the entry or any page yet: the pages that show a board (Task 75 on) load it.

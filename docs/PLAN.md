@@ -2873,7 +2873,7 @@ As 12.1, with these differences:
 | 71 | Foundation: the `chaal` layer, the Lichess client and cache, fixtures and the fake Lichess, connecting (OAuth, vault), spikes | xhigh | Done (decisions 0254–0257) |
 | 72 | Design direction: comps (the owner picks), tokens, boards, pieces, sounds | high | Done (decision 0258) |
 | 73 | Shell, brand, home, auth pages, settings, about | high | Done (decisions 0259, 0260) |
-| 74 | The board kit and the game model | xhigh | Planned |
+| 74 | The board kit and the game model | xhigh | Done (decisions 0261, 0262) |
 | 75 | Analysis board and the engine | xhigh | Planned |
 | 76 | Play offline: the computer and over the board | high | Planned |
 | 77 | Play online I: streams, challenges, the Lichess AI, the live game | xhigh | Planned |
@@ -3062,11 +3062,11 @@ As 12.1, with these differences:
 **Rules and the board** (`features/chaal/chess/`, `board/`):
 - **Rules:** chess.js for legality, SAN, FEN and the draw rules.
 - **Our game tree** (`tree.ts`): each node has id, ply, uci, san, fen, children, comments, NAGs, eval and clock.
-- **PGN** with variations, comments and NAGs (`pgn.ts`: our own, or `@mliebelt/pgn-parser` (Apache-2.0); Task 74 checks). Imports are capped at 500 KB and 2,000 plies.
+- **PGN** with variations, comments and NAGs (`pgn.ts`: our own, Task 74, decision 0261). Imports are capped at 500 KB and 2,000 plies.
 - **Standard chess only.** Variant games show in archives with "Open on Lichess".
 - **The board:**
-  - SVG, `aspect-ratio: 1`, sized by its container (CLS 0); coordinates inside the board; orientation;
-  - drag with `@dnd-kit/react` (as `calendar.tsx`) plus click-click;
+  - HTML squares on the diagram plate (the board themes are CSS), `aspect-ratio: 1`, sized by its container (CLS 0); coordinates outside the frame (the look, 0258); orientation;
+  - drag with our own Pointer Events handling plus click-click (Task 74, decision 0262: not dnd-kit);
   - legal-move dots, capture rings, last move, check, selection and premove marks;
   - a promotion picker (auto-queen is a setting);
   - arrows and circles in analysis;
@@ -3080,7 +3080,7 @@ As 12.1, with these differences:
   - the cburnett pieces (multi-licensed by the author; used under the 3-clause BSD licence, attributed: Task 72, decision 0258);
   - board colour themes as token sets: "diagram" (hatched, the default), "print" and "stone" (Task 72);
   - our own sounds (`pnpm chaal:sounds`), silent until the first interaction.
-- **Kit:** `Board`, `MiniBoard` (static SVG drawn on the server), `MoveList`, `Clock`, `PlayerStrip`, `EvalBar`, `EvalGraph` (Recharts, lazy), `Material`, `GameControls`, `OpeningName`, `PromotionPicker`, `ResultBanner`, and skeletons. Every piece has a story.
+- **Kit:** `Board`, `MiniBoard` (static HTML drawn on the server), `MoveList`, `MoveInput`, `Clock`, `PlayerStrip`, `EvalBar`, `EvalGraph` (our own SVG, decision 0262), `Material`, `GameControls`, `PromotionPicker`, `ResultBanner` (Task 74), and `OpeningName` (Task 75, with the explorer's names). Every piece has a story.
 
 **Data model** (each table arrives in the task that first needs it):
 
@@ -3253,21 +3253,35 @@ As 12.1, with these differences:
 
 **Left for the owner:** run `pnpm db:migrate` on Neon (`0040_chaal_shell`).
 
-### Task 74: The board kit and the game model (planned)
+### Task 74: The board kit and the game model (done)
 
-- **`chess/`:**
-  - the chess.js wrapper, the tree and PGN (with variations);
-  - FEN checks, clock maths, SAN and UCI, figurines;
-  - the spoken-move text in en/ne.
-- **`board/`:**
-  - drag, click, the keyboard grid and the move input;
-  - promotion, highlights, arrows, animation, sounds.
-- **The rest of the kit:** `MoveList` (a tree for analysis, compact for play), `Clock`, `PlayerStrip`, `EvalBar`, `EvalGraph`, `Material`, `GameControls`, `MiniBoard`.
-- **Tests:**
-  - stories for every state (a11y en/ne × light/dark);
-  - component tests: drag, click, keyboard, promotion, an illegal move, announcements;
-  - unit tests: PGN round trips with variations, and 50 known positions (mate, stalemate, insufficient material, threefold repetition, the fifty-move rule).
-- **Measure** the kit's size.
+**Done** (decisions 0261 and 0262; the guide's "The game model and the board kit").
+
+**What changed:**
+- **The game model** (`src/features/chaal/chess/`): chess.js 1.4.0 (BSD-2) behind FEN functions (`rules.ts`: play, legal targets, promotion, check, FEN checks with reasons, a game's state with FIDE's automatic draws and claims, material, premove targets); the flat game tree (`tree.ts`); our own PGN reader and writer (`pgn.ts`: variations, comments, NAGs and suffixes, `[%clk]` and `[%eval]`, the caps); figurines, the annotator's symbols and the move input's reader (`notation.ts`); spoken moves in en/ne (`speech.ts`); clock maths (`clock.ts`); win chance and score text (`eval.ts`).
+- **The board** (`board/board.tsx`): controlled; click-click and drag with Pointer Events; the keyboard grid (one tab stop, `aria-activedescendant`, arrows, Enter/Space, Escape) and self-naming squares; one polite live region; promotion picker and auto-queen; last move, selection, check, targets (dots and capture rings with a paper halo), premoves, arrows and circles (right-drag draws); the 150 ms slide with stable piece keys; move sounds after the first interaction. `MiniBoard` now shares the plate (`plate.tsx`).
+- **The kit:** `MoveList` (table, strip, tree), `MoveInput` (`/`), `Clock`, `PlayerStrip`, `Material`, `EvalBar`, `EvalGraph`, `GameControls` with `useBoardKeys`, `ResultBanner`, `PromotionPicker`; the board's keys in the shortcuts dialog; the settings page's "Try it" uses the shared sound player.
+- **Messages:** 60 new keys in en and ne (pieces, sides, spoken moves, the board, the kit), and the glossary's board words.
+- **Stories:** "Chaal/Board" (playing, captures, check, promotion, shapes, premove, keyboard, themes) and "Chaal/Kit" (the move list's three layouts and the empty list, players and clocks, the eval, results, and the comps' game screen put together from the kit).
+- **Tests:** `tests/unit/chaal-chess.test.ts` (50 known positions: mates, stalemates, dead material, repetition along a game, the 50- and 75-move rules; rules, notation, speech in both languages, clocks, evals, the tree), `tests/unit/chaal-pgn.test.ts` (reading, refusals, writing, round trips with nested variations), `tests/components/chaal/board.test.tsx` (click, drag, keyboard, promotion, an illegal move, premoves, announcements, shapes, flipping, sliding) and `kit.test.tsx`.
+
+**Deviations:**
+- **Our own pointer handling instead of `@dnd-kit/react`,** HTML squares instead of SVG, and `EvalGraph` as our own SVG instead of Recharts (0262; 13.5 updated).
+- **Our own PGN,** not `@mliebelt/pgn-parser` (checked: about 600 KB unpacked, its own tree, no writer; 0261).
+- **Move buttons are named by what they show** (♘f3), not in words: axe's label-in-name rule; the board speaks moves in words.
+- **`OpeningName` moves to Task 75** (it needs the explorer's names), and the board needs no skeleton (it renders on the server at its final size).
+- **No page uses the kit yet,** so there's no e2e run; the first page is Task 75's analysis board.
+- **The Nepali chess words** were written without a Nepali speaker's check.
+
+**Numbers:**
+- **Size** (esbuild, minified / gzipped): chess.js 36.2 / 12.8 kB, the game model 14.1 / 6.3 kB, the board kit 26.6 / 9.7 kB; the board with the model and chess.js 50.6 / 18.4 kB; everything 75.6 / 27.3 kB. The entry is 286.3 kB, unchanged (budget 290 kB, built as CI builds): no page loads the kit yet.
+- **Tests:** 101 new (`chaal-chess` 68, `chaal-pgn` 9, `board` 13, `kit` 11). `pnpm test`: 168 files, 1,849 tests; on the second full run `tests/i18n/message-usage.test.ts` timed out at 15 s under load (Storybook and a browser were running) and passed alone in 7 s.
+- **Storybook:** the Chaal stories in both passes, 44 of 44 (axe included).
+- **e2e:** `e2e/flows/chaal.spec.ts` 14 of 14 (the shortcuts dialog and settings changed); the review of `/app/chaal/settings` 35 passed, 1 flaky (the sign-in fixture, passed on retry).
+- **Gates:** `typecheck`, `check`, `knip`, `i18n:check`, `build` and the bundle check, `build-storybook`.
+- **Design check:** Playwright screenshots of the stories at 390 and 1280, light and dark, en and ne, against the comps; they found the capture and check rings sized from the board instead of the square (fixed).
+
+**Left for the owner:** have a Nepali speaker read the board's words (the guide's glossary, `ch_piece_*`, `ch_say_*`, `ch_board_*`); no migration.
 
 ### Task 75: Analysis board and the engine (planned)
 

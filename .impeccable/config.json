@@ -74,6 +74,13 @@
 				"value": "inter",
 				"createdAt": "2026-11-07T20:01:48.745Z",
 				"reason": "Claude: Inter is the whole app's established text face (Graphite, decision 0007, design-system.md); Chaal's own voice is its display face, Mukta (decision 0258)"
+			},
+			{
+				"rule": "side-tab",
+				"value": "*",
+				"files": ["src/features/chaal/board/player-strip.tsx"],
+				"createdAt": "2026-11-08T04:09:20.871Z",
+				"reason": "Approved comp: .impeccable/mocks/chaal/frames/game-1280-light.png (owner approved the comps 2026-11-08, decision 0258) marks the side to move with a heavy ink bar; ink, not a colour accent"
 			}
 		]
 	}

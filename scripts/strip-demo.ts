@@ -298,6 +298,10 @@ const SPECS: Record<Layer, LayerSpec> = {
 			".storybook/mocks/chaal.tsx",
 			"public/chaal",
 			"scripts/chaal-sounds.ts",
+			// The game model and the board kit (Task 74, decisions 0261 and 0262).
+			"tests/unit/chaal-chess.test.ts",
+			"tests/unit/chaal-pgn.test.ts",
+			"tests/components/chaal",
 		],
 		packageScripts: ["lichess:record", "chaal:sounds"],
 		crons: [],

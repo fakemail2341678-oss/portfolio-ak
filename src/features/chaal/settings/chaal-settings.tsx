@@ -16,6 +16,7 @@ import { GUEST_LIFETIME_DAYS } from "@/lib/guests";
 import { formatDate, formatNumber } from "@/lib/i18n/intl";
 import { m } from "@/paraglide/messages";
 import { MiniBoard } from "../board/mini-board";
+import { playSound } from "../board/sounds";
 import { canConnect, connectionState, useConnectLichess } from "../connect/use-connect";
 import { useDisconnectLichess } from "../connect/use-disconnect";
 import type { ChaalFeature } from "../features";
@@ -246,13 +247,6 @@ function MovesSection({
 	);
 }
 
-/** Plays the move sound at the chosen volume: the click is the interaction sounds wait for (PLAN 13.5). */
-function playSample(volume: number) {
-	const audio = new Audio("/chaal/sounds/move.wav");
-	audio.volume = volume / 100;
-	void audio.play().catch(() => {});
-}
-
 function SoundSection({
 	preferences,
 	save,
@@ -296,7 +290,7 @@ function SoundSection({
 							variant="outline"
 							size="sm"
 							disabled={!preferences.sounds}
-							onClick={() => playSample(shown)}
+							onClick={() => playSound("move", shown)}
 							className="shrink-0"
 						>
 							<Volume2Icon aria-hidden />
