@@ -517,6 +517,16 @@ const CHAAL_PUBLIC_FUNCTIONS: Record<string, ReadonlyArray<string>> = {
 	"chaal/status.ts": ["getChaalStatus"],
 	"chaal/analysis.ts": ["getChaalCloudEval", "getChaalExplorer", "getChaalTablebase", "importChaalGame"],
 	"chaal/puzzles.ts": ["getChaalDailyPuzzle", "getChaalPuzzle", "getChaalPuzzleBatch"],
+	"chaal/players.ts": [
+		"getChaalLeaderboard",
+		"getChaalPlayer",
+		"getChaalRatingHistory",
+		"getChaalPerfStats",
+		"getChaalActivity",
+		"getChaalPlayerGames",
+		"searchChaalPlayers",
+		"getChaalReplay",
+	],
 };
 
 /**
@@ -553,6 +563,7 @@ const CHAAL_FUNCTIONS: Record<string, ReadonlyArray<string>> = {
 		"getChaalPuzzleProgress",
 		"getChaalPuzzleReplay",
 	],
+	"chaal/follows.ts": ["getChaalFollowing", "followChaalPlayer"],
 };
 // chaal:end
 

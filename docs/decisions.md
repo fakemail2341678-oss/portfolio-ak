@@ -3,7 +3,7 @@
 Record every non-obvious choice here: **What**, **Why**, **Alternatives considered**. Newest entries at the bottom.
 
 <details>
-<summary>Index (239 entries)</summary>
+<summary>Index (240 entries)</summary>
 
 - [0001](#0001-project-has-its-own-git-repository): Project has its own git repository
 - [0002](#0002-default-deployment-target-is-vercel-assumption): Default deployment target is Vercel (assumption)
@@ -275,6 +275,7 @@ Record every non-obvious choice here: **What**, **Why**, **Alternatives consider
 - [0268](#0268-chaals-admin-one-versioned-settings-row-with-maintenance-as-its-own-switch-revoking-keeps-the-row-call-stats-flushed-after-each-call): Chaal's admin: one versioned settings row with maintenance as its own switch, revoking keeps the row, call stats flushed after each call
 - [0269](#0269-chaals-puzzles-lichesss-puzzles-replayed-from-their-pgn-a-trainer-of-our-own-attempts-kept-where-the-player-is-and-posted-to-lichess-in-batches): Chaal's puzzles: Lichess's puzzles replayed from their PGN, a trainer of our own, attempts kept where the player is and posted to Lichess in batches
 - [0270](#0270-the-entry-budget-rises-to-295-kb-for-tasks-8084s-routes): The entry budget rises to 295 kB for Tasks 80–84's routes
+- [0271](#0271-chaals-players-and-games-lichesss-public-reads-through-the-cache-the-viewers-token-only-for-following-a-replay-that-shares-the-analysis-imports-read): Chaal's players and games: Lichess's public reads through the cache, the viewer's token only for following, a replay that shares the analysis import's read
 </details>
 
 ---
@@ -3739,3 +3740,31 @@ Measured on the owner's Windows machine (Node 24.11, 12 threads, 11.7 GB), 2026-
 **Alternatives considered:**
 - **`/puzzles?id=` instead of `/puzzles/$id`** (PLAN 13.5 allows merging into params when the budget is tight): about 0.3 kB, and a puzzle's address would need a noindex that depends on its search; the next task would be over again.
 - **Trimming other layers' routes now:** that's Task 85's whole-app pass, not a puzzles change.
+
+## 0271: Chaal's players and games: Lichess's public reads through the cache, the viewer's token only for following, a replay that shares the analysis import's read
+
+**What** (Task 81, 2026-11-09; `src/features/chaal/players/`, `src/features/chaal/game/{game-page,replay-page,replay,load}.ts(x)`, `src/server/chaal/players/service.ts`, `src/functions/chaal/{players,follows}.ts`, `/app/chaal/players`, `/app/chaal/players/$username` and `/app/chaal/game/$id`, the fake Lichess's `e2e/harness/lichess-players.ts`):
+- **Leaderboards** (`/players?perf=`, indexable): `GET /api/player/top/50/{perf}` for one rating at a time (bullet, blitz, rapid, classical, UltraBullet; Lichess keeps none for correspondence), cached an hour. Beside them, a connected viewer with the social scopes sees whom they follow (`GET /api/rel/following`, their token, never cached).
+- **A player's page** (`/players/$username`, noindex: a person's page): the profile (`/api/user/{name}`) and whether they're online or playing (`/api/users/status?withGameIds=true`), both a minute, render on the server; a name Lichess doesn't know is Chaal's 404. The rating with the most games opens (`?perf=` picks another); its history (`rating-history`, thinned to 120 points for the kit's `LineChart`), its details (`perf/{perf}`: rank, percentile, highest and lowest, record, streaks, best wins) and the activity (ten minutes each), and the latest games (the first page of the games tab, the game in progress first) stream in after the profile under sized, error-bounded places. A connected viewer gets their score against the player (`/api/crosstable/{you}/{them}`, public, a minute) and, with the social scopes, Follow (`following` from `/api/user/{name}` read with their token, never cached; `POST /api/rel/{follow,unfollow}/{name}`, shown at once and put back on a refusal). Challenge fills in the play hub's challenge. A closed account shows its name only. What the player wrote (bio, location, links) is text, clipped; links are web addresses only, `rel="nofollow ugc noopener"`.
+- **The games tab** (`?tab=games`): the kit's FilterBar (works without JavaScript) over the rating, side, rated or casual (`mode`), result, opponent and dates; pages by time over the ndjson export (`/api/games/user/{name}`, standard ratings only unless one is chosen, the games in progress on the first page only): "Older" carries the oldest game's time as `before`, and any filter change starts again from the newest. Lichess can't filter by result, so a result filter reads three pages' worth and keeps the matches, the next page starting after the last one shown. A page is cached a minute.
+- **A game** (`/game/$id`): for a session the loader first reads it as the player's own (Task 77's Board API first line); a game they play that's still going on is the live page. Everything else is the replay, from `/game/export/{id}` with clocks, evals and the opening: the board between the players with each side's clock as it stood after every move, Lichess's judgements as the annotator's symbols in the move list (?!, ?, ??), its eval graph and each side's summary (accuracy, inaccuracies, mistakes, blunders, ACPL) when the game was analysed, the result, PGN (copy, download), Analyse (the line on the analysis board) and lichess.org. A game still being played that isn't the player's says so (spectating is Task 82); a variant links to Lichess; a game Lichess doesn't have is an answer (`null`), not an error.
+- **The palette** finds players by name (`/api/player/autocomplete`, three letters or more after a pause, cached a minute) and opens a typed name; its module loads with the first search. Players sit under More and in the footer: the contract's top bar has four sections.
+- **The admin's controls:** the `players` switch (every players function refuses, the pages say so) and the `social` switch (following off, the button and the list go), both already on /admin/chaal/settings; their server checks arrive now. Purging the cache (the epoch) reaches every read here.
+- **The client** gains `lines(request, schema)`: a finite ndjson answer (an export, the follows) read whole inside its lane, a line that doesn't map dropped and logged.
+
+**Why:**
+- **Public reads through our server and the cache, not the browser:** the pages render on the server (golden rule 1); a profile, a leaderboard or a game is the same for everyone, so one call serves many visitors, and "one request at a time" holds on the public lane.
+- **The viewer's token only for what needs it:** `following` and the follow calls are personal; everything else on the page is public, so reading it with a token would split the cache by viewer for nothing.
+- **The replay shares the analysis import's read:** the same export under the same key, so opening a game and then analysing it is one call; one schema (`gameExportAnswer`) gives both shapes, since a narrower one would put a different shape in the other's cache (the daily puzzle's pitfall, Task 80). A game still being played is kept half a minute instead of a day.
+- **Streaming the details:** a profile needs up to six calls one after another on the public lane; drawing the header first and streaming the rest (Parda's rails, 0236) keeps the first paint to two.
+- **Paging by time:** Lichess's export has no offsets, only `until`; a cursor in the URL keeps pages shareable and the back button honest.
+- **A missing game as `null`:** an error isn't dehydrated, so the browser would ask again and log a 404; an answer renders on the server and stays.
+
+**Alternatives considered:**
+- **Every rating's details at once:** six calls per profile; the chosen one's is what's read.
+- **The current game from `/api/user/{name}/current-game`:** another call; the first page of games already has it, with its last position (`lastFen`).
+- **Our own result filter on every page of twenty:** pages of two or three games; reading three pages' worth fills most pages.
+- **Players in the top bar:** the contract's first viewport has four sections (Play, Puzzles, Analysis, Watch); More, the footer and the palette reach it.
+- **Spectating an ongoing game in the replay:** that's Task 82's (the browser reads Lichess's stream).
+
+**Not checked against Lichess itself** (they need a live account; left for the owner): `following` on a profile read with a token, follow and unfollow, the following list. Built against the spec and the fake Lichess; the public reads are recorded from Lichess (`pnpm lichess:record players`).

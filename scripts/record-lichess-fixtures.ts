@@ -8,7 +8,9 @@
  * evals of the start and of 1. e4, a tablebase position, the first lines of the TV feed,
  * the daily puzzle's game as importing it into analysis reads it (Task 75), and a batch of
  * puzzles, the fake Lichess's pool for training (Task 80; `pnpm lichess:record puzzles`
- * records only that). The
+ * records only that), and a player (Task 81: the leaderboards, the profile and status, the
+ * rating history, details and activity, the latest games, a search; `pnpm lichess:record
+ * players` records only those). The
  * opening explorer refuses calls without a token: with LICHESS_APP_TOKEN in .env (a
  * personal token with no scopes) it records the masters and Lichess databases at the start
  * and after 1. e4, and a player's games (the stream's last line); without it, it keeps the
@@ -72,7 +74,9 @@ async function recordStream({ host = "api", pathname, params = {}, token, file, 
 	const url = new URL(`${BASES[host]}${pathname}`);
 	for (const [key, value] of Object.entries(params)) url.searchParams.set(key, value);
 	try {
-		const headers = token ? { ...HEADERS, authorization: `Bearer ${token}` } : HEADERS;
+		// Streams and exports answer ndjson (a games export would otherwise be PGN).
+		const ndjson = { ...HEADERS, accept: "application/x-ndjson" };
+		const headers = token ? { ...ndjson, authorization: `Bearer ${token}` } : ndjson;
 		const response = await fetch(url, { headers, signal: controller.signal });
 		if (!response.ok || !response.body) throw new Error(`${pathname}: ${response.status}`);
 		const decoder = new TextDecoder();
@@ -105,6 +109,51 @@ const START_FEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
 const EXPLORER_PLAYER = "thibault";
 /** Training's pool in the fake Lichess (Task 80): one anonymous batch of mixed puzzles. */
 const PUZZLE_BATCH = { path: "/api/puzzle/batch/mix", params: { nb: "15" } };
+/** The player the fake Lichess knows (Task 81): an account with games at every speed. */
+const PLAYER = "nihalsarin2004";
+/** What the palette's search types in e2e. */
+const PLAYER_TERM = "nihalsarin200";
+/** The leaderboards Chaal shows, and how many players each lists (src/features/chaal/players/schema.ts). */
+const LEADERBOARDS = ["bullet", "blitz", "rapid", "classical", "ultraBullet"];
+const LEADERBOARD_SIZE = 50;
+/** The standard ratings, as a games page without a rating filter asks for them. */
+const PLAYER_PERFS = ["ultraBullet", "bullet", "blitz", "rapid", "classical", "correspondence"];
+
+/**
+ * A player, as Chaal reads one (src/server/chaal/players/service.ts): the parameters are
+ * the ones it sends, so the fake Lichess finds each recording by them.
+ */
+async function recordPlayer() {
+	for (const perf of LEADERBOARDS) await record("api", `/api/player/top/${LEADERBOARD_SIZE}/${perf}`);
+	await record("api", `/api/user/${PLAYER}`);
+	await record("api", "/api/users/status", { ids: PLAYER, withGameIds: "true" });
+	await record("api", `/api/user/${PLAYER}/rating-history`);
+	await record("api", `/api/user/${PLAYER}/activity`);
+	// The rating the overview opens on: the one with the most games (mainPerf).
+	const user = JSON.parse(readFileSync(path.join(OUT, lichessFixtureName("api", `/api/user/${PLAYER}`)), "utf8")) as {
+		perfs: Record<string, { games?: number }>;
+	};
+	const main = PLAYER_PERFS.reduce((best, perf) =>
+		(user.perfs[perf]?.games ?? 0) > (user.perfs[best]?.games ?? 0) ? perf : best,
+	);
+	await record("api", `/api/user/${PLAYER}/perf/${main}`);
+	await recordStream({
+		pathname: `/api/games/user/${PLAYER}`,
+		params: {
+			max: "20",
+			perfType: PLAYER_PERFS.join(","),
+			ongoing: "true",
+			lastFen: "true",
+			opening: "true",
+			sort: "dateDesc",
+		},
+		lines: 20,
+		keep: "first",
+		maxMs: 30_000,
+	});
+	await record("api", "/api/player/autocomplete", { term: PLAYER_TERM, object: "true" });
+}
+
 /** The game-export parameters importing a game sends. */
 const GAME_EXPORT = { pgnInJson: "true", clocks: "true", evals: "true", opening: "true", literate: "false" };
 
@@ -116,6 +165,10 @@ if (only === "puzzles") {
 	await record("api", PUZZLE_BATCH.path, PUZZLE_BATCH.params);
 	process.exit(0);
 }
+if (only === "players") {
+	await recordPlayer();
+	process.exit(0);
+}
 await record("api", "/api/puzzle/daily");
 await record("api", "/api/tv/channels");
 await record("api", PUZZLE_BATCH.path, PUZZLE_BATCH.params);
@@ -125,6 +178,7 @@ await recordStream({ pathname: "/api/tv/feed", file: "api_tv_feed.ndjson", lines
 // A finished game to import into analysis: the daily puzzle's (its id is in the puzzle's recording).
 const daily = JSON.parse(readFileSync(path.join(OUT, "api_puzzle_daily.json"), "utf8")) as { game: { id: string } };
 await record("api", `/game/export/${daily.game.id}`, GAME_EXPORT);
+await recordPlayer();
 if (APP_TOKEN) {
 	for (const fen of [START_FEN, SAMPLE_FEN]) {
 		await record("explorer", "/masters", { fen, topGames: "4", moves: "12" }, APP_TOKEN);

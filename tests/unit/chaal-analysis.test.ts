@@ -328,7 +328,7 @@ describe("Lichess's analysis answers, lean", () => {
 		expect(game).toMatchObject({ id: daily.game.id, standard: true, finished: true });
 		const read = readPgn(game.pgn);
 		expect(read.ok).toBe(true);
-		expect(gameExportAnswer.parse({ id: "x", variant: "chess960", status: "started", pgn: "" })).toMatchObject({
+		expect(gameExportAnswer.parse({ id: "abcdEFGH", variant: "chess960", status: "started", pgn: "" })).toMatchObject({
 			standard: false,
 			finished: false,
 		});

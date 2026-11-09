@@ -1,4 +1,5 @@
 import "@tanstack/react-start/server-only";
+import type { z } from "zod";
 import { checkFen } from "@/features/chaal/chess/rules";
 import { ndjsonLines, parseLine } from "@/features/chaal/live/ndjson";
 import type {
@@ -43,6 +44,8 @@ const TTL = {
 	tablebase: 30 * DAY,
 	/** A finished game doesn't change. */
 	game: DAY,
+	/** A game still being played: its export changes as it goes on. */
+	ongoingGame: 30_000,
 } as const;
 
 /** How long a player's explorer stream is read before answering with what it has (it's still indexing). */
@@ -226,22 +229,35 @@ export async function tablebase(chaal: ChaalPublic, fen: string): Promise<ChaalT
 }
 
 /**
+ * A game as Lichess exports it, with its clocks, evals and opening, or null when Lichess
+ * has no such game: importing it into analysis (Task 75) and its replay (Task 81) share
+ * this read and its cache key. The caller checks its own feature's switch. A finished game
+ * is kept a day; one still being played half a minute (Lichess delays its moves anyway).
+ */
+export function exportedGame(
+	chaal: Pick<ChaalPublic, "cache" | "lichess" | "settings">,
+	id: string,
+): Promise<z.output<typeof gameExportAnswer> | null> {
+	const params = { pgnInJson: true, clocks: true, evals: true, opening: true, literate: false };
+	const path = `/game/export/${id}`;
+	return chaal.cache.read(
+		{ endpoint: "game-export", path, params, epoch: chaal.settings.cacheEpoch },
+		(game) => (game && !game.ongoing ? TTL.game : TTL.ongoingGame),
+		() =>
+			notFoundIsNull(chaal.lichess.json({ endpoint: "game-export", path, params, lane: "public" }, gameExportAnswer)),
+	);
+}
+
+/**
  * A finished standard game from Lichess as PGN, for analysis. A game still being played
  * isn't opened (fair play: PLAN 13.5; Lichess delays an ongoing game's moves anyway), and
  * a variant isn't standard chess.
  */
 export async function importGame(chaal: ChaalPublic, id: string): Promise<ChaalImportedGame> {
 	requireFeature(chaal.settings, "analysis");
-	const params = { pgnInJson: true, clocks: true, evals: true, opening: true, literate: false };
-	const path = `/game/export/${id}`;
-	const game = await chaal.cache.read(
-		{ endpoint: "game-export", path, params, epoch: chaal.settings.cacheEpoch },
-		TTL.game,
-		() =>
-			notFoundIsNull(chaal.lichess.json({ endpoint: "game-export", path, params, lane: "public" }, gameExportAnswer)),
-	);
+	const game = await exportedGame(chaal, id);
 	if (!game) return { ok: false, reason: "not-found" };
-	if (!game.finished) return { ok: false, reason: "in-progress" };
+	if (game.ongoing) return { ok: false, reason: "in-progress" };
 	if (!game.standard) return { ok: false, reason: "variant" };
 	return { ok: true, id: game.id, pgn: game.pgn };
 }

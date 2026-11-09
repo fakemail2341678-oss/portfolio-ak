@@ -34,6 +34,7 @@ import { existsSync, readFileSync } from "node:fs";
 import type { IncomingMessage, ServerResponse } from "node:http";
 import path from "node:path";
 import { type Account, createPlay } from "./lichess-play.ts";
+import { createPlayers } from "./lichess-players.ts";
 import { createPuzzles } from "./lichess-puzzles.ts";
 
 const FIXTURES = path.resolve(import.meta.dirname, "../../tests/fixtures/lichess");
@@ -93,6 +94,12 @@ const emit = (account: Account, event: unknown) => {
 };
 const play = createPlay({ emit });
 const puzzles = createPuzzles({ read: (name) => readLichessFixture(name) });
+// Defined below with the other helpers; called only while serving.
+const players = createPlayers({
+	read: (name) => readLichessFixture(name),
+	json: (response, status, body) => json(response, status, body),
+	recordedName: (pathname) => lichessFixtureName("api", pathname),
+});
 
 /** The fake's own address, as the links it gives out (an open challenge's) carry it. */
 const baseOf = (request: IncomingMessage) => `http://${request.headers.host ?? "127.0.0.1"}/lichess`;
@@ -174,6 +181,7 @@ export async function serveLichess(url: URL, request: IncomingMessage, response:
 	if (route === "DELETE /e2e/lichess") {
 		play.reset();
 		puzzles.reset();
+		players.reset();
 		codes.clear();
 		tokens.clear();
 		for (const stream of streams.values()) stream.end();
@@ -214,6 +222,7 @@ export async function serveLichess(url: URL, request: IncomingMessage, response:
 		return true;
 	}
 	if (puzzles.control(route, url, response)) return true;
+	if (players.control(route, url, response)) return true;
 	if (url.pathname.startsWith("/e2e/lichess/")) {
 		const body =
 			request.method === "POST" ? (JSON.parse((await readBody(request)) || "{}") as Record<string, unknown>) : {};
@@ -327,6 +336,10 @@ export async function serveLichess(url: URL, request: IncomingMessage, response:
 			bearer(request) !== null,
 		))
 	)
+		return true;
+
+	// Players (Task 81, ./lichess-players.ts): following, the players followed, a crosstable.
+	if (host === "api" && players.serve(pathname, request, response, tokenOf(request)?.token.account ?? null))
 		return true;
 
 	if (request.method !== "GET") {

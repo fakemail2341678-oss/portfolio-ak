@@ -70,3 +70,40 @@ export const puzzlesSearch = z.object({
 	color: z.enum(["white", "black"]).optional().catch(undefined),
 });
 export type PuzzlesSearch = z.infer<typeof puzzlesSearch>;
+
+/** Leaderboards (Task 81): which rating's list. Lichess keeps none for correspondence. */
+export const playersSearch = z.object({
+	perf: z.enum(["bullet", "blitz", "rapid", "classical", "ultraBullet"]).optional().catch(undefined),
+});
+export type PlayersSearch = z.infer<typeof playersSearch>;
+
+/** A day as `<input type="date">` writes it. */
+const searchDay = z
+	.string()
+	.regex(/^\d{4}-\d{2}-\d{2}$/)
+	.optional()
+	.catch(undefined);
+
+/**
+ * A player's page (Task 81, decision 0271): the overview with one rating's details
+ * (`perf`), or `?tab=games` with its filters (the rating, a side, rated or casual, the
+ * result, an opponent, dates) and `before`, the page's cursor (Lichess pages by time).
+ * Anything that doesn't read is dropped.
+ */
+export const playerSearch = z.object({
+	tab: z.enum(["games"]).optional().catch(undefined),
+	perf: z.enum(["ultraBullet", "bullet", "blitz", "rapid", "classical", "correspondence"]).optional().catch(undefined),
+	color: z.enum(["white", "black"]).optional().catch(undefined),
+	mode: z.enum(["rated", "casual"]).optional().catch(undefined),
+	result: z.enum(["win", "loss", "draw"]).optional().catch(undefined),
+	vs: z
+		.string()
+		.max(30)
+		.regex(/^[A-Za-z0-9][A-Za-z0-9_-]{0,28}[A-Za-z0-9]$/)
+		.optional()
+		.catch(undefined),
+	since: searchDay,
+	until: searchDay,
+	before: z.coerce.number().int().positive().optional().catch(undefined),
+});
+export type PlayerSearch = z.infer<typeof playerSearch>;

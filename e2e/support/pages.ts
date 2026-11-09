@@ -422,8 +422,24 @@ export const REVIEWED_PAGES: ReadonlyArray<ReviewedPage> = [
 		path: "/app/chaal/local/00000000-0000-4000-8000-000000000000",
 		label: "a game not in this browser",
 	},
-	// A game on Lichess (Task 77): a visitor is asked to connect where the board would be.
-	{ route: "/app/chaal/game/$id", path: "/app/chaal/game/abcdEFGH", label: "a visitor" },
+	// Players and games (Task 81): the leaderboards, a player (the recorded one), their games, a replay.
+	{ route: "/app/chaal/players" },
+	{ route: "/app/chaal/players", path: "/app/chaal/players?perf=rapid", label: "rapid" },
+	{ route: "/app/chaal/players/$username", path: "/app/chaal/players/nihalsarin2004", label: "a player" },
+	{
+		route: "/app/chaal/players/$username",
+		path: "/app/chaal/players/nihalsarin2004?tab=games",
+		label: "their games",
+	},
+	{
+		route: "/app/chaal/players/$username",
+		path: "/app/chaal/players/nobody_here",
+		status: 404,
+		label: "no such player",
+	},
+	// A game on Lichess: its replay (Task 81), or said where the board would be (Lichess has no such game).
+	{ route: "/app/chaal/game/$id", path: "/app/chaal/game/T8myeL3d", label: "a replay" },
+	{ route: "/app/chaal/game/$id", path: "/app/chaal/game/abcdEFGH", label: "no such game" },
 	{ route: "/app/chaal/settings", label: "signed out" },
 	{ route: "/app/chaal/settings", as: "viewer", label: "viewer" },
 	{ route: "/app/chaal/settings", path: "/app/chaal/settings?lichess=denied", label: "connect result" },

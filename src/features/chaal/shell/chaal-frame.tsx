@@ -9,6 +9,7 @@ import {
 	SearchIcon,
 	SettingsIcon,
 	SwordsIcon,
+	TrophyIcon,
 } from "lucide-react";
 import { type ReactNode, useState } from "react";
 import { LanguageSwitcher } from "@/components/layout/language-switcher";
@@ -56,6 +57,7 @@ const focusRing = "outline-none focus-visible:ring-[3px] focus-visible:ring-ring
 
 /** The pages behind "More" on phones, and in the footer everywhere. */
 const MORE: ReadonlyArray<{ link: LinkOptions; label: () => string; icon: LucideIcon; testId: string }> = [
+	{ link: chaalLinks.players(), label: m.ch_nav_players, icon: TrophyIcon, testId: "chaal-more-players" },
 	{ link: chaalLinks.settings(), label: m.ch_settings_title, icon: SettingsIcon, testId: "chaal-more-settings" },
 	{ link: chaalLinks.about(), label: m.ch_about_title, icon: InfoIcon, testId: "chaal-more-about" },
 ];

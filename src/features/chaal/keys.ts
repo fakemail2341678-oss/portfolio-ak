@@ -33,6 +33,17 @@ export const chaalKeys = {
 	puzzleBatch: (input: Readonly<Record<string, unknown>>) => [...all, "puzzles", "batch", input] as const,
 	puzzleProgress: () => [...all, "puzzles", "progress"] as const,
 	puzzleReplay: (theme: string) => [...all, "puzzles", "replay", theme] as const,
+	/** Players and games (Task 81). */
+	leaderboard: (perf: string) => [...all, "players", "top", perf] as const,
+	player: (username: string) => [...all, "players", "user", username.toLowerCase()] as const,
+	ratingHistory: (username: string) => [...all, "players", "user", username.toLowerCase(), "history"] as const,
+	perfStats: (username: string, perf: string) =>
+		[...all, "players", "user", username.toLowerCase(), "perf", perf] as const,
+	activity: (username: string) => [...all, "players", "user", username.toLowerCase(), "activity"] as const,
+	playerGames: (input: Readonly<Record<string, unknown>>) => [...all, "players", "games", input] as const,
+	playerSearch: (term: string) => [...all, "players", "search", term.toLowerCase()] as const,
+	following: () => [...all, "players", "following"] as const,
+	replay: (id: string) => [...all, "replay", id] as const,
 	/** Online play (Task 77): the player's challenges, a game they play, its chat. */
 	challenges: () => [...all, "challenges"] as const,
 	liveGame: (id: string) => [...all, "live-game", id] as const,

@@ -324,6 +324,10 @@ const SPECS: Record<Layer, LayerSpec> = {
 			"tests/unit/chaal-puzzles.test.ts",
 			"tests/server/chaal-puzzles.test.ts",
 			"e2e/harness/lichess-puzzles.ts",
+			// Players and games: leaderboards, a player's page and games, following, the replay (Task 81, decision 0271).
+			"tests/unit/chaal-players.test.ts",
+			"tests/server/chaal-players.test.ts",
+			"e2e/harness/lichess-players.ts",
 		],
 		packageScripts: ["lichess:record", "chaal:sounds", "engine:copy"],
 		crons: ["/api/cron/chaal"],

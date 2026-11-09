@@ -1,9 +1,8 @@
 import { useQuery } from "@tanstack/react-query";
-import { getRouteApi, Link, useNavigate } from "@tanstack/react-router";
+import { Link, useNavigate } from "@tanstack/react-router";
 import {
 	BanIcon,
 	ChartSplineIcon,
-	ExternalLinkIcon,
 	FlagIcon,
 	HandshakeIcon,
 	RotateCcwIcon,
@@ -11,15 +10,12 @@ import {
 	TrophyIcon,
 	Undo2Icon,
 } from "lucide-react";
-import { type ReactNode, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { useConfirm } from "@/components/dialogs/confirm";
 import { errorMessage } from "@/components/errors/error-page";
 import { MAIN_CONTENT } from "@/components/layout/skip-link";
 import { Button } from "@/components/ui/button";
-import { Skeleton } from "@/components/ui/skeleton";
-import { sessionQueryOptions } from "@/features/auth/queries";
-import { isAppError } from "@/lib/errors";
 import { m } from "@/paraglide/messages";
 import { Board } from "../board/board";
 import { Clock } from "../board/clock";
@@ -30,19 +26,19 @@ import { PlayerStrip } from "../board/player-strip";
 import { ResultBanner } from "../board/result-banner";
 import { formatTimeControl } from "../chess/clock";
 import { type Color, opposite, START_FEN } from "../chess/rules";
-import { canConnect, useConnectLichess } from "../connect/use-connect";
 import { chaalLinks } from "../links";
 import type { ChaalGamePlayer } from "../live/events";
 import type { KeepOptions } from "../live/reader";
 import { useLive } from "../live/store";
 import { treeOf } from "../local/game";
 import { paceKey } from "../play/controls";
-import { liveGameQueryOptions, playCalls } from "../play/queries";
+import { playCalls } from "../play/queries";
 import type { ChaalLiveGame } from "../play/schema";
-import { chaalConnectionQueryOptions, chaalStatusQueryOptions } from "../queries";
+import { chaalStatusQueryOptions } from "../queries";
 import { useChaalPreferences } from "../settings/use-preferences";
 import { LAND_BOARD, LAND_SIDE, PLACE, PLAY_COLUMN, playGrid, STRIP, ZenExit } from "../shell/play-layout";
 import { useZen } from "../shell/zen";
+import { lichessGameUrl } from "./lichess-links";
 import { LiveChat } from "./live-chat";
 import {
 	againstAi,
@@ -62,125 +58,6 @@ import {
 	turnIn,
 } from "./live-game";
 import { type LiveCalls, type LiveGameView, useLiveGame } from "./use-live-game";
-
-const route = getRouteApi("/_chaal/app/chaal/game/$id");
-
-/** The Lichess page of a game, for every state of this one. */
-export const lichessGameUrl = (id: string) => `https://lichess.org/${id}`;
-
-/**
- * /app/chaal/game/$id (PLAN Task 77; noindex): a game the player plays on Lichess. The
- * loader read its first state with the player's token, so it renders on the server; its
- * stream keeps it live after that. Every other case is said where the board would be:
- * not signed in or not connected (connect), online play off, not one of the player's games
- * (a link to Lichess), or Lichess unreachable.
- */
-export function ChaalLiveGamePage() {
-	const { id } = route.useParams();
-	const { data: session } = useQuery(sessionQueryOptions());
-	const { data: status } = useQuery(chaalStatusQueryOptions());
-	const { data: connection } = useQuery({ ...chaalConnectionQueryOptions(), enabled: Boolean(session) });
-	const connected = Boolean(connection && !connection.revoked && !connection.needsScopesFor.includes("play"));
-	const off = status?.features.play === false;
-	const game = useQuery({ ...liveGameQueryOptions(id), enabled: Boolean(session) && connected && !off });
-
-	let body: ReactNode;
-	if (off) body = <Said testId="chaal-game-off" title={m.ch_online_off_title()} text={m.ch_online_off_body()} />;
-	else if (!session || !connected) body = <ConnectHere id={id} />;
-	else if (game.data) return <LiveGameBoard key={id} initial={game.data} />;
-	else if (game.isError) {
-		const missing = isAppError(game.error) && game.error.code === "NOT_FOUND";
-		body = missing ? (
-			<Said testId="chaal-game-missing" title={m.ch_game_missing_title()} text={m.ch_game_missing_body()}>
-				<LichessLink id={id} />
-			</Said>
-		) : (
-			<Said testId="chaal-game-error" title={m.ch_game_error_title()} text={errorMessage(game.error)}>
-				<Button type="button" onClick={() => void game.refetch()}>
-					{m.error_retry()}
-				</Button>
-			</Said>
-		);
-	} else body = <BoardPlace busy />;
-
-	return (
-		<main {...MAIN_CONTENT} className="flex flex-1 flex-col outline-none" data-testid="chaal-game">
-			<h1 className="sr-only">{m.ch_game_title()}</h1>
-			{body}
-		</main>
-	);
-}
-
-/** The board's place: the same grid and square as the game, so nothing moves when it arrives. */
-function BoardPlace({ children, busy }: { children?: ReactNode; busy?: boolean }) {
-	return (
-		<div className="mx-auto grid w-full max-w-7xl gap-x-8 gap-y-3 pt-2 pb-8 sm:px-6 lg:grid-cols-[minmax(0,1fr)_minmax(18rem,24rem)] lg:px-8 lg:pt-6">
-			<div className="flex flex-col gap-1 lg:items-end" aria-busy={busy || undefined}>
-				<div className={`h-12 ${PLACE}`} />
-				{children ?? <Skeleton className={`aspect-square rounded-none ${PLACE}`} />}
-				<div className={`h-12 ${PLACE}`} />
-			</div>
-		</div>
-	);
-}
-
-/** Something said in the board's place: a title, a line, and what to do. */
-function Said({
-	title,
-	text,
-	children,
-	testId,
-}: {
-	title: string;
-	text: string;
-	children?: ReactNode;
-	testId: string;
-}) {
-	return (
-		<BoardPlace>
-			<div
-				className={`ch-frame flex aspect-square flex-col items-start justify-center gap-4 bg-ch-plate p-6 sm:p-10 ${PLACE}`}
-				data-testid={testId}
-			>
-				<p className="ch-display text-ch-head">{title}</p>
-				<p className="max-w-prose text-ch-muted">{text}</p>
-				<div className="flex flex-wrap gap-2">
-					{children}
-					<Button asChild variant="outline">
-						<Link {...chaalLinks.play()}>{m.ch_local_to_play()}</Link>
-					</Button>
-				</div>
-			</div>
-		</BoardPlace>
-	);
-}
-
-function LichessLink({ id }: { id: string }) {
-	return (
-		<Button asChild variant="outline">
-			<a href={lichessGameUrl(id)} rel="noopener" target="_blank">
-				<ExternalLinkIcon aria-hidden />
-				{m.ch_game_on_lichess()}
-			</a>
-		</Button>
-	);
-}
-
-/** Not signed in, or Lichess not connected for play: connect (or reconnect) here. */
-function ConnectHere({ id }: { id: string }) {
-	const { data: status } = useQuery(chaalStatusQueryOptions());
-	const { connect, pending } = useConnectLichess();
-	return (
-		<Said testId="chaal-game-connect" title={m.ch_game_connect_title()} text={m.ch_game_connect_body()}>
-			{canConnect(status) ? (
-				<Button type="button" onClick={() => void connect()} disabled={pending}>
-					{m.ch_connect()}
-				</Button>
-			) : null}
-			<LichessLink id={id} />
-		</Said>
-	);
-}
 
 /** A player's name as the strip shows it: the Lichess AI by its level. */
 export const playerLabel = (player: ChaalGamePlayer) =>

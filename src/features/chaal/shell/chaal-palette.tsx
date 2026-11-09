@@ -13,7 +13,9 @@ import {
 	PuzzleIcon,
 	SettingsIcon,
 	SwordsIcon,
+	TrophyIcon,
 } from "lucide-react";
+import { lazy, Suspense, useState } from "react";
 import { THEME_ICONS, THEME_LABELS } from "@/components/layout/theme";
 import {
 	CommandDialog,
@@ -34,12 +36,14 @@ import { canConnect, connectionState, useConnectLichess } from "../connect/use-c
 import { CHAAL_PATHS, chaalLinks } from "../links";
 import { chaalConnectionQueryOptions, chaalStatusQueryOptions } from "../queries";
 
+const PalettePlayers = lazy(() => import("./palette-players"));
+
 const LANGUAGE_NAMES: Record<Locale, () => string> = { en: m.language_en, ne: m.language_ne };
 
 /**
  * Chaal's palette (Ctrl/⌘ K, PLAN 13.6): its pages, connecting Lichess, the shortcuts,
- * theme, language, and signing in or out. Players join it with their pages (Task 81),
- * and each page's actions with their tasks.
+ * theme, language, and signing in or out; players found by name (Task 81, loaded with the
+ * first search), and each page's actions with their tasks.
  */
 export function ChaalPalette({
 	open,
@@ -59,8 +63,13 @@ export function ChaalPalette({
 	const { connect } = useConnectLichess();
 	const { signOut } = useAuthNavigation({ signedOutTo: CHAAL_PATHS.home });
 	const state = connectionState(connection);
+	const [term, setTerm] = useState("");
+	const close = (next: boolean) => {
+		if (!next) setTerm("");
+		onOpenChange(next);
+	};
 	const run = (action: () => void) => {
-		onOpenChange(false);
+		close(false);
 		action();
 	};
 	const go = (navigation: () => Promise<void>) => run(() => void navigation());
@@ -69,14 +78,24 @@ export function ChaalPalette({
 	return (
 		<CommandDialog
 			open={open}
-			onOpenChange={onOpenChange}
+			onOpenChange={close}
 			title={m.command_title()}
 			description={m.command_description()}
 			className="top-[18%] translate-y-0 sm:max-w-xl"
 		>
-			<CommandInput placeholder={m.ch_palette_placeholder()} data-testid="command-input" />
+			<CommandInput
+				placeholder={m.ch_palette_placeholder()}
+				value={term}
+				onValueChange={setTerm}
+				data-testid="command-input"
+			/>
 			<CommandList>
 				<CommandEmpty>{m.command_empty()}</CommandEmpty>
+				{status?.features.players !== false && term.trim().length >= 3 ? (
+					<Suspense fallback={null}>
+						<PalettePlayers term={term} onPick={(username) => go(() => navigate(chaalLinks.player(username)))} />
+					</Suspense>
+				) : null}
 				<CommandGroup heading={m.command_group_pages()}>
 					<CommandItem
 						value="go home"
@@ -109,6 +128,14 @@ export function ChaalPalette({
 					>
 						<FlameIcon aria-hidden />
 						<span>{m.ch_puzzle_streak()}</span>
+					</CommandItem>
+					<CommandItem
+						value="go players"
+						keywords={[m.ch_players_title(), m.ch_players_leaderboards()]}
+						onSelect={() => go(() => navigate(chaalLinks.players()))}
+					>
+						<TrophyIcon aria-hidden />
+						<span>{m.ch_players_title()}</span>
 					</CommandItem>
 					<CommandItem
 						value="go analysis"

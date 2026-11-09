@@ -55,6 +55,11 @@ export type Lichess = {
 	config: LichessConfig;
 	/** A JSON answer, mapped by `schema`. */
 	json: <S extends z.ZodType>(request: LichessRequest, schema: S) => Promise<z.output<S>>;
+	/**
+	 * A finite ndjson answer (a player's games, the players someone follows: Task 81), read
+	 * whole inside its lane, each line mapped by `schema`; a line that doesn't map is dropped.
+	 */
+	lines: <S extends z.ZodType>(request: LichessRequest, schema: S) => Promise<z.output<S>[]>;
 	/** A call whose answer has no body Chaal needs (a 204, a move's `{ ok: true }`). */
 	send: (request: LichessRequest) => Promise<void>;
 	/** A long-lived ndjson or PGN stream, outside the lanes. `signal` ends it. */
@@ -213,6 +218,35 @@ export function createLichess(config: LichessConfig, fetcher: typeof fetch = fet
 					throw unavailable(request.endpoint, "unexpected answer");
 				}
 				return parsed.data;
+			}),
+		lines: (request, schema) =>
+			lanes.run(request.lane, async () => {
+				// An export arrives at Lichess's pace (20 or 30 games a second), so it gets twice the time.
+				const timeout = AbortSignal.timeout(timeoutMs * 2);
+				const response = await call(request, "application/x-ndjson", () => timeout);
+				let text: string;
+				try {
+					text = await response.text();
+				} catch (error) {
+					throw unavailable(request.endpoint, "unreadable answer", error);
+				}
+				const out: z.output<typeof schema>[] = [];
+				let dropped = 0;
+				for (const line of text.split("\n")) {
+					if (!line.trim()) continue;
+					let value: unknown;
+					try {
+						value = JSON.parse(line);
+					} catch {
+						dropped += 1;
+						continue;
+					}
+					const parsed = schema.safeParse(value);
+					if (parsed.success) out.push(parsed.data);
+					else dropped += 1;
+				}
+				if (dropped > 0) log("warn", "lichess answer changed shape", { endpoint: request.endpoint, dropped });
+				return out;
 			}),
 		send: (request) =>
 			lanes.run(request.lane, async () => {

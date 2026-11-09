@@ -1,5 +1,6 @@
 import "@tanstack/react-start/server-only";
 import { z } from "zod";
+import type { Score } from "@/features/chaal/chess/eval";
 import { play, START_FEN, turnOf } from "@/features/chaal/chess/rules";
 import type {
 	ChaalChallengeLine,
@@ -12,6 +13,30 @@ import type {
 	ChaalGamePlayer,
 	ChaalGameState,
 } from "@/features/chaal/live/events";
+import {
+	type ActivityDay,
+	type ActivityGames,
+	type ChaalCrosstable,
+	type ChaalGameSummary,
+	type ChaalLeaderboard,
+	type ChaalPerfStats,
+	type ChaalPlayer,
+	type ChaalReplay,
+	type FollowedPlayer,
+	type GamePlayerSummary,
+	JUDGEMENTS,
+	type Judgement,
+	type LeaderboardPerf,
+	type MoveAnalysis,
+	PLAYER_PERFS,
+	type PlayerPerf,
+	type PlayerRating,
+	type PlayerSuggestion,
+	type RatingMoment,
+	type RatingOpponent,
+	type RatingSeries,
+	type ReplayPlayer,
+} from "@/features/chaal/players/schema";
 import type { ChaalPuzzle, LichessPuzzleDashboard, PuzzleGlicko } from "@/features/chaal/puzzles/schema";
 import type {
 	ChaalCloudEval,
@@ -375,21 +400,573 @@ export const tablebaseAnswer = z
 		}),
 	);
 
-/** GET /game/export/{id} as JSON with `pgnInJson`: what importing a game needs. */
-export const gameExportAnswer = z
+// --- Players and games (Task 81, decision 0271) ----------------------------------------------
+
+const count = z
+	.number()
+	.nullish()
+	.transform((value) => value ?? 0);
+
+const gameUser = z
 	.object({
-		id: z.string(),
-		variant: z.string(),
-		status: z.string(),
-		pgn: z.string(),
+		user: z.object({ id: z.string().nullish(), name: z.string().nullish(), title: z.string().nullish() }).nullish(),
+		name: z.string().nullish(),
+		rating: z.number().nullish(),
+		ratingDiff: z.number().nullish(),
+		aiLevel: z.number().nullish(),
+		analysis: z
+			.object({
+				inaccuracy: z.number().nullish(),
+				mistake: z.number().nullish(),
+				blunder: z.number().nullish(),
+				acpl: z.number().nullish(),
+				accuracy: z.number().nullish(),
+			})
+			.nullish(),
 	})
-	.transform((game) => ({
+	.nullish();
+
+/** A game as Lichess exports it (one ndjson line, or GET /game/export/{id} as JSON). */
+const lichessGame = z.object({
+	id: z.string().regex(/^[A-Za-z0-9]{8}$/),
+	rated: z.boolean().nullish(),
+	variant: z.string(),
+	perf: z.string().nullish(),
+	speed: z.string().nullish(),
+	createdAt: z.number().nullish(),
+	lastMoveAt: z.number().nullish(),
+	status: z.string(),
+	winner: color.nullish(),
+	players: z.object({ white: gameUser, black: gameUser }).nullish(),
+	opening: z.object({ eco: z.string().max(8), name: z.string().max(200) }).nullish(),
+	moves: z.string().nullish(),
+	initialFen: z.string().max(100).nullish(),
+	clock: z.object({ initial: z.number(), increment: z.number() }).nullish(),
+	daysPerTurn: z.number().nullish(),
+	clocks: z.array(z.number()).max(4_000).nullish(),
+	analysis: z
+		.array(
+			z.object({
+				eval: z.number().nullish(),
+				mate: z.number().nullish(),
+				best: z.string().nullish(),
+				judgment: z.object({ name: z.string() }).nullish(),
+			}),
+		)
+		.max(4_000)
+		.nullish(),
+	lastFen: z.string().max(100).nullish(),
+	lastMove: z.string().max(5).nullish(),
+});
+
+/** Lichess's statuses for a game that hasn't ended yet. */
+const UNFINISHED = new Set(["created", "started"]);
+
+function summaryPlayer(player: z.output<typeof gameUser>): GamePlayerSummary {
+	const aiLevel = player?.aiLevel ?? null;
+	return {
+		id: player?.user?.id ?? null,
+		name: player?.user?.name ?? player?.name ?? (aiLevel ? `Stockfish level ${aiLevel}` : "?"),
+		title: player?.user?.title ?? null,
+		rating: player?.rating ?? null,
+		ratingDiff: player?.ratingDiff ?? null,
+		aiLevel,
+	};
+}
+
+function gameSummaryOf(game: z.output<typeof lichessGame>): ChaalGameSummary {
+	return {
 		id: game.id,
+		rated: game.rated === true,
+		perf: game.perf ?? game.speed ?? "",
 		standard: game.variant === "standard" || game.variant === "fromPosition",
-		// Lichess's statuses for a game that hasn't ended yet.
-		finished: game.status !== "created" && game.status !== "started",
-		pgn: game.pgn,
-	}));
+		ongoing: UNFINISHED.has(game.status),
+		status: game.status,
+		winner: game.winner ?? null,
+		createdAt: game.createdAt ?? 0,
+		lastMoveAt: game.lastMoveAt ?? game.createdAt ?? 0,
+		white: summaryPlayer(game.players?.white),
+		black: summaryPlayer(game.players?.black),
+		opening: game.opening ? { eco: game.opening.eco, name: game.opening.name } : null,
+		clock: game.clock ? { initial: game.clock.initial, increment: game.clock.increment } : null,
+		daysPerTurn: game.daysPerTurn ?? null,
+		plies: (game.moves ?? "").split(" ").filter(Boolean).length,
+		lastFen: game.lastFen ?? null,
+		lastMove: game.lastMove ?? null,
+	};
+}
+
+/** One line of GET /api/games/user/{username} (ndjson): a game in a list. */
+export const gameLineAnswer = lichessGame.transform(gameSummaryOf);
+
+const perfEntry = z
+	.object({
+		games: z.number().nullish(),
+		rating: z.number().nullish(),
+		prog: z.number().nullish(),
+		prov: z.boolean().nullish(),
+	})
+	.nullable()
+	.catch(null);
+
+/** Lichess's user (GET /api/user/{username}, a line of /api/rel/following): what a profile shows. */
+const lichessUser = z.object({
+	id: z.string(),
+	username: z.string(),
+	title: z.string().nullish(),
+	disabled: z.boolean().nullish(),
+	tosViolation: z.boolean().nullish(),
+	closed: z.boolean().nullish(),
+	online: z.boolean().nullish(),
+	following: z.boolean().nullish(),
+	createdAt: z.number().nullish(),
+	seenAt: z.number().nullish(),
+	playTime: z.object({ total: z.number().nullish() }).nullish(),
+	profile: z
+		.object({
+			flag: z.string().max(16).nullish(),
+			country: z.string().max(16).nullish(),
+			location: z.string().nullish(),
+			realName: z.string().nullish(),
+			bio: z.string().nullish(),
+			fideRating: z.number().nullish(),
+			links: z.string().nullish(),
+		})
+		.nullish(),
+	count: z.object({ all: count, rated: count, win: count, loss: count, draw: count }).nullish(),
+	perfs: z.record(z.string(), perfEntry).nullish(),
+});
+
+/** Text a player wrote, kept short: the page shows it as text. */
+const clip = (text: string | null | undefined, max: number) => {
+	const trimmed = text?.trim();
+	return trimmed ? trimmed.slice(0, max) : null;
+};
+
+/** A profile's links: one per line, web addresses only. */
+function linksOf(text: string | null | undefined): string[] {
+	return (text ?? "")
+		.split(/\s+/)
+		.map((link) => link.trim())
+		.filter((link) => link.length > 3 && link.length < 200 && /^(https?:\/\/)?[\w-]+(\.[\w-]+)+(\/\S*)?$/.test(link))
+		.slice(0, 5);
+}
+
+function playerOf(user: z.output<typeof lichessUser>): ChaalPlayer {
+	const closed = user.disabled === true || user.closed === true || user.tosViolation === true;
+	const perfs = user.perfs ?? {};
+	const ratings: PlayerRating[] = [];
+	for (const perf of PLAYER_PERFS) {
+		const entry = perfs[perf];
+		if (!entry?.rating || !entry.games) continue;
+		ratings.push({
+			perf,
+			rating: Math.round(entry.rating),
+			games: entry.games,
+			progress: entry.prog ?? 0,
+			provisional: entry.prov === true,
+		});
+	}
+	const puzzle = perfs.puzzle;
+	return {
+		id: user.id.toLowerCase(),
+		username: user.username,
+		title: user.title ?? null,
+		closed,
+		online: user.online === true,
+		playingId: null,
+		createdAt: user.createdAt ?? null,
+		seenAt: user.seenAt ?? null,
+		playSeconds: user.playTime?.total ?? null,
+		profile: closed
+			? { flag: null, location: null, realName: null, bio: null, fideRating: null, links: [] }
+			: {
+					flag: user.profile?.flag ?? user.profile?.country ?? null,
+					location: clip(user.profile?.location, 80),
+					realName: clip(user.profile?.realName, 80),
+					bio: clip(user.profile?.bio, 400),
+					fideRating: user.profile?.fideRating ?? null,
+					links: linksOf(user.profile?.links),
+				},
+		count: user.count ?? { all: 0, rated: 0, win: 0, loss: 0, draw: 0 },
+		ratings: closed ? [] : ratings,
+		puzzle:
+			!closed && puzzle?.rating && puzzle.games ? { rating: Math.round(puzzle.rating), games: puzzle.games } : null,
+	};
+}
+
+/** GET /api/user/{username}; with a token, `following` says whether its owner follows them. */
+export const userAnswer = lichessUser.transform((user) => ({
+	player: playerOf(user),
+	following: user.following ?? null,
+}));
+
+/** A line of GET /api/rel/following (ndjson). */
+export const followedAnswer = lichessUser.transform(
+	(user): FollowedPlayer => ({
+		id: user.id.toLowerCase(),
+		username: user.username,
+		title: user.title ?? null,
+		online: user.online === true,
+	}),
+);
+
+/** GET /api/users/status?ids=…&withGameIds=true: online and playing. */
+export const userStatusAnswer = z
+	.array(
+		z.object({
+			id: z.string(),
+			online: z.boolean().nullish(),
+			playing: z.boolean().nullish(),
+			playingId: z.string().nullish(),
+		}),
+	)
+	.max(100)
+	.transform((list) =>
+		list.map((each) => ({
+			id: each.id.toLowerCase(),
+			online: each.online === true,
+			playingId: each.playing && each.playingId && /^[A-Za-z0-9]{8}$/.test(each.playingId) ? each.playingId : null,
+		})),
+	);
+
+/** GET /api/player/top/{nb}/{perf}. */
+export const leaderboardAnswer = (perf: LeaderboardPerf) =>
+	z
+		.object({
+			users: z
+				.array(
+					z.object({
+						id: z.string(),
+						username: z.string(),
+						title: z.string().nullish(),
+						online: z.boolean().nullish(),
+						perfs: z.record(z.string(), z.object({ rating: z.number(), progress: z.number().nullish() })),
+					}),
+				)
+				.max(200),
+		})
+		.transform(
+			(answer): ChaalLeaderboard => ({
+				perf,
+				players: answer.users.flatMap((user) => {
+					const entry = user.perfs[perf];
+					return entry
+						? [
+								{
+									id: user.id.toLowerCase(),
+									username: user.username,
+									title: user.title ?? null,
+									online: user.online === true,
+									rating: Math.round(entry.rating),
+									progress: entry.progress ?? 0,
+								},
+							]
+						: [];
+				}),
+			}),
+		);
+
+/** Lichess's names for the rating history's series. */
+const HISTORY_NAMES: Readonly<Record<string, PlayerPerf>> = {
+	ultrabullet: "ultraBullet",
+	bullet: "bullet",
+	blitz: "blitz",
+	rapid: "rapid",
+	classical: "classical",
+	correspondence: "correspondence",
+};
+
+const pad = (value: number) => String(value).padStart(2, "0");
+
+/** GET /api/user/{username}/rating-history: standard chess's series, days as `YYYY-MM-DD` (Lichess's months count from 0). */
+export const ratingHistoryAnswer = z
+	.array(
+		z.object({
+			name: z.string(),
+			points: z.array(z.tuple([z.number(), z.number(), z.number(), z.number()])).max(20_000),
+		}),
+	)
+	.transform((series): RatingSeries[] =>
+		series.flatMap((each) => {
+			const perf = HISTORY_NAMES[each.name.toLowerCase()];
+			if (!perf || each.points.length === 0) return [];
+			return [
+				{
+					perf,
+					points: each.points.map(
+						([year, month, date, rating]) => [`${year}-${pad(month + 1)}-${pad(date)}`, rating] as const,
+					),
+				},
+			];
+		}),
+	);
+
+const moment = z
+	.object({ int: z.number(), at: z.string(), gameId: z.string().nullish() })
+	.nullish()
+	.catch(null)
+	.transform((value): RatingMoment | null =>
+		value ? { rating: value.int, at: value.at, gameId: value.gameId ?? null } : null,
+	);
+
+const opponents = z
+	.object({
+		results: z.array(
+			z.object({
+				opRating: z.number(),
+				opId: z.object({ name: z.string(), id: z.string().nullish() }),
+				at: z.string(),
+				gameId: z.string().nullish(),
+			}),
+		),
+	})
+	.nullish()
+	.catch(null)
+	.transform((value): RatingOpponent[] =>
+		(value?.results ?? []).slice(0, 5).map((result) => ({
+			name: result.opId.name,
+			rating: result.opRating,
+			at: result.at,
+			gameId: result.gameId ?? null,
+		})),
+	);
+
+const streakValue = z
+	.object({ v: z.number().nullish() })
+	.nullish()
+	.transform((value) => value?.v ?? 0);
+
+/** GET /api/user/{username}/perf/{perf}: one rating's details. */
+export const perfStatsAnswer = (perf: PlayerPerf) =>
+	z
+		.object({
+			perf: z.object({
+				glicko: z.object({ rating: z.number(), deviation: z.number(), provisional: z.boolean().nullish() }),
+				nb: z.number().nullish(),
+				progress: z.number().nullish(),
+			}),
+			rank: z.number().nullish(),
+			percentile: z.number().nullish(),
+			stat: z.object({
+				highest: moment,
+				lowest: moment,
+				bestWins: opponents,
+				worstLosses: opponents,
+				count: z
+					.object({
+						all: count,
+						rated: count,
+						win: count,
+						loss: count,
+						draw: count,
+						tour: count,
+						berserk: count,
+						opAvg: z.number().nullish(),
+					})
+					.nullish(),
+				resultStreak: z
+					.object({
+						win: z.object({ cur: streakValue, max: streakValue }).nullish(),
+						loss: z.object({ cur: streakValue, max: streakValue }).nullish(),
+					})
+					.nullish(),
+			}),
+		})
+		.transform(
+			(answer): ChaalPerfStats => ({
+				perf,
+				rating: Math.round(answer.perf.glicko.rating),
+				deviation: Math.round(answer.perf.glicko.deviation),
+				provisional: answer.perf.glicko.provisional === true,
+				games: answer.perf.nb ?? 0,
+				progress: answer.perf.progress ?? 0,
+				rank: answer.rank ?? null,
+				percentile: answer.percentile ?? null,
+				highest: answer.stat.highest,
+				lowest: answer.stat.lowest,
+				count: {
+					all: answer.stat.count?.all ?? 0,
+					rated: answer.stat.count?.rated ?? 0,
+					win: answer.stat.count?.win ?? 0,
+					loss: answer.stat.count?.loss ?? 0,
+					draw: answer.stat.count?.draw ?? 0,
+					tournament: answer.stat.count?.tour ?? 0,
+					berserk: answer.stat.count?.berserk ?? 0,
+				},
+				opponentAverage: answer.stat.count?.opAvg ? Math.round(answer.stat.count.opAvg) : null,
+				streak: {
+					win: answer.stat.resultStreak?.win?.cur ?? 0,
+					winBest: answer.stat.resultStreak?.win?.max ?? 0,
+					loss: answer.stat.resultStreak?.loss?.cur ?? 0,
+					lossBest: answer.stat.resultStreak?.loss?.max ?? 0,
+				},
+				bestWins: answer.stat.bestWins,
+				worstLosses: answer.stat.worstLosses,
+			}),
+		);
+
+const score = z
+	.object({
+		win: count,
+		loss: count,
+		draw: count,
+		rp: z.object({ before: z.number(), after: z.number() }).nullish(),
+	})
+	.nullable()
+	.catch(null);
+
+/** GET /api/user/{username}/activity: the latest days, standard chess's games only. */
+export const activityAnswer = z
+	.array(
+		z.object({
+			interval: z.object({ start: z.number(), end: z.number() }),
+			games: z.record(z.string(), score).nullish(),
+			puzzles: z.object({ score }).nullish(),
+			tournaments: z.object({ nb: z.number().nullish() }).nullish(),
+			follows: z
+				.object({ in: z.object({ ids: z.array(z.string()).nullish(), nb: z.number().nullish() }).nullish() })
+				.nullish(),
+			correspondenceMoves: z.object({ nb: z.number().nullish() }).nullish(),
+		}),
+	)
+	.max(100)
+	.transform((days): ActivityDay[] =>
+		days.map((day) => {
+			const games: ActivityGames[] = [];
+			for (const perf of PLAYER_PERFS) {
+				const entry = day.games?.[perf];
+				if (entry)
+					games.push({
+						perf,
+						win: entry.win,
+						loss: entry.loss,
+						draw: entry.draw,
+						before: entry.rp?.before ?? 0,
+						after: entry.rp?.after ?? 0,
+					});
+			}
+			const puzzles = day.puzzles?.score;
+			return {
+				start: day.interval.start,
+				games,
+				puzzles: puzzles
+					? {
+							win: puzzles.win,
+							loss: puzzles.loss,
+							before: puzzles.rp?.before ?? 0,
+							after: puzzles.rp?.after ?? 0,
+						}
+					: null,
+				tournaments: day.tournaments?.nb ?? 0,
+				followers: day.follows?.in?.nb ?? day.follows?.in?.ids?.length ?? 0,
+				correspondenceMoves: day.correspondenceMoves?.nb ?? 0,
+			};
+		}),
+	);
+
+/** GET /api/crosstable/{a}/{b}: the score between two players, from `you`'s side. */
+export const crosstableAnswer = (you: string, them: string) =>
+	z.object({ users: z.record(z.string(), z.number()), nbGames: z.number() }).transform(
+		(answer): ChaalCrosstable => ({
+			you: answer.users[you.toLowerCase()] ?? 0,
+			them: answer.users[them.toLowerCase()] ?? 0,
+			games: answer.nbGames,
+		}),
+	);
+
+/** GET /api/player/autocomplete?object=true. */
+export const autocompleteAnswer = z
+	.object({
+		result: z
+			.array(
+				z.object({
+					id: z.string(),
+					name: z.string(),
+					title: z.string().nullish(),
+					online: z.boolean().nullish(),
+				}),
+			)
+			.max(50),
+	})
+	.transform((answer): PlayerSuggestion[] =>
+		answer.result.map((user) => ({
+			id: user.id.toLowerCase(),
+			username: user.name,
+			title: user.title ?? null,
+			online: user.online === true,
+		})),
+	);
+
+/**
+ * GET /game/export/{id} as JSON with `pgnInJson`, clocks, evals and the opening: what
+ * importing a game into analysis needs (Task 75) and what its replay shows (Task 81). Both
+ * read it under one cache key, so both use this one shape (see "Pitfalls" in chaal.md).
+ */
+export const gameExportAnswer = z
+	.object({ pgn: z.string() })
+	.and(lichessGame)
+	.transform((game): ChaalReplay & { finished: boolean } => {
+		const summary = gameSummaryOf(game);
+		const moves = summary.plies > 0 ? (game.moves ?? "").split(" ").filter(Boolean) : [];
+		const analysis = game.analysis
+			? moves.map((_, index): MoveAnalysis => {
+					const entry = game.analysis?.[index];
+					if (!entry) return { eval: null, judgement: null, best: null };
+					const score: Score | null =
+						typeof entry.mate === "number"
+							? { mate: entry.mate }
+							: typeof entry.eval === "number"
+								? { cp: entry.eval }
+								: null;
+					const name = entry.judgment?.name.toLowerCase();
+					return {
+						eval: score,
+						judgement: (JUDGEMENTS as ReadonlyArray<string>).includes(name ?? "") ? (name as Judgement) : null,
+						best: entry.best && /^[a-h][1-8][a-h][1-8][qrbn]?$/.test(entry.best) ? entry.best : null,
+					};
+				})
+			: null;
+		const side = (color: "white" | "black"): ReplayPlayer => {
+			const player = game.players?.[color];
+			const own = player?.analysis;
+			return {
+				...summary[color],
+				analysis: own
+					? {
+							inaccuracy: own.inaccuracy ?? 0,
+							mistake: own.mistake ?? 0,
+							blunder: own.blunder ?? 0,
+							acpl: own.acpl ?? 0,
+							accuracy: own.accuracy ?? null,
+						}
+					: null,
+			};
+		};
+		return {
+			id: summary.id,
+			rated: summary.rated,
+			perf: summary.perf,
+			standard: summary.standard,
+			ongoing: summary.ongoing,
+			finished: !summary.ongoing,
+			status: summary.status,
+			winner: summary.winner,
+			createdAt: summary.createdAt,
+			lastMoveAt: summary.lastMoveAt,
+			initialFen: game.initialFen ?? null,
+			clock: summary.clock,
+			daysPerTurn: summary.daysPerTurn,
+			white: side("white"),
+			black: side("black"),
+			opening: summary.opening,
+			moves,
+			// Lichess counts clocks in centiseconds.
+			clocks: game.clocks && game.clocks.length > 0 ? game.clocks.map((cs) => cs * 10) : null,
+			analysis,
+			pgn: game.pgn,
+		};
+	});
 
 // --- Online play (Task 77, decision 0266) ----------------------------------------------------
 

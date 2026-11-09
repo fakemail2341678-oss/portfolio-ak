@@ -2880,7 +2880,7 @@ As 12.1, with these differences:
 | 78 | Play online II: quick pairing, correspondence, notifications | high | Done (decision 0267) |
 | 79 | Admin I: settings, connections and blocks, API health | high | Done (decision 0268) |
 | 80 | Puzzles | high | Done (decisions 0269, 0270) |
-| 81 | Players and games | high | Planned |
+| 81 | Players and games | high | Done (decision 0271) |
 | 82 | Watch: TV, live games, broadcasts | high | Planned |
 | 83 | Community: tournaments, teams, studies | high | Planned |
 | 84 | Admin II: overview and curation | high | Planned |
@@ -2957,7 +2957,7 @@ As 12.1, with these differences:
   - the dnd-kit model in `src/features/taskline/calendar/calendar.tsx` (`useDraggable`, `useDroppable`, `Accessibility.configure`);
   - `enforceRateLimit` (`src/server/http/rate-limit.ts`);
   - env in `src/server/env.ts`, plus the dev-offline `OFF` list, `tests/setup/env.ts`, the harness `APP_ENV` regex and `tests/unit/env.test.ts`.
-- **Bundle:** the entry was 283.7 kB after Part 6, 284.4 after Tasks 71 and 72, 286.3 after Task 73, 286.9 after Task 75, 287.7 after Task 76, 288.5 after Task 77, 288.6 after Task 78, 289.9 after Task 79 and 290.5 after Task 80 (built as CI builds, without Sentry or PostHog keys); each route definition adds about 0.3 kB (0217). Task 73 raised the budget to 290 kB for Part 7's routes (0260), and Task 80 to 295 kB for Tasks 80–84's (0270); Task 85 measures and trims.
+- **Bundle:** the entry was 283.7 kB after Part 6, 284.4 after Tasks 71 and 72, 286.3 after Task 73, 286.9 after Task 75, 287.7 after Task 76, 288.5 after Task 77, 288.6 after Task 78, 289.9 after Task 79, 290.5 after Task 80 and 291.4 after Task 81 (built as CI builds, without Sentry or PostHog keys); each route definition adds about 0.3 kB (0217). Task 73 raised the budget to 290 kB for Part 7's routes (0260), and Task 80 to 295 kB for Tasks 80–84's (0270); Task 85 measures and trims.
 
 ### 13.5 Architecture (every task follows it)
 
@@ -3515,21 +3515,41 @@ As 12.1, with these differences:
 - On the deployment, connected with your Lichess account: train a few puzzles, check that the results and your puzzle rating reach Lichess, and open the dashboard and a replay; tell me if anything differs from the fake.
 - Have a Nepali speaker read the puzzle words (the glossary's Task 80 rows, `ch_puzzle_*`, `ch_theme_*`).
 
-### Task 81: Players and games (planned)
+### Task 81: Players and games (done)
 
-- **`/players`:** leaderboards per rating category.
-- **`/players/$username`:**
-  - the header: title, flag, online or playing, follow, "Challenge";
-  - rating cards and the rating history chart (lazy);
-  - rating details and activity;
-  - the current game, the crosstable with you, recent games.
-- **`?tab=games`:** filters in the URL (rating category, colour, rated, result, opponent, dates), pages by `until` over the ndjson export.
-- **`/game/$id` replay:**
-  - moves and per-move clocks;
-  - Lichess's eval graph and move judgements when the game has been analysed;
-  - PGN, "Analyse", and a lichess.org link.
-- **Also:** user search in the palette, and the following list.
-- **Tests.**
+**Done** (decision 0271; the guide's "Players and games").
+
+**What changed:**
+- **`/app/chaal/players`** (indexable, in the sitemap, under More and the footer, a palette entry): Lichess's leaderboards, a tab per rating (`?perf=`: bullet, blitz, rapid, classical, UltraBullet; Lichess keeps none for correspondence), 50 players each; beside them, whom a connected viewer follows.
+- **`/app/chaal/players/$username`** (noindex; an unknown name is Chaal's 404): the header (title, name, flag, online or playing, real name, location, FIDE, bio and links as text, games and record, member since; Follow, Challenge, lichess.org), then the overview: rating cards (the one with the most games opens, `?perf=` picks another), its history (the kit's `LineChart`, lazy), its details (rank, percentile, highest and lowest, record, streak, best wins), the score with a connected viewer, the game in progress, the latest games and the activity. The profile renders on the server; the rest streams in under sized, error-bounded places.
+- **`?tab=games`:** the kit's FilterBar over the rating, side, rated or casual, result, opponent and dates, all in the URL; pages by `before` (Lichess's `until`) over the ndjson export; a result filter reads three pages' worth (Lichess can't filter by result).
+- **`/app/chaal/game/$id`:** the player's own game while it's played (Task 77); every other game is its replay for anyone: the board between the players with each side's clock after every move, the moves with Lichess's judgements as ?!, ? and ??, Lichess's eval graph and each side's summary (accuracy, inaccuracies, mistakes, blunders, ACPL) when analysed, the result, PGN (copy, download), Analyse and lichess.org. A game still being played that isn't the player's, a variant, or a game Lichess doesn't have is said where the board would be.
+- **The palette** finds players by name (three letters or more, loaded with the first search) and opens a typed name.
+- **Following** (`social`, `follow:read`/`follow:write`): Follow and Unfollow on a player's page (shown at once, put back on a refusal) and the list of whom you follow, with the player's own token, never cached.
+- **Admin:** the `players` switch (every players function refuses, the pages say so) and the `social` switch (Follow and the list go), already on /admin/chaal/settings, get their server checks; the cache purge reaches every read here.
+- **Server and client:** `src/server/chaal/players/service.ts`; the players' schemas in `lichess/schemas.ts`; `gameExportAnswer` now gives the replay's shape too and the export is one read (`exportedGame`) shared with importing into analysis (a game in progress is kept 30 s, a finished one a day); the client's `lines()` reads a finite ndjson answer inside its lane. Functions `src/functions/chaal/players.ts` (public) and `follows.ts` (personal), with Storybook mocks, guard-test entries and access-matrix rows.
+- **Fixtures and the fake Lichess:** `pnpm lichess:record players` records a player (`nihalsarin2004`: the leaderboards, profile and status, history, main rating's details, activity, first page of games, a search); `e2e/harness/lichess-players.ts` follows and unfollows, lists the follows, says `following` on a profile read with a token and answers a crosstable; `GET /e2e/lichess/following?account=`.
+- **Messages:** 98 new keys in en and ne (`ch_players_*`, `ch_player_*`, `ch_games_*`, `ch_activity_*`, `ch_replay_*`, `ch_palette_*`, `ch_nav_players`, `ch_speed_ultra_bullet`; the glossary's Task 81 rows); five keys whose UI went with the old game page removed.
+- **Stories:** "Chaal/Players": a leaderboard, game rows, a replay with and without Lichess's analysis.
+- **Tests:** `tests/unit/chaal-players.test.ts` (15: every recorded answer as Chaal maps it, a closed account, links and bios, the games page's parameters, results and URL, the replay's line, clocks, scores and ending), `tests/server/chaal-players.test.ts` (10: the cache, a viewer's follow state with their token and score, missing scopes and social off, a refused token, NOT_FOUND and the players switch, the details, the cursor and the result filter, the replay, following and its checks), 4 access-matrix rows, and e2e (7: a leaderboard to a player's page and Challenge; the games tab's filters; an unknown player's 404; the palette's search; a replay stepped through to Analyse; a game Lichess doesn't have; following and unfollowing while connected, with the list).
+
+**Numbers:**
+- **Size:** the entry is 291.4 kB (290.5 before; budget 295 kB), built by the e2e harness as CI builds.
+- **Tests:** related suites (`tests/unit/chaal-*`, `tests/server/chaal-*`, the guard, route-SEO, e2e-pages, strip-markers, sitemap, i18n, `tests/components/chaal`): 35 files, 543 tests, all passing. The full `pnpm test` runs in Task 85.
+- **Storybook:** every Chaal story in both passes, 110 of 110.
+- **e2e:** every Chaal flow and the browser review of every `/app/chaal` and `/admin/chaal` page: 425 passed in the full run; its one failure (the Challenge check's own regex, which stopped the 5 flows after it) was fixed and the Task 81 flows rerun, 7 of 7.
+- **Gates:** `typecheck`, `check`, `knip`, `i18n:check`, the bundle check, `build-storybook`.
+
+**Deviations:**
+- **Players are under More, not in the top bar:** the contract's top bar has four sections (Play, Puzzles, Analysis, Watch).
+- **One rating's details at a time** (the chosen one), not all six: a call each on the public lane.
+- **The current game is the first page's game in progress** (its last position as Lichess exports it, a little behind), not `/api/user/{name}/current-game`; spectating it live is Task 82's.
+- **A missing game is an answer (`null`), not an error,** so the browser doesn't ask again (0271).
+- **Design flow:** the browser review at three widths in both languages and themes and the stories' axe passes; no separate Playwright MCP pass, `ui-ux-pro-max` or impeccable critique, as in Tasks 73–80 (the finish review is Task 85's).
+
+**Left for the owner:**
+- On the deployment, connected with your Lichess account: follow and unfollow a player, check the list beside the leaderboards, and open one of your finished games; tell me if anything differs from the fake.
+- Have a Nepali speaker read the players' words (the glossary's Task 81 rows, `ch_player_*`, `ch_players_*`, `ch_replay_*`).
 
 ### Task 82: Watch: TV, live games and broadcasts (planned)
 

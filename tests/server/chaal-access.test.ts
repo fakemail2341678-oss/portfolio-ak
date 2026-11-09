@@ -12,6 +12,7 @@ import { createChaalCache } from "@/server/chaal/lichess/cache";
 import { createLichess } from "@/server/chaal/lichess/client";
 import * as local from "@/server/chaal/local/service";
 import * as play from "@/server/chaal/play/service";
+import * as players from "@/server/chaal/players/service";
 import * as preferences from "@/server/chaal/preferences";
 import * as puzzles from "@/server/chaal/puzzles/service";
 import { chaalStatus } from "@/server/chaal/status";
@@ -25,8 +26,8 @@ import { createTestDb } from "../utils/test-db";
  * tests/server/guarded-functions.test.ts; here are the rules behind it: no session, a
  * guest, a member, a blocked user, a feature that's off, a missing scope, a revoked token,
  * another user's connection, another user's analysis (Task 75), another user's local
- * game (Task 76), online play's calls (Task 77), each with the caller's own token, and
- * another user's puzzle attempts (Task 80).
+ * game (Task 76), online play's calls (Task 77), each with the caller's own token,
+ * another user's puzzle attempts (Task 80), and following players (Task 81).
  */
 let env: Awaited<ReturnType<typeof createTestDb>>;
 let vault: Vault;
@@ -148,6 +149,14 @@ const PUZZLE_OPERATIONS: Record<string, (userId: string, id: string) => Promise<
 	importChaalPuzzleAttempts: (userId, id) => puzzles.importAttempts(deps(), userId, [puzzleAttempt(id)]),
 	getChaalPuzzleProgress: (userId) => puzzles.progress({ ...deps(), cache: createChaalCache() }, userId),
 	getChaalPuzzleReplay: (userId) => puzzles.replay(deps(), userId, "fork"),
+};
+
+const SOCIAL = ["follow:read", "follow:write"];
+
+/** Every following function's service call (src/functions/chaal/follows.ts, Task 81). */
+const FOLLOW_OPERATIONS: Record<string, (userId: string) => Promise<unknown>> = {
+	getChaalFollowing: (userId) => players.following(deps(), userId),
+	followChaalPlayer: (userId) => players.setFollowing(deps(), userId, "someone", true),
 };
 
 beforeAll(async () => {
@@ -281,6 +290,36 @@ describe("Chaal's access matrix", () => {
 		);
 		expect(tokens.length).toBeGreaterThan(0);
 		expect(tokens.every((token) => token === "Bearer lio_other_lichess")).toBe(true);
+		fetcher.mockImplementation(async () => new Response(null, { status: 204 }));
+	});
+
+	it.each(
+		Object.keys(FOLLOW_OPERATIONS),
+	)("%s needs a connection with the social scopes: refused without one, without them, revoked, or with social off", async (name) => {
+		const operation = FOLLOW_OPERATIONS[name];
+		if (!operation) throw new Error(name);
+		await expect(operation("member")).rejects.toMatchObject({ reason: "lichess-reconnect" });
+		await connected("member", "member_lichess", PLAY);
+		await expect(operation("member")).rejects.toMatchObject({ reason: "lichess-reconnect" });
+		await env.db.update(schema.chConnection).set({ scopes: SOCIAL, revokedAt: new Date(0) });
+		await expect(operation("member")).rejects.toMatchObject({ reason: "lichess-reconnect" });
+		await env.db.update(schema.chConnection).set({ revokedAt: null });
+		await env.db.insert(schema.chSettings).values({ id: 1, features: { social: false } });
+		await expect(operation("member")).rejects.toMatchObject({ code: "FORBIDDEN" });
+		expect(fetcher).not.toHaveBeenCalled();
+	});
+
+	it.each(Object.keys(FOLLOW_OPERATIONS))("%s acts with the caller's own token only", async (name) => {
+		const operation = FOLLOW_OPERATIONS[name];
+		if (!operation) throw new Error(name);
+		await connected("member", "member_lichess", SOCIAL);
+		await connected("other", "other_lichess", SOCIAL);
+		fetcher.mockImplementation(async () => new Response("", { status: 200 }));
+		await operation("other");
+		const tokens = fetcher.mock.calls.map(
+			([, init]) => (init?.headers as Record<string, string> | undefined)?.authorization,
+		);
+		expect(tokens).toEqual(["Bearer lio_other_lichess"]);
 		fetcher.mockImplementation(async () => new Response(null, { status: 204 }));
 	});
 

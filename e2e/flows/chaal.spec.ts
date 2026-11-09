@@ -12,6 +12,8 @@
  * kept open, an open link, and two tabs sharing one event stream.
  * Task 79 (decision 0268): the admin turns play off (pages say so, the streams refuse), revokes
  * a connection (the lab says reconnect), and blocks an account (connecting it is refused).
+ * Task 81 (decision 0271): leaderboards, a player's page and games, the palette's search, a
+ * finished game's replay, and following a player while connected.
  */
 import type { Page } from "@playwright/test";
 import { E2E } from "../harness/config.ts";
@@ -1017,5 +1019,140 @@ test.describe("Chaal's puzzles connected to Lichess (Task 80)", () => {
 		await replay.click();
 		await expect(page).toHaveURL(/mode=replay/);
 		await puzzleTurn(page);
+	});
+});
+
+/** The player the fake Lichess knows (recorded by `pnpm lichess:record players`). */
+const RECORDED_PLAYER = "nihalsarin2004";
+
+const replayPiece = (page: Page, square: string, piece: string) =>
+	page.getByTestId("chaal-replay-board").locator(`[data-at="${square}"][data-piece="${piece}"]`);
+
+test.describe("Chaal's players and games for a visitor (Task 81)", () => {
+	test.describe.configure({ mode: "serial" });
+
+	test("a leaderboard links to a player; their page renders on the server and streams the rest", async ({ page }) => {
+		await page.goto("/app/chaal/players?perf=ultraBullet", { waitUntil: "networkidle" });
+		const rows = page.getByTestId("chaal-leaderboard").locator("tbody tr");
+		await expect(rows.first()).toBeVisible();
+		expect(await rows.count()).toBeGreaterThan(10);
+		await expect(page.getByTestId("chaal-players-perf-ultraBullet")).toHaveAttribute("aria-current", "page");
+
+		await page.goto(`/app/chaal/players/${RECORDED_PLAYER}`, { waitUntil: "networkidle" });
+		await expect(page.getByTestId("chaal-player-header")).toContainText(RECORDED_PLAYER, { ignoreCase: true });
+		// The rating with the most games opens, with its details, the latest games and the activity.
+		await expect(page.getByTestId("chaal-player-perf-ultraBullet")).toHaveAttribute("aria-current", "true");
+		await expect(page.getByTestId("chaal-player-perf")).toBeVisible();
+		await expect(page.getByTestId("chaal-player-latest").getByTestId("chaal-game-row").first()).toBeVisible();
+		await expect(page.getByTestId("chaal-player-activity")).toBeVisible();
+		await expect(page.locator("[data-chart-frame]")).toBeVisible();
+		// No follow button for a visitor; Challenge fills in the play hub.
+		await expect(page.getByTestId("chaal-player-follow")).toHaveCount(0);
+		await page.getByTestId("chaal-player-challenge").click();
+		await page.waitForURL(
+			(url) =>
+				url.pathname === "/app/chaal/play" &&
+				url.searchParams.get("with") === "friend" &&
+				url.searchParams.get("opponent")?.toLowerCase() === RECORDED_PLAYER,
+		);
+	});
+
+	test("the games tab: filters go in the URL and an empty result says so", async ({ page }) => {
+		await page.goto(`/app/chaal/players/${RECORDED_PLAYER}?tab=games`, { waitUntil: "networkidle" });
+		const rows = page.getByTestId("chaal-player-games").getByTestId("chaal-game-row");
+		expect(await rows.count()).toBe(20);
+		await expect(page.getByTestId("chaal-player-games-older")).toBeVisible();
+		// A filter changes the URL at once (the fake has recorded only the first page without one).
+		await page.locator('select[name="result"]').selectOption("win");
+		await expect(page).toHaveURL(/tab=games.*result=win|result=win.*tab=games/);
+	});
+
+	test("a player Lichess doesn't know is Chaal's 404", async ({ page, guard }) => {
+		guard.allow(RESOURCE_STATUS(404));
+		const response = await page.goto("/app/chaal/players/nobody_here");
+		expect(response?.status()).toBe(404);
+	});
+
+	test("the palette finds a player by name", async ({ page }) => {
+		await page.goto("/app/chaal", { waitUntil: "networkidle" });
+		await page.keyboard.press("Control+k");
+		// One fill: the search waits for a pause, so only the recorded term is asked for.
+		await page.getByTestId("command-input").fill("nihalsarin200");
+		await page.getByRole("option", { name: new RegExp(`(^|\\s)${RECORDED_PLAYER}$`, "i") }).click();
+		await expect(page).toHaveURL(new RegExp(`/app/chaal/players/${RECORDED_PLAYER}$`, "i"));
+	});
+
+	test("a finished game replays: at the end, stepping back, the clocks, Lichess's analysis and Analyse", async ({
+		page,
+	}) => {
+		await page.goto("/app/chaal/game/T8myeL3d", { waitUntil: "networkidle" });
+		await expect(page.getByTestId("chaal-replay")).toBeVisible();
+		await expect(page.getByTestId("chaal-replay-summary")).toBeVisible();
+		// The end: Black's rook mated on h4.
+		await expect(replayPiece(page, "h4", "bR")).toBeVisible();
+		await page.keyboard.press("Home");
+		await expect(replayPiece(page, "c2", "wP")).toBeVisible();
+		await page.keyboard.press("ArrowRight");
+		await expect(replayPiece(page, "c4", "wP")).toBeVisible();
+		// Lichess's judgements are the annotator's symbols beside the moves.
+		await expect(page.getByText("??").first()).toBeAttached();
+		await page.getByRole("link", { name: "Analyse" }).click();
+		await expect(page).toHaveURL(/\/app\/chaal\/analysis\?moves=c2c4_/);
+	});
+
+	test("a game Lichess doesn't have is said where the board would be", async ({ page }) => {
+		await page.goto("/app/chaal/game/abcdEFGH", { waitUntil: "networkidle" });
+		await expect(page.getByTestId("chaal-game-missing")).toBeVisible();
+	});
+});
+
+test.describe("Chaal's players connected to Lichess (Task 81)", () => {
+	// Not the review's viewer: Lichess allows one event stream per token (Task 77).
+	test.use(signedIn("member"));
+	test.describe.configure({ mode: "serial" });
+
+	test.afterAll(async () => {
+		await harness("/e2e/lichess", "DELETE");
+		await harness("/e2e/chaal-connections", "DELETE");
+	});
+
+	test("follow and unfollow a player; the leaderboards' page lists whom you follow; the score with you", async ({
+		page,
+	}) => {
+		await harness("/e2e/lichess", "DELETE");
+		await harness("/e2e/chaal-connections", "DELETE");
+		await page.goto("/app/chaal/settings", { waitUntil: "networkidle" });
+		await page.getByTestId("chaal-settings-connect").click();
+		const opened = eventStreamOpened(page);
+		await page.getByRole("button", { name: "Approve" }).click();
+		await page.waitForURL(/\/app\/chaal\/settings\?lichess=connected$/);
+		await opened;
+
+		await page.goto(`/app/chaal/players/${RECORDED_PLAYER}`);
+		await expect(page.getByTestId("chaal-crosstable")).toBeVisible();
+		const follow = page.getByTestId("chaal-player-follow");
+		await expect(follow).toHaveAttribute("aria-pressed", "false");
+		await follow.click();
+		await expect(follow).toHaveAttribute("aria-pressed", "true");
+		await expect
+			.poll(async () => {
+				const answer = await harness("/e2e/lichess/following?account=e2e_player", "GET");
+				return ((await answer.json()) as { following: string[] }).following;
+			})
+			.toEqual([RECORDED_PLAYER]);
+
+		await page.goto("/app/chaal/players");
+		await expect(page.getByTestId("chaal-following")).toContainText(RECORDED_PLAYER);
+
+		await page.goto(`/app/chaal/players/${RECORDED_PLAYER}`);
+		await expect(follow).toHaveAttribute("aria-pressed", "true");
+		await follow.click();
+		await expect(follow).toHaveAttribute("aria-pressed", "false");
+		await expect
+			.poll(async () => {
+				const answer = await harness("/e2e/lichess/following?account=e2e_player", "GET");
+				return ((await answer.json()) as { following: string[] }).following;
+			})
+			.toEqual([]);
 	});
 });
