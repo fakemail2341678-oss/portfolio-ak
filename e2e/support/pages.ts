@@ -411,6 +411,8 @@ export const REVIEWED_PAGES: ReadonlyArray<ReviewedPage> = [
 		path: "/app/chaal/local/00000000-0000-4000-8000-000000000000",
 		label: "a game not in this browser",
 	},
+	// A game on Lichess (Task 77): a visitor is asked to connect where the board would be.
+	{ route: "/app/chaal/game/$id", path: "/app/chaal/game/abcdEFGH", label: "a visitor" },
 	{ route: "/app/chaal/settings", label: "signed out" },
 	{ route: "/app/chaal/settings", as: "viewer", label: "viewer" },
 	{ route: "/app/chaal/settings", path: "/app/chaal/settings?lichess=denied", label: "connect result" },

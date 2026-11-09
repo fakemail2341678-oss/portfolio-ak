@@ -13,6 +13,7 @@ import { type GameTree, sizeOf, verifyTree } from "@/features/chaal/chess/tree";
 import { AppError } from "@/lib/errors";
 import { chAnalysis } from "@/server/db/schema";
 import type { Db, Tx } from "@/server/db/types";
+import { recordActivity } from "../activity";
 
 /**
  * "My analyses" (PLAN 13.5, `ch_analysis`; decision 0264): each call acts on the caller's
@@ -106,6 +107,7 @@ export async function saveAnalysis(db: Db, ownerId: string, input: AnalysisInput
 			.values({ ownerId, ...values })
 			.returning();
 		if (!row) throw new AppError("INTERNAL", "Analysis not saved");
+		await recordActivity(tx, { userId: ownerId, kind: "analysis", ref: row.id });
 		return summaryOf(row);
 	});
 }

@@ -150,7 +150,7 @@ export type BoardEnd = {
 
 /**
  * Every way a game can end: the board's own, and those a player or a clock decides (the
- * local games, Task 76; Lichess's own reasons join with online play).
+ * local games, Task 76), and Lichess's own (online play, Task 77).
  */
 export type GameEndReason =
 	| BoardEnd["reason"]
@@ -160,7 +160,13 @@ export type GameEndReason =
 	| "timeout-draw"
 	| "agreement"
 	| "threefold"
-	| "fifty";
+	| "fifty"
+	/** Lichess's own (online play, Task 77): the other player left and the win was claimed. */
+	| "left"
+	/** Lichess ended it for a fair-play violation. */
+	| "cheat"
+	/** A player never made a first move. */
+	| "no-start";
 
 export type GameState = {
 	turn: Color;

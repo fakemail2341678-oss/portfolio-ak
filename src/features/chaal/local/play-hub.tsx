@@ -1,4 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
+import { useSearch } from "@tanstack/react-router";
 import { CpuIcon, UsersIcon } from "lucide-react";
 import { type ReactNode, useState } from "react";
 import { MAIN_CONTENT } from "@/components/layout/skip-link";
@@ -6,7 +7,9 @@ import { Button } from "@/components/ui/button";
 import { sessionQueryOptions } from "@/features/auth/queries";
 import { m } from "@/paraglide/messages";
 import { formatTimeControl } from "../chess/clock";
+import { OnlinePlay } from "../play/online-play";
 import { chaalStatusQueryOptions } from "../queries";
+import { playSearch } from "../search";
 import { Choice } from "./choice";
 import { GameHistory } from "./game-history";
 import { type BoardLayout, LOCAL_LEVELS, LOCAL_TIME_CONTROLS, type LocalSetup } from "./types";
@@ -30,32 +33,46 @@ const clockOf = (value: ClockValue) => {
 };
 
 /**
- * /app/chaal/play (PLAN Task 76): the play hub, first version. Against the computer
- * (Stockfish at a level 1–8, a side, an optional clock) or over the board (two people at
- * this screen, a clock with increment, the board flipping or face to face), then the games
- * played here. Online play joins it with Task 77.
+ * /app/chaal/play (PLAN Tasks 76 and 77): the play hub. Online on Lichess first (the
+ * Lichess AI, a player by name or a link, and what's live now), then offline: against the
+ * computer (Stockfish at a level 1–8, a side, an optional clock) or over the board (two
+ * people at this screen, a clock with increment, the board flipping or face to face), then
+ * the games played here.
  */
 export function ChaalPlayHub() {
 	const { data: session } = useQuery(sessionQueryOptions());
 	const { data: status } = useQuery(chaalStatusQueryOptions());
 	const off = status?.features.local === false;
+	// Not the route's own API: the hub renders in stories too, outside its route.
+	const search = playSearch.parse(useSearch({ strict: false }));
 	return (
 		<main {...MAIN_CONTENT} className="flex flex-1 flex-col outline-none" data-testid="chaal-play">
 			<div className="mx-auto flex w-full max-w-6xl flex-col gap-8 px-4 py-6 sm:px-6 lg:px-8 lg:py-10">
 				<header className="flex flex-col gap-2">
 					<h1 className="ch-display text-ch-title">{m.ch_play_title()}</h1>
-					<p className="max-w-prose text-ch-muted">{session ? m.ch_play_lead_account() : m.ch_play_lead_device()}</p>
+					<p className="max-w-prose text-ch-muted">{m.ch_play_lead()}</p>
 				</header>
-				{off ? (
-					<p className="ch-rule py-4" data-testid="chaal-play-off">
-						{m.ch_play_local_off()}
-					</p>
-				) : (
-					<div className="grid gap-8 lg:grid-cols-2 lg:gap-10">
-						<ComputerSetup />
-						<BoardSetup />
+				<OnlinePlay search={search} />
+				<section className="flex flex-col gap-5" aria-labelledby="chaal-offline-title" data-testid="chaal-offline">
+					<div className="flex flex-col gap-1">
+						<h2 id="chaal-offline-title" className="ch-display text-ch-head">
+							{m.ch_offline_title()}
+						</h2>
+						<p className="max-w-prose text-ch-muted text-sm">
+							{session ? m.ch_play_lead_account() : m.ch_play_lead_device()}
+						</p>
 					</div>
-				)}
+					{off ? (
+						<p className="ch-rule py-4" data-testid="chaal-play-off">
+							{m.ch_play_local_off()}
+						</p>
+					) : (
+						<div className="grid gap-8 lg:grid-cols-2 lg:gap-10">
+							<ComputerSetup />
+							<BoardSetup />
+						</div>
+					)}
+				</section>
 				<GameHistory signedIn={Boolean(session)} />
 			</div>
 		</main>
@@ -87,9 +104,9 @@ function SetupPanel({
 					{icon}
 				</span>
 				<div className="flex flex-col gap-1">
-					<h2 id={`${testId}-title`} className="ch-display text-ch-head">
+					<h3 id={`${testId}-title`} className="ch-display text-xl">
 						{title}
-					</h2>
+					</h3>
 					<p className="text-ch-muted text-sm">{body}</p>
 				</div>
 			</div>

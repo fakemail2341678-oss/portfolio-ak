@@ -148,6 +148,10 @@ export default defineConfig(async ({ command, mode }) => {
 					"/api/chaal/oauth/start": { handler: "./src/server/routes/chaal-oauth.ts", method: "GET" },
 					"/api/chaal/oauth/callback": { handler: "./src/server/routes/chaal-oauth.ts", method: "GET" },
 					"/api/chaal/stream/events": { handler: "./src/server/routes/chaal-stream.ts", method: "GET" },
+					"/api/chaal/stream/game/**": { handler: "./src/server/routes/chaal-stream.ts", method: "GET" },
+					"/api/chaal/stream/challenge": { handler: "./src/server/routes/chaal-stream.ts", method: "POST" },
+					// Chaal's daily job: prunes ch_activity (decision 0266).
+					"/api/cron/chaal": { handler: "./src/server/routes/cron-chaal.ts", method: "GET" },
 					"/app/chaal/manifest.webmanifest": { handler: "./src/server/routes/chaal-manifest.ts", method: "GET" },
 					"/ne/app/chaal/manifest.webmanifest": { handler: "./src/server/routes/chaal-manifest.ts", method: "GET" },
 					// chaal:end

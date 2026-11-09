@@ -12,7 +12,7 @@ export type LocalMode = "engine" | "board";
 export type BoardLayout = "flip" | "tablet";
 
 /** How a local game ended: the board's own reasons, plus the ones a player or a clock decides. */
-export type LocalEndReason = GameEndReason;
+export type LocalEndReason = Exclude<GameEndReason, "left" | "cheat" | "no-start">;
 
 export const LOCAL_END_REASONS = [
 	"checkmate",

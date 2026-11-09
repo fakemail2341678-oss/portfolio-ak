@@ -1,6 +1,16 @@
 import "@tanstack/react-start/server-only";
 import { z } from "zod";
-import type { ChaalEvent, ChaalEventChallenge, ChaalEventGame, ChaalEventPlayer } from "@/features/chaal/live/events";
+import type {
+	ChaalChallengeLine,
+	ChaalEvent,
+	ChaalEventChallenge,
+	ChaalEventGame,
+	ChaalEventPlayer,
+	ChaalGameFull,
+	ChaalGameLine,
+	ChaalGamePlayer,
+	ChaalGameState,
+} from "@/features/chaal/live/events";
 import type {
 	ChaalCloudEval,
 	ChaalExplorer,
@@ -355,3 +365,192 @@ export const gameExportAnswer = z
 		finished: game.status !== "created" && game.status !== "started",
 		pgn: game.pgn,
 	}));
+
+// --- Online play (Task 77, decision 0266) ----------------------------------------------------
+
+/** A move as Lichess's Board API writes it. */
+const uciMove = /^[a-h][1-8][a-h][1-8][qrbn]?$/;
+
+const gameStreamPlayer = z
+	.object({
+		id: z.string().nullish(),
+		name: z.string().nullish(),
+		title: z.string().nullish(),
+		rating: z.number().nullish(),
+		provisional: z.boolean().nullish(),
+		aiLevel: z.number().nullish(),
+		ratingDiff: z.number().nullish(),
+	})
+	.transform(
+		(player): ChaalGamePlayer => ({
+			id: player.id ?? null,
+			name: player.name ?? "",
+			title: player.title ?? null,
+			rating: player.rating ?? null,
+			provisional: player.provisional === true,
+			aiLevel: player.aiLevel ?? null,
+			ratingDiff: player.ratingDiff ?? null,
+		}),
+	);
+
+const gameStateShape = z
+	.object({
+		moves: z.string(),
+		wtime: z.number(),
+		btime: z.number(),
+		winc: z.number().nullish(),
+		binc: z.number().nullish(),
+		status: z.string(),
+		winner: color.nullish(),
+		wdraw: z.boolean().nullish(),
+		bdraw: z.boolean().nullish(),
+		wtakeback: z.boolean().nullish(),
+		btakeback: z.boolean().nullish(),
+		expiration: z.object({ idleMillis: z.number(), millisToMove: z.number() }).nullish(),
+	})
+	.refine((state) => state.moves.split(" ").every((move) => move === "" || uciMove.test(move)))
+	.transform(
+		(state): ChaalGameState => ({
+			moves: state.moves.split(" ").filter(Boolean),
+			wtime: state.wtime,
+			btime: state.btime,
+			winc: state.winc ?? 0,
+			binc: state.binc ?? 0,
+			status: state.status,
+			winner: state.winner ?? null,
+			wdraw: state.wdraw === true,
+			bdraw: state.bdraw === true,
+			wtakeback: state.wtakeback === true,
+			btakeback: state.btakeback === true,
+			expiration: state.expiration ?? null,
+		}),
+	);
+
+const gameFullShape = z
+	.object({
+		id: z.string().regex(/^[A-Za-z0-9]{8}$/),
+		variant: named.nullish(),
+		clock: z.object({ initial: z.number(), increment: z.number() }).nullish(),
+		speed: z.string().nullish(),
+		rated: z.boolean().nullish(),
+		createdAt: z.number().nullish(),
+		white: gameStreamPlayer,
+		black: gameStreamPlayer,
+		initialFen: z.string().nullish(),
+		state: gameStateShape,
+		daysPerTurn: z.number().nullish(),
+		tournamentId: z.string().nullish(),
+	})
+	.transform(
+		(game): ChaalGameFull => ({
+			id: game.id,
+			rated: game.rated === true,
+			speed: game.speed ?? "",
+			variant: nameOf(game.variant, "key"),
+			clock: game.clock ?? null,
+			daysPerTurn: game.daysPerTurn ?? null,
+			initialFen: !game.initialFen || game.initialFen === "startpos" ? null : game.initialFen,
+			white: game.white,
+			black: game.black,
+			state: game.state,
+			tournamentId: game.tournamentId ?? null,
+			createdAt: game.createdAt ?? 0,
+		}),
+	);
+
+const chatLine = z.object({
+	room: z.enum(["player", "spectator"]),
+	username: z.string(),
+	text: z.string().max(2_000),
+});
+const opponentGone = z.object({ gone: z.boolean(), claimWinInSeconds: z.number().nullish() });
+
+/**
+ * One line of a Board API game's stream as Chaal's, or null when it isn't one Chaal knows
+ * (a new type, or a shape that changed): those are dropped, never passed on.
+ */
+export function mapGameLine(value: unknown): ChaalGameLine | null {
+	const type = value && typeof value === "object" ? (value as { type?: unknown }).type : undefined;
+	if (type === "gameFull") {
+		const game = gameFullShape.safeParse(value);
+		return game.success ? { type: "gameFull", game: game.data } : null;
+	}
+	if (type === "gameState") {
+		const state = gameStateShape.safeParse(value);
+		return state.success ? { type: "gameState", state: state.data } : null;
+	}
+	if (type === "chatLine") {
+		const line = chatLine.safeParse(value);
+		return line.success ? { type: "chatLine", ...line.data } : null;
+	}
+	if (type === "opponentGone") {
+		const gone = opponentGone.safeParse(value);
+		return gone.success
+			? { type: "opponentGone", gone: gone.data.gone, claimWinInSeconds: gone.data.claimWinInSeconds ?? null }
+			: null;
+	}
+	return null;
+}
+
+/** A game's first line, read for the page's first paint (getChaalLiveGame). */
+export const gameFullAnswer = gameFullShape;
+
+/** Lichess answers a challenge either as the challenge or wrapped in `{ challenge }`. */
+const challengeOrWrapped = z.preprocess(
+	(value) =>
+		value && typeof value === "object" && "challenge" in value && !("id" in value)
+			? (value as { challenge: unknown }).challenge
+			: value,
+	eventChallenge,
+);
+
+/** POST /api/challenge/{username}: the challenge made (correspondence, or a kept-open stream's first line). */
+export const challengeAnswer = challengeOrWrapped;
+
+/** GET /api/challenge: incoming and outgoing; a challenge that doesn't read is dropped, not the list. */
+export const challengeListAnswer = z
+	.object({
+		in: z.array(eventChallenge.nullable().catch(null)).nullish(),
+		out: z.array(eventChallenge.nullable().catch(null)).nullish(),
+	})
+	.transform((answer) => ({
+		incoming: (answer.in ?? []).filter((challenge): challenge is ChaalEventChallenge => challenge !== null),
+		outgoing: (answer.out ?? []).filter((challenge): challenge is ChaalEventChallenge => challenge !== null),
+	}));
+
+/** A kept-open challenge's lines: the challenge, then how it ended. */
+export function mapChallengeLine(value: unknown): ChaalChallengeLine | null {
+	if (value && typeof value === "object" && "done" in value) {
+		const done = (value as { done: unknown }).done;
+		return done === "accepted" || done === "declined" || done === "canceled" ? { type: "done", done } : null;
+	}
+	const challenge = challengeOrWrapped.safeParse(value);
+	return challenge.success ? { type: "challenge", challenge: challenge.data } : null;
+}
+
+/** POST /api/challenge/ai: the game started with the Lichess AI. */
+export const aiGameAnswer = z
+	.object({ id: z.string().regex(/^[A-Za-z0-9]{8}$/) })
+	.transform((game) => ({ id: game.id }));
+
+/** POST /api/challenge/open: the challenge and its links (only lichess.org addresses are kept). */
+export const openChallengeAnswer = z
+	.object({
+		id: z.string().regex(/^[A-Za-z0-9]{8}$/),
+		url: z.string(),
+		urlWhite: z.string(),
+		urlBlack: z.string(),
+	})
+	.transform((answer) => ({ id: answer.id, url: answer.url, urlWhite: answer.urlWhite, urlBlack: answer.urlBlack }));
+
+/** GET /api/board/game/{id}/chat: the players' chat so far. */
+export const chatHistoryAnswer = z
+	.array(
+		z
+			.object({ user: z.string(), text: z.string().max(2_000) })
+			.nullable()
+			.catch(null),
+	)
+	.transform((lines) =>
+		lines.flatMap((line) => (line ? [{ room: "player" as const, username: line.user, text: line.text }] : [])),
+	);

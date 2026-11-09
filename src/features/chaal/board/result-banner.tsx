@@ -13,6 +13,9 @@ const REASONS: Record<GameEndReason, () => string> = {
 	agreement: () => m.ch_reason_agreement(),
 	threefold: () => m.ch_reason_threefold(),
 	fifty: () => m.ch_reason_fifty(),
+	left: () => m.ch_reason_left(),
+	cheat: () => m.ch_reason_cheat(),
+	"no-start": () => m.ch_reason_no_start(),
 };
 
 const SCORES: Record<GameResult, string> = { "1-0": "1–0", "0-1": "0–1", "1/2-1/2": "½–½" };
@@ -20,7 +23,7 @@ const SCORES: Record<GameResult, string> = { "1-0": "1–0", "0-1": "0–1", "1/
 /**
  * How a game ended (PLAN 13.5, `ResultBanner`): the score as a scoresheet writes it, who
  * won, and why. A status, so it's read out when it appears. Resignation, time, agreement
- * and claims arrived with the local games (Task 76); online play adds Lichess's own.
+ * and claims arrived with the local games (Task 76); online play added Lichess's own (Task 77).
  */
 export function ResultBanner({
 	result,

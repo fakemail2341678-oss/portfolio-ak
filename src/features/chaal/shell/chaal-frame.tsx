@@ -20,6 +20,7 @@ import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTr
 import { useHotkeyLabel, useHotkeys } from "@/hooks/use-hotkeys";
 import { m } from "@/paraglide/messages";
 import { chaalLinks } from "../links";
+import { useLiveEvents } from "../live/use-live-events";
 import { useImportLocalGames } from "../local/use-local-games";
 import { useImportLocalPreferences } from "../settings/use-preferences";
 import { ChaalWordmark } from "./chaal-mark";
@@ -237,13 +238,15 @@ function ChaalFooter() {
 /**
  * Chaal's frame on every page (PLAN Task 73): the top bar, the admin's notice, the page, the
  * footer, and on phones the tab bar, whose height the page keeps clear. The palette (⌘K) and
- * the shortcuts (`?`) open from anywhere. The page renders its own <main>.
+ * the shortcuts (`?`) open from anywhere. A player connected for play follows their Lichess
+ * events from every page (Task 77). The page renders its own <main>.
  */
 export function ChaalFrame({ children }: { children: ReactNode }) {
 	const [paletteOpen, setPaletteOpen] = useState(false);
 	const [shortcutsOpen, setShortcutsOpen] = useState(false);
 	useImportLocalPreferences();
 	useImportLocalGames();
+	useLiveEvents();
 	useHotkeys({
 		"mod+k": () => setPaletteOpen((open) => !open),
 		"shift+?": () => setShortcutsOpen(true),

@@ -1,7 +1,8 @@
 /**
- * What Chaal's event stream carries (src/server/routes/chaal-stream.ts): Lichess's events,
- * mapped to lean shapes on the server (src/server/chaal/lichess/schemas.ts), one JSON object
- * per line. Unknown event types are dropped there; an empty line is a keepalive.
+ * What Chaal's streams carry (src/server/routes/chaal-stream.ts): Lichess's events, a game's
+ * lines and a kept-open challenge's, mapped to lean shapes on the server
+ * (src/server/chaal/lichess/schemas.ts), one JSON object per line. Unknown types are
+ * dropped there; an empty line is a keepalive.
  */
 
 export type ChaalColor = "white" | "black";
@@ -51,8 +52,83 @@ export type ChaalEventChallenge = {
 	declineReasonKey: string | null;
 };
 
+/** Ours, not Lichess's: the stream closes on purpose before the function's time limit runs out; reconnect at once. */
+export type ChaalReconnect = { type: "reconnect"; afterMs: number };
+
 export type ChaalEvent =
 	| { type: "gameStart" | "gameFinish"; game: ChaalEventGame }
 	| { type: "challenge" | "challengeCanceled" | "challengeDeclined"; challenge: ChaalEventChallenge }
-	/** Ours, not Lichess's: the stream closes on purpose before the function's time limit runs out; reconnect at once. */
-	| { type: "reconnect"; afterMs: number };
+	| ChaalReconnect;
+
+// --- A game's stream (GET /api/chaal/stream/game/{id}, Task 77) ----------------------------
+
+/** A player in a game's stream: a Lichess account, or the Lichess AI (`aiLevel`, no id). */
+export type ChaalGamePlayer = {
+	id: string | null;
+	name: string;
+	title: string | null;
+	rating: number | null;
+	provisional: boolean;
+	aiLevel: number | null;
+	/** Once a rated game has ended. */
+	ratingDiff: number | null;
+};
+
+/** What changes during a game: Lichess's `gameState`. Times are milliseconds. */
+export type ChaalGameState = {
+	/** Every move so far, in UCI. */
+	moves: string[];
+	wtime: number;
+	btime: number;
+	winc: number;
+	binc: number;
+	/** Lichess's status name: `started`, then how it ended (`mate`, `resign`, `outoftime`, `draw`, `aborted`…). */
+	status: string;
+	winner: ChaalColor | null;
+	/** Standing offers: a draw or a takeback, by side. */
+	wdraw: boolean;
+	bdraw: boolean;
+	wtakeback: boolean;
+	btakeback: boolean;
+	/** Before both sides have moved: the time each has for a first move before the game is aborted. */
+	expiration: { idleMillis: number; millisToMove: number } | null;
+};
+
+/** What doesn't change during a game, with its state when the stream opened: Lichess's `gameFull`. */
+export type ChaalGameFull = {
+	id: string;
+	rated: boolean;
+	speed: string;
+	variant: string;
+	/** Start and increment in milliseconds; null for correspondence. */
+	clock: { initial: number; increment: number } | null;
+	daysPerTurn: number | null;
+	/** The start position; null for the usual one. */
+	initialFen: string | null;
+	white: ChaalGamePlayer;
+	black: ChaalGamePlayer;
+	state: ChaalGameState;
+	tournamentId: string | null;
+	createdAt: number;
+};
+
+export type ChaalChatLine = { room: "player" | "spectator"; username: string; text: string };
+
+export type ChaalGameLine =
+	| { type: "gameFull"; game: ChaalGameFull }
+	| { type: "gameState"; state: ChaalGameState }
+	| ({ type: "chatLine" } & ChaalChatLine)
+	/** The opponent left (or came back), and the seconds until a win or a draw may be claimed. */
+	| { type: "opponentGone"; gone: boolean; claimWinInSeconds: number | null }
+	| ChaalReconnect;
+
+// --- A real-time challenge kept open (POST /api/chaal/stream/challenge, Task 77) ------------
+
+/** How a challenge Lichess kept alive ended (its `{"done": …}` line). */
+export type ChallengeDone = "accepted" | "declined" | "canceled";
+
+export type ChaalChallengeLine =
+	| { type: "challenge"; challenge: ChaalEventChallenge }
+	| { type: "done"; done: ChallengeDone }
+	/** Ours: nobody answered while the stream could stay open; the challenge was cancelled. */
+	| { type: "expired" };

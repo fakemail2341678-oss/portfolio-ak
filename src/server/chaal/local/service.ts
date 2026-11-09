@@ -7,6 +7,7 @@ import { LOCAL_GAMES_MAX, type LocalGameRecord } from "@/features/chaal/local/ty
 import { AppError } from "@/lib/errors";
 import { chLocalGame } from "@/server/db/schema";
 import type { Db, Tx } from "@/server/db/types";
+import { recordActivity } from "../activity";
 import { requireFeature } from "../connect/service";
 import type { ChaalControls } from "../controls";
 
@@ -105,6 +106,15 @@ export async function saveLocalGame(
 			return summaryOf(own);
 		}
 		await prune(tx, ownerId);
+		// A game is counted when it starts: its first write has no moves (decision 0266).
+		if (row.moves === 0) {
+			await recordActivity(tx, {
+				userId: ownerId,
+				kind: "game",
+				mode: row.mode === "engine" ? "local-engine" : "local-board",
+				ref: row.id,
+			});
+		}
 		return summaryOf(row);
 	});
 }

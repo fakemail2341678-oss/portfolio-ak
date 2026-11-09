@@ -1,4 +1,5 @@
 import { linkOptions } from "@tanstack/react-router";
+import type { PlaySearch } from "./search";
 
 /**
  * Where Chaal lives (PLAN 13.2): its base path is here and nowhere else, so a rename is
@@ -16,8 +17,13 @@ export const chaalLinks = {
 	/** The analysis board (Task 75): empty, at a position, or a saved analysis. */
 	analysis: (search: { fen?: string; moves?: string; id?: string } = {}) =>
 		linkOptions({ to: "/app/chaal/analysis", search }),
-	/** The play hub (Task 76): against the computer, over the board, and the games played here. */
-	play: () => linkOptions({ to: "/app/chaal/play" }),
+	/**
+	 * The play hub (Task 76): against the computer, over the board, and the games played here;
+	 * online play (Task 77), with a setup filled in ("Play again" with a player).
+	 */
+	play: (search: PlaySearch = {}) => linkOptions({ to: "/app/chaal/play", search }),
+	/** A game the player plays on Lichess (Task 77, noindex). */
+	game: (id: string) => linkOptions({ to: "/app/chaal/game/$id", params: { id } }),
 	/** A local game (Task 76, noindex): its board, to play on or look back at. */
 	local: (id: string) => linkOptions({ to: "/app/chaal/local/$id", params: { id } }),
 	/** Preferences, the Lichess connection, this browser's data (noindex). `hash` opens a section. */

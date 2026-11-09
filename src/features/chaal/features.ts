@@ -6,6 +6,8 @@
  */
 export const CHAAL_FEATURES = [
 	"play",
+	/** The players' chat in an online game (Task 77). Needs no scope beyond play's. */
+	"chat",
 	/** Games in the browser: against the computer and over the board (Task 76). Needs no scope. */
 	"local",
 	"puzzles",

@@ -1,6 +1,7 @@
 import type { Localized } from "@/lib/i18n/localized";
 import type { EngineLimits } from "./engine/limits";
 import type { ChaalFeature } from "./features";
+import type { PlayLimits } from "./play/controls";
 
 /** Shapes Chaal's server functions return (Task 71). */
 
@@ -15,6 +16,8 @@ export type ChaalStatus = {
 	banner: Localized | null;
 	/** The engine's limits in the browser (Task 75). */
 	engine: EngineLimits;
+	/** Online play's limits (Task 77): the Lichess AI's highest level, whether rated games may be asked for. */
+	play: PlayLimits;
 };
 
 /** A connected Lichess account as a page sees it: never the token (src/server/chaal/connect/service.ts). */

@@ -2876,7 +2876,7 @@ As 12.1, with these differences:
 | 74 | The board kit and the game model | xhigh | Done (decisions 0261, 0262) |
 | 75 | Analysis board and the engine | xhigh | Done (decisions 0263, 0264) |
 | 76 | Play offline: the computer and over the board | high | Done (decision 0265) |
-| 77 | Play online I: streams, challenges, the Lichess AI, the live game | xhigh | Planned |
+| 77 | Play online I: streams, challenges, the Lichess AI, the live game | xhigh | Done (decision 0266) |
 | 78 | Play online II: quick pairing, correspondence, notifications | high | Planned |
 | 79 | Admin I: settings, connections and blocks, API health | high | Planned |
 | 80 | Puzzles | high | Planned |
@@ -2916,6 +2916,7 @@ As 12.1, with these differences:
   - **Rapid, Classical and Correspondence only**. Blitz is allowed for direct challenges, AI games and bulk pairing; bullet is not allowed at all;
   - seeks take `time` 0–180 min plus `increment` 0–180 s, or `days` 1/2/3/5/7/10/14;
   - moves: `POST /api/board/game/{id}/move/{uci}` (`offeringDraw`), plus `draw/{accept}`, `takeback/{accept}`, `resign`, `abort`, `claim-victory`, `claim-draw`, `berserk` and chat.
+- **Challenges** (checked in Task 77, decision 0266): a real-time challenge to a player expires after 20 s unless the request stays open (`keepAliveStream`, then `{"done": …}`); a correspondence one waits. `POST /api/challenge/open` makes a link any two players can join, and `accept?color=` joins it as a side. Decline reasons: `generic`, `later`, `tooFast`, `tooSlow`, `timeControl`, `rated`, `casual` (and four for variants and bots). Clock starts are 0, 15, 30, 45, 60, 90 s or whole minutes to 3 h, increments 0–60 s. An ongoing game's export is delayed 3–60 s, so a game's first paint reads the Board API stream's first line.
 - **Lichess AI:** `POST /api/challenge/ai` with level 1–8, a clock of 0–10800 s plus 0–60 s increment (or `days`), colour and fen. The game arrives on the event stream.
 - **Puzzles** are public domain:
   - `daily` and `{id}`;
@@ -2934,7 +2935,7 @@ As 12.1, with these differences:
   - the explorer needs a token (above);
   - every public stream answers `access-control-allow-origin: *`, and preflights allow `Authorization`;
   - the TV feed sends `featured` then `fen` lines; a spectated game sends every position so far before the live ones; a broadcast round streams PGN with `[%eval]` and `[%clk]`.
-- **Still not checked** (they need a live account; Task 77, with the lab): Board API seeks, chat and endings in practice, and a Board API rematch (none is known).
+- **Still not checked on Lichess itself** (they need a live account; left for the owner, decision 0266): Board API seeks (Task 78), the kept-open challenge's first line (both shapes are read), joining one's own open challenge with `color`, chat and the claims after an opponent leaves. Task 77 built them against the spec and the fake Lichess. There's no Board API rematch: "Play again" starts a new challenge.
 
 **The repo** (as of Part 5; check after Part 6):
 - **CSP:**
@@ -2955,7 +2956,7 @@ As 12.1, with these differences:
   - the dnd-kit model in `src/features/taskline/calendar/calendar.tsx` (`useDraggable`, `useDroppable`, `Accessibility.configure`);
   - `enforceRateLimit` (`src/server/http/rate-limit.ts`);
   - env in `src/server/env.ts`, plus the dev-offline `OFF` list, `tests/setup/env.ts`, the harness `APP_ENV` regex and `tests/unit/env.test.ts`.
-- **Bundle:** the entry was 283.7 kB after Part 6, 284.4 after Tasks 71 and 72, 286.3 after Task 73, 286.9 after Task 75 and 287.7 after Task 76 (built as CI builds, without Sentry or PostHog keys); each route definition adds about 0.3 kB (0217). Task 73 raised the budget to 290 kB for Part 7's routes (0260); Task 85 measures and trims.
+- **Bundle:** the entry was 283.7 kB after Part 6, 284.4 after Tasks 71 and 72, 286.3 after Task 73, 286.9 after Task 75, 287.7 after Task 76 and 288.5 after Task 77 (built as CI builds, without Sentry or PostHog keys); each route definition adds about 0.3 kB (0217). Task 73 raised the budget to 290 kB for Part 7's routes (0260); Task 85 measures and trims.
 
 ### 13.5 Architecture (every task follows it)
 
@@ -2968,7 +2969,7 @@ As 12.1, with these differences:
 | Server | `src/server/chaal/`: `lichess/` (client, queue, ndjson, schemas, cache, store), `connect/` (`oauth.ts`, `vault.ts`, repository, service), `play/`, `puzzles/`, `analysis/`, `local/`, `admin/`, `stats.ts`, `guest-data.ts`, `cron.ts`, `manifest.ts` |
 | Functions | `src/functions/chaal/*.ts` (public reads: `withChaalPublic`; personal: `requireChaalUser` → `withChaalServices`), `src/functions/chaal-admin/*.ts` (`requirePermission` → `withServices`) |
 | Middleware | `src/middleware/chaal.ts` |
-| Nitro routes | `src/server/routes/chaal-{oauth,stream,manifest,cron}.ts`: `/api/chaal/oauth/{start,callback}`, `/api/chaal/stream/{events,game/:id,seek}`, the manifest and `/api/cron/chaal`; `vite.config.ts` and `vercel.json` with `// @chaal`, and knip entries. These aren't in the client route tree, so they don't cost entry bytes |
+| Nitro routes | `src/server/routes/chaal-{oauth,stream,manifest}.ts` and `cron-chaal.ts`: `/api/chaal/oauth/{start,callback}`, `/api/chaal/stream/{events,game/:id,challenge,seek}` (the challenge stream keeps a real-time challenge open, Task 77; seek arrives with Task 78), the manifest and `/api/cron/chaal`; `vite.config.ts` and `vercel.json` with `// @chaal`, and knip entries. These aren't in the client route tree, so they don't cost entry bytes |
 | Schema | `src/server/db/schema/chaal/*.ts`, tables `ch_*`, exported with `// @chaal` |
 | Assets | `public/chaal/` (icons, pieces, sounds); `public/chaal/engine/` is filled from the `stockfish` package by `pnpm engine:copy` (hashed names, gitignored, `COPYING` included) |
 | Styles | `src/styles/chaal.css`, scoped to `html[data-section=chaal]` |
@@ -3042,13 +3043,14 @@ As 12.1, with these differences:
 **Live play** (`features/chaal/live/`, `server/routes/chaal-stream.ts`):
 - **Token streams go through our server.** The stream routes check the session and the connection, open the Lichess stream, and pass each line on as ndjson after the Zod mapping (unknown types are dropped, keepalives pass through).
 - **Duration:** the route closes a little before the function's maximum duration (Task 71 measures it), and the client reconnects at once. Nothing is lost, because both streams restate everything when they open.
-- **One event stream per token:** one tab holds it under a Web Lock (`chaal-events`) and shares events over a `BroadcastChannel`. Another tab takes over when that one closes.
+- **One event stream per token:** one tab holds it under a Web Lock (`chaal-events`) and shares events over a `BroadcastChannel`. Another tab takes over when that one closes. Two devices take turns, the client backing off from 1 s to 30 s (Task 77).
 - **Public live data** (TV feeds, spectating with `/api/stream/game/{id}`, broadcast PGN) is read **by the browser from lichess.org**, so viewers don't share our server's IP limits (if CORS allows; else through our stream route).
 - **Clocks** come from `wtime`/`btime` at receipt plus a monotonic local clock, so a reconnect doesn't make them jump.
 - **Moves:** `makeMove` (UCI format checked; Lichess judges legality). The board shows the move at once and rolls back on a refusal. One premove is sent when the turn arrives.
 - **Fair play:**
   - while the user has a real-time game in progress, the engine, cloud eval and the explorer are off everywhere in Chaal, with a banner saying why;
-  - a correspondence game can't be opened in analysis until it ends.
+  - a correspondence game can't be opened in analysis until it ends;
+  - the lock is the browser's, fed by the event stream: the same data is public at Lichess, so a check on our server would protect nothing (Task 77, decision 0266).
 
 **The engine** (`features/chaal/engine/`):
 - **Build:** the `stockfish` package's lite single-threaded build: 19.0.1, `stockfish-19-lite-single.js` (28 KB) and `.wasm` (1.85 MB); the package unpacks to 205 MB, so `engine:copy` copies only those and `Copying.txt` (0257). It ships with immutable cache headers, its own `script-src 'self' 'wasm-unsafe-eval'`, its licence, and a source link on `/about`.
@@ -3086,13 +3088,13 @@ As 12.1, with these differences:
 
 | Table | Holds | Task |
 | --- | --- | --- |
-| `ch_settings` (one row, `version`) | feature switches (Task 71: `features`, `guests_may_connect`, `extra_scopes`, `cache_epoch`, the public cooldown), quick-pair controls, AI max level, rated allowed, chat, guests may connect, extra scopes, defaults (board, pieces, sounds), engine limits, banner and maintenance (en/ne), `cache_epoch`, public cooldown | 71 |
+| `ch_settings` (one row, `version`) | feature switches (Task 71: `features`, `guests_may_connect`, `extra_scopes`, `cache_epoch`, the public cooldown; Task 77: `play` with the AI's max level and rated allowed, and a `chat` feature), quick-pair controls, AI max level, rated allowed, chat, guests may connect, extra scopes, defaults (board, pieces, sounds), engine limits, banner and maintenance (en/ne), `cache_epoch`, public cooldown | 71 |
 | `ch_connection` | user (the primary key, cascade), Lichess id (unique), username, title, sealed token, scopes, expiry, connected and last used, `cooldown_until` and `cooldown_ms`, `revoked_at` | 71 |
 | `ch_block` | a site user or a Lichess username, reason, by, at | 71 |
 | `ch_preference` | per user: board, pieces, sounds, volume, auto-queen, premove, confirm moves, coordinates, notation, zen. Without a session these live in localStorage, imported once | 73 |
 | `ch_analysis` | owner, title, the tree (jsonb), start FEN, PGN tags, orientation, move count, updated (Task 75) | 75 |
 | `ch_local_game` | owner, mode (engine or board), level, colour, clock, PGN, result, status, times; also the layout, the clocks left, the reason and the move count (Task 76) | 76 |
-| `ch_activity` | user (`set null`), kind (game started by mode, puzzle, analysis, connect), at. Pruned after 90 days | 77 |
+| `ch_activity` | user (`set null`), kind (game started by mode, puzzle, analysis, connect), at; also the mode and a `ref` (the game's or analysis's id, counted once per player, Task 77). Pruned after 90 days | 77 |
 | `ch_api_stat`, `ch_api_error` | hourly calls, errors, 429s and ms per endpoint class (instance counters flushed with `waitUntil`); the last 500 errors, never a token | 79 |
 | `ch_puzzle_attempt` | owner, puzzle, won, ms, themes, rating, synced to Lichess | 80 |
 | `ch_featured`, `ch_home_section`, `ch_daily_stat` | curation, home order, rollups | 84 |
@@ -3361,27 +3363,44 @@ As 12.1, with these differences:
 - Have a Nepali speaker read the play words (the glossary's Task 76 rows, `ch_play_*`, `ch_local_*`, `ch_history_*`, the new `ch_reason_*`).
 - `pnpm dev:offline` fails here before this task's code: its `OFF` list blanks `SENTRY_AUTH_TOKEN` but not `SENTRY_ORG` and `SENTRY_PROJECT`, which the env check wants together. `pnpm dev:local` works.
 
-### Task 77: Play online I: streams, challenges, the Lichess AI and the live game (planned)
+### Task 77: Play online I: streams, challenges, the Lichess AI and the live game (done)
 
-- **Streams:** the event and game stream routes, the tab leader, and reconnects.
-- **Challenges:**
-  - to a username, with only Board-legal controls, colour, rated, or days;
-  - incoming and outgoing, with accept, decline (with a reason) and cancel;
-  - an open-challenge link.
-- **The Lichess AI:** levels 1–8 and clocks.
-- **`/game/$id` live:**
-  - optimistic moves and a premove, the clocks;
-  - draw and takeback offers;
-  - resign, abort, claim victory, claim draw;
-  - the opponent-gone countdown, chat (if allowed);
-  - the game-over panel (result, rating change, "Analyse" once finished, "Play again with these settings").
-- **The fair-play lock, `ch_activity`, and the play switch** (pages show a calm "off" state; functions refuse).
-- **Tests:**
-  - stream mapping;
-  - two tabs (leader election);
-  - a reconnect mid-game;
-  - a full game against the scripted opponent;
-  - refusals and scopes.
+**Done** (decision 0266; the guide's "Online play" and "Streams").
+
+**What changed:**
+- **Streams** (`src/server/chaal/stream.ts`, `src/server/routes/chaal-stream.ts`): one relay for the event stream, `GET /api/chaal/stream/game/{id}` (a Board API game) and `POST /api/chaal/stream/challenge` (a real-time challenge kept open with `keepAliveStream`, same-origin only). Lines mapped (`mapGameLine`, `mapChallengeLine`), the chat dropped while it's off, `reconnect` before 270 s (or `expired` and a cancel for a challenge). In the browser, `live/reader.ts` (`readStream`, `keepStreaming`: reconnects, a backoff from 1 s to 30 s, a minute after a 429, 20 s of silence counts as a drop).
+- **The tab leader** (`live/events-client.ts`): the Web Lock `chaal-events` and a BroadcastChannel; the event store (`live/store.ts`: challenges, games, finished games, declined reasons; stale until restated); loaded by the frame (`useLiveEvents`) only for a session connected for play; it feeds fair play's lock with real-time games.
+- **Challenges and the AI** (`src/server/chaal/play/service.ts`, `src/functions/chaal/challenges.ts`): the list, a correspondence challenge, an open link (joined at once as the player's side), accept, decline with a reason, cancel, the Lichess AI (levels up to the admin's limit). Board-legal paces only (`play/controls.ts`: blitz or slower on Lichess's clock values, or days).
+- **`/app/chaal/game/$id`** (noindex; `game/`, `src/functions/chaal/live-game.ts`): the first paint from the stream's first line; the model (`live-game.ts`: replay, the pending move and its rollback, clocks from the second move, offers, endings with three new reasons); the hook (premove, the stream stopped at the end); the page (strips with clocks, takeback, draw, abort or resign; the opponent's offers; "left the game" with its countdown and the claims; the first move's countdown; the reconnect dot and banner; the game over with the result, the rating change, Analyse and Play again; the chat).
+- **The play hub:** "On Lichess" first (the AI, a player, a link; the games in progress, challenges to answer and waiting), then "Offline"; its URL fills in a challenge (`playSearch`).
+- **Switches:** `play` (functions, streams and pages), a new `chat` feature, `ch_settings.play` (`{ aiMaxLevel, rated }`).
+- **`ch_activity`** (migration `0043_chaal_play`, with `ch_settings.play`): connections, games by mode (counted once by `ref`), local games and analyses; `/api/cron/chaal` (02:45 UTC) prunes after 90 days (`vercel.json`, `SPECS.chaal.crons`).
+- **The fake Lichess** (`e2e/harness/lichess-play.ts`): restated events, challenges (kept open, open links, the AI), Board API games with clocks, a scripted AI and the rival's controls.
+- **Messages:** 104 new keys in en and ne, and the play page's description (the glossary's Task 77 rows).
+- **Stories:** "Chaal/Online" (the hub's online part connected, a link, not connected, off; a game: your move, offers and leaving, against the AI, over).
+- **Tests:** `tests/unit/chaal-live.test.ts` (18: mapping, the model, controls, the store, the reader and its backoff, two tabs), `tests/server/chaal-play.test.ts` (15: challenges and the AI with the limits, the first paint, moves and actions, chat, the three streams, a challenge expiring, activity once, the prune), `tests/components/chaal/live-game.test.tsx` (4: the pending move and its rollback, the premove, a reconnect and the end, actions), 24 access-matrix rows, the guard test, and e2e (the AI to mate and Analyse; a challenge with offers, chat, a reconnect mid-game and a claimed win; a real-time challenge declined then accepted; an open link; two tabs and one event stream).
+
+**Deviations:**
+- **No fair-play check on the server:** the data is public at Lichess, so the lock stays in the browser, now fed by the event stream (0266).
+- **A challenge route of its own:** Lichess drops a real-time challenge after 20 s unless its request stays open, so it's a stream, not a function; one unanswered for 270 s ends as expired.
+- **`ch_activity` has `mode` and `ref`** (not only a kind): a game the event stream restates is counted once.
+- **A `chat` feature switch** rather than a column, and `ch_settings.play` holds the AI's max level and rated play (the plan's "AI max level, rated allowed, chat"; their forms are Task 79's).
+- **Play again with a player** opens the hub's challenge form filled in (the Board API has no rematch).
+- **Not checked on Lichess itself** (no live account here): the kept-open challenge's first line, joining one's own open link with `color`, chat and the claims. The lab got no play tools: playing on the deployment checks them.
+- **Zen mode (`z`)** isn't built yet; it joins the phone play layout in Task 78.
+- **Design flow:** Playwright screenshots of the "Chaal/Online" stories at 390 and 1280, en/ne, light and dark; they found the opponent's offers and the claim below the fold on a phone (moved under the controls); `ui-ux-pro-max` and impeccable's critique weren't run, as in Tasks 73–76 (the finish review is Task 85's).
+
+**Numbers:**
+- **Size:** the entry is 288.5 kB (287.7 before; budget 290 kB), built by the e2e harness as CI builds. The play hub's chunk is 47.9 / 14.9 kB gzipped (18.5 / 7.0 before: the online part); the game page's 34.9 / 12.8 kB beside the board kit and chess.js; the tab leader is its own lazy chunk, 2.0 / 1.0 kB.
+- **Tests:** 61 new (`chaal-live` 18, `chaal-play` 15, the components' `live-game` 4, 24 access-matrix rows) plus 5 e2e flows. `pnpm test`: 178 files, 2,000 tests, all passing.
+- **Storybook:** the Chaal stories in both passes, 82 of 82 (axe included); `pnpm build-storybook`.
+- **e2e:** `e2e/flows/chaal.spec.ts` 29 of 29 (5 new; the lab's and the settings' flows changed with the restated stream); the browser review of every `/app/chaal` page, 192 of 192 (the game page new). After the design check moved the offers under the controls, the flows ran again on a fresh build: 29 of 29.
+- **Gates:** `typecheck`, `check`, `knip`, `i18n:check`, `build` and the bundle check, `build-storybook`.
+
+**Left for the owner:**
+- Run `pnpm db:migrate` on Neon (`0043_chaal_play`; `0039`–`0042` are still pending there too, `pnpm diagnose` says 4).
+- On the deployment, connected with your Lichess account: play the Lichess AI, challenge a friend (with a clock, and by days), make a link, offer a draw, chat, and let an opponent leave to claim the win; tell me if anything differs from the fake.
+- Have a Nepali speaker read the online words (the glossary's Task 77 rows, `ch_online_*`, `ch_challenge*`, `ch_decline_*`, `ch_live_*`, `ch_game_*`).
 
 ### Task 78: Play online II: quick pairing, correspondence and notifications (planned)
 

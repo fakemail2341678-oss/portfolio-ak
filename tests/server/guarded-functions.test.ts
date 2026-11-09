@@ -515,6 +515,16 @@ const CHAAL_FUNCTIONS: Record<string, ReadonlyArray<string>> = {
 		"deleteChaalLocalGame",
 		"importChaalLocalGames",
 	],
+	"chaal/challenges.ts": [
+		"getChaalChallenges",
+		"challengeChaalPlayer",
+		"openChaalChallenge",
+		"acceptChaalChallenge",
+		"declineChaalChallenge",
+		"cancelChaalChallenge",
+		"challengeChaalAi",
+	],
+	"chaal/live-game.ts": ["getChaalLiveGame", "playChaalMove", "actOnChaalGame", "getChaalChat", "sendChaalChat"],
 };
 // chaal:end
 

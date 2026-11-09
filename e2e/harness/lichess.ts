@@ -8,22 +8,27 @@
  *   PKCE verifier against the challenge, the redirect URI and the client id, and gives a
  *   token; DELETE revokes it.
  * - `/lichess/api/account`: the token's account; a revoked token gets a 401.
- * - `/lichess/api/stream/event`: the account's event stream. It opens with the recorded
- *   events (tests/fixtures/lichess/events.ndjson), then sends a keepalive every second.
- *   One stream per token, as Lichess: a new one closes the previous.
+ * - `/lichess/api/stream/event`: the account's event stream. It opens with the account's
+ *   current challenges and games, as Lichess restates them, then sends a keepalive every
+ *   second. One stream per token, as Lichess: a new one closes the previous.
+ * - Online play (Task 77, ./lichess-play.ts): challenges (kept open, open links, the AI),
+ *   Board API games with clocks and a scripted AI, offers, endings and chat.
  * - Everything else answers from tests/fixtures/lichess (`pnpm lichess:record`), by
  *   `lichessFixtureName`; the explorer asks for a token, as the real one does. A recorded
  *   stream (`.ndjson`: the player explorer, Task 75) is sent as ndjson and ends.
  *
  * Test controls: `POST /e2e/lichess/revoke` (every token of `{ account }`), `POST
- * /e2e/lichess/event` (`{ account, event }` to its open streams), `DELETE /e2e/lichess`.
- * Later tasks add the game stream with a scripted opponent, seeks, the AI and the rest
- * (PLAN 13.5, "Fixtures").
+ * /e2e/lichess/event` (`{ account, event }` to its open streams), `POST /e2e/lichess/drop`
+ * (`{ account }`: its streams break), `GET /e2e/lichess/streams?account=` (how many it has
+ * open), the rival's `POST /e2e/lichess/challenge`, `/respond` and `/act`, `GET
+ * /e2e/lichess/games`, and `DELETE /e2e/lichess`. Later tasks add seeks and the rest (PLAN
+ * 13.5, "Fixtures").
  */
 import { createHash, randomBytes } from "node:crypto";
 import { existsSync, readFileSync } from "node:fs";
 import type { IncomingMessage, ServerResponse } from "node:http";
 import path from "node:path";
+import { type Account, createPlay } from "./lichess-play.ts";
 
 const FIXTURES = path.resolve(import.meta.dirname, "../../tests/fixtures/lichess");
 
@@ -73,6 +78,17 @@ type Token = { account: LichessAccountId; scopes: string; revoked: boolean };
 const codes = new Map<string, Grant>();
 const tokens = new Map<string, Token>();
 const streams = new Map<string, ServerResponse>();
+
+/** Sends an event to every open event stream of the account. */
+const emit = (account: Account, event: unknown) => {
+	for (const [value, stream] of streams) {
+		if (tokens.get(value)?.account === account) stream.write(`${JSON.stringify(event)}\n`);
+	}
+};
+const play = createPlay({ emit });
+
+/** The fake's own address, as the links it gives out (an open challenge's) carry it. */
+const baseOf = (request: IncomingMessage) => `http://${request.headers.host ?? "127.0.0.1"}/lichess`;
 
 const json = (response: ServerResponse, status: number, body: unknown) => {
 	response.writeHead(status, { "content-type": "application/json", "access-control-allow-origin": "*" });
@@ -125,13 +141,12 @@ const withQuery = (base: string, params: Record<string, string>) => {
 
 const challengeOf = (verifier: string) => createHash("sha256").update(verifier).digest("base64url");
 
-/** Writes the recorded opening events, then a keepalive every second, until the stream is replaced or the client goes. */
-function openEventStream(response: ServerResponse, value: string) {
+/** Restates the account's challenges and games, then a keepalive every second, until the stream is replaced or the client goes. */
+function openEventStream(response: ServerResponse, value: string, account: Account, base: string) {
 	streams.get(value)?.end();
 	streams.set(value, response);
 	response.writeHead(200, { "content-type": "application/x-ndjson", "access-control-allow-origin": "*" });
-	const opening = readLichessFixture("events.ndjson") ?? "";
-	for (const line of opening.split("\n")) if (line.trim()) response.write(`${line}\n`);
+	for (const event of play.restate(account, base)) response.write(`${JSON.stringify(event)}\n`);
 	const keepalive = setInterval(() => response.write("\n"), 1_000);
 	response.on("close", () => {
 		clearInterval(keepalive);
@@ -150,6 +165,7 @@ export async function serveLichess(url: URL, request: IncomingMessage, response:
 	const route = `${request.method} ${url.pathname}`;
 
 	if (route === "DELETE /e2e/lichess") {
+		play.reset();
 		codes.clear();
 		tokens.clear();
 		for (const stream of streams.values()) stream.end();
@@ -174,6 +190,25 @@ export async function serveLichess(url: URL, request: IncomingMessage, response:
 		}
 		json(response, 200, { sent });
 		return true;
+	}
+
+	if (route === "POST /e2e/lichess/drop") {
+		const { account } = JSON.parse((await readBody(request)) || "{}") as { account?: Account };
+		for (const [value, stream] of streams) if (tokens.get(value)?.account === account) stream.destroy();
+		if (account) play.drop(account);
+		json(response, 200, { ok: true });
+		return true;
+	}
+	if (route === "GET /e2e/lichess/streams") {
+		const account = url.searchParams.get("account") as Account | null;
+		const events = [...streams.keys()].filter((value) => tokens.get(value)?.account === account).length;
+		json(response, 200, { events, games: account ? play.gameStreams(account) : 0 });
+		return true;
+	}
+	if (url.pathname.startsWith("/e2e/lichess/")) {
+		const body =
+			request.method === "POST" ? (JSON.parse((await readBody(request)) || "{}") as Record<string, unknown>) : {};
+		if (await play.control(route, body, response, baseOf(request))) return true;
 	}
 
 	const match = HOSTS.find(([prefix]) => url.pathname === prefix || url.pathname.startsWith(`${prefix}/`));
@@ -255,8 +290,16 @@ export async function serveLichess(url: URL, request: IncomingMessage, response:
 			json(response, 401, { error: "No such token" });
 			return true;
 		}
-		openEventStream(response, known.value);
+		openEventStream(response, known.value, known.token.account, baseOf(request));
 		return true;
+	}
+	if (host === "api" && (pathname.startsWith("/api/board/") || pathname.startsWith("/api/challenge"))) {
+		const known = tokenOf(request);
+		if (!known) {
+			json(response, 401, { error: "No such token" });
+			return true;
+		}
+		if (await play.serve(pathname, request, response, known.token.account, baseOf(request))) return true;
 	}
 
 	if (request.method !== "GET") {

@@ -27,3 +27,27 @@ export const analysisSearch = z.object({
 	orientation: z.enum(["white", "black"]).optional().catch(undefined),
 	id: z.uuid().optional().catch(undefined),
 });
+
+/**
+ * The play hub's URL (Task 77): an online setup to open, filled in. "Play again" against a
+ * player links here with the game's settings; anything that doesn't read is dropped.
+ */
+export const playSearch = z.object({
+	with: z.enum(["ai", "friend", "link"]).optional().catch(undefined),
+	opponent: z
+		.string()
+		.max(30)
+		.regex(/^[A-Za-z0-9_-]+$/)
+		.optional()
+		.catch(undefined),
+	/** A pace key: "600+5" or "d3" (src/features/chaal/play/controls.ts). */
+	pace: z
+		.string()
+		.max(12)
+		.regex(/^(\d+\+\d+|d\d+)$/)
+		.optional()
+		.catch(undefined),
+	color: z.enum(["white", "random", "black"]).optional().catch(undefined),
+	rated: z.boolean().optional().catch(undefined),
+});
+export type PlaySearch = z.infer<typeof playSearch>;

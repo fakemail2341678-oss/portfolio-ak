@@ -277,6 +277,8 @@ const SPECS: Record<Layer, LayerSpec> = {
 			// Connecting Lichess and the streams through the server (decision 0256).
 			"src/server/routes/chaal-oauth.ts",
 			"src/server/routes/chaal-stream.ts",
+			// Its daily job (Task 77, decision 0266).
+			"src/server/routes/cron-chaal.ts",
 			"src/server/db/schema/chaal",
 			".storybook/mocks/functions/chaal",
 			".storybook/mocks/functions/chaal-admin",
@@ -310,9 +312,13 @@ const SPECS: Record<Layer, LayerSpec> = {
 			// Local games: against the computer and over the board (Task 76, decision 0265).
 			"tests/unit/chaal-local.test.ts",
 			"tests/server/chaal-local.test.ts",
+			// Online play: streams, challenges, the Lichess AI and the live game (Task 77, decision 0266).
+			"e2e/harness/lichess-play.ts",
+			"tests/unit/chaal-live.test.ts",
+			"tests/server/chaal-play.test.ts",
 		],
 		packageScripts: ["lichess:record", "chaal:sounds", "engine:copy"],
-		crons: [],
+		crons: ["/api/cron/chaal"],
 		knipEntries: [],
 		schema: [],
 	},

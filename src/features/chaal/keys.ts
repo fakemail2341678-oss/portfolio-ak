@@ -17,4 +17,8 @@ export const chaalKeys = {
 	/** Local games on the account (Task 76). */
 	localGames: () => [...all, "local-games"] as const,
 	localGame: (id: string) => [...all, "local-games", id] as const,
+	/** Online play (Task 77): the player's challenges, a game they play, its chat. */
+	challenges: () => [...all, "challenges"] as const,
+	liveGame: (id: string) => [...all, "live-game", id] as const,
+	chat: (id: string) => [...all, "live-game", id, "chat"] as const,
 };

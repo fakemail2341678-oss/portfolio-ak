@@ -302,6 +302,13 @@
 			"when": 1794161178914,
 			"tag": "0042_chaal_local_game",
 			"breakpoints": true
+		},
+		{
+			"idx": 43,
+			"version": "7",
+			"when": 1794189764051,
+			"tag": "0043_chaal_play",
+			"breakpoints": true
 		}
 	]
 }

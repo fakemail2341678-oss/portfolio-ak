@@ -72,6 +72,7 @@ function chaal(overrides: Partial<ChaalPublic> = {}, now = () => 0): ChaalPublic
 			publicCooldownMs: 0,
 			banner: null,
 			engine: { maxDepth: 22, multiPv: 3, hashMb: 16 },
+			play: { aiMaxLevel: 8, rated: true },
 			version: 1,
 			updatedAt: new Date(0),
 		},

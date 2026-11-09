@@ -1,19 +1,28 @@
 import "@tanstack/react-start/server-only";
-import type { ChaalEvent } from "@/features/chaal/live/events";
+import { featureOn } from "@/features/chaal/features";
+import type { ChaalChallengeLine, ChaalEvent, ChaalGameLine } from "@/features/chaal/live/events";
 import { ndjsonLines, parseLine } from "@/features/chaal/live/ndjson";
+import { challengePlayerInput } from "@/features/chaal/play/schema";
 import { isAppError } from "@/lib/errors";
 import { errorFields, log } from "@/server/log";
+import { modeOfSource, recordActivity } from "./activity";
 import { type ChaalUser, type ConnectDeps, withToken } from "./connect/service";
 import { userLane } from "./lichess/lanes";
-import { mapStreamEvent } from "./lichess/schemas";
+import { mapChallengeLine, mapGameLine, mapStreamEvent } from "./lichess/schemas";
+import { cancelChallenge, challengeForm, checkChallenge } from "./play/service";
 
 /**
- * GET /api/chaal/stream/events (PLAN 13.5, "Live play"; decision 0256): the user's Lichess
- * event stream, through our server so the token never leaves it. Each line is mapped to
- * Chaal's lean event (unknown types are dropped) and keepalives pass through. The route
- * closes itself before the function's time limit with a `reconnect` event, and the client
- * opens it again at once: Lichess restates every current challenge and game on open, so
- * nothing is lost.
+ * Chaal's streams through our server (PLAN 13.5, "Live play"; decisions 0256 and 0266), so
+ * a token never leaves it:
+ * - GET /api/chaal/stream/events: the user's Lichess event stream;
+ * - GET /api/chaal/stream/game/{id}: a Board API game's stream (Task 77);
+ * - POST /api/chaal/stream/challenge: a real-time challenge to a player, kept open by
+ *   Lichess's `keepAliveStream` while this response lasts (Task 77).
+ * Each line is mapped to Chaal's lean shape (unknown types are dropped) and keepalives pass
+ * through. A stream closes itself before the function's time limit; the event and game
+ * streams then say `reconnect` and the client opens them again at once (Lichess restates
+ * everything when they open, so nothing is lost); a challenge nobody answered in that time
+ * is cancelled and said `expired`.
  */
 
 /**
@@ -23,7 +32,7 @@ import { mapStreamEvent } from "./lichess/schemas";
 export const STREAM_WINDOW_MS = 270_000;
 
 const encoder = new TextEncoder();
-const line = (event: ChaalEvent) => encoder.encode(`${JSON.stringify(event)}\n`);
+const lineOf = (value: object) => encoder.encode(`${JSON.stringify(value)}\n`);
 
 const json = (status: number, body: Record<string, unknown>) =>
 	new Response(JSON.stringify(body), {
@@ -42,72 +51,68 @@ function refusal(error: unknown): Response {
 
 export type StreamOptions = { windowMs?: number };
 
-export async function eventStream(
-	deps: ConnectDeps,
-	user: ChaalUser | null,
-	{ windowMs = STREAM_WINDOW_MS }: StreamOptions = {},
-): Promise<Response> {
-	if (!user) return json(401, { error: "UNAUTHORIZED" });
-	const blocks = await deps.controls.blocks();
-	if (blocks.users.has(user.id)) return json(403, { error: "FORBIDDEN" });
+/** Why a relay ended: its window ran out, Lichess ended it, it broke, or the browser went away. */
+type Ending = "window" | "ended" | "broke" | "client";
 
-	const upstreamAbort = new AbortController();
-	let upstream: ReadableStream<Uint8Array>;
-	try {
-		upstream = await withToken(deps, user.id, "play", (token) =>
-			deps.lichess.stream({
-				endpoint: "stream:event",
-				path: "/api/stream/event",
-				token,
-				lane: userLane(user.id),
-				signal: upstreamAbort.signal,
-			}),
-		);
-	} catch (error) {
-		return refusal(error);
-	}
+type Relay<L extends object> = {
+	name: string;
+	upstream: ReadableStream<Uint8Array>;
+	abort: AbortController;
+	map: (value: unknown) => L | null;
+	windowMs: number;
+	/** The last line, by why the relay ends (none for the browser going away); null sends nothing. */
+	closing: (ending: Exclude<Ending, "client">) => object | null;
+	onLine?: (line: L) => void;
+	onEnd?: (ending: Ending) => void;
+};
 
+/** Passes a Lichess stream on: mapped lines and keepalives, then one closing line. */
+function relay<L extends object>({ name, upstream, abort, map, windowMs, closing, onLine, onEnd }: Relay<L>): Response {
 	const opened = Date.now();
-	let closing = false;
+	let closed = false;
 	const body = new ReadableStream<Uint8Array>({
 		async start(controller) {
-			const finish = (afterMs: number) => {
-				if (closing) return;
-				closing = true;
-				controller.enqueue(line({ type: "reconnect", afterMs }));
+			const finish = (ending: Exclude<Ending, "client">) => {
+				if (closed) return;
+				closed = true;
+				const last = closing(ending);
+				if (last) controller.enqueue(lineOf(last));
 				controller.close();
-				upstreamAbort.abort();
+				abort.abort();
+				onEnd?.(ending);
 			};
 			// A first keepalive sends the headers at once, so the client knows it's open.
 			controller.enqueue(encoder.encode("\n"));
-			const deadline = setTimeout(() => finish(0), windowMs);
+			const deadline = setTimeout(() => finish("window"), windowMs);
 			try {
 				for await (const text of ndjsonLines(upstream)) {
-					if (closing) break;
+					if (closed) break;
 					if (text === "") {
 						controller.enqueue(encoder.encode("\n"));
 						continue;
 					}
-					const event = mapStreamEvent(parseLine(text));
-					if (event) controller.enqueue(line(event));
+					const line = map(parseLine(text));
+					if (!line) continue;
+					controller.enqueue(lineOf(line));
+					onLine?.(line);
 				}
-				// Lichess ended it: another stream opened for this token, or Lichess restarted.
-				finish(1_000);
+				finish("ended");
 			} catch (error) {
-				if (!closing) log("warn", "chaal event stream broke", errorFields(error));
-				finish(2_000);
+				if (!closed) log("warn", `chaal ${name} stream broke`, errorFields(error));
+				finish("broke");
 			} finally {
 				clearTimeout(deadline);
-				log("info", "chaal event stream closed", { ms: Date.now() - opened });
+				log("info", `chaal ${name} stream closed`, { ms: Date.now() - opened });
 			}
 		},
 		cancel() {
 			// The browser went away: stop reading Lichess.
-			closing = true;
-			upstreamAbort.abort();
+			if (closed) return;
+			closed = true;
+			abort.abort();
+			onEnd?.("client");
 		},
 	});
-
 	return new Response(body, {
 		headers: {
 			"content-type": "application/x-ndjson; charset=utf-8",
@@ -116,4 +121,173 @@ export async function eventStream(
 			"x-accel-buffering": "no",
 		},
 	});
+}
+
+/** The reconnect line for the event and game streams: at once after the window, a second after Lichess ended it, two after a break. */
+const reconnect = (ending: Exclude<Ending, "client">) =>
+	({ type: "reconnect", afterMs: ending === "window" ? 0 : ending === "ended" ? 1_000 : 2_000 }) as const;
+
+/** Refused before Lichess is asked: no session, or a blocked user. */
+async function gate(deps: ConnectDeps, user: ChaalUser | null): Promise<Response | null> {
+	if (!user) return json(401, { error: "UNAUTHORIZED" });
+	const blocks = await deps.controls.blocks();
+	return blocks.users.has(user.id) ? json(403, { error: "FORBIDDEN" }) : null;
+}
+
+export async function eventStream(
+	deps: ConnectDeps,
+	user: ChaalUser | null,
+	{ windowMs = STREAM_WINDOW_MS }: StreamOptions = {},
+): Promise<Response> {
+	const refused = await gate(deps, user);
+	if (refused || !user) return refused ?? json(401, { error: "UNAUTHORIZED" });
+	const abort = new AbortController();
+	let upstream: ReadableStream<Uint8Array>;
+	try {
+		upstream = await withToken(deps, user.id, "play", (token) =>
+			deps.lichess.stream({
+				endpoint: "stream:event",
+				path: "/api/stream/event",
+				token,
+				lane: userLane(user.id),
+				signal: abort.signal,
+			}),
+		);
+	} catch (error) {
+		return refusal(error);
+	}
+	return relay<ChaalEvent>({
+		name: "event",
+		upstream,
+		abort,
+		map: mapStreamEvent,
+		windowMs,
+		closing: reconnect,
+		onLine: (event) => {
+			// A game that has just started counts once (decision 0266); a restated one that has moves doesn't.
+			if (event.type === "gameStart" && !event.game.hasMoved) {
+				void recordActivity(deps.db, {
+					userId: user.id,
+					kind: "game",
+					mode: modeOfSource(event.game.source),
+					ref: event.game.id,
+				});
+			}
+		},
+	});
+}
+
+/** A game's id in a stream route's path: `/api/chaal/stream/game/{id}`. */
+export const GAME_ID = /^[A-Za-z0-9]{8}$/;
+
+export async function gameStream(
+	deps: ConnectDeps,
+	user: ChaalUser | null,
+	gameId: string,
+	{ windowMs = STREAM_WINDOW_MS }: StreamOptions = {},
+): Promise<Response> {
+	const refused = await gate(deps, user);
+	if (refused || !user) return refused ?? json(401, { error: "UNAUTHORIZED" });
+	if (!GAME_ID.test(gameId)) return json(404, { error: "NOT_FOUND" });
+	const abort = new AbortController();
+	let upstream: ReadableStream<Uint8Array>;
+	try {
+		upstream = await withToken(deps, user.id, "play", (token) =>
+			deps.lichess.stream({
+				endpoint: "stream:game",
+				path: `/api/board/game/stream/${gameId}`,
+				token,
+				lane: userLane(user.id),
+				signal: abort.signal,
+			}),
+		);
+	} catch (error) {
+		return refusal(error);
+	}
+	const chat = featureOn((await deps.controls.settings()).features, "chat");
+	return relay<ChaalGameLine>({
+		name: "game",
+		upstream,
+		abort,
+		// With chat off, its lines never reach the page.
+		map: (value) => {
+			const line = mapGameLine(value);
+			return line?.type === "chatLine" && !chat ? null : line;
+		},
+		windowMs,
+		closing: reconnect,
+	});
+}
+
+/**
+ * A real-time challenge to a player: Lichess keeps it while this response is open (its
+ * `keepAliveStream`), then says how it ended (`done`). Nobody answering within the window,
+ * the stream breaking or the page going away cancels it at Lichess.
+ */
+export async function challengeStream(
+	deps: ConnectDeps,
+	user: ChaalUser | null,
+	body: unknown,
+	{ windowMs = STREAM_WINDOW_MS }: StreamOptions = {},
+): Promise<Response> {
+	const refused = await gate(deps, user);
+	if (refused || !user) return refused ?? json(401, { error: "UNAUTHORIZED" });
+	const parsed = challengePlayerInput.safeParse(body);
+	if (!parsed.success || parsed.data.pace.kind !== "clock") return json(400, { error: "BAD_REQUEST" });
+	const input = parsed.data;
+	const abort = new AbortController();
+	let upstream: ReadableStream<Uint8Array>;
+	try {
+		await checkChallenge(deps, input);
+		upstream = await withToken(deps, user.id, "play", (token) =>
+			deps.lichess.stream({
+				endpoint: "stream:challenge",
+				method: "POST",
+				path: `/api/challenge/${encodeURIComponent(input.username)}`,
+				form: challengeForm(input, { keepAliveStream: "true" }),
+				token,
+				lane: userLane(user.id),
+				signal: abort.signal,
+			}),
+		);
+	} catch (error) {
+		return refusal(error);
+	}
+	let challengeId: string | null = null;
+	let done = false;
+	return relay<ChaalChallengeLine>({
+		name: "challenge",
+		upstream,
+		abort,
+		map: mapChallengeLine,
+		windowMs,
+		closing: () => (done ? null : { type: "expired" }),
+		onLine: (line) => {
+			if (line.type === "challenge") challengeId = line.challenge.id;
+			if (line.type === "done") {
+				done = true;
+				if (line.done === "accepted" && challengeId) {
+					void recordActivity(deps.db, { userId: user.id, kind: "game", mode: "challenge", ref: challengeId });
+				}
+			}
+		},
+		onEnd: () => {
+			// Not answered: take it back at Lichess, so the player doesn't accept a challenge nobody waits for.
+			if (done || !challengeId) return;
+			void cancelChallenge(deps, user.id, challengeId).catch((error: unknown) =>
+				log("warn", "chaal challenge cancel failed", errorFields(error)),
+			);
+		},
+	});
+}
+
+/**
+ * A POST from one of our pages, not another site's (the stream routes run outside the server
+ * functions' CSRF check): the browser's `Sec-Fetch-Site`, else the `Origin`.
+ */
+export function sameOrigin(headers: Headers, url: string): boolean {
+	const site = headers.get("sec-fetch-site");
+	if (site) return site === "same-origin";
+	const origin = headers.get("origin");
+	return origin !== null && origin === new URL(url).origin;
 }

@@ -17,6 +17,10 @@
 		{
 			"path": "/api/cron/parda",
 			"schedule": "30 2 * * *"
+		},
+		{
+			"path": "/api/cron/chaal",
+			"schedule": "45 2 * * *"
 		}
 	]
 }

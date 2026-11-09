@@ -2,6 +2,7 @@ import { sql } from "drizzle-orm";
 import { boolean, check, integer, jsonb, pgTable, text, timestamp, uniqueIndex, uuid } from "drizzle-orm/pg-core";
 import type { EngineLimits } from "@/features/chaal/engine/limits";
 import type { ChaalFeatureSwitches } from "@/features/chaal/features";
+import type { PlayLimits } from "@/features/chaal/play/controls";
 import { user } from "../auth";
 import { localizedText } from "../columns";
 
@@ -9,7 +10,8 @@ import { localizedText } from "../columns";
  * Chaal's controls (PLAN 13.5, decision 0254): one settings row, read at most every 5 s per
  * process (src/server/chaal/controls.ts). Columns arrive with the feature that needs them;
  * Task 71 has the feature switches, the connecting rules, the cache epoch and the public
- * lane's cooldown; Task 73 the notice under the top bar. A missing row means the defaults.
+ * lane's cooldown; Task 73 the notice under the top bar; Task 75 the engine's limits; Task 77
+ * online play's. A missing row means the defaults.
  */
 export const chSettings = pgTable(
 	"ch_settings",
@@ -30,6 +32,8 @@ export const chSettings = pgTable(
 		banner: localizedText(),
 		/** The engine's limits in the browser (Task 75, decision 0263): depth, lines and hash. Its form arrives with Task 79. */
 		engine: jsonb().$type<EngineLimits>().notNull().default({ maxDepth: 22, multiPv: 3, hashMb: 16 }),
+		/** Online play's limits (Task 77, decision 0266): the Lichess AI's highest level, rated games. Its form arrives with Task 79. */
+		play: jsonb().$type<PlayLimits>().notNull().default({ aiMaxLevel: 8, rated: true }),
 		version: integer().notNull().default(1),
 		updatedAt: timestamp({ withTimezone: true })
 			.defaultNow()

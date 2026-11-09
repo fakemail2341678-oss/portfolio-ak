@@ -7,6 +7,9 @@
  * the browser and on the account, and connecting from the settings page as a visitor.
  * Task 76 (decision 0265): local games against Stockfish and over the board, kept in the
  * browser, and moved to the account when a session opens Chaal.
+ * Task 77 (decision 0266): online play against the fake Lichess: the Lichess AI to mate, a
+ * challenge with offers, chat, a reconnect mid-game and a claimed win, a real-time challenge
+ * kept open, an open link, and two tabs sharing one event stream.
  */
 import type { Page } from "@playwright/test";
 import { E2E } from "../harness/config.ts";
@@ -68,6 +71,8 @@ test.describe("Chaal's lab as the admin", () => {
 
 	test("connects Lichess, shows the account and scopes, streams events and disconnects", async ({ page }) => {
 		await connect(page);
+		// A challenge waiting for the account: the stream restates it when it opens.
+		await harness("/e2e/lichess/challenge", "POST", { from: "e2e_rival", to: "e2e_player", days: 3 });
 		await expect(page).toHaveURL(/\/admin\/chaal\/lab\?lichess=connected$/);
 		await expect(page.getByTestId("ch-lab-result")).toContainText("Lichess is connected.");
 		await expect(page.getByTestId("ch-lab-account")).toHaveText("E2E_Player");
@@ -79,10 +84,12 @@ test.describe("Chaal's lab as the admin", () => {
 		const events = page.getByTestId("ch-lab-events");
 		await expect(page.getByTestId("ch-lab-stream-state")).toContainText("Open: the first byte came after");
 		await expect(events).toContainText('"type":"challenge"');
-		await expect(events).toContainText('"type":"gameFinish"');
-		await expect(events).not.toContainText("aFutureEventChaalDoesNotKnow");
 		await expect(page.getByTestId("ch-lab-stream-counts")).toContainText(/[1-9]\d* keepalives/);
-		// An event Lichess sends now arrives at once.
+		// An event Chaal doesn't know is dropped; one Lichess sends now arrives at once.
+		await harness("/e2e/lichess/event", "POST", {
+			account: "e2e_player",
+			event: { type: "aFutureEventChaalDoesNotKnow" },
+		});
 		const pushed = await harness("/e2e/lichess/event", "POST", {
 			account: "e2e_player",
 			event: {
@@ -92,6 +99,7 @@ test.describe("Chaal's lab as the admin", () => {
 		});
 		expect(((await pushed.json()) as { sent: number }).sent).toBe(1);
 		await expect(events).toContainText("liveOne1");
+		await expect(events).not.toContainText("aFutureEventChaalDoesNotKnow");
 		await page.getByRole("button", { name: "Stop" }).click();
 		await expect(page.getByTestId("ch-lab-stream-state")).toContainText("You stopped it after");
 
@@ -193,9 +201,11 @@ test.describe("Chaal's pages for a visitor (Task 73)", () => {
 		await expect(page.getByTestId("chaal-not-connected")).toBeVisible();
 		await page.getByTestId("chaal-settings-connect").click();
 		await expect(page.getByRole("heading", { name: "Authorize chaal-e2e" })).toBeVisible();
+		// After connecting, the frame's event stream keeps a request open: networkidle never comes.
+		const opened = eventStreamOpened(page);
 		await page.getByRole("button", { name: "Approve" }).click();
 		await page.waitForURL(/\/app\/chaal\/settings\?lichess=connected$/);
-		await page.waitForLoadState("networkidle");
+		await opened;
 
 		await expect(page.getByTestId("chaal-connect-result")).toContainText("Lichess is connected.");
 		await expect(page.getByTestId("chaal-connection-account")).toContainText("E2E_Player");
@@ -444,5 +454,177 @@ test.describe("Chaal's local games for a member (Task 76)", () => {
 		// Drawn on the server from the account now.
 		const html = await (await page.request.get(`/app/chaal/local/${id}`)).text();
 		expect(html).toContain('data-at="d5"');
+	});
+});
+
+/**
+ * A connected player's page has hydrated once the frame opens their event stream; `networkidle`
+ * never comes while it's open (Task 77).
+ */
+const eventStreamOpened = (page: Page) =>
+	page.waitForRequest((request) => request.url().includes("/api/chaal/stream/events"));
+
+/** Plays a move by clicking its two squares. */
+const move = async (page: Page, uci: string) => {
+	const board = page.getByTestId("chaal-game-board");
+	await board.locator(`[data-square="${uci.slice(0, 2)}"]`).click();
+	await board.locator(`[data-square="${uci.slice(2, 4)}"]`).click();
+};
+
+/** A piece on a square of the game's board ("wP", "bN"…). */
+const pieceAt = (page: Page, square: string, piece: string) =>
+	page.getByTestId("chaal-game-board").locator(`[data-at="${square}"][data-piece="${piece}"]`);
+
+/** The rival's side of a game, played by the test. */
+const rival = (game: string, action: string, extra: Record<string, unknown> = {}) =>
+	harness("/e2e/lichess/act", "POST", { game, account: "e2e_rival", action, ...extra });
+
+/** Picks a choice in one of the hub's ruled rows. */
+const choose = (page: Page, row: string, value: string) =>
+	page.getByTestId(row).locator(`label:has(input[value="${value}"])`).click();
+
+test.describe("Chaal's online play (Task 77)", () => {
+	test.use(signedIn("viewer"));
+	test.describe.configure({ mode: "serial" });
+
+	test.beforeEach(async ({ page }) => {
+		await harness("/e2e/lichess", "DELETE");
+		await harness("/e2e/chaal-connections", "DELETE");
+		await page.goto("/app/chaal/play", { waitUntil: "networkidle" });
+		await page.getByTestId("chaal-online-connect-button").click();
+		await page.getByRole("button", { name: "Approve" }).click();
+		const opened = eventStreamOpened(page);
+		await page.waitForURL(/\/app\/chaal\/play\?lichess=connected$/);
+		await opened;
+	});
+
+	test("plays the Lichess AI to mate, then Analyse opens the game", async ({ page }) => {
+		await choose(page, "chaal-online-ai-side", "white");
+		await page.getByTestId("chaal-online-ai-start").click();
+		await page.waitForURL(/\/app\/chaal\/game\/[A-Za-z0-9]{8}$/);
+		await expect(page.getByTestId("chaal-game-link")).toHaveAttribute("data-link", "open");
+		// The AI answers from its script: 1. e4 e5 2. Bc4 Nc6 3. Qh5 Nf6 4. Qxf7#.
+		const replies: Array<[string, string, string]> = [
+			["e2e4", "e5", "bP"],
+			["f1c4", "c6", "bN"],
+			["d1h5", "f6", "bN"],
+		];
+		for (const [mine, square, piece] of replies) {
+			await move(page, mine);
+			await expect(pieceAt(page, square, piece)).toBeVisible();
+		}
+		await move(page, "h5f7");
+		await expect(page.getByTestId("chaal-result")).toContainText("1–0");
+		await expect(page.getByTestId("chaal-game-again")).toBeVisible();
+		await page.getByTestId("chaal-game-analyse").click();
+		await page.waitForURL(/\/app\/chaal\/analysis\?.*moves=e2e4_e7e5_f1c4_b8c6_d1h5_g8f6_h5f7/);
+	});
+
+	test("a challenge from a player: accepted, offers, chat, a reconnect mid-game, and the win claimed when they leave", async ({
+		page,
+	}) => {
+		const created = await harness("/e2e/lichess/challenge", "POST", {
+			from: "e2e_rival",
+			to: "e2e_player",
+			clock: { limit: 600, increment: 5 },
+			color: "black",
+		});
+		const { id } = (await created.json()) as { id: string };
+		// The event stream brings it to the open page.
+		const incoming = page.getByTestId("chaal-challenge-in");
+		await expect(incoming).toContainText("E2E_Rival");
+		await incoming.getByTestId("chaal-challenge-accept").click();
+		await page.waitForURL(new RegExp(`/app/chaal/game/${id}$`));
+		await expect(page.getByTestId("chaal-game-link")).toHaveAttribute("data-link", "open");
+
+		await move(page, "e2e4");
+		await expect(pieceAt(page, "e4", "wP")).toBeVisible();
+		await expect.poll(async () => (await rival(id, "move", { uci: "e7e5" })).status).toBe(200);
+		await expect(pieceAt(page, "e5", "bP")).toBeVisible();
+
+		await rival(id, "draw-yes");
+		await expect(page.getByTestId("chaal-game-draw-offer")).toBeVisible();
+		await page.getByTestId("chaal-game-draw-offer-decline").click();
+		await expect(page.getByTestId("chaal-game-draw-offer")).toBeHidden();
+
+		await rival(id, "chat", { text: "<b>good luck</b>" });
+		const chat = page.getByTestId("chaal-game-chat-lines");
+		// Other people's words are text, never HTML.
+		await expect(chat).toContainText("<b>good luck</b>");
+		await page.getByTestId("chaal-game-chat-input").fill("you too");
+		await page.getByTestId("chaal-game-chat-input").press("Enter");
+		await expect(chat).toContainText("you too");
+
+		// The connection drops and the rival's offer comes meanwhile: the reconnect restates the game.
+		await harness("/e2e/lichess/drop", "POST", { account: "e2e_player" });
+		await rival(id, "draw-yes");
+		await expect(page.getByTestId("chaal-game-draw-offer")).toBeVisible({ timeout: 15_000 });
+		await expect(page.getByTestId("chaal-game-link")).toHaveAttribute("data-link", "open");
+		await page.getByTestId("chaal-game-draw-offer-decline").click();
+		await move(page, "g1f3");
+		await expect.poll(async () => (await rival(id, "move", { uci: "b8c6" })).status).toBe(200);
+		await expect(pieceAt(page, "c6", "bN")).toBeVisible();
+
+		await rival(id, "gone", { claimWinInSeconds: 0 });
+		await page.getByTestId("chaal-game-claim-victory").click();
+		await expect(page.getByTestId("chaal-result")).toContainText("1–0");
+		const games = (await (await harness("/e2e/lichess/games", "GET")).json()) as Array<{ id: string; status: string }>;
+		expect(games.find((game) => game.id === id)?.status).toBe("timeout");
+	});
+
+	test("a real-time challenge waits while the page is open: declined with a reason, then accepted", async ({
+		page,
+	}) => {
+		await choose(page, "chaal-online-opponent", "friend");
+		await page.getByTestId("chaal-online-username").fill("E2E_Rival");
+		await page.getByTestId("chaal-online-friend-start").click();
+		const sent = page.getByTestId("chaal-online-sent");
+		await expect(sent).toHaveAttribute("data-state", "waiting");
+		const waiting = async () => {
+			const list = (await (await harness("/e2e/lichess/challenges", "GET")).json()) as Array<{
+				id: string;
+				status: string;
+			}>;
+			return list.find((challenge) => challenge.status === "created")?.id;
+		};
+		const first = await waiting();
+		await harness("/e2e/lichess/respond", "POST", { id: first, decision: "decline", reason: "tooFast" });
+		await expect(sent).toHaveAttribute("data-state", "declined");
+		await expect(sent).toContainText("Too fast for me.");
+
+		await page.getByTestId("chaal-online-friend-start").click();
+		await expect(sent).toHaveAttribute("data-state", "waiting");
+		const second = await waiting();
+		await harness("/e2e/lichess/respond", "POST", { id: second, decision: "accept" });
+		await page.waitForURL(new RegExp(`/app/chaal/game/${second}$`));
+		await expect(page.getByTestId("chaal-game-bottom")).toContainText("E2E_Player");
+	});
+
+	test("an open challenge's link: the game opens when the friend joins", async ({ page }) => {
+		await choose(page, "chaal-online-opponent", "link");
+		await page.getByTestId("chaal-online-link-start").click();
+		const value = await page.getByTestId("chaal-online-link-value").inputValue();
+		const id = /\/([A-Za-z0-9]{8})\?color=/.exec(value)?.[1];
+		expect(id).toBeTruthy();
+		await harness("/e2e/lichess/respond", "POST", { id, account: "e2e_rival", decision: "accept" });
+		await page.waitForURL(new RegExp(`/app/chaal/game/${id}$`));
+	});
+
+	test("two tabs share one event stream; when the leader closes, the other takes it over", async ({ page }) => {
+		const streams = async () =>
+			((await (await harness("/e2e/lichess/streams?account=e2e_player", "GET")).json()) as { events: number }).events;
+		await expect.poll(streams).toBe(1);
+		const second = await page.context().newPage();
+		await second.goto("/app/chaal/play", { waitUntil: "load" });
+		await harness("/e2e/lichess/challenge", "POST", { from: "e2e_rival", to: "e2e_player", days: 3 });
+		await expect(second.getByTestId("chaal-challenge-in")).toHaveCount(1);
+		await expect(page.getByTestId("chaal-challenge-in")).toHaveCount(1);
+		expect(await streams()).toBe(1);
+
+		await page.close();
+		await expect.poll(streams, { timeout: 15_000 }).toBe(1);
+		await harness("/e2e/lichess/challenge", "POST", { from: "e2e_rival", to: "e2e_player", days: 7 });
+		await expect(second.getByTestId("chaal-challenge-in")).toHaveCount(2);
+		await second.close();
 	});
 });

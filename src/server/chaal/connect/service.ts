@@ -6,6 +6,7 @@ import { AppError } from "@/lib/errors";
 import { isUniqueViolation } from "@/server/db/crud";
 import type { Db } from "@/server/db/types";
 import { errorFields, log } from "@/server/log";
+import { recordActivity } from "../activity";
 import type { ChaalControls, ChaalSettingsRow } from "../controls";
 import { type Lichess, LichessAuthError } from "../lichess/client";
 import { userLane } from "../lichess/lanes";
@@ -247,6 +248,7 @@ export async function completeConnect(
 	// The new token replaced the user's earlier one (the same account or another): the old one isn't kept, so it's revoked.
 	if (previous) await revokeSealed(deps, previous.token, user.id);
 	log("info", "chaal connected", { lichessId: account.id, guest: user.isGuest });
+	await recordActivity(deps.db, { userId: user.id, kind: "connect" });
 	return "connected";
 }
 

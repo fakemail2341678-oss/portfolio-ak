@@ -25,6 +25,7 @@ export * from "./apps/notes"; // @apps
 export * from "./attachments";
 export * from "./audit";
 export * from "./auth";
+export * from "./chaal/activity"; // @chaal
 export * from "./chaal/analysis"; // @chaal
 export * from "./chaal/connection"; // @chaal
 export * from "./chaal/local-game"; // @chaal

@@ -11,6 +11,7 @@ import { createChaalControls } from "@/server/chaal/controls";
 import { createChaalCache } from "@/server/chaal/lichess/cache";
 import { createLichess } from "@/server/chaal/lichess/client";
 import * as local from "@/server/chaal/local/service";
+import * as play from "@/server/chaal/play/service";
 import * as preferences from "@/server/chaal/preferences";
 import { chaalStatus } from "@/server/chaal/status";
 import * as schema from "@/server/db/schema";
@@ -22,8 +23,8 @@ import { createTestDb } from "../utils/test-db";
  * requireChaalUser then withChaalServices) is checked by
  * tests/server/guarded-functions.test.ts; here are the rules behind it: no session, a
  * guest, a member, a blocked user, a feature that's off, a missing scope, a revoked token,
- * another user's connection, another user's analysis (Task 75) and another user's local
- * game (Task 76). Online games join with their tasks.
+ * another user's connection, another user's analysis (Task 75), another user's local
+ * game (Task 76), and online play's calls (Task 77), each with the caller's own token.
  */
 let env: Awaited<ReturnType<typeof createTestDb>>;
 let vault: Vault;
@@ -101,6 +102,25 @@ const LOCAL_OPERATIONS: Record<string, (userId: string, id: string) => Promise<u
 	deleteChaalLocalGame: (userId, id) => local.deleteLocalGame(env.db, userId, id),
 	importChaalLocalGames: (userId, id) =>
 		local.importLocalGames({ db: env.db, controls: createChaalControls(env.db, () => 0) }, userId, [localRecord(id)]),
+};
+
+const DAYS = { kind: "days", days: 3 } as const;
+
+/** Every online play function's service call (src/functions/chaal/challenges.ts and live-game.ts, Task 77). */
+const PLAY_OPERATIONS: Record<string, (userId: string) => Promise<unknown>> = {
+	getChaalChallenges: (userId) => play.listChallenges(deps(), userId),
+	challengeChaalPlayer: (userId) =>
+		play.challengePlayer(deps(), userId, { username: "someone", pace: DAYS, color: "white", rated: false }),
+	openChaalChallenge: (userId) => play.openChallenge(deps(), userId, { pace: DAYS, color: "white", rated: false }),
+	acceptChaalChallenge: (userId) => play.acceptChallenge(deps(), userId, "chal1234"),
+	declineChaalChallenge: (userId) => play.declineChallenge(deps(), userId, "chal1234", "later"),
+	cancelChaalChallenge: (userId) => play.cancelChallenge(deps(), userId, "chal1234"),
+	challengeChaalAi: (userId) => play.challengeAi(deps(), userId, { level: 1, pace: DAYS, color: "white" }),
+	getChaalLiveGame: (userId) => play.liveGame(deps(), userId, "game1234"),
+	playChaalMove: (userId) => play.playMove(deps(), userId, "game1234", "e2e4"),
+	actOnChaalGame: (userId) => play.gameAction(deps(), userId, "game1234", "resign"),
+	getChaalChat: (userId) => play.chatHistory(deps(), userId, "game1234"),
+	sendChaalChat: (userId) => play.sendChat(deps(), userId, "game1234", "hi"),
 };
 
 beforeAll(async () => {
@@ -184,6 +204,39 @@ describe("Chaal's access matrix", () => {
 		else expect(result).toMatchObject({ code: "NOT_FOUND" });
 		expect((await local.getLocalGame(env.db, "member", id)).id).toBe(id);
 		expect(await local.listLocalGames(env.db, "other")).toEqual([]);
+	});
+
+	it.each(
+		Object.keys(PLAY_OPERATIONS),
+	)("%s needs a connection that can play: refused without one, without play's scopes, revoked, or with play off", async (name) => {
+		const operation = PLAY_OPERATIONS[name];
+		if (!operation) throw new Error(name);
+		await expect(operation("member")).rejects.toMatchObject({ reason: "lichess-reconnect" });
+		await connected("member", "member_lichess", ["puzzle:read"]);
+		await expect(operation("member")).rejects.toMatchObject({ reason: "lichess-reconnect" });
+		await env.db.update(schema.chConnection).set({ scopes: PLAY, revokedAt: new Date(0) });
+		await expect(operation("member")).rejects.toMatchObject({ reason: "lichess-reconnect" });
+		await env.db.update(schema.chConnection).set({ revokedAt: null });
+		await env.db.insert(schema.chSettings).values({ id: 1, features: { play: false } });
+		await expect(operation("member")).rejects.toMatchObject({ code: "FORBIDDEN" });
+		expect(fetcher).not.toHaveBeenCalled();
+	});
+
+	it.each(
+		Object.keys(PLAY_OPERATIONS),
+	)("%s acts with the caller's own token: another player's game or challenge is Lichess's to refuse", async (name) => {
+		const operation = PLAY_OPERATIONS[name];
+		if (!operation) throw new Error(name);
+		await connected("member", "member_lichess", PLAY);
+		await connected("other", "other_lichess", PLAY);
+		fetcher.mockImplementation(async () => Response.json({ error: "Not found" }, { status: 404 }));
+		await expect(operation("other")).rejects.toMatchObject({ code: "NOT_FOUND" });
+		const tokens = fetcher.mock.calls.map(
+			([, init]) => (init?.headers as Record<string, string> | undefined)?.authorization,
+		);
+		expect(tokens.length).toBeGreaterThan(0);
+		expect(tokens.every((token) => token === "Bearer lio_other_lichess")).toBe(true);
+		fetcher.mockImplementation(async () => new Response(null, { status: 204 }));
 	});
 
 	it("a guest's connection works like a member's", async () => {
