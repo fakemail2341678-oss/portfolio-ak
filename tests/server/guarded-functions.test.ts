@@ -527,6 +527,16 @@ const CHAAL_PUBLIC_FUNCTIONS: Record<string, ReadonlyArray<string>> = {
 		"searchChaalPlayers",
 		"getChaalReplay",
 	],
+	"chaal/watch.ts": [
+		"getChaalTv",
+		"getChaalStreamers",
+		"getChaalBroadcasts",
+		"getChaalOfficialBroadcasts",
+		"searchChaalBroadcasts",
+		"getChaalBroadcastTour",
+		"getChaalBroadcastRound",
+		"getChaalBroadcastGame",
+	],
 };
 
 /**

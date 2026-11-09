@@ -2881,7 +2881,7 @@ As 12.1, with these differences:
 | 79 | Admin I: settings, connections and blocks, API health | high | Done (decision 0268) |
 | 80 | Puzzles | high | Done (decisions 0269, 0270) |
 | 81 | Players and games | high | Done (decision 0271) |
-| 82 | Watch: TV, live games, broadcasts | high | Planned |
+| 82 | Watch: TV, live games, broadcasts | high | Done (decision 0272) |
 | 83 | Community: tournaments, teams, studies | high | Planned |
 | 84 | Admin II: overview and curation | high | Planned |
 | 85 | Wrap-up: full e2e, accessibility pass, template matrix, finish review | medium | Planned |
@@ -2957,7 +2957,7 @@ As 12.1, with these differences:
   - the dnd-kit model in `src/features/taskline/calendar/calendar.tsx` (`useDraggable`, `useDroppable`, `Accessibility.configure`);
   - `enforceRateLimit` (`src/server/http/rate-limit.ts`);
   - env in `src/server/env.ts`, plus the dev-offline `OFF` list, `tests/setup/env.ts`, the harness `APP_ENV` regex and `tests/unit/env.test.ts`.
-- **Bundle:** the entry was 283.7 kB after Part 6, 284.4 after Tasks 71 and 72, 286.3 after Task 73, 286.9 after Task 75, 287.7 after Task 76, 288.5 after Task 77, 288.6 after Task 78, 289.9 after Task 79, 290.5 after Task 80 and 291.4 after Task 81 (built as CI builds, without Sentry or PostHog keys); each route definition adds about 0.3 kB (0217). Task 73 raised the budget to 290 kB for Part 7's routes (0260), and Task 80 to 295 kB for Tasks 80–84's (0270); Task 85 measures and trims.
+- **Bundle:** the entry was 283.7 kB after Part 6, 284.4 after Tasks 71 and 72, 286.3 after Task 73, 286.9 after Task 75, 287.7 after Task 76, 288.5 after Task 77, 288.6 after Task 78, 289.9 after Task 79, 290.5 after Task 80, 291.4 after Task 81 and 292.9 after Task 82 (built as CI builds, without Sentry or PostHog keys); each route definition adds about 0.3 kB (0217). Task 73 raised the budget to 290 kB for Part 7's routes (0260), and Task 80 to 295 kB for Tasks 80–84's (0270); Task 85 measures and trims.
 
 ### 13.5 Architecture (every task follows it)
 
@@ -2998,9 +2998,9 @@ As 12.1, with these differences:
 - **User-Agent:** `Chaal/<version> (+<site>/app/chaal/about)`. **Logging:** `log()` on every call (class, status, ms; never the token), plus counters for the health page.
 - **Cache TTLs:**
   - the daily puzzle until the next UTC midnight, a puzzle by id 7 d, visitors' puzzle batches by round (10 min for the first, then 1 min), a player's puzzle dashboard 10 min (Task 80);
-  - TV channels 5 s;
+  - TV channels 5 s (Task 82: with one export of their games, 5 s too);
   - profiles and the tournament list 60 s;
-  - broadcasts 5 min;
+  - broadcasts 5 min (Task 82: a round 20 s while it's played, a tournament a minute while a round is, a board's PGN 20 s while its result is `*`; the streamers a minute);
   - leaderboards 1 h;
   - the explorer: masters 7 d, Lichess 1 h;
   - the tablebase 30 d;
@@ -3089,7 +3089,7 @@ As 12.1, with these differences:
 
 | Table | Holds | Task |
 | --- | --- | --- |
-| `ch_settings` (one row, `version`) | feature switches (Task 71: `features`, `guests_may_connect`, `extra_scopes`, `cache_epoch`, the public cooldown; Task 77: `play` with the AI's max level and rated allowed, and a `chat` feature), quick-pair controls, AI max level, rated allowed, chat, guests may connect, extra scopes, defaults (board, pieces, sounds), engine limits, banner and maintenance (en/ne), `cache_epoch`, public cooldown | 71 |
+| `ch_settings` (one row, `version`) | feature switches (Task 71: `features`, `guests_may_connect`, `extra_scopes`, `cache_epoch`, the public cooldown; Task 77: `play` with the AI's max level and rated allowed, and a `chat` feature; Task 82: `watch`, the TV channels shown and the streamers), quick-pair controls, AI max level, rated allowed, chat, guests may connect, extra scopes, defaults (board, pieces, sounds), engine limits, banner and maintenance (en/ne), `cache_epoch`, public cooldown | 71 |
 | `ch_connection` | user (the primary key, cascade), Lichess id (unique), username, title, sealed token, scopes, expiry, connected and last used, `cooldown_until` and `cooldown_ms`, `revoked_at` | 71 |
 | `ch_block` | a site user or a Lichess username, reason, by, at | 71 |
 | `ch_preference` | per user: board, pieces, sounds, volume, auto-queen, premove, confirm moves, coordinates, notation, zen. Without a session these live in localStorage, imported once | 73 |
@@ -3551,13 +3551,42 @@ As 12.1, with these differences:
 - On the deployment, connected with your Lichess account: follow and unfollow a player, check the list beside the leaderboards, and open one of your finished games; tell me if anything differs from the fake.
 - Have a Nepali speaker read the players' words (the glossary's Task 81 rows, `ch_player_*`, `ch_players_*`, `ch_replay_*`).
 
-### Task 82: Watch: TV, live games and broadcasts (planned)
+### Task 82: Watch: TV, live games and broadcasts (done)
 
-- **`/watch`:** a grid of TV channels, server-rendered, then live from the browser feeds. **`/watch/$channel`:** the big board.
-- **Spectating** any game: `/game/$id` in spectator mode.
-- **Broadcasts:** `/broadcasts` (official, top, search) and `/broadcasts/$id` (rounds, a boards grid, a focused board on the PGN stream, replays).
-- **Live streamers** (links out).
-- **Tests** with fake feeds.
+**Done** (decision 0272; the guide's "Watch").
+
+**What changed:**
+- **`/app/chaal/watch`** (indexable; Watch is the frame's fourth section, current on the broadcasts' pages too; two palette entries with Broadcasts): Lichess's standard TV channels (top rated, bullet, blitz, rapid, classical, UltraBullet, bots, the Lichess AI) as a grid of diagrams drawn on the server from `/api/tv/channels` and **one** export of their games by id (`lastFen`), both 5 s; then each card follows its channel's feed **from the browser**, only while it's on screen and the tab is shown. Beside it, what's broadcast now and the streamers live (links out, `nofollow ugc noopener`).
+- **`/app/chaal/watch/$channel`** (noindex; a variant's channel is the 404): the big board with both clocks, live from the feed, moving on with the channel; "Follow this game", lichess.org, the other channels.
+- **Spectating** on `/app/chaal/game/$id`: someone else's game still being played is followed live (the replay's export first, then `/api/stream/game/{id}` from the browser, three moves behind as Lichess shows spectators): the moves so far, each new one, stepping back while moves come in, the result, then the replay once Lichess's export has the ending.
+- **`/app/chaal/broadcasts`** (indexable): live now, coming up and the past a page at a time (`/api/broadcast/top`), the official ones (`?view=official`), a search (`?q=`). **`/app/chaal/broadcasts/$id`** (noindex; one Lichess doesn't know is the 404): the tournament (info, days, website and standings as links), its rounds as tabs, a round's boards as diagrams, and one board followed (`?board=`: the big board, clocks and Lichess's evals from the PGN, the moves, the result, Analyse, the PGN, lichess.org). While a round is played the browser reads its PGN stream, which keeps the grid and the followed board current; a finished round's boards are replays.
+- **The browser's side:** the status carries `live` (LICHESS_API_BASE) and Chaal's pages allow its origin in `connect-src`; `usePublicStream` keeps a public stream open (`keepStreaming` with new `split`/`parse` options for a PGN stream, minutes of silence allowed: Lichess's public streams send no keepalives, and a `closed` state).
+- **Admin:** `ch_settings.watch` (`{ channels, streamers }`, migration `0046_chaal_watch`) in a Watch section of /admin/chaal/settings, audited; the `watch` switch refuses every watch function and the pages say so.
+- **Server and client:** `src/server/chaal/watch/service.ts`; the watch answers in `lichess/schemas.ts`; the client sends `accept-language: en` (Lichess names rounds in the language it's asked in) and gains `pgn()`. Functions `src/functions/chaal/watch.ts` (public), with a Storybook mock, guard-test entries and access-matrix rows.
+- **Fixtures and the fake Lichess:** `pnpm lichess:record watch` (the TV's channels and their games' export, the streamers, the broadcasts' top, official and a search, the tournament `9NE16qcS` with two rounds and a board's PGN each; `.pgn` fixtures); `e2e/harness/lichess-watch.ts`: the TV's feeds, a game it plays itself (`e2eWatch`, the rapid channel's) with its export and spectators' stream, the recorded tournament's first round played live on its PGN stream, and controls to move, end, push a board and count the browser's streams.
+- **The review:** a page that keeps a stream open (`live: true`) waits for the load and a moment, since the network never goes idle.
+- **Messages:** 72 new keys in en and ne (`ch_watch_*`, `ch_tv_*`, `ch_spectate_*`, `ch_broadcast_*`, `ch_broadcasts_*`, `ch_nav_watch`, `ch_admin_settings_watch*`; the glossary's Task 82 rows).
+- **Stories:** "Chaal/Watch": the TV's channels, the streamers, the broadcasts' lists, a round's boards, a board followed, a game being played.
+- **Tests:** `tests/unit/chaal-watch.test.ts` (18: every recorded answer as Chaal maps it, an unsafe stream address dropped, the TV's feed lines, following a game (restated moves passed over, a different line, a lost thread, the ending), a round's PGN stream split across chunks, boards named, updated and added, the reader with a PGN splitter, the admin's controls, the URLs), `tests/server/chaal-watch.test.ts` (8: one export for the TV and its 5 s cache, the admin's channels, a failed export, the streamers' switch, the lists' cache and search, a tournament, round and board with their TTLs and the size limit, the watch switch, the status's live base), 8 access-matrix rows, the admin's settings test with watch, and e2e (5: the TV live and a channel on the big board; a variant's channel's 404; following a game to its end; the broadcasts' lists, a tournament and a finished board replayed; a round played live on its PGN stream).
+
+**Numbers:**
+- **Size:** the entry is 292.9 kB (291.4 before; budget 295 kB), built by the e2e harness as CI builds; the four routes and Watch in the frame added 1.5 kB.
+- **Tests:** 27 new unit and server tests (18 + 8, and the admin's settings test with watch), 8 access-matrix rows. Related suites (`tests/unit/chaal-*`, `tests/server/chaal-*`, the guard, route-SEO, e2e-pages, strip-markers, sitemap, CSP, env, `tests/i18n`, `tests/components/chaal`): 39 files, 607 tests, all passing. The full `pnpm test` runs in Task 85.
+- **Storybook:** every Chaal story in both passes, 122 of 122.
+- **e2e:** every Chaal flow and the browser review of every `/app/chaal` and `/admin/chaal` page, 556 of 556 (2 workers, 11.8 min). The first runs found layout shifts on the channel page and a game being played (the clocks and the live dot's words arriving after the first paint); fixed by drawing the clocks' places on the server and giving the dot a line of its own.
+- **Gates:** `typecheck`, `check`, `knip`, `i18n:check`, the bundle check, `build-storybook`.
+- **Design flow:** the browser review's 120 views of the new pages, plus screenshots of the TV, a channel, a game followed, the broadcasts, a tournament and a board at 390 and 1280 in both languages and themes; they led to the TV cards' steady headings, larger thumbnails of the other channels, the current round scrolled into view, and a short tournament heading over a followed board. `ui-ux-pro-max` and impeccable's critique weren't run, as in Tasks 73–81 (the finish review is Task 85's).
+
+**Deviations:**
+- **TV feeds open only for cards on screen** (and close in a hidden tab): Lichess allows at most eight game streams per IP, and a phone shows one or two channels.
+- **Broadcasts' data for the first paint goes through our server and the cache;** only what's live is read by the browser (the plan's "public live data").
+- **The channel page has no move list:** the TV feed gives positions only; "Follow this game" opens the game's page, which has them.
+- **Watch's top bar section is the fourth** (Home, Play, Puzzles, Analysis, Watch), so a phone's tab bar has six places.
+
+**Left for the owner:**
+- Run `pnpm db:migrate` on Neon (`0039`–`0046` are pending there).
+- On the deployment, while a broadcast round is being played: open it and follow a board, and check the boards move with Lichess's; tell me if anything differs from the fake (no round was live while recording).
+- Have a Nepali speaker read the watch words (the glossary's Task 82 rows, `ch_watch_*`, `ch_tv_*`, `ch_broadcast*`, `ch_spectate_*`).
 
 ### Task 83: Community: tournaments, teams and studies (planned)
 

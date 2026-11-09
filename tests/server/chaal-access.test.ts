@@ -16,6 +16,7 @@ import * as players from "@/server/chaal/players/service";
 import * as preferences from "@/server/chaal/preferences";
 import * as puzzles from "@/server/chaal/puzzles/service";
 import { chaalStatus } from "@/server/chaal/status";
+import * as watch from "@/server/chaal/watch/service";
 import * as schema from "@/server/db/schema";
 import { createTestDb } from "../utils/test-db";
 
@@ -27,7 +28,8 @@ import { createTestDb } from "../utils/test-db";
  * guest, a member, a blocked user, a feature that's off, a missing scope, a revoked token,
  * another user's connection, another user's analysis (Task 75), another user's local
  * game (Task 76), online play's calls (Task 77), each with the caller's own token,
- * another user's puzzle attempts (Task 80), and following players (Task 81).
+ * another user's puzzle attempts (Task 80), following players (Task 81), and watching (Task 82:
+ * public, with no session or connection, and refused when the admin turns it off).
  */
 let env: Awaited<ReturnType<typeof createTestDb>>;
 let vault: Vault;
@@ -157,6 +159,21 @@ const SOCIAL = ["follow:read", "follow:write"];
 const FOLLOW_OPERATIONS: Record<string, (userId: string) => Promise<unknown>> = {
 	getChaalFollowing: (userId) => players.following(deps(), userId),
 	followChaalPlayer: (userId) => players.setFollowing(deps(), userId, "someone", true),
+};
+
+/** Every watch function's service call (src/functions/chaal/watch.ts, Task 82): public, no token. */
+const WATCH_OPERATIONS: Record<
+	string,
+	(chaal: Pick<ChaalPublic, "lichess" | "cache" | "settings">) => Promise<unknown>
+> = {
+	getChaalTv: (chaal) => watch.tv(chaal),
+	getChaalStreamers: (chaal) => watch.streamers(chaal),
+	getChaalBroadcasts: (chaal) => watch.broadcasts(chaal, 1),
+	getChaalOfficialBroadcasts: (chaal) => watch.officialBroadcasts(chaal),
+	searchChaalBroadcasts: (chaal) => watch.searchBroadcasts(chaal, "spice", 1),
+	getChaalBroadcastTour: (chaal) => watch.broadcastTour(chaal, "abcdEFGH"),
+	getChaalBroadcastRound: (chaal) => watch.broadcastRound(chaal, "abcdEFGH"),
+	getChaalBroadcastGame: (chaal) => watch.broadcastGame(chaal, "abcdEFGH", "efghABCD"),
 };
 
 beforeAll(async () => {
@@ -320,6 +337,26 @@ describe("Chaal's access matrix", () => {
 			([, init]) => (init?.headers as Record<string, string> | undefined)?.authorization,
 		);
 		expect(tokens).toEqual(["Bearer lio_other_lichess"]);
+		fetcher.mockImplementation(async () => new Response(null, { status: 204 }));
+	});
+
+	it.each(
+		Object.keys(WATCH_OPERATIONS),
+	)("%s is public: no session or token, on the public lane; refused when watch is off, before Lichess", async (name) => {
+		const operation = WATCH_OPERATIONS[name];
+		if (!operation) throw new Error(name);
+		const controls = createChaalControls(env.db, () => 0);
+		const chaal = { lichess: deps().lichess, cache: createChaalCache(), settings: await controls.settings() };
+		fetcher.mockImplementation(async () => Response.json({ error: "Not found" }, { status: 404 }));
+		await operation(chaal).catch(() => undefined);
+		const asked = fetcher.mock.calls.map(([, init]) => (init?.headers as Record<string, string>).authorization);
+		expect(asked.length).toBeGreaterThan(0);
+		expect(asked.every((token) => token === undefined)).toBe(true);
+		fetcher.mockClear();
+		await env.db.insert(schema.chSettings).values({ id: 1, features: { watch: false } });
+		const off = { ...chaal, settings: await createChaalControls(env.db, () => 0).settings() };
+		await expect(operation(off)).rejects.toMatchObject({ code: "FORBIDDEN" });
+		expect(fetcher).not.toHaveBeenCalled();
 		fetcher.mockImplementation(async () => new Response(null, { status: 204 }));
 	});
 

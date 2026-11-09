@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { getRouteApi, Link } from "@tanstack/react-router";
 import { ExternalLinkIcon } from "lucide-react";
-import type { ReactNode } from "react";
+import { type ReactNode, useState } from "react";
 import { errorMessage } from "@/components/errors/error-page";
 import { MAIN_CONTENT } from "@/components/layout/skip-link";
 import { Button } from "@/components/ui/button";
@@ -14,6 +14,7 @@ import { liveGameQueryOptions } from "../play/queries";
 import { replayQueryOptions } from "../players/queries";
 import { chaalConnectionQueryOptions, chaalStatusQueryOptions } from "../queries";
 import { PLACE } from "../shell/play-layout";
+import { SpectateBoard } from "../watch/spectate-board";
 import { lichessGameUrl } from "./lichess-links";
 import { LiveGameBoard } from "./live-game-page";
 import { inProgress } from "./load";
@@ -22,11 +23,12 @@ import { ReplayBoard } from "./replay-page";
 const route = getRouteApi("/_chaal/app/chaal/game/$id");
 
 /**
- * /app/chaal/game/$id (noindex; decision 0271): a game the player plays on Lichess while
- * it's going on (Task 77), else the game's replay for anyone (Task 81). Every other case is
- * said where the board would be: the feature off, a game still being played that isn't the
- * player's (connect, or follow it on Lichess until Task 82's spectating), a variant, a game
- * Lichess doesn't have, or Lichess unreachable.
+ * /app/chaal/game/$id (noindex; decisions 0271 and 0272): a game the player plays on Lichess
+ * while it's going on (Task 77), anyone else's followed live while it's played (Task 82), else
+ * the game's replay for anyone (Task 81); when a followed game ends, the replay takes over.
+ * Every other case is said where the board would be: the feature off, a game being played
+ * with Watch off (connect, or follow it on Lichess), a variant, a game Lichess doesn't have,
+ * or Lichess unreachable.
  */
 export function ChaalGamePage() {
 	const { id } = route.useParams();
@@ -37,7 +39,13 @@ export function ChaalGamePage() {
 	const playable = Boolean(session) && connected && status?.features.play !== false;
 	const live = useQuery({ ...liveGameQueryOptions(id), enabled: playable });
 	const liveGame = live.data && inProgress(live.data.game.state.status) ? live.data : null;
-	const replay = useQuery({ ...replayQueryOptions(id), enabled: !liveGame && !(playable && live.isPending) });
+	// A followed game that ended: its replay is asked for until Lichess's export has the ending.
+	const [ended, setEnded] = useState(false);
+	const replay = useQuery({
+		...replayQueryOptions(id),
+		enabled: !liveGame && !(playable && live.isPending),
+		refetchInterval: (query) => (ended && query.state.data?.ongoing ? 4_000 : false),
+	});
 
 	if (liveGame) return <LiveGameBoard key={id} initial={liveGame} />;
 
@@ -46,6 +54,8 @@ export function ChaalGamePage() {
 		body = <Said testId="chaal-game-off" title={m.ch_players_off_title()} text={m.ch_players_off_body()} />;
 	else if (replay.data) {
 		const game = replay.data;
+		if (game.ongoing && game.standard && status?.features.watch !== false)
+			return <SpectateBoard key={id} game={game} onOver={() => setEnded(true)} />;
 		if (game.ongoing) body = <BeingPlayed id={id} canPlay={playable} />;
 		else if (!game.standard)
 			body = (

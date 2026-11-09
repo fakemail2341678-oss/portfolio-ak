@@ -1,0 +1,25 @@
+[Event "Round 1: Sonis, Francesco - Wilber, Matthew K"]
+[Site "https://lichess.org/broadcast/20th-annual-spice-cup/round-1/HUCtFdGE/WgYhKv3x"]
+[Date "2026.11.05"]
+[Round "1.1"]
+[White "Sonis, Francesco"]
+[Black "Wilber, Matthew K"]
+[Result "1-0"]
+[WhiteElo "2547"]
+[WhiteTitle "GM"]
+[WhiteFideId "895733"]
+[BlackElo "2096"]
+[BlackFideId "2050404"]
+[TimeControl "90+30"]
+[Variant "Standard"]
+[ECO "E04"]
+[Opening "Catalan Opening: Open Defense"]
+[UTCDate "2026.11.05"]
+[UTCTime "22:24:56"]
+[BroadcastName "20th Annual SPICE Cup"]
+[BroadcastURL "https://lichess.org/broadcast/20th-annual-spice-cup/round-1/HUCtFdGE"]
+[GameURL "https://lichess.org/broadcast/20th-annual-spice-cup/round-1/HUCtFdGE/WgYhKv3x"]
+
+1. d4 { [%clk 1:30:57] } 1... Nf6 { [%clk 1:30:53] } 2. c4 { [%clk 1:31:22] } 2... e6 { [%clk 1:31:18] } 3. Nf3 { [%clk 1:31:46] } 3... d5 { [%clk 1:31:41] } 4. g3 { [%clk 1:31:45] } 4... dxc4 { [%clk 1:31:58] } 5. Bg2 { [%clk 1:32:09] } 5... c5 { [%clk 1:31:23] } 6. O-O { [%clk 1:32:25] } 6... Nc6 { [%clk 1:31:35] } 7. dxc5 { [%clk 1:32:38] } 7... Qxd1 { [%clk 1:31:55] } 8. Rxd1 { [%clk 1:33:05] } 8... Bxc5 { [%clk 1:32:17] } 9. Nbd2 { [%clk 1:33:33] } 9... c3 { [%clk 1:32:38] } 10. bxc3 { [%clk 1:33:58] } 10... O-O { [%clk 1:32:59] } 11. Ne1 { [%clk 1:33:44] } 11... Rd8 { [%clk 1:32:45] } 12. Nd3 { [%clk 1:33:52] } 12... Be7 { [%clk 1:32:19] } 13. a4 { [%clk 1:30:07] } 13... Bd7 { [%clk 1:29:29] } 14. a5 { [%clk 1:27:38] } 14... Rac8 { [%clk 1:20:04] } 15. Ba3 { [%clk 1:21:28] } 15... Rc7 { [%clk 1:05:13] } 16. Rdb1 { [%clk 1:11:00] } 16... Nd5 { [%clk 0:54:48] } 17. Rb3 { [%clk 1:03:00] } 17... Bf6 { [%clk 0:50:16] } 18. Bb2 { [%clk 0:52:53] } 18... Bc8 { [%clk 0:42:49] } 19. Kf1 { [%clk 0:45:37] } 19... Ne5 { [%clk 0:37:32] } 20. Nxe5 { [%clk 0:40:31] } 20... Bxe5 { [%clk 0:37:48] } 21. c4 { [%clk 0:40:25] } 21... Bxb2 { [%clk 0:37:51] } 22. Rxb2 { [%clk 0:40:51] } 22... Nb4 { [%clk 0:30:53] } 23. Ke1 { [%clk 0:32:50] } 23... Na6 { [%clk 0:28:54] } 24. f4 { [%clk 0:24:59] } 24... Kf8 { [%clk 0:27:16] } 25. Rc1 { [%clk 0:22:47] } 25... Nc5 { [%clk 0:26:12] } 26. Nb3 { [%clk 0:18:12] } 26... Rdd7 { [%clk 0:23:01] } 27. Nd2 { [%clk 0:16:36] } 27... h6 { [%clk 0:19:35] } 28. Kf2 { [%clk 0:14:59] } 28... Ke7 { [%clk 0:18:18] } 29. Ke3 { [%clk 0:15:25] } 29... g5 { [%clk 0:16:06] } 30. Nf3 { [%clk 0:15:42] } 30... gxf4+ { [%clk 0:13:58] } 31. gxf4 { [%clk 0:13:12] } 31... Rd6 { [%clk 0:14:24] } 32. Ne5 { [%clk 0:12:40] } 32... Ra6 { [%clk 0:13:02] } 33. Rb5 { [%clk 0:11:32] } 33... f6 { [%clk 0:11:37] } 34. Nd3 { [%clk 0:11:41] } 34... b6 { [%clk 0:11:13] } 35. Nb4 { [%clk 0:11:15] } 35... Rxa5 { [%clk 0:11:22] } 36. Nc6+ { [%clk 0:11:39] } 36... Rxc6 { [%clk 0:11:45] } 37. Rxa5 { [%clk 0:12:06] } 37... bxa5 { [%clk 0:10:56] } 38. Bxc6 { [%clk 0:12:33] } 38... Kd6 { [%clk 0:11:09] } 39. Bb5 { [%clk 0:12:41] } 39... a6 { [%clk 0:09:06] } 40. Rd1+ { [%clk 0:13:10] } 40... Kc7 { [%clk 0:06:50] } 41. Be8 { [%clk 0:13:34] } 41... Bb7 { [%clk 0:06:49] } 42. Kd4 { [%clk 0:12:39] } 42... Nb3+ { [%clk 0:07:14] } 43. Kc3 { [%clk 0:12:56] } 43... Nc5 { [%clk 0:07:40] } 44. Bg6 { [%clk 0:12:50] } 44... Bc6 { [%clk 0:07:13] } 45. Bc2 { [%clk 0:13:15] } 45... h5 { [%clk 0:05:49] } 46. Rg1 { [%clk 0:13:23] } 46... Kd6 { [%clk 0:04:38] } 47. Ra1 { [%clk 0:12:18] } 47... a4 { [%clk 0:04:29] } 48. Kb4 { [%clk 0:12:43] } 48... a5+ { [%clk 0:03:15] } 49. Kxa5 { [%clk 0:12:57] } 49... h4 { [%clk 0:01:51] } 50. Ra3 { [%clk 0:11:54] } 50... Bg2 { [%clk 0:01:38] } 51. Bxa4 { [%clk 0:11:39] } 51... e5 { [%clk 0:02:02] } 52. fxe5+ { [%clk 0:12:01] } 52... Kxe5 { [%clk 0:02:23] } 53. Kb6 { [%clk 0:11:39] } 53... Kd4 { [%clk 0:01:57] } 54. Bb5 { [%clk 0:11:59] } 54... Ne6 { [%clk 0:01:29] } 55. c5 { [%clk 0:12:11] } 55... Nxc5 { [%clk 0:01:06] } 56. e3+ { [%clk 0:12:38] } 56... Kd5 { [%clk 0:01:31] } 57. Bc6+ { [%clk 0:13:06] } 57... Kd6 { [%clk 0:01:20] } 58. Bxg2 { [%clk 0:13:31] } 58... Nd7+ { [%clk 0:00:58] } 59. Kb5 { [%clk 0:13:57] } 59... Nc5 { [%clk 0:00:49] } 60. Rc3 { [%clk 0:14:14] } 1-0
+
+

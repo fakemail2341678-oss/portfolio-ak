@@ -1,0 +1,1 @@
+ALTER TABLE "ch_settings" ADD COLUMN "watch" jsonb DEFAULT '{"channels":["best","bullet","blitz","rapid","classical","ultraBullet","bot","computer"],"streamers":true}'::jsonb NOT NULL;

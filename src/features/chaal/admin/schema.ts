@@ -9,6 +9,7 @@ import { CHAAL_BOARD_THEMES } from "../look/board-themes";
 import { AI_LEVELS, type PlayLimits, QUICK_PAIR_MODES } from "../play/controls";
 import { PUZZLE_AHEAD_BOUNDS, type PuzzleLimits } from "../puzzles/limits";
 import { CHAAL_PIECE_SETS, type ChaalDefaults } from "../settings/preferences";
+import { TV_CHANNELS, type WatchLimits } from "../watch/limits";
 
 /**
  * Chaal's admin (PLAN Task 79, decision 0268): the shapes its functions return and the
@@ -27,6 +28,7 @@ export type ChaalAdminSettings = {
 	extraScopes: string[];
 	play: PlayLimits;
 	puzzles: PuzzleLimits;
+	watch: WatchLimits;
 	defaults: ChaalDefaults;
 	engine: EngineLimits;
 	banner: Localized;
@@ -57,6 +59,14 @@ export const chaalSettingsInput = z.strictObject({
 		quickPair: z.enum(QUICK_PAIR_MODES),
 	}),
 	puzzles: z.strictObject({ ahead: between(PUZZLE_AHEAD_BOUNDS), streak: z.boolean() }),
+	/** Watch (Task 82): at least one TV channel, and whether the streamers live are listed. */
+	watch: z.strictObject({
+		channels: z
+			.array(z.enum(TV_CHANNELS))
+			.min(1, { error: () => m.ch_admin_settings_watch_channels_min() })
+			.max(TV_CHANNELS.length),
+		streamers: z.boolean(),
+	}),
 	defaults: z.strictObject({
 		board: z.enum(CHAAL_BOARD_THEMES),
 		pieces: z.enum(CHAAL_PIECE_SETS),

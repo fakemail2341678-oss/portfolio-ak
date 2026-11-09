@@ -113,7 +113,10 @@ for (const page of REVIEWED_PAGES) {
 								await browserPage.context().addCookies([{ name: "theme", value: "light", url: E2E.baseURL }]);
 							}
 							// parda:end
-							await reviewPage(browserPage, localizedPath(path, locale), page.status ? { status: page.status } : {});
+							await reviewPage(browserPage, localizedPath(path, locale), {
+								...(page.status ? { status: page.status } : {}),
+								...(page.live ? { live: true } : {}),
+							});
 						});
 					}
 				});

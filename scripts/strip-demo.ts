@@ -328,6 +328,10 @@ const SPECS: Record<Layer, LayerSpec> = {
 			"tests/unit/chaal-players.test.ts",
 			"tests/server/chaal-players.test.ts",
 			"e2e/harness/lichess-players.ts",
+			// Watch: the TV, following a game being played, broadcasts (Task 82, decision 0272).
+			"tests/unit/chaal-watch.test.ts",
+			"tests/server/chaal-watch.test.ts",
+			"e2e/harness/lichess-watch.ts",
 		],
 		packageScripts: ["lichess:record", "chaal:sounds", "engine:copy"],
 		crons: ["/api/cron/chaal"],

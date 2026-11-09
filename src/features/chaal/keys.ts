@@ -44,6 +44,16 @@ export const chaalKeys = {
 	playerSearch: (term: string) => [...all, "players", "search", term.toLowerCase()] as const,
 	following: () => [...all, "players", "following"] as const,
 	replay: (id: string) => [...all, "replay", id] as const,
+	/** Watch (Task 82): the TV, the streamers, the broadcasts' lists, a broadcast, a round, a board. */
+	tv: () => [...all, "watch", "tv"] as const,
+	streamers: () => [...all, "watch", "streamers"] as const,
+	broadcasts: (page: number) => [...all, "watch", "broadcasts", "top", page] as const,
+	officialBroadcasts: () => [...all, "watch", "broadcasts", "official"] as const,
+	broadcastSearch: (q: string, page: number) =>
+		[...all, "watch", "broadcasts", "search", q.trim().toLowerCase(), page] as const,
+	broadcastTour: (id: string) => [...all, "watch", "broadcast", id] as const,
+	broadcastRound: (id: string) => [...all, "watch", "round", id] as const,
+	broadcastGame: (round: string, board: string) => [...all, "watch", "round", round, "board", board] as const,
 	/** Online play (Task 77): the player's challenges, a game they play, its chat. */
 	challenges: () => [...all, "challenges"] as const,
 	liveGame: (id: string) => [...all, "live-game", id] as const,

@@ -13,6 +13,7 @@ import { IDLE, liveStore } from "../live/store";
 import { DEFAULT_PUZZLE_LIMITS } from "../puzzles/limits";
 import { DEFAULT_CHAAL_DEFAULTS } from "../settings/preferences";
 import { NoticeBell } from "../shell/live-notices";
+import { DEFAULT_WATCH_LIMITS } from "../watch/limits";
 import { DEFAULT_PLAY_LIMITS } from "./controls";
 import { MyGames, OnlinePlay } from "./online-play";
 import { QuickPair } from "./quick-pair";
@@ -118,6 +119,8 @@ export const Off: Story = {
 			engine: DEFAULT_ENGINE_LIMITS,
 			play: DEFAULT_PLAY_LIMITS,
 			puzzles: DEFAULT_PUZZLE_LIMITS,
+			watch: DEFAULT_WATCH_LIMITS,
+			live: "",
 			defaults: DEFAULT_CHAAL_DEFAULTS,
 			maintenance: null,
 		});

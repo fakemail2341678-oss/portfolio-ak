@@ -10,7 +10,9 @@
  * puzzles, the fake Lichess's pool for training (Task 80; `pnpm lichess:record puzzles`
  * records only that), and a player (Task 81: the leaderboards, the profile and status, the
  * rating history, details and activity, the latest games, a search; `pnpm lichess:record
- * players` records only those). The
+ * players` records only those), and watch (Task 82: the TV's channels and their games, the live
+ * streamers, the broadcasts' lists, a tournament, two rounds and a board of each; `pnpm
+ * lichess:record watch` records only those). The
  * opening explorer refuses calls without a token: with LICHESS_APP_TOKEN in .env (a
  * personal token with no scopes) it records the masters and Lichess databases at the start
  * and after 1. e4, and a player's games (the stream's last line); without it, it keeps the
@@ -32,7 +34,12 @@ const BASES: Record<LichessHost, string> = {
 };
 const APP_TOKEN = process.env.LICHESS_APP_TOKEN;
 const OUT = path.resolve(import.meta.dirname, "../tests/fixtures/lichess");
-const HEADERS = { "user-agent": "Chaal-recorder/1 (template fixtures)", accept: "application/json" };
+/** In English, as Chaal asks (Lichess names a round "Round 1" in the language it's asked in). */
+const HEADERS = {
+	"user-agent": "Chaal-recorder/1 (template fixtures)",
+	accept: "application/json",
+	"accept-language": "en",
+};
 
 /** After 1. e4, a position every database and the cloud know. */
 const SAMPLE_FEN = "rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq - 0 1";
@@ -157,6 +164,81 @@ async function recordPlayer() {
 /** The game-export parameters importing a game sends. */
 const GAME_EXPORT = { pgnInJson: "true", clocks: "true", evals: "true", opening: "true", literate: "false" };
 
+/** The TV channels Chaal shows: standard chess only (src/features/chaal/watch/schema.ts). */
+const TV_CHANNELS = ["best", "bullet", "blitz", "rapid", "classical", "ultraBullet", "bot", "computer"];
+/** What the TV page asks of its games' export: their last positions, without the moves. */
+const TV_EXPORT = { moves: "false", lastFen: "true" };
+/**
+ * The broadcast the fake Lichess knows (Task 82): an official tournament that has finished,
+ * so its rounds stay as recorded. Its default round and its first one are recorded, each with
+ * its first board's PGN (the fake Lichess plays the first round as live).
+ */
+const BROADCAST_TOUR = "9NE16qcS";
+/** What the broadcasts page's search types in e2e. */
+const BROADCAST_TERM = "spice";
+
+/** A text answer (a PGN) as Lichess sends it, kept as it came. */
+async function recordText(pathname: string) {
+	const url = new URL(`${BASES.api}${pathname}`);
+	const response = await fetch(url, { headers: { ...HEADERS, accept: "application/x-chess-pgn" } });
+	if (!response.ok) throw new Error(`api ${pathname}: ${response.status}`);
+	const name = lichessFixtureName("api", pathname);
+	writeFileSync(path.join(OUT, name), await response.text());
+	console.log(`  ${name}`);
+	await pause();
+}
+
+/** A POST whose answer is ndjson (an export by ids): every line, named by the path and parameters. */
+async function recordPostLines(pathname: string, params: Record<string, string>, body: string) {
+	const url = new URL(`${BASES.api}${pathname}`);
+	for (const [key, value] of Object.entries(params)) url.searchParams.set(key, value);
+	const response = await fetch(url, {
+		method: "POST",
+		headers: { ...HEADERS, accept: "application/x-ndjson", "content-type": "text/plain" },
+		body,
+	});
+	if (!response.ok) throw new Error(`api ${pathname}: ${response.status}`);
+	const lines = (await response.text()).split("\n").filter((line) => line.trim());
+	const name = lichessFixtureName("api", pathname, Object.entries(params)).replace(/\.json$/, ".ndjson");
+	writeFileSync(path.join(OUT, name), `${lines.join("\n")}\n`);
+	console.log(`  ${name} (${lines.length} lines)`);
+	await pause();
+}
+
+const readRecorded = <T>(name: string): T => JSON.parse(readFileSync(path.join(OUT, name), "utf8")) as T;
+
+/**
+ * Watch (Task 82), as Chaal reads it (src/server/chaal/watch/service.ts): the TV's channels
+ * and their games' last positions (one export by ids), the live streamers, the broadcasts'
+ * lists (top, official, a search), a tournament, two of its rounds and a board of each. The
+ * TV and game streams are the fake Lichess's own (e2e/harness/lichess-watch.ts).
+ */
+async function recordWatch() {
+	await record("api", "/api/tv/channels");
+	const channels = readRecorded<Record<string, { gameId?: string }>>("api_tv_channels.json");
+	const ids = TV_CHANNELS.map((channel) => channels[channel]?.gameId).filter(Boolean);
+	await recordPostLines("/api/games/export/_ids", TV_EXPORT, ids.join(","));
+	await record("api", "/api/streamer/live");
+	await record("api", "/api/broadcast/top", { page: "1" });
+	await recordStream({ pathname: "/api/broadcast", params: { nb: "20" }, lines: 20, keep: "first", maxMs: 30_000 });
+	await record("api", "/api/broadcast/search", { q: BROADCAST_TERM, page: "1" });
+	await record("api", `/api/broadcast/${BROADCAST_TOUR}`);
+	const tour = readRecorded<{ rounds: Array<{ id: string }>; defaultRoundId?: string }>(
+		lichessFixtureName("api", `/api/broadcast/${BROADCAST_TOUR}`),
+	);
+	const rounds = [...new Set([tour.defaultRoundId ?? tour.rounds.at(-1)?.id, tour.rounds[0]?.id])].filter(
+		(id): id is string => Boolean(id),
+	);
+	for (const round of rounds) {
+		await record("api", `/api/broadcast/-/-/${round}`);
+		const answer = readRecorded<{ games: Array<{ id: string }> }>(
+			lichessFixtureName("api", `/api/broadcast/-/-/${round}`),
+		);
+		const first = answer.games[0]?.id;
+		if (first) await recordText(`/api/study/${round}/${first}.pgn`);
+	}
+}
+
 mkdirSync(OUT, { recursive: true });
 console.log("record-lichess-fixtures:");
 /** `pnpm lichess:record puzzles`: only the puzzle batch, leaving every other recording as it is. */
@@ -169,8 +251,11 @@ if (only === "players") {
 	await recordPlayer();
 	process.exit(0);
 }
+if (only === "watch") {
+	await recordWatch();
+	process.exit(0);
+}
 await record("api", "/api/puzzle/daily");
-await record("api", "/api/tv/channels");
 await record("api", PUZZLE_BATCH.path, PUZZLE_BATCH.params);
 for (const fen of [START_FEN, SAMPLE_FEN]) await record("api", "/api/cloud-eval", { fen, multiPv: "3" });
 await record("tablebase", "/standard", { fen: TABLEBASE_FEN });
@@ -179,6 +264,7 @@ await recordStream({ pathname: "/api/tv/feed", file: "api_tv_feed.ndjson", lines
 const daily = JSON.parse(readFileSync(path.join(OUT, "api_puzzle_daily.json"), "utf8")) as { game: { id: string } };
 await record("api", `/game/export/${daily.game.id}`, GAME_EXPORT);
 await recordPlayer();
+await recordWatch();
 if (APP_TOKEN) {
 	for (const fen of [START_FEN, SAMPLE_FEN]) {
 		await record("explorer", "/masters", { fen, topGames: "4", moves: "12" }, APP_TOKEN);

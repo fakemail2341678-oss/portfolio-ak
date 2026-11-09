@@ -14,6 +14,9 @@
  * a connection (the lab says reconnect), and blocks an account (connecting it is refused).
  * Task 81 (decision 0271): leaderboards, a player's page and games, the palette's search, a
  * finished game's replay, and following a player while connected.
+ * Task 82 (decision 0272): the TV live from the fake Lichess's feeds and a channel on the big
+ * board, following a game being played to its end, the broadcasts' lists and a tournament, and
+ * a round being played on its PGN stream.
  */
 import type { Page } from "@playwright/test";
 import { E2E } from "../harness/config.ts";
@@ -1154,5 +1157,132 @@ test.describe("Chaal's players connected to Lichess (Task 81)", () => {
 				return ((await answer.json()) as { following: string[] }).following;
 			})
 			.toEqual([]);
+	});
+});
+
+/** The fake Lichess's watch (e2e/harness/lichess-watch.ts): what the browser holds open there. */
+const watchStreams = async () =>
+	(await (await harness("/e2e/lichess/watch-streams", "GET")).json()) as {
+		feeds: Record<string, number>;
+		game: number;
+		rounds: Record<string, number>;
+	};
+
+/** The recorded tournament (pnpm lichess:record watch), its default round, and its first round, played live by the fake. */
+const TOUR = "9NE16qcS";
+const LIVE_ROUND = "HUCtFdGE";
+const LIVE_BOARD = "WgYhKv3x";
+
+/** A board's PGN as the round's stream sends it: the board's address names it. */
+const boardPgn = (moves: string) =>
+	`[Event "Round 1"]\n[White "Sonis, Francesco"]\n[Black "Wilber, Matthew K"]\n[Result "*"]\n[GameURL "https://lichess.org/broadcast/20th-annual-spice-cup/round-1/${LIVE_ROUND}/${LIVE_BOARD}"]\n\n${moves} *`;
+
+test.describe("Chaal's watch (Task 82)", () => {
+	test.describe.configure({ mode: "serial" });
+	test.beforeAll(() => harness("/e2e/lichess/watch-reset", "POST"));
+	test.afterAll(() => harness("/e2e/lichess/watch-reset", "POST"));
+
+	test("the TV: every channel drawn on the server, then live from its feed; a channel on the big board follows its game", async ({
+		page,
+	}) => {
+		// Live pages keep their feeds open: networkidle never comes.
+		await page.goto("/app/chaal/watch", { waitUntil: "load" });
+		const rapid = page.locator('[data-testid="chaal-tv-card"][data-channel="rapid"]');
+		await expect(rapid).toHaveAttribute("data-game", "e2eWatch");
+		expect(await page.getByTestId("chaal-tv-card").count()).toBeGreaterThan(5);
+		await expect(page.getByTestId("chaal-streamer").first()).toBeVisible();
+		await expect(page.getByTestId("chaal-nav-watch")).toHaveAttribute("aria-current", "page");
+		await expect.poll(async () => (await watchStreams()).feeds.rapid ?? 0).toBeGreaterThan(0);
+		// 3. Bb5 on Lichess: the card's diagram moves.
+		await harness("/e2e/lichess/watch-move", "POST", { uci: "f1b5", wc: 590 });
+		await expect(rapid).toHaveAttribute("data-fen", /^r1bqkbnr\/pppp1ppp\/2n5\/1B2p3\//);
+
+		await rapid.getByRole("link").click();
+		await expect(page).toHaveURL(/\/app\/chaal\/watch\/rapid$/);
+		const board = page.getByTestId("chaal-channel-board");
+		await expect(board).toHaveAttribute("data-game", "e2eWatch");
+		await expect(board.locator('[data-at="b5"][data-piece="wB"]')).toBeVisible();
+		await expect(page.getByTestId("chaal-watch-live")).toHaveAttribute("data-link", "open");
+		await harness("/e2e/lichess/watch-move", "POST", { uci: "a7a6", bc: 580 });
+		await expect(board.locator('[data-at="a6"][data-piece="bP"]')).toBeVisible();
+		await expect(page.getByTestId("chaal-channel-others").getByTestId("chaal-channel-link").first()).toBeVisible();
+	});
+
+	test("a channel Chaal doesn't show is its 404", async ({ page, guard }) => {
+		guard.allow(RESOURCE_STATUS(404));
+		const response = await page.goto("/app/chaal/watch/horde");
+		expect(response?.status()).toBe(404);
+	});
+
+	test("following a game being played: its moves so far, each new one, looking back, and how it ended", async ({
+		page,
+	}) => {
+		await page.goto("/app/chaal/watch/rapid", { waitUntil: "load" });
+		await page.getByTestId("chaal-channel-follow").click();
+		await expect(page).toHaveURL(/\/app\/chaal\/game\/e2eWatch$/);
+		const board = page.getByTestId("chaal-spectate-board");
+		await expect(board).toHaveAttribute("data-ply", "6");
+		await expect.poll(async () => (await watchStreams()).game).toBeGreaterThan(0);
+		await harness("/e2e/lichess/watch-move", "POST", { uci: "b5a4" });
+		await expect(board).toHaveAttribute("data-ply", "7");
+		await expect(board.locator('[data-at="a4"][data-piece="wB"]')).toBeVisible();
+		// Looking back keeps the board where it is while moves come in.
+		await page.getByRole("button", { name: "Start position" }).click();
+		await expect(board).toHaveAttribute("data-ply", "0");
+		await harness("/e2e/lichess/watch-move", "POST", { uci: "g8f6" });
+		await expect(page.getByTestId("chaal-spectate-note")).toContainText("earlier move");
+		await expect(board).toHaveAttribute("data-ply", "0");
+		await page.getByTestId("chaal-spectate-live").click();
+		await expect(board).toHaveAttribute("data-ply", "8");
+		await harness("/e2e/lichess/watch-end", "POST", { status: "resign", winner: "white" });
+		await expect(page.getByTestId("chaal-result")).toBeVisible();
+	});
+
+	test("broadcasts: live now, the official ones, a search, a tournament's rounds and a finished round's board replayed", async ({
+		page,
+	}) => {
+		await page.goto("/app/chaal/broadcasts", { waitUntil: "networkidle" });
+		await expect(page.getByTestId("chaal-broadcasts-live").getByTestId("chaal-broadcast-row").first()).toBeVisible();
+		await expect(page.getByTestId("chaal-nav-watch")).toHaveAttribute("aria-current", "page");
+		await page.getByTestId("chaal-broadcasts-official").click();
+		await expect(page).toHaveURL(/view=official/);
+		await expect(page.getByTestId("chaal-broadcasts-official").getByTestId("chaal-broadcast-row")).toHaveCount(20);
+		await page.getByTestId("chaal-broadcasts-q").fill("spice");
+		await page.getByTestId("chaal-broadcasts-q").press("Enter");
+		await expect(page).toHaveURL(/q=spice/);
+		await expect(page.locator(`[data-testid="chaal-broadcast-row"][data-tour="${TOUR}"]`)).toBeVisible();
+
+		await page.goto(`/app/chaal/broadcasts/${TOUR}`, { waitUntil: "networkidle" });
+		await expect(page.getByTestId("chaal-broadcast-name")).toContainText("SPICE");
+		await expect(page.getByTestId("chaal-broadcast-round")).toHaveCount(9);
+		await expect(page.locator('[data-testid="chaal-broadcast-round"][data-round="9gsZmGXg"]')).toHaveAttribute(
+			"aria-current",
+			"page",
+		);
+		await page.getByTestId("chaal-broadcast-board").first().getByRole("link").click();
+		await expect(page).toHaveURL(/board=qA1AQnT5/);
+		const focused = page.getByTestId("chaal-broadcast-focus-board");
+		await expect(page.getByTestId("chaal-result")).toBeVisible();
+		await page.keyboard.press("Home");
+		await expect(focused).toHaveAttribute("data-ply", "0");
+		await page.getByTestId("chaal-broadcast-all-boards").click();
+		await expect(page.getByTestId("chaal-broadcast-boards")).toBeVisible();
+	});
+
+	test("a round being played: its boards follow the round's PGN stream, and a followed board takes each move", async ({
+		page,
+	}) => {
+		await page.goto(`/app/chaal/broadcasts/${TOUR}?round=${LIVE_ROUND}`, { waitUntil: "load" });
+		await expect(page.getByTestId("chaal-watch-live")).toBeVisible();
+		await expect.poll(async () => (await watchStreams()).rounds[LIVE_ROUND] ?? 0).toBeGreaterThan(0);
+		await harness("/e2e/lichess/round-push", "POST", { round: LIVE_ROUND, pgn: boardPgn("1. e4 e5 2. Nf3") });
+		const board = page.locator(`[data-testid="chaal-broadcast-board"][data-board="${LIVE_BOARD}"]`);
+		await expect(board).toHaveAttribute("data-fen", "rnbqkbnr/pppp1ppp/8/4p3/4P3/5N2/PPPP1PPP/RNBQKB1R b KQkq - 1 2");
+		await board.getByRole("link").click();
+		const focused = page.getByTestId("chaal-broadcast-focus-board");
+		await expect(focused).toHaveAttribute("data-ply", "3");
+		await harness("/e2e/lichess/round-push", "POST", { round: LIVE_ROUND, pgn: boardPgn("1. e4 e5 2. Nf3 Nc6") });
+		await expect(focused).toHaveAttribute("data-ply", "4");
+		await expect(focused.locator('[data-at="c6"][data-piece="bN"]')).toBeVisible();
 	});
 });

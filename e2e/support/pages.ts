@@ -41,6 +41,11 @@ export type ReviewedPage = {
 	status?: 403 | 404;
 	/** A name for pages reviewed more than once (e.g. a route as two users). */
 	label?: string;
+	/**
+	 * The page keeps a stream open (Chaal's live boards, Task 82): the network never goes idle,
+	 * so the review waits for the load and a quiet moment instead.
+	 */
+	live?: true;
 };
 
 /** A seeded Test CRUD item (scripts/lib/demo-data.ts) for admin detail pages (a draft: every third item is). */
@@ -440,6 +445,27 @@ export const REVIEWED_PAGES: ReadonlyArray<ReviewedPage> = [
 	// A game on Lichess: its replay (Task 81), or said where the board would be (Lichess has no such game).
 	{ route: "/app/chaal/game/$id", path: "/app/chaal/game/T8myeL3d", label: "a replay" },
 	{ route: "/app/chaal/game/$id", path: "/app/chaal/game/abcdEFGH", label: "no such game" },
+	// Watch (Task 82): the TV and a channel, live from the fake Lichess's feeds; a game being played
+	// (the fake's own), followed; the broadcasts' lists, the recorded tournament, a board, an unknown one.
+	{ route: "/app/chaal/watch", live: true },
+	{ route: "/app/chaal/watch/$channel", path: "/app/chaal/watch/rapid", label: "a channel", live: true },
+	{ route: "/app/chaal/watch/$channel", path: "/app/chaal/watch/horde", status: 404, label: "a variant's channel" },
+	{ route: "/app/chaal/game/$id", path: "/app/chaal/game/e2eWatch", label: "a game being played", live: true },
+	{ route: "/app/chaal/broadcasts" },
+	{ route: "/app/chaal/broadcasts", path: "/app/chaal/broadcasts?view=official", label: "official" },
+	{ route: "/app/chaal/broadcasts", path: "/app/chaal/broadcasts?q=spice", label: "a search" },
+	{ route: "/app/chaal/broadcasts/$id", path: "/app/chaal/broadcasts/9NE16qcS", label: "a tournament" },
+	{
+		route: "/app/chaal/broadcasts/$id",
+		path: "/app/chaal/broadcasts/9NE16qcS?round=9gsZmGXg&board=qA1AQnT5",
+		label: "a board",
+	},
+	{
+		route: "/app/chaal/broadcasts/$id",
+		path: "/app/chaal/broadcasts/nOtThere",
+		status: 404,
+		label: "no such broadcast",
+	},
 	{ route: "/app/chaal/settings", label: "signed out" },
 	{ route: "/app/chaal/settings", as: "viewer", label: "viewer" },
 	{ route: "/app/chaal/settings", path: "/app/chaal/settings?lichess=denied", label: "connect result" },

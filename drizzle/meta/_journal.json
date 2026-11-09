@@ -323,6 +323,13 @@
 			"when": 1794231044405,
 			"tag": "0045_chaal_puzzles",
 			"breakpoints": true
+		},
+		{
+			"idx": 46,
+			"version": "7",
+			"when": 1794263141355,
+			"tag": "0046_chaal_watch",
+			"breakpoints": true
 		}
 	]
 }

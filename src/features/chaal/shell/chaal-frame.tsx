@@ -1,4 +1,4 @@
-import { Link, type LinkOptions } from "@tanstack/react-router";
+import { Link, type LinkOptions, useRouterState } from "@tanstack/react-router";
 import {
 	ChartSplineIcon,
 	HouseIcon,
@@ -10,6 +10,7 @@ import {
 	SettingsIcon,
 	SwordsIcon,
 	TrophyIcon,
+	TvIcon,
 } from "lucide-react";
 import { type ReactNode, useState } from "react";
 import { LanguageSwitcher } from "@/components/layout/language-switcher";
@@ -38,20 +39,62 @@ import { useZen, useZenKey } from "./zen";
 /**
  * Chaal's sections: the top bar's links on wide screens, the tab bar on phones (PLAN Task
  * 73: Play, Puzzles, Analysis, Watch, More). A link arrives with its route (PLAN 13.3):
- * Home, Play (Task 76), Puzzles (Task 80) and Analysis (Task 75) now, Watch with 82.
+ * Home, Play (Task 76), Puzzles (Task 80), Analysis (Task 75) and Watch (Task 82). A section
+ * whose pages live under more than one path names the others in `also` (Watch: the broadcasts).
  */
 const SECTIONS: ReadonlyArray<{
 	link: LinkOptions;
 	label: () => string;
 	icon: LucideIcon;
 	exact?: boolean;
+	also?: RegExp;
 	testId: string;
 }> = [
 	{ link: chaalLinks.home(), label: m.ch_nav_home, icon: HouseIcon, exact: true, testId: "chaal-nav-home" },
 	{ link: chaalLinks.play(), label: m.ch_nav_play, icon: SwordsIcon, testId: "chaal-nav-play" },
 	{ link: chaalLinks.puzzles(), label: m.ch_nav_puzzles, icon: PuzzleIcon, testId: "chaal-nav-puzzles" },
 	{ link: chaalLinks.analysis(), label: m.ch_nav_analysis, icon: ChartSplineIcon, testId: "chaal-nav-analysis" },
+	{
+		link: chaalLinks.watch(),
+		label: m.ch_nav_watch,
+		icon: TvIcon,
+		also: /^(\/ne)?\/app\/chaal\/broadcasts(\/|$)/,
+		testId: "chaal-nav-watch",
+	},
 ];
+
+/** A section's link is current on its other paths too (Link marks its own path). */
+function useAlsoCurrent(also: RegExp | undefined): "page" | undefined {
+	const pathname = useRouterState({ select: (state) => state.location.pathname });
+	return also?.test(pathname) ? "page" : undefined;
+}
+
+/** A section's link, current on its own path (the router's mark) and on its other paths. */
+function SectionLink({
+	section,
+	className,
+	testId,
+	children,
+}: {
+	section: (typeof SECTIONS)[number];
+	className: string;
+	/** The top bar's links have test ids; the tab bar's don't (one id, one element). */
+	testId?: string;
+	children: ReactNode;
+}) {
+	const also = useAlsoCurrent(section.also);
+	return (
+		<Link
+			{...section.link}
+			activeOptions={{ exact: section.exact ?? false }}
+			{...(also ? { "aria-current": also } : {})}
+			className={className}
+			data-testid={testId}
+		>
+			{children}
+		</Link>
+	);
+}
 
 const focusRing = "outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50";
 
@@ -80,15 +123,14 @@ function ChaalHeader({ onOpenPalette }: { onOpenPalette: () => void }) {
 					<ul className="flex items-center gap-1">
 						{SECTIONS.map((section) => (
 							<li key={section.testId}>
-								<Link
-									{...section.link}
-									activeOptions={{ exact: section.exact ?? false }}
+								<SectionLink
+									section={section}
+									testId={section.testId}
 									className={`relative block whitespace-nowrap px-2 py-[1.125rem] text-ch-muted transition-colors hover:text-ch-ink aria-[current=page]:text-ch-ink aria-[current=page]:shadow-[inset_0_-2px_0_var(--ch-ink)] ${focusRing}`}
-									data-testid={section.testId}
 								>
 									{section.label()}
 									{section.testId === "chaal-nav-play" ? <PlayBadge /> : null}
-								</Link>
+								</SectionLink>
 							</li>
 						))}
 					</ul>
@@ -192,9 +234,8 @@ function ChaalTabBar({ onOpenPalette }: { onOpenPalette: () => void }) {
 					const Icon = section.icon;
 					return (
 						<li key={section.testId} className="flex">
-							<Link
-								{...section.link}
-								activeOptions={{ exact: section.exact ?? false }}
+							<SectionLink
+								section={section}
 								className={`flex flex-1 flex-col items-center justify-center gap-1 text-[0.6875rem] text-ch-muted aria-[current=page]:font-semibold aria-[current=page]:text-ch-ink ${focusRing}`}
 							>
 								<span className="relative">
@@ -202,7 +243,7 @@ function ChaalTabBar({ onOpenPalette }: { onOpenPalette: () => void }) {
 									{section.testId === "chaal-nav-play" ? <PlayBadge /> : null}
 								</span>
 								{section.label()}
-							</Link>
+							</SectionLink>
 						</li>
 					);
 				})}

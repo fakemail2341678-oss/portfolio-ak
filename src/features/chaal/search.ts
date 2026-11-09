@@ -107,3 +107,25 @@ export const playerSearch = z.object({
 	before: z.coerce.number().int().positive().optional().catch(undefined),
 });
 export type PlayerSearch = z.infer<typeof playerSearch>;
+
+/** A broadcast's, a round's or a board's id. */
+const broadcastId = z
+	.string()
+	.regex(/^[A-Za-z0-9]{8}$/)
+	.optional()
+	.catch(undefined);
+
+/**
+ * Lichess's broadcasts (Task 82, decision 0272): the top list (live, coming up, a page of the
+ * past), `?view=official`, or a search (`q`); `page` pages the past or the search.
+ */
+export const broadcastsSearch = z.object({
+	view: z.enum(["official"]).optional().catch(undefined),
+	q: z.string().trim().min(2).max(60).optional().catch(undefined),
+	page: z.coerce.number().int().min(2).max(20).optional().catch(undefined),
+});
+export type BroadcastsSearch = z.infer<typeof broadcastsSearch>;
+
+/** A broadcast (Task 82): which round (else the one Lichess opens), and a board followed on its own. */
+export const broadcastPageSearch = z.object({ round: broadcastId, board: broadcastId });
+export type BroadcastPageSearch = z.infer<typeof broadcastPageSearch>;

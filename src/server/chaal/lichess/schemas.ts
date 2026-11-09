@@ -47,6 +47,20 @@ import type {
 	ExplorerDatabase,
 	TablebaseResult,
 } from "@/features/chaal/schema";
+import {
+	BOARD_RESULTS,
+	type BoardResult,
+	type BroadcastBoard,
+	type BroadcastInfo,
+	type BroadcastPlayer,
+	type BroadcastRoundSummary,
+	type BroadcastTourSummary,
+	type ChaalBroadcastRound,
+	type ChaalBroadcastSearch,
+	type ChaalBroadcasts,
+	type ChaalBroadcastTour,
+	type ChaalStreamer,
+} from "@/features/chaal/watch/schema";
 
 /**
  * Lichess's answers, kept lean (PLAN 13.5): each schema reads only the fields Chaal uses
@@ -1312,3 +1326,272 @@ export const puzzleReplayAnswer = z
 		}),
 	})
 	.transform((answer) => ({ theme: answer.replay.theme, remaining: answer.replay.remaining }));
+
+// --- Watch (Task 82, decision 0272) -----------------------------------------------------------
+
+/** A web address Lichess passed on from someone (a website, a stream): http or https only, else null. */
+function webAddress(value: string | null | undefined): string | null {
+	if (!value || value.length > 300) return null;
+	try {
+		const url = new URL(value);
+		return url.protocol === "https:" || url.protocol === "http:" ? url.href : null;
+	} catch {
+		return null;
+	}
+}
+
+/** Someone else's words, clipped: shown as text, never HTML. */
+const clipped = (max: number) =>
+	z
+		.string()
+		.nullish()
+		.transform((text) => {
+			const trimmed = text?.trim() ?? "";
+			return trimmed ? trimmed.slice(0, max) : null;
+		});
+
+/** GET /api/tv/channels: each channel's game and the side it follows, by channel. */
+export const tvChannelsAnswer = z.record(
+	z.string(),
+	z.object({ gameId: z.string().regex(/^[A-Za-z0-9]{8}$/), color: color.nullish() }).nullish(),
+);
+
+/** GET /api/streamer/live: the streamers live now, with a link to the stream they're on. */
+export const streamersAnswer = z
+	.array(
+		z.object({
+			id: z.string().max(30),
+			name: z.string().max(30),
+			title: z.string().max(4).nullish(),
+			stream: z.object({ service: z.string(), status: clipped(200), lang: z.string().max(10).nullish() }),
+			streamer: z
+				.object({
+					name: clipped(60),
+					headline: clipped(200),
+					twitch: z.string().nullish(),
+					youtube: z.string().nullish(),
+				})
+				.nullish(),
+		}),
+	)
+	.max(200)
+	.transform((list) =>
+		list.flatMap((entry): ChaalStreamer[] => {
+			const service =
+				entry.stream.service === "youtube" ? "youtube" : entry.stream.service === "twitch" ? "twitch" : null;
+			const url = service ? webAddress(entry.streamer?.[service]) : null;
+			if (!service || !url) return [];
+			return [
+				{
+					id: entry.id,
+					username: entry.name,
+					title: entry.title ?? null,
+					name: entry.streamer?.name ?? entry.name,
+					status: entry.stream.status ?? "",
+					lang: entry.stream.lang ?? null,
+					service,
+					url,
+				},
+			];
+		}),
+	);
+
+const broadcastInfo = z
+	.object({
+		format: clipped(120),
+		tc: clipped(80),
+		location: clipped(120),
+		players: clipped(200),
+		website: z.string().nullish(),
+		standings: z.string().nullish(),
+	})
+	.nullish()
+	.transform(
+		(info): BroadcastInfo => ({
+			format: info?.format ?? null,
+			timeControl: info?.tc ?? null,
+			location: info?.location ?? null,
+			players: info?.players ?? null,
+			website: webAddress(info?.website),
+			standings: webAddress(info?.standings),
+		}),
+	);
+
+const broadcastTour = z.object({
+	id: z.string().regex(/^[A-Za-z0-9]{8}$/),
+	name: z.string().max(200),
+	tier: z.number().int().nullish(),
+	dates: z.array(z.number()).max(2).nullish(),
+	info: broadcastInfo,
+	url: z.string().nullish(),
+});
+
+const broadcastRound = z
+	.object({
+		id: z.string().regex(/^[A-Za-z0-9]{8}$/),
+		name: z.string().max(100),
+		startsAt: z.number().nullish(),
+		finishedAt: z.number().nullish(),
+		finished: z.boolean().nullish(),
+		ongoing: z.boolean().nullish(),
+		url: z.string().nullish(),
+	})
+	.transform((round): BroadcastRoundSummary & { url: string } => ({
+		id: round.id,
+		name: round.name,
+		state: round.finished ? "finished" : round.ongoing ? "ongoing" : "upcoming",
+		startsAt: round.startsAt ?? null,
+		finishedAt: round.finishedAt ?? null,
+		url: webAddress(round.url) ?? "https://lichess.org/broadcast",
+	}));
+
+const roundSummary = ({ url: _url, ...round }: z.output<typeof broadcastRound>): BroadcastRoundSummary => round;
+
+function tourSummary(
+	tour: z.output<typeof broadcastTour>,
+	round: z.output<typeof broadcastRound> | null,
+): BroadcastTourSummary {
+	return {
+		id: tour.id,
+		name: tour.name,
+		tier: tour.tier ?? null,
+		dates: tour.dates ?? [],
+		info: tour.info,
+		round: round ? roundSummary(round) : null,
+	};
+}
+
+/** A broadcast in Lichess's lists (top, search): the tournament and a round to open. */
+const broadcastPreview = z
+	.object({ tour: broadcastTour, round: broadcastRound.nullish(), roundToLink: broadcastRound.nullish() })
+	.transform((entry) => tourSummary(entry.tour, entry.roundToLink ?? entry.round ?? null));
+
+const previewList = z.array(broadcastPreview).max(200);
+
+const paged = z.object({
+	currentPage: z.number().int(),
+	currentPageResults: previewList,
+	nextPage: z.number().int().nullish(),
+});
+
+/** GET /api/broadcast/top: what's live, what's coming, and a page of the past. */
+export const broadcastTopAnswer = z
+	.object({ active: previewList.nullish(), upcoming: previewList.nullish(), past: paged })
+	.transform(
+		(answer): ChaalBroadcasts => ({
+			active: answer.active ?? [],
+			upcoming: answer.upcoming ?? [],
+			past: answer.past.currentPageResults,
+			page: answer.past.currentPage,
+			next: answer.past.nextPage ?? null,
+		}),
+	);
+
+/** GET /api/broadcast/search: a page of broadcasts whose names match. */
+export const broadcastSearchAnswer = paged.transform(
+	(answer): ChaalBroadcastSearch => ({
+		results: answer.currentPageResults,
+		page: answer.currentPage,
+		next: answer.nextPage ?? null,
+	}),
+);
+
+/** The round to open in a tournament with all its rounds: Lichess's choice, else the one being played, else the latest finished. */
+function roundToOpen(rounds: ReadonlyArray<z.output<typeof broadcastRound>>, preferred: string | null | undefined) {
+	return (
+		rounds.find((round) => round.id === preferred) ??
+		rounds.find((round) => round.state === "ongoing") ??
+		[...rounds].reverse().find((round) => round.state === "finished") ??
+		rounds[0] ??
+		null
+	);
+}
+
+const tourWithRounds = z.object({
+	tour: broadcastTour,
+	rounds: z.array(broadcastRound).max(300),
+	defaultRoundId: z.string().nullish(),
+	group: z.union([z.string(), z.object({ name: z.string() })]).nullish(),
+});
+
+/** One line of GET /api/broadcast (ndjson): an official broadcast with its rounds. */
+export const officialBroadcastAnswer = tourWithRounds.transform((entry) =>
+	tourSummary(entry.tour, roundToOpen(entry.rounds, entry.defaultRoundId)),
+);
+
+/** GET /api/broadcast/{id}: a tournament and its rounds. */
+export const broadcastTourAnswer = tourWithRounds.transform(
+	(entry): ChaalBroadcastTour => ({
+		id: entry.tour.id,
+		name: entry.tour.name,
+		tier: entry.tour.tier ?? null,
+		dates: entry.tour.dates ?? [],
+		info: entry.tour.info,
+		group: typeof entry.group === "string" ? entry.group.slice(0, 200) : (entry.group?.name.slice(0, 200) ?? null),
+		rounds: entry.rounds.map(roundSummary),
+		defaultRound: roundToOpen(entry.rounds, entry.defaultRoundId)?.id ?? null,
+		url: webAddress(entry.tour.url) ?? "https://lichess.org/broadcast",
+	}),
+);
+
+const NO_PLAYER: BroadcastPlayer = { name: "?", title: null, rating: null, fed: null, clock: null };
+
+const broadcastPlayer = z
+	.object({
+		name: z.string().max(100).nullish(),
+		title: z.string().max(4).nullish(),
+		rating: z.number().int().nullish(),
+		fed: z
+			.string()
+			.regex(/^[A-Z]{3}$/)
+			.nullish()
+			.catch(null),
+		clock: z.number().nullish(),
+	})
+	.nullish()
+	.transform(
+		(player): BroadcastPlayer => ({
+			name: player?.name?.trim() || NO_PLAYER.name,
+			title: player?.title ?? null,
+			rating: player?.rating ?? null,
+			fed: player?.fed ?? null,
+			// Lichess counts a board's clock in centiseconds.
+			clock: typeof player?.clock === "number" ? player.clock * 10 : null,
+		}),
+	);
+
+const broadcastBoard = z
+	.object({
+		id: z.string().regex(/^[A-Za-z0-9]{8}$/),
+		fen: z.string().max(100).nullish(),
+		lastMove: z.string().max(5).nullish(),
+		status: z.string().nullish(),
+		players: z.array(broadcastPlayer).max(2).nullish(),
+	})
+	.transform(
+		(board): BroadcastBoard => ({
+			id: board.id,
+			fen: board.fen ?? START_FEN,
+			lastMove: board.lastMove && /^[a-h][1-8][a-h][1-8][qrbn]?$/.test(board.lastMove) ? board.lastMove : null,
+			result: (BOARD_RESULTS as ReadonlyArray<string>).includes(board.status ?? "")
+				? (board.status as BoardResult)
+				: "*",
+			white: board.players?.[0] ?? NO_PLAYER,
+			black: board.players?.[1] ?? NO_PLAYER,
+		}),
+	);
+
+/** GET /api/broadcast/-/-/{roundId}: a round, its tournament and its boards. */
+export const broadcastRoundAnswer = z
+	.object({
+		round: broadcastRound,
+		tour: z.object({ id: z.string(), name: z.string().max(200) }),
+		games: z.array(broadcastBoard).max(1_000).nullish(),
+	})
+	.transform(
+		(answer): ChaalBroadcastRound => ({
+			tour: { id: answer.tour.id, name: answer.tour.name },
+			round: answer.round,
+			boards: answer.games ?? [],
+		}),
+	);

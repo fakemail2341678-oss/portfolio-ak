@@ -1,5 +1,13 @@
 import { linkOptions } from "@tanstack/react-router";
-import type { PlayerSearch, PlayersSearch, PlaySearch, PuzzlesSearch } from "./search";
+import type {
+	BroadcastPageSearch,
+	BroadcastsSearch,
+	PlayerSearch,
+	PlayersSearch,
+	PlaySearch,
+	PuzzlesSearch,
+} from "./search";
+import type { TvChannel } from "./watch/limits";
 
 /**
  * Where Chaal lives (PLAN 13.2): its base path is here and nowhere else, so a rename is
@@ -31,7 +39,19 @@ export const chaalLinks = {
 	/** A Lichess player (Task 81, noindex): the overview, or their games with filters. */
 	player: (username: string, search: PlayerSearch = {}) =>
 		linkOptions({ to: "/app/chaal/players/$username", params: { username }, search }),
-	/** A game on Lichess (noindex): the player's own while it's played (Task 77), else its replay (Task 81). */
+	/** Watch (Task 82): the TV's channels, live. */
+	watch: () => linkOptions({ to: "/app/chaal/watch" }),
+	/** One TV channel's game on the big board (Task 82, noindex). */
+	channel: (channel: TvChannel) => linkOptions({ to: "/app/chaal/watch/$channel", params: { channel } }),
+	/** Lichess's broadcasts (Task 82): live, coming up and past; the official ones; a search. */
+	broadcasts: (search: BroadcastsSearch = {}) => linkOptions({ to: "/app/chaal/broadcasts", search }),
+	/** A broadcast (Task 82, noindex): a round's boards, or one board followed. */
+	broadcast: (id: string, search: BroadcastPageSearch = {}) =>
+		linkOptions({ to: "/app/chaal/broadcasts/$id", params: { id }, search }),
+	/**
+	 * A game on Lichess (noindex): the player's own while it's played (Task 77), anyone else's
+	 * followed live (Task 82), else its replay (Task 81).
+	 */
 	game: (id: string) => linkOptions({ to: "/app/chaal/game/$id", params: { id } }),
 	/** A local game (Task 76, noindex): its board, to play on or look back at. */
 	local: (id: string) => linkOptions({ to: "/app/chaal/local/$id", params: { id } }),
@@ -50,6 +70,8 @@ export const CHAAL_PATHS = {
 	analysis: `${CHAAL_BASE}/analysis`,
 	puzzles: `${CHAAL_BASE}/puzzles`,
 	players: `${CHAAL_BASE}/players`,
+	watch: `${CHAAL_BASE}/watch`,
+	broadcasts: `${CHAAL_BASE}/broadcasts`,
 	about: `${CHAAL_BASE}/about`,
 	settings: `${CHAAL_BASE}/settings`,
 } as const;
@@ -61,6 +83,8 @@ export const CHAAL_SITEMAP: ReadonlyArray<string> = [
 	CHAAL_PATHS.analysis,
 	CHAAL_PATHS.puzzles,
 	CHAAL_PATHS.players,
+	CHAAL_PATHS.watch,
+	CHAAL_PATHS.broadcasts,
 	CHAAL_PATHS.about,
 ];
 

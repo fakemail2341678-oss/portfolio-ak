@@ -60,6 +60,8 @@ export type Lichess = {
 	 * whole inside its lane, each line mapped by `schema`; a line that doesn't map is dropped.
 	 */
 	lines: <S extends z.ZodType>(request: LichessRequest, schema: S) => Promise<z.output<S>[]>;
+	/** A PGN answer (a broadcast's board, Task 82), as text; longer than `maxBytes` is an upstream fault. */
+	pgn: (request: LichessRequest, maxBytes: number) => Promise<string>;
 	/** A call whose answer has no body Chaal needs (a 204, a move's `{ ok: true }`). */
 	send: (request: LichessRequest) => Promise<void>;
 	/** A long-lived ndjson or PGN stream, outside the lanes. `signal` ends it. */
@@ -129,7 +131,9 @@ export function createLichess(config: LichessConfig, fetcher: typeof fetch = fet
 	};
 
 	const initOf = (request: LichessRequest, accept: string, signal: AbortSignal): RequestInit => {
-		const headers: Record<string, string> = { "user-agent": config.userAgent, accept };
+		// In English: Lichess names some things (a broadcast's "Round 1") in the language it's asked in,
+		// and one cached answer serves both of Chaal's languages (Task 82).
+		const headers: Record<string, string> = { "user-agent": config.userAgent, accept, "accept-language": "en" };
 		if (request.token) headers.authorization = `Bearer ${request.token}`;
 		let body: string | undefined;
 		if (request.form) {
@@ -247,6 +251,19 @@ export function createLichess(config: LichessConfig, fetcher: typeof fetch = fet
 				}
 				if (dropped > 0) log("warn", "lichess answer changed shape", { endpoint: request.endpoint, dropped });
 				return out;
+			}),
+		pgn: (request, maxBytes) =>
+			lanes.run(request.lane, async () => {
+				const timeout = AbortSignal.timeout(timeoutMs);
+				const response = await call(request, "application/x-chess-pgn", () => timeout);
+				let text: string;
+				try {
+					text = await response.text();
+				} catch (error) {
+					throw unavailable(request.endpoint, "unreadable answer", error);
+				}
+				if (text.length > maxBytes) throw unavailable(request.endpoint, "answer too long");
+				return text;
 			}),
 		send: (request) =>
 			lanes.run(request.lane, async () => {

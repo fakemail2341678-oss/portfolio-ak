@@ -27,9 +27,18 @@ export type ReadOptions = {
 	onLine: (value: unknown) => void;
 	/** Each keepalive (an empty line), counted from the first. */
 	onKeepalive?: (count: number) => void;
-	/** Nothing for this long (not even a keepalive) means the connection is gone. Lichess sends one every 7 s. */
+	/**
+	 * Nothing for this long (not even a keepalive) means the connection is gone. Lichess's event
+	 * stream sends one every 7 s; its public feeds send none, so they wait minutes (Task 82).
+	 */
 	silenceMs?: number;
 	fetcher?: typeof fetch;
+	/**
+	 * How the body splits into what `onLine` gets (Task 82): ndjson lines by default, JSON-parsed
+	 * (an empty line is a keepalive); a broadcast round's PGN stream gives whole games as text.
+	 */
+	split?: (body: ReadableStream<Uint8Array>) => AsyncIterable<string>;
+	parse?: (text: string) => unknown;
 };
 
 const SILENCE_MS = 20_000;
@@ -51,7 +60,16 @@ async function refusalOf(response: Response): Promise<StreamEnd> {
 
 /** Reads one response of a stream route to its end. */
 export async function readStream(url: string, options: ReadOptions): Promise<StreamEnd> {
-	const { signal, onOpen, onLine, onKeepalive, silenceMs = SILENCE_MS, fetcher = fetch } = options;
+	const {
+		signal,
+		onOpen,
+		onLine,
+		onKeepalive,
+		silenceMs = SILENCE_MS,
+		fetcher = fetch,
+		split = ndjsonLines,
+		parse = parseLine,
+	} = options;
 	const local = new AbortController();
 	const stop = () => local.abort();
 	signal.addEventListener("abort", stop, { once: true });
@@ -79,14 +97,14 @@ export async function readStream(url: string, options: ReadOptions): Promise<Str
 		onOpen?.();
 		let reconnect: number | null = null;
 		let keepalives = 0;
-		for await (const text of ndjsonLines(response.body)) {
+		for await (const text of split(response.body)) {
 			listen();
 			if (text === "") {
 				keepalives += 1;
 				onKeepalive?.(keepalives);
 				continue;
 			}
-			const value = parseLine(text);
+			const value = parse(text);
 			if (value === undefined) continue;
 			const type = (value as { type?: unknown }).type;
 			if (type === "reconnect") {
@@ -112,7 +130,9 @@ export type StreamStatus =
 	| { state: "connecting" }
 	| { state: "open" }
 	| { state: "waiting"; retryInMs: number }
-	| { state: "refused"; status: number; error: string | null; reason: string | null };
+	| { state: "refused"; status: number; error: string | null; reason: string | null }
+	/** The server closed it for good and it isn't opened again (`reopenWhenClosed` false). */
+	| { state: "closed" };
 
 export type KeepOptions = Omit<ReadOptions, "signal" | "onOpen"> & {
 	onStatus?: (status: StreamStatus) => void;
@@ -184,7 +204,10 @@ export function keepStreaming(url: string, options: KeepOptions): { stop: () => 
 					return;
 				}
 			} else if (end.kind === "closed") {
-				if (!reopenWhenClosed) return;
+				if (!reopenWhenClosed) {
+					onStatus?.({ state: "closed" });
+					return;
+				}
 				delay = next(1_000);
 			} else if (end.kind === "reconnect") {
 				// A window running out is routine; Lichess ending a fresh stream again and again isn't.

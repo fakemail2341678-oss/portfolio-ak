@@ -24,6 +24,8 @@ import { CHAAL_BOARD_THEMES } from "../../look/board-themes";
 import { QUICK_PAIR_MODES } from "../../play/controls";
 import { PUZZLE_AHEAD_BOUNDS } from "../../puzzles/limits";
 import { CHAAL_PIECE_SETS } from "../../settings/preferences";
+import { CHANNEL_NAMES } from "../../watch/labels";
+import { TV_CHANNELS } from "../../watch/limits";
 import { FEATURE_HINTS, FEATURE_TITLES, PIECE_SET_NAMES, QUICK_PAIR_LABELS } from "../labels";
 import { chaalAdminMutations, chaalAdminSettingsQueryOptions } from "../queries";
 import { type ChaalAdminSettings, type ChaalSettingsFormValues, chaalSettingsInput } from "../schema";
@@ -55,6 +57,7 @@ function SettingsForm({ settings }: { settings: ChaalAdminSettings }) {
 				extraScopes: settings.extraScopes,
 				play: settings.play,
 				puzzles: settings.puzzles,
+				watch: settings.watch,
 				defaults: settings.defaults,
 				engine: settings.engine,
 				banner: settings.banner,
@@ -141,6 +144,25 @@ function SettingsForm({ settings }: { settings: ChaalAdminSettings }) {
 						<field.SwitchField
 							label={m.ch_admin_settings_puzzles_streak()}
 							description={m.ch_admin_settings_puzzles_streak_hint()}
+						/>
+					)}
+				</form.AppField>
+			</FormSection>
+			<FormSection title={m.ch_admin_settings_watch()} description={m.ch_admin_settings_watch_hint()}>
+				<form.AppField name="watch.channels">
+					{(field) => (
+						<field.CheckboxGroupField
+							label={m.ch_admin_settings_watch_channels()}
+							description={m.ch_admin_settings_watch_channels_hint()}
+							options={TV_CHANNELS.map((channel) => ({ value: channel, label: CHANNEL_NAMES[channel]() }))}
+						/>
+					)}
+				</form.AppField>
+				<form.AppField name="watch.streamers">
+					{(field) => (
+						<field.SwitchField
+							label={m.ch_admin_settings_watch_streamers()}
+							description={m.ch_admin_settings_watch_streamers_hint()}
 						/>
 					)}
 				</form.AppField>

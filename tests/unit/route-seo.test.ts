@@ -196,6 +196,14 @@ const INDEXABLE: ReadonlyArray<{
 	{ to: "/app/chaal/play", label: "chaal play", context: {}, path: "/app/chaal/play", siteName: "Chaal" },
 	{ to: "/app/chaal/puzzles", label: "chaal puzzles", context: {}, path: "/app/chaal/puzzles", siteName: "Chaal" },
 	{ to: "/app/chaal/players", label: "chaal players", context: {}, path: "/app/chaal/players", siteName: "Chaal" },
+	{ to: "/app/chaal/watch", label: "chaal watch", context: {}, path: "/app/chaal/watch", siteName: "Chaal" },
+	{
+		to: "/app/chaal/broadcasts",
+		label: "chaal broadcasts",
+		context: {},
+		path: "/app/chaal/broadcasts",
+		siteName: "Chaal",
+	},
 	// chaal:end
 	// @strip-demo:indexable (the neutral landing page goes here when the portfolio is stripped)
 	// @new-feature:indexable

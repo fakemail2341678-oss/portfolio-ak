@@ -4,6 +4,7 @@ import type { ChaalFeature } from "./features";
 import type { PlayLimits } from "./play/controls";
 import type { PuzzleLimits } from "./puzzles/limits";
 import type { ChaalDefaults } from "./settings/preferences";
+import type { WatchLimits } from "./watch/limits";
 
 /** Shapes Chaal's server functions return (Task 71). */
 
@@ -22,6 +23,14 @@ export type ChaalStatus = {
 	play: PlayLimits;
 	/** Puzzles' limits (Task 80): how many training keeps ready, whether the streak is offered. */
 	puzzles: PuzzleLimits;
+	/** Watch's controls (Task 82): the TV channels shown, and whether live streamers are listed. */
+	watch: WatchLimits;
+	/**
+	 * Where the browser reads Lichess's public live data (Task 82: the TV's feeds, a game being
+	 * played, a broadcast round's PGN): LICHESS_API_BASE, lichess.org in production. Chaal's pages
+	 * allow it in connect-src.
+	 */
+	live: string;
 	/** The board, pieces and sound a player starts with until they choose (Task 79). */
 	defaults: ChaalDefaults;
 	/**

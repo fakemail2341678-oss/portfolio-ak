@@ -10,13 +10,22 @@ import { expect } from "./fixtures.ts";
 /** WCAG 2.2 AA plus axe's best practices. */
 const AXE_TAGS = ["wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "wcag22aa", "best-practice"];
 const MAX_CLS = 0.01;
+/** How long a live page is given after its load (it never reaches network idle). */
+const LIVE_SETTLE_MS = 1_500;
 
-export async function reviewPage(page: Page, url: string, { status = 200 }: { status?: number } = {}) {
+export async function reviewPage(
+	page: Page,
+	url: string,
+	{ status = 200, live = false }: { status?: number; live?: boolean } = {},
+) {
 	// Warm-up load: the measured load then has the fonts in the HTTP cache, as on an idle machine where
 	// the preloaded fonts arrive before first paint. Cold, on a busy CPU, the fallback faces paint first
 	// and the swap shifts text, so CLS would depend on how loaded the machine is (decision 0121).
 	await page.goto(url, { waitUntil: "load" });
-	const response = await page.goto(url, { waitUntil: "networkidle" });
+	// A live page (Chaal's TV, Task 82) keeps a stream open, so the network is never idle: the load,
+	// then a quiet moment for hydration and the lazy parts.
+	const response = await page.goto(url, { waitUntil: live ? "load" : "networkidle" });
+	if (live) await page.waitForTimeout(LIVE_SETTLE_MS);
 	expect(response?.status(), `HTTP status of ${url}`).toBe(status);
 	// Fonts settle and hydration finishes before measuring.
 	await page.evaluate(async () => {

@@ -47,6 +47,18 @@ const PARDA_LAB = /^(?:\/ne)?\/admin\/parda\/player-lab(?:\/|$)/;
 // chaal:start
 /** Chaal's pages may start its engine, a worker from this origin (decisions 0257 and 0263). */
 const CHAAL_PAGE = /^(?:\/ne)?\/app\/chaal(?:\/|$)/;
+/**
+ * And read Lichess's public live data from the browser (the TV, a game being played, a
+ * broadcast's PGN: Task 82, decision 0272): LICHESS_API_BASE's origin, lichess.org in production.
+ */
+let chaalLiveOrigin: Promise<string[]> | undefined;
+const loadChaalLiveOrigin = () => {
+	chaalLiveOrigin ??= import("@/server/env").then(({ serverEnv }) => {
+		const origin = originOf(serverEnv.LICHESS_API_BASE);
+		return origin ? [origin] : [];
+	});
+	return chaalLiveOrigin;
+};
 // chaal:end
 
 const createNonce = () => {
@@ -81,7 +93,10 @@ export const securityHeadersMiddleware = createMiddleware().server(async ({ next
 		}
 		// parda:end
 		// chaal:start
-		if (CHAAL_PAGE.test(new URL(request.url).pathname)) section.worker.push("'self'");
+		if (CHAAL_PAGE.test(new URL(request.url).pathname)) {
+			section.worker.push("'self'");
+			section.connect.push(...(await loadChaalLiveOrigin()));
+		}
 		// chaal:end
 		result.response.headers.set("reporting-endpoints", reportingEndpoints(reportUrl));
 		result.response.headers.set(

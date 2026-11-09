@@ -11,9 +11,11 @@ import {
 	LogInIcon,
 	LogOutIcon,
 	PuzzleIcon,
+	RadioTowerIcon,
 	SettingsIcon,
 	SwordsIcon,
 	TrophyIcon,
+	TvIcon,
 } from "lucide-react";
 import { lazy, Suspense, useState } from "react";
 import { THEME_ICONS, THEME_LABELS } from "@/components/layout/theme";
@@ -136,6 +138,22 @@ export function ChaalPalette({
 					>
 						<TrophyIcon aria-hidden />
 						<span>{m.ch_players_title()}</span>
+					</CommandItem>
+					<CommandItem
+						value="go watch"
+						keywords={[m.ch_nav_watch(), m.ch_watch_tv()]}
+						onSelect={() => go(() => navigate(chaalLinks.watch()))}
+					>
+						<TvIcon aria-hidden />
+						<span>{m.ch_watch_title()}</span>
+					</CommandItem>
+					<CommandItem
+						value="go broadcasts"
+						keywords={[m.ch_broadcasts_title()]}
+						onSelect={() => go(() => navigate(chaalLinks.broadcasts()))}
+					>
+						<RadioTowerIcon aria-hidden />
+						<span>{m.ch_broadcasts_title()}</span>
 					</CommandItem>
 					<CommandItem
 						value="go analysis"

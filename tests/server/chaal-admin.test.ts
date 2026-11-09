@@ -93,6 +93,7 @@ async function formOf(): Promise<ChaalSettingsInput> {
 		extraScopes: [],
 		play: current.play,
 		puzzles: current.puzzles,
+		watch: current.watch,
 		defaults: current.defaults,
 		engine: current.engine,
 		banner: current.banner,
@@ -138,25 +139,41 @@ describe("settings", () => {
 			defaults: { board: "stone", pieces: "cburnett", sounds: false },
 			engine: { maxDepth: 16, multiPv: 2, hashMb: 8 },
 			banner: { en: "Hello", ne: "" },
+			// Watch's controls (Task 82): kept in the grid's order.
+			watch: { channels: ["rapid", "blitz"], streamers: false },
 		});
 		expect(saved.features.play).toBe(false);
+		expect(saved.watch).toEqual({ channels: ["blitz", "rapid"], streamers: false });
 		expect(saved.updatedAt).toBe(String(Number(form.updatedAt) + 1));
 		const [row] = await env.db.select().from(schema.chSettings);
 		expect(row?.features).toEqual({ play: false, studies: false });
 		expect(row?.banner).toEqual({ en: "Hello", ne: "" });
 		expect(row?.maintenanceMessage).toBeNull();
 		const [audit] = await auditOf("chaal.settings.update");
-		expect(audit?.after).toMatchObject({ featuresOff: ["play", "studies"], aiMaxLevel: 4, quickPair: "days" });
+		expect(audit?.after).toMatchObject({
+			featuresOff: ["play", "studies"],
+			aiMaxLevel: 4,
+			quickPair: "days",
+			tvChannels: "blitz, rapid",
+			streamers: false,
+		});
 		expect(invalidate).toHaveBeenCalledTimes(1);
 
 		// The status every page reads follows.
 		const status = chaalStatus(
-			{ settings: row, connectConfigured: true, appToken: null } as unknown as ChaalPublic,
+			{
+				settings: row,
+				connectConfigured: true,
+				appToken: null,
+				lichess: { config: { apiBase: "https://lichess.org/" } },
+			} as unknown as ChaalPublic,
 			null,
 		);
 		expect(status.features.play).toBe(false);
 		expect(status.defaults.board).toBe("stone");
 		expect(status.play.quickPair).toBe("days");
+		expect(status.watch.streamers).toBe(false);
+		expect(status.live).toBe("https://lichess.org");
 	});
 
 	it("refuses a form opened at an older version", async () => {

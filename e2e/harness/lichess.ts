@@ -16,6 +16,9 @@
  *   games in progress (`/api/account/playing`) and berserk in an arena game.
  * - Puzzles (Task 80, ./lichess-puzzles.ts): by id, batches (unseen ones for a token),
  *   posted solutions, the dashboard and replays, from a recorded pool.
+ * - Watch (Task 82, ./lichess-watch.ts): the TV's feeds, a game being played (`e2eWatch`, the
+ *   rapid channel's) with its spectators' stream, and the recorded tournament's first round
+ *   played live on its PGN stream.
  * - Everything else answers from tests/fixtures/lichess (`pnpm lichess:record`), by
  *   `lichessFixtureName`; the explorer asks for a token, as the real one does. A recorded
  *   stream (`.ndjson`: the player explorer, Task 75) is sent as ndjson and ends.
@@ -26,7 +29,8 @@
  * open), the rival's `POST /e2e/lichess/challenge`, `/respond` and `/act`, `GET
  * /e2e/lichess/games`, quick pairing's `POST /e2e/lichess/seek-accept`, `GET /e2e/lichess/seeks`
  * and `POST /e2e/lichess/arena` (Task 78), `GET /e2e/lichess/puzzle-solutions?account=` (Task 80),
- * and `DELETE /e2e/lichess`. Later tasks add the
+ * watch's `POST /e2e/lichess/watch-move`, `/watch-end` and `/round-push` and `GET
+ * /e2e/lichess/watch-streams` (Task 82), and `DELETE /e2e/lichess`. Later tasks add the
  * rest (PLAN 13.5, "Fixtures").
  */
 import { createHash, randomBytes } from "node:crypto";
@@ -36,6 +40,7 @@ import path from "node:path";
 import { type Account, createPlay } from "./lichess-play.ts";
 import { createPlayers } from "./lichess-players.ts";
 import { createPuzzles } from "./lichess-puzzles.ts";
+import { createWatch } from "./lichess-watch.ts";
 
 const FIXTURES = path.resolve(import.meta.dirname, "../../tests/fixtures/lichess");
 
@@ -55,16 +60,20 @@ export type LichessHost = "api" | "explorer" | "tablebase";
  *
  *   api /api/puzzle/daily -> api_puzzle_daily.json
  *   tablebase /standard?fen=… -> tablebase_standard.3f9a1c02.json
+ *   api /api/study/abcd1234/efgh5678.pgn -> api_study_abcd1234_efgh5678.pgn (a PGN answer, Task 82)
  */
 export function lichessFixtureName(host: LichessHost, pathname: string, params: Iterable<[string, string]> = []) {
 	const sorted = [...params].sort(([a], [b]) => a.localeCompare(b));
+	const pgn = pathname.endsWith(".pgn");
 	const base = `${host}_${pathname
+		.replace(/\.pgn$/, "")
 		.replace(/^\/(api\/)?/, "")
 		.replaceAll("/", "_")
 		.replace(/[^\w-]/g, "")}`;
-	if (sorted.length === 0) return `${base}.json`;
+	const extension = pgn ? "pgn" : "json";
+	if (sorted.length === 0) return `${base}.${extension}`;
 	const hash = createHash("sha256").update(JSON.stringify(sorted)).digest("hex").slice(0, 8);
-	return `${base}.${hash}.json`;
+	return `${base}.${hash}.${extension}`;
 }
 
 /** A recorded file's text, or undefined. */
@@ -99,6 +108,10 @@ const players = createPlayers({
 	read: (name) => readLichessFixture(name),
 	json: (response, status, body) => json(response, status, body),
 	recordedName: (pathname) => lichessFixtureName("api", pathname),
+});
+const watch = createWatch({
+	read: (name) => readLichessFixture(name),
+	json: (response, status, body) => json(response, status, body),
 });
 
 /** The fake's own address, as the links it gives out (an open challenge's) carry it. */
@@ -182,6 +195,7 @@ export async function serveLichess(url: URL, request: IncomingMessage, response:
 		play.reset();
 		puzzles.reset();
 		players.reset();
+		watch.reset();
 		codes.clear();
 		tokens.clear();
 		for (const stream of streams.values()) stream.end();
@@ -227,6 +241,7 @@ export async function serveLichess(url: URL, request: IncomingMessage, response:
 		const body =
 			request.method === "POST" ? (JSON.parse((await readBody(request)) || "{}") as Record<string, unknown>) : {};
 		if (await play.control(route, body, response, baseOf(request))) return true;
+		if (await watch.control(route, body, response)) return true;
 	}
 
 	const match = HOSTS.find(([prefix]) => url.pathname === prefix || url.pathname.startsWith(`${prefix}/`));
@@ -342,6 +357,9 @@ export async function serveLichess(url: URL, request: IncomingMessage, response:
 	if (host === "api" && players.serve(pathname, request, response, tokenOf(request)?.token.account ?? null))
 		return true;
 
+	// Watch (Task 82, ./lichess-watch.ts): the TV's feeds, a game being played, a live round's PGN stream.
+	if (host === "api" && (await watch.serve(pathname, request, response))) return true;
+
 	if (request.method !== "GET") {
 		json(response, 404, { error: "Not found" });
 		return true;
@@ -360,7 +378,12 @@ export async function serveLichess(url: URL, request: IncomingMessage, response:
 		return true;
 	}
 	response.writeHead(200, {
-		"content-type": stream === undefined ? "application/json" : "application/x-ndjson",
+		"content-type":
+			stream !== undefined
+				? "application/x-ndjson"
+				: name.endsWith(".pgn")
+					? "application/x-chess-pgn"
+					: "application/json",
 		"access-control-allow-origin": "*",
 	});
 	response.end(body ?? stream);

@@ -5,6 +5,7 @@ import { readPlayLimits } from "@/features/chaal/play/controls";
 import { readPuzzleLimits } from "@/features/chaal/puzzles/limits";
 import type { ChaalStatus } from "@/features/chaal/schema";
 import { readDefaults } from "@/features/chaal/settings/preferences";
+import { readWatchLimits } from "@/features/chaal/watch/limits";
 import type { Session } from "@/lib/session";
 import type { ChaalPublic } from "./context";
 
@@ -29,6 +30,8 @@ export function chaalStatus(chaal: ChaalPublic, session: Session | null): ChaalS
 		engine: readEngineLimits(chaal.settings.engine),
 		play: readPlayLimits(chaal.settings.play),
 		puzzles: readPuzzleLimits(chaal.settings.puzzles),
+		watch: readWatchLimits(chaal.settings.watch),
+		live: chaal.lichess.config.apiBase.replace(/\/$/, ""),
 		defaults: readDefaults(settings.defaults),
 		maintenance: maintenance
 			? { message: settings.maintenanceMessage?.en.trim() ? settings.maintenanceMessage : null }

@@ -5,6 +5,7 @@ import { DEFAULT_PLAY_LIMITS } from "../../../../src/features/chaal/play/control
 import { DEFAULT_PUZZLE_LIMITS } from "../../../../src/features/chaal/puzzles/limits";
 import type { ChaalStatus } from "../../../../src/features/chaal/schema";
 import { DEFAULT_CHAAL_DEFAULTS } from "../../../../src/features/chaal/settings/preferences";
+import { DEFAULT_WATCH_LIMITS } from "../../../../src/features/chaal/watch/limits";
 
 // Stand-ins for src/functions/chaal/status.ts.
 export const getChaalStatus = fn(
@@ -16,6 +17,9 @@ export const getChaalStatus = fn(
 		engine: DEFAULT_ENGINE_LIMITS,
 		play: DEFAULT_PLAY_LIMITS,
 		puzzles: DEFAULT_PUZZLE_LIMITS,
+		watch: DEFAULT_WATCH_LIMITS,
+		// No live base: stories never read Lichess's streams.
+		live: "",
 		defaults: DEFAULT_CHAAL_DEFAULTS,
 		maintenance: null,
 	}),
