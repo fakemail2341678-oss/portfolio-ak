@@ -2,6 +2,7 @@ import type { Localized } from "@/lib/i18n/localized";
 import type { EngineLimits } from "./engine/limits";
 import type { ChaalFeature } from "./features";
 import type { PlayLimits } from "./play/controls";
+import type { PuzzleLimits } from "./puzzles/limits";
 import type { ChaalDefaults } from "./settings/preferences";
 
 /** Shapes Chaal's server functions return (Task 71). */
@@ -19,6 +20,8 @@ export type ChaalStatus = {
 	engine: EngineLimits;
 	/** Online play's limits (Task 77): the Lichess AI's highest level, whether rated games may be asked for; quick pairing's paces (Task 79). */
 	play: PlayLimits;
+	/** Puzzles' limits (Task 80): how many training keeps ready, whether the streak is offered. */
+	puzzles: PuzzleLimits;
 	/** The board, pieces and sound a player starts with until they choose (Task 79). */
 	defaults: ChaalDefaults;
 	/**

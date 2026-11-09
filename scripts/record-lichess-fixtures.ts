@@ -6,7 +6,9 @@
  *
  * It records the public answers Chaal reads so far: the daily puzzle, the TV channels, cloud
  * evals of the start and of 1. e4, a tablebase position, the first lines of the TV feed,
- * and the daily puzzle's game as importing it into analysis reads it (Task 75). The
+ * the daily puzzle's game as importing it into analysis reads it (Task 75), and a batch of
+ * puzzles, the fake Lichess's pool for training (Task 80; `pnpm lichess:record puzzles`
+ * records only that). The
  * opening explorer refuses calls without a token: with LICHESS_APP_TOKEN in .env (a
  * personal token with no scopes) it records the masters and Lichess databases at the start
  * and after 1. e4, and a player's games (the stream's last line); without it, it keeps the
@@ -101,13 +103,22 @@ async function recordStream({ host = "api", pathname, params = {}, token, file, 
 const START_FEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
 /** A player whose games the explorer has indexed, for the player tab. */
 const EXPLORER_PLAYER = "thibault";
+/** Training's pool in the fake Lichess (Task 80): one anonymous batch of mixed puzzles. */
+const PUZZLE_BATCH = { path: "/api/puzzle/batch/mix", params: { nb: "15" } };
 /** The game-export parameters importing a game sends. */
 const GAME_EXPORT = { pgnInJson: "true", clocks: "true", evals: "true", opening: "true", literate: "false" };
 
 mkdirSync(OUT, { recursive: true });
 console.log("record-lichess-fixtures:");
+/** `pnpm lichess:record puzzles`: only the puzzle batch, leaving every other recording as it is. */
+const only = process.argv[2];
+if (only === "puzzles") {
+	await record("api", PUZZLE_BATCH.path, PUZZLE_BATCH.params);
+	process.exit(0);
+}
 await record("api", "/api/puzzle/daily");
 await record("api", "/api/tv/channels");
+await record("api", PUZZLE_BATCH.path, PUZZLE_BATCH.params);
 for (const fen of [START_FEN, SAMPLE_FEN]) await record("api", "/api/cloud-eval", { fen, multiPv: "3" });
 await record("tablebase", "/standard", { fen: TABLEBASE_FEN });
 await recordStream({ pathname: "/api/tv/feed", file: "api_tv_feed.ndjson", lines: 6, keep: "first", maxMs: 20_000 });

@@ -411,6 +411,12 @@ export const REVIEWED_PAGES: ReadonlyArray<ReviewedPage> = [
 	{ route: "/app/chaal/analysis", as: "viewer", label: "viewer" },
 	{ route: "/app/chaal/play" },
 	{ route: "/app/chaal/play", as: "viewer", label: "viewer" },
+	// Puzzles (Task 80): the daily one, training, the streak, a puzzle by id, and the viewer's progress.
+	{ route: "/app/chaal/puzzles" },
+	{ route: "/app/chaal/puzzles", path: "/app/chaal/puzzles?mode=train&theme=fork", label: "training" },
+	{ route: "/app/chaal/puzzles", path: "/app/chaal/puzzles?mode=streak", label: "the streak" },
+	{ route: "/app/chaal/puzzles", as: "viewer", label: "viewer" },
+	{ route: "/app/chaal/puzzles/$id", path: "/app/chaal/puzzles/xSeW5", label: "the daily one by id" },
 	{
 		route: "/app/chaal/local/$id",
 		path: "/app/chaal/local/00000000-0000-4000-8000-000000000000",

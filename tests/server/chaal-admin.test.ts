@@ -92,6 +92,7 @@ async function formOf(): Promise<ChaalSettingsInput> {
 		guestsMayConnect: current.guestsMayConnect,
 		extraScopes: [],
 		play: current.play,
+		puzzles: current.puzzles,
 		defaults: current.defaults,
 		engine: current.engine,
 		banner: current.banner,

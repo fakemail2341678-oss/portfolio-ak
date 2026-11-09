@@ -4,6 +4,7 @@ import type { ChaalAdminSettings, ChaalSettingsInput } from "@/features/chaal/ad
 import { readEngineLimits } from "@/features/chaal/engine/limits";
 import { CHAAL_FEATURES, type ChaalFeature, featureOn, isLichessScope } from "@/features/chaal/features";
 import { readPlayLimits } from "@/features/chaal/play/controls";
+import { readPuzzleLimits } from "@/features/chaal/puzzles/limits";
 import { readDefaults } from "@/features/chaal/settings/preferences";
 import { staleError } from "@/lib/concurrency";
 import type { Localized } from "@/lib/i18n/localized";
@@ -16,8 +17,8 @@ import type { ChaalAdminServices } from "./context";
 
 /**
  * /admin/chaal/settings (PLAN Task 79, decision 0268): the one `ch_settings` row. The form
- * saves the switches, connecting, online play, the defaults, the engine's limits, the banner
- * and the maintenance message from the version it opened at; maintenance itself and the
+ * saves the switches, connecting, online play, puzzles (Task 80), the defaults, the engine's
+ * limits, the banner and the maintenance message from the version it opened at; maintenance itself and the
  * purge are their own writes, so they never make an open form stale. Every write is audited
  * and clears the controls' cache.
  */
@@ -38,6 +39,7 @@ const toAdmin = (row: Row, connectConfigured: boolean): ChaalAdminSettings => ({
 	guestsMayConnect: row.guestsMayConnect,
 	extraScopes: row.extraScopes.filter(isLichessScope),
 	play: readPlayLimits(row.play),
+	puzzles: readPuzzleLimits(row.puzzles),
 	defaults: readDefaults(row.defaults),
 	engine: readEngineLimits(row.engine),
 	banner: row.banner ?? EMPTY,
@@ -72,6 +74,7 @@ const textOrNull = (value: Localized): Localized | null => (value.en.trim() || v
 function summary(row: Row) {
 	const play = readPlayLimits(row.play);
 	const engine = readEngineLimits(row.engine);
+	const puzzles = readPuzzleLimits(row.puzzles);
 	const defaults = readDefaults(row.defaults);
 	return {
 		featuresOff: CHAAL_FEATURES.filter((feature) => !featureOn(row.features, feature)),
@@ -80,6 +83,8 @@ function summary(row: Row) {
 		aiMaxLevel: play.aiMaxLevel,
 		rated: play.rated,
 		quickPair: play.quickPair,
+		puzzlesAhead: puzzles.ahead,
+		puzzleStreak: puzzles.streak,
 		defaults: `${defaults.board}, ${defaults.pieces}, ${defaults.sounds ? "sound" : "silent"}`,
 		engine: `depth ${engine.maxDepth}, ${engine.multiPv} lines, ${engine.hashMb} MB`,
 		banner: row.banner?.en ?? "",
@@ -106,6 +111,7 @@ export async function updateSettings(
 				guestsMayConnect: input.guestsMayConnect,
 				extraScopes: input.extraScopes,
 				play: input.play,
+				puzzles: input.puzzles,
 				defaults: input.defaults,
 				engine: input.engine,
 				banner: textOrNull(input.banner),

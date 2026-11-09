@@ -10,6 +10,7 @@ import { LiveGameBoard } from "../game/live-game-page";
 import type { ChaalEventGame, ChaalGameState } from "../live/events";
 import type { KeepOptions } from "../live/reader";
 import { IDLE, liveStore } from "../live/store";
+import { DEFAULT_PUZZLE_LIMITS } from "../puzzles/limits";
 import { DEFAULT_CHAAL_DEFAULTS } from "../settings/preferences";
 import { NoticeBell } from "../shell/live-notices";
 import { DEFAULT_PLAY_LIMITS } from "./controls";
@@ -116,6 +117,7 @@ export const Off: Story = {
 			banner: null,
 			engine: DEFAULT_ENGINE_LIMITS,
 			play: DEFAULT_PLAY_LIMITS,
+			puzzles: DEFAULT_PUZZLE_LIMITS,
 			defaults: DEFAULT_CHAAL_DEFAULTS,
 			maintenance: null,
 		});

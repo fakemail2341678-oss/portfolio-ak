@@ -320,6 +320,10 @@ const SPECS: Record<Layer, LayerSpec> = {
 			"tests/unit/chaal-quick.test.ts",
 			// The admin: settings, connections and blocks, the API's health (Task 79, decision 0268).
 			"tests/server/chaal-admin.test.ts",
+			// Puzzles: the daily one, training, the streak, Lichess's dashboard and replays (Task 80, decision 0269).
+			"tests/unit/chaal-puzzles.test.ts",
+			"tests/server/chaal-puzzles.test.ts",
+			"e2e/harness/lichess-puzzles.ts",
 		],
 		packageScripts: ["lichess:record", "chaal:sounds", "engine:copy"],
 		crons: ["/api/cron/chaal"],

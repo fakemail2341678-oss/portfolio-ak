@@ -31,6 +31,7 @@ export * from "./chaal/api-stat"; // @chaal
 export * from "./chaal/connection"; // @chaal
 export * from "./chaal/local-game"; // @chaal
 export * from "./chaal/preference"; // @chaal
+export * from "./chaal/puzzle-attempt"; // @chaal
 export * from "./chaal/settings"; // @chaal
 export * from "./parda/alerts"; // @parda
 export * from "./parda/catalog"; // @parda

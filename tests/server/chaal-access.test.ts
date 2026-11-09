@@ -13,6 +13,7 @@ import { createLichess } from "@/server/chaal/lichess/client";
 import * as local from "@/server/chaal/local/service";
 import * as play from "@/server/chaal/play/service";
 import * as preferences from "@/server/chaal/preferences";
+import * as puzzles from "@/server/chaal/puzzles/service";
 import { chaalStatus } from "@/server/chaal/status";
 import * as schema from "@/server/db/schema";
 import { createTestDb } from "../utils/test-db";
@@ -24,7 +25,8 @@ import { createTestDb } from "../utils/test-db";
  * tests/server/guarded-functions.test.ts; here are the rules behind it: no session, a
  * guest, a member, a blocked user, a feature that's off, a missing scope, a revoked token,
  * another user's connection, another user's analysis (Task 75), another user's local
- * game (Task 76), and online play's calls (Task 77), each with the caller's own token.
+ * game (Task 76), online play's calls (Task 77), each with the caller's own token, and
+ * another user's puzzle attempts (Task 80).
  */
 let env: Awaited<ReturnType<typeof createTestDb>>;
 let vault: Vault;
@@ -126,6 +128,28 @@ const PLAY_OPERATIONS: Record<string, (userId: string) => Promise<unknown>> = {
 	sendChaalChat: (userId) => play.sendChat(deps(), userId, "game1234", "hi"),
 };
 
+/** A finished puzzle of the member's, as the browser sends it. */
+const puzzleAttempt = (id: string) => ({
+	id,
+	puzzleId: "xSeW5",
+	won: true,
+	ms: 9_000,
+	rating: 1894,
+	themes: ["skewer"],
+	mode: "train" as const,
+	angle: "mix" as const,
+	streak: null,
+	at: "2026-11-09T10:00:00.000Z",
+});
+
+/** Every puzzle function's service call (src/functions/chaal/puzzle-attempts.ts, Task 80), on the member's attempt. */
+const PUZZLE_OPERATIONS: Record<string, (userId: string, id: string) => Promise<unknown>> = {
+	recordChaalPuzzleAttempt: (userId, id) => puzzles.recordAttempt(deps(), userId, puzzleAttempt(id)),
+	importChaalPuzzleAttempts: (userId, id) => puzzles.importAttempts(deps(), userId, [puzzleAttempt(id)]),
+	getChaalPuzzleProgress: (userId) => puzzles.progress({ ...deps(), cache: createChaalCache() }, userId),
+	getChaalPuzzleReplay: (userId) => puzzles.replay(deps(), userId, "fork"),
+};
+
 beforeAll(async () => {
 	env = await createTestDb("admin-1", async (db) => {
 		await db.insert(schema.user).values(
@@ -207,6 +231,24 @@ describe("Chaal's access matrix", () => {
 		else expect(result).toMatchObject({ code: "NOT_FOUND" });
 		expect((await local.getLocalGame(env.db, "member", id)).id).toBe(id);
 		expect(await local.listLocalGames(env.db, "other")).toEqual([]);
+	});
+
+	it.each(Object.keys(PUZZLE_OPERATIONS))("%s acts on the caller's own attempts and token only", async (name) => {
+		const operation = PUZZLE_OPERATIONS[name];
+		if (!operation) throw new Error(name);
+		const id = "6b7c8d9e-0f1a-4b2c-8d3e-4f5a6b7c8d9e";
+		await puzzles.recordAttempt(deps(), "member", puzzleAttempt(id));
+		await connected("member", "member_lichess", ["puzzle:read", "puzzle:write"]);
+		// Another player's id is never taken over or imported; their progress shows none of the member's;
+		// without a connection of their own, Lichess's replays are refused before Lichess is asked.
+		const result = await operation("other", id).catch((error: unknown) => error);
+		if (name === "importChaalPuzzleAttempts") expect(result).toEqual({ imported: [] });
+		else if (name === "getChaalPuzzleProgress")
+			expect(result).toMatchObject({ stats: { nb: 0 }, lichess: { state: "connect" } });
+		else if (name === "getChaalPuzzleReplay") expect(result).toMatchObject({ reason: "lichess-reconnect" });
+		const rows = await env.db.select().from(schema.chPuzzleAttempt);
+		expect(rows.map((row) => [row.id, row.ownerId])).toEqual([[id, "member"]]);
+		expect(fetcher).not.toHaveBeenCalled();
 	});
 
 	it.each(

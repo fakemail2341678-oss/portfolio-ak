@@ -861,3 +861,161 @@ test.describe("Chaal's admin (Task 79)", () => {
 		await expect(page).toHaveURL(/\?lichess=connected$/);
 	});
 });
+
+/** A puzzle as the fake Lichess has it (its pool: the recorded batch and the daily one). */
+const fakePuzzle = async (id: string) =>
+	(await (await harness(`/lichess/api/puzzle/${id}`, "GET")).json()) as {
+		game: { pgn: string };
+		puzzle: { id: string; solution: string[] };
+	};
+
+/** The puzzle on the board: its id, and its trainer's state. */
+const puzzleBoard = (page: Page) => page.getByTestId("chaal-puzzle-board");
+
+/** Waits for the player's turn on a puzzle (the opponent's move plays first). */
+const puzzleTurn = (page: Page) => expect(puzzleBoard(page)).toHaveAttribute("data-phase", "play");
+
+/** Plays a move on the puzzle's board by clicking its two squares. */
+const puzzleMove = async (page: Page, uci: string) => {
+	await puzzleBoard(page)
+		.locator(`[data-square="${uci.slice(0, 2)}"]`)
+		.click();
+	await puzzleBoard(page)
+		.locator(`[data-square="${uci.slice(2, 4)}"]`)
+		.click();
+};
+
+/** Solves the puzzle on the board: the player's moves of its solution, the replies between. */
+async function solvePuzzle(page: Page) {
+	const id = (await puzzleBoard(page).getAttribute("data-puzzle")) ?? "";
+	const { puzzle } = await fakePuzzle(id);
+	for (let index = 0; index < puzzle.solution.length; index += 2) {
+		await puzzleTurn(page);
+		await puzzleMove(page, puzzle.solution[index] ?? "");
+	}
+	await expect(page.getByTestId("chaal-puzzle-status")).toHaveAttribute("data-won", "true");
+	return id;
+}
+
+/** A legal move on the board that isn't the puzzle's first one and doesn't mate (a miss). */
+async function missPuzzle(page: Page) {
+	const { Chess } = await import("chess.js");
+	const id = (await puzzleBoard(page).getAttribute("data-puzzle")) ?? "";
+	const { game, puzzle } = await fakePuzzle(id);
+	const chess = new Chess();
+	for (const san of game.pgn.split(" ")) chess.move(san);
+	const wrong = chess
+		.moves({ verbose: true })
+		.find(
+			(entry) =>
+				`${entry.from}${entry.to}` !== puzzle.solution[0]?.slice(0, 4) && !entry.san.includes("#") && !entry.promotion,
+		);
+	if (!wrong) throw new Error(`no wrong move in ${id}`);
+	await puzzleTurn(page);
+	await puzzleMove(page, `${wrong.from}${wrong.to}`);
+}
+
+test.describe("Chaal's puzzles for a visitor (Task 80)", () => {
+	test.describe.configure({ mode: "serial" });
+
+	test("the daily puzzle is drawn on the server, solved move by move, and its rating and themes follow", async ({
+		page,
+	}) => {
+		const html = await (await page.request.get("/app/chaal/puzzles")).text();
+		expect(html).toContain('data-phase="intro"');
+		await page.goto("/app/chaal/puzzles", { waitUntil: "networkidle" });
+		const id = await solvePuzzle(page);
+		await expect(page.getByTestId("chaal-puzzle-rating")).toBeVisible();
+		await expect(page.getByTestId("chaal-puzzle-themes")).toBeVisible();
+		await expect(page.getByTestId("chaal-puzzle-analyse")).toHaveAttribute("href", /\/app\/chaal\/analysis\?fen=/);
+		// Kept in this browser, and the progress panel counts it.
+		await expect
+			.poll(() => page.evaluate(() => JSON.parse(localStorage.getItem("chaal:puzzles") ?? "[]").length))
+			.toBe(1);
+		await expect(page.getByTestId("chaal-puzzle-solved")).toContainText("1");
+		await expect(page.getByTestId("chaal-puzzle-recent").getByRole("link", { name: `Puzzle ${id}` })).toBeVisible();
+	});
+
+	test("training: a wrong move goes back for another try, the solution shows, and Next brings another puzzle", async ({
+		page,
+	}) => {
+		await page.goto("/app/chaal/puzzles?mode=train", { waitUntil: "networkidle" });
+		const first = await puzzleBoard(page).getAttribute("data-puzzle");
+		await missPuzzle(page);
+		await expect(puzzleBoard(page)).toHaveAttribute("data-phase", "wrong");
+		await puzzleTurn(page);
+		await page.getByTestId("chaal-puzzle-hint").click();
+		await expect(page.getByTestId("chaal-puzzle-hint")).toBeDisabled();
+		await page.getByTestId("chaal-puzzle-solution").click();
+		await expect(puzzleBoard(page)).toHaveAttribute("data-phase", "failed");
+		await expect(page.getByTestId("chaal-puzzle-status")).toHaveAttribute("data-won", "false");
+		await page.getByTestId("chaal-puzzle-next").click();
+		await expect(puzzleBoard(page)).not.toHaveAttribute("data-puzzle", first ?? "");
+		await puzzleTurn(page);
+		// A theme is a new address: the choice is in the URL.
+		await page.getByTestId("chaal-puzzle-difficulty").click();
+		await page.getByRole("option", { name: "Harder", exact: true }).click();
+		await expect(page).toHaveURL(/difficulty=harder/);
+		await puzzleTurn(page);
+	});
+
+	test("the streak: solved puzzles count, a miss ends it, and the best is kept", async ({ page }) => {
+		await page.goto("/app/chaal/puzzles?mode=streak", { waitUntil: "networkidle" });
+		await expect(page.getByTestId("chaal-puzzle-hint")).toHaveCount(0);
+		await solvePuzzle(page);
+		await expect(page.getByTestId("chaal-puzzle-streak-count")).toHaveText("1");
+		await page.getByTestId("chaal-puzzle-next").click();
+		await missPuzzle(page);
+		await expect(puzzleBoard(page)).toHaveAttribute("data-phase", "failed", { timeout: 15_000 });
+		await page.getByTestId("chaal-puzzle-next").click();
+		await expect(page.getByTestId("chaal-puzzle-streak-count")).toHaveText("0");
+		await expect(page.getByTestId("chaal-puzzle-streak")).toContainText("1");
+		await expect(page.getByTestId("chaal-puzzle-best-streak")).toHaveText("1");
+	});
+});
+
+test.describe("Chaal's puzzles connected to Lichess (Task 80)", () => {
+	// Not the review's viewer: Lichess allows one event stream per token (Task 77).
+	test.use(signedIn("member"));
+	test.describe.configure({ mode: "serial" });
+
+	test.afterAll(async () => {
+		await harness("/e2e/lichess", "DELETE");
+		await harness("/e2e/chaal-connections", "DELETE");
+	});
+
+	test("training at the player's rating posts results to Lichess in batches; its dashboard and replays follow", async ({
+		page,
+	}) => {
+		await harness("/e2e/lichess", "DELETE");
+		await harness("/e2e/chaal-connections", "DELETE");
+		await page.goto("/app/chaal/puzzles?mode=train", { waitUntil: "networkidle" });
+		await page.getByTestId("chaal-puzzle-connect").click();
+		await page.getByRole("button", { name: "Approve" }).click();
+		const opened = eventStreamOpened(page);
+		await page.waitForURL(/\/app\/chaal\/puzzles\?mode=train&lichess=connected$/);
+		await opened;
+		await expect(page.getByTestId("chaal-puzzle-my-rating")).toContainText("1,500");
+
+		// Five finished puzzles: the solution shown each time (a miss), posted together at the fifth.
+		for (let count = 0; count < 5; count++) {
+			await puzzleTurn(page);
+			await page.getByTestId("chaal-puzzle-solution").click();
+			await expect(puzzleBoard(page)).toHaveAttribute("data-phase", "failed", { timeout: 15_000 });
+			await page.getByTestId("chaal-puzzle-next").click();
+		}
+		await expect
+			.poll(async () => {
+				const answer = await harness("/e2e/lichess/puzzle-solutions?account=e2e_player", "GET");
+				return ((await answer.json()) as { solutions: unknown[] }).solutions.length;
+			})
+			.toBe(5);
+
+		await page.reload();
+		await expect(page.getByTestId("chaal-puzzle-lichess")).toContainText("5");
+		const replay = page.getByTestId("chaal-puzzle-lichess").locator('a[data-testid^="chaal-puzzle-replay-"]').first();
+		await replay.click();
+		await expect(page).toHaveURL(/mode=replay/);
+		await puzzleTurn(page);
+	});
+});

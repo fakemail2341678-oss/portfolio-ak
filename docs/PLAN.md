@@ -2879,7 +2879,7 @@ As 12.1, with these differences:
 | 77 | Play online I: streams, challenges, the Lichess AI, the live game | xhigh | Done (decision 0266) |
 | 78 | Play online II: quick pairing, correspondence, notifications | high | Done (decision 0267) |
 | 79 | Admin I: settings, connections and blocks, API health | high | Done (decision 0268) |
-| 80 | Puzzles | high | Planned |
+| 80 | Puzzles | high | Done (decisions 0269, 0270) |
 | 81 | Players and games | high | Planned |
 | 82 | Watch: TV, live games, broadcasts | high | Planned |
 | 83 | Community: tournaments, teams, studies | high | Planned |
@@ -2923,6 +2923,7 @@ As 12.1, with these differences:
   - `next` (`angle`, `difficulty` easiest…hardest, `color`; it returns only unseen puzzles when authenticated, and is not for mass download);
   - `batch/{angle}`: GET with `nb` 1–50, and POST to submit solutions (`puzzle:write`);
   - `dashboard/{days}`, `replay/{days}/{theme}` and `activity` (`puzzle:read`).
+  - Checked in Task 80 (decision 0269): a batch's puzzles carry no FEN (the daily one has `fen` and `lastMove`), so the game's PGN is replayed to the puzzle's position; `color` works only with `nb=1`; the POST takes JSON `{ solutions: [{ id, win, rated }] }` and, with `nb`, answers the next batch too; a replay with nothing left is a 404.
 - **Analysis:**
   - `GET /api/cloud-eval`: cached positions only, `multiPv` up to 5, 404 when not cached; "a few positions here and there";
   - the explorer at `explorer.lichess.org` (`/masters`, `/lichess`, and `/player`, which is ndjson) **needs a token**: any token, no scope; 401 without one (checked in Task 71, decision 0257), so visitors use `LICHESS_APP_TOKEN`;
@@ -2956,7 +2957,7 @@ As 12.1, with these differences:
   - the dnd-kit model in `src/features/taskline/calendar/calendar.tsx` (`useDraggable`, `useDroppable`, `Accessibility.configure`);
   - `enforceRateLimit` (`src/server/http/rate-limit.ts`);
   - env in `src/server/env.ts`, plus the dev-offline `OFF` list, `tests/setup/env.ts`, the harness `APP_ENV` regex and `tests/unit/env.test.ts`.
-- **Bundle:** the entry was 283.7 kB after Part 6, 284.4 after Tasks 71 and 72, 286.3 after Task 73, 286.9 after Task 75, 287.7 after Task 76, 288.5 after Task 77, 288.6 after Task 78 and 289.9 after Task 79 (built as CI builds, without Sentry or PostHog keys); each route definition adds about 0.3 kB (0217). Task 73 raised the budget to 290 kB for Part 7's routes (0260); Task 85 measures and trims.
+- **Bundle:** the entry was 283.7 kB after Part 6, 284.4 after Tasks 71 and 72, 286.3 after Task 73, 286.9 after Task 75, 287.7 after Task 76, 288.5 after Task 77, 288.6 after Task 78, 289.9 after Task 79 and 290.5 after Task 80 (built as CI builds, without Sentry or PostHog keys); each route definition adds about 0.3 kB (0217). Task 73 raised the budget to 290 kB for Part 7's routes (0260), and Task 80 to 295 kB for Tasks 80–84's (0270); Task 85 measures and trims.
 
 ### 13.5 Architecture (every task follows it)
 
@@ -2996,7 +2997,7 @@ As 12.1, with these differences:
   - during a cooldown, reads serve the stale cache, or else `RATE_LIMITED` with a "Lichess asks us to wait a minute" state.
 - **User-Agent:** `Chaal/<version> (+<site>/app/chaal/about)`. **Logging:** `log()` on every call (class, status, ms; never the token), plus counters for the health page.
 - **Cache TTLs:**
-  - the daily puzzle until the next UTC midnight;
+  - the daily puzzle until the next UTC midnight, a puzzle by id 7 d, visitors' puzzle batches by round (10 min for the first, then 1 min), a player's puzzle dashboard 10 min (Task 80);
   - TV channels 5 s;
   - profiles and the tournament list 60 s;
   - broadcasts 5 min;
@@ -3474,20 +3475,45 @@ As 12.1, with these differences:
 - On the deployment: turn a feature off and on, try maintenance, revoke your own connection (you should see Reconnect), and look at the health page after some play; tell me if anything differs.
 - Have a Nepali speaker read the admin's words (`ch_admin_*`, `ch_maintenance_*`).
 
-### Task 80: Puzzles (planned)
+### Task 80: Puzzles (done)
 
-- **`/puzzles`:** the daily puzzle (server-rendered, indexable) and training.
-- **The trainer:**
-  - the opponent's move animates;
-  - feedback on a wrong move, with a retry;
-  - a hint, the solution, Next;
-  - the rating and themes shown afterwards.
-- **Choosing puzzles:** themes (our own messages) by difficulty and colour.
-- **Streak mode** (our own) with the best streak saved.
-- **Connected users:** `next` and `batch` at their rating, results posted in batches, and Lichess's dashboard and replay.
-- **Others:** `ch_puzzle_attempt` and a local dashboard.
-- **Prefetching:** 15 puzzles ahead.
-- **Tests.**
+**Done** (decisions 0269 and 0270; the guide's "Puzzles").
+
+**What changed:**
+- **`/app/chaal/puzzles`** (indexable, in the sitemap, a Puzzles section in the top bar and tab bar, two palette entries): the daily puzzle, drawn on the server; `?mode=train` with a theme, a difficulty and a side; `?mode=streak`; `?mode=replay&theme=` (Lichess's misses). **`/app/chaal/puzzles/$id`** (noindex): one puzzle by its Lichess id. Board first, the panel beside it (under it on a phone), then the modes, training's choices and the progress panel.
+- **The trainer** (`puzzles/trainer.ts`, `use-trainer.ts`): the opponent's move plays, right moves bring the replies, a wrong move shows and goes back for another try, any mate solves it, a hint rings the piece to move, the solution plays a move at a time, Next. Afterwards the puzzle's rating, plays and themes, its game (linked to lichess.org), Analyse and "Open on Lichess". The first miss, hint or solution makes the attempt a loss.
+- **Choosing:** 72 Lichess themes in seven groups with our own names in en and ne (`angles.ts` keys, `themes.ts` names), five difficulties, a side; each choice a URL.
+- **Prefetching** (`use-queue.ts`): the first batch with the page (the admin's `ahead`, 15), the next when fewer than five are left ahead. Visitors' batches are anyone's, cached by round; a player connected with `puzzle:read`/`puzzle:write` gets unseen puzzles at their rating and sees their Lichess puzzle rating.
+- **The streak** (our own): anyone's mixed puzzles, harder every five solved, no hints, one miss ends it, the best kept.
+- **Attempts** (`ch_puzzle_attempt`, migration `0045_chaal_puzzles`): on the account with a session, in this browser without one (imported into a new session, moved by the guest claim). A connected player's (not the streak's) are posted to Lichess in batches (with the next batch, at five waiting, or before the dashboard), each with its rating change. Each puzzle counts once in `ch_activity`.
+- **Progress:** a local dashboard (30 days: solved, first-try share, best streak, themes to work on, the latest five) and, connected, Lichess's dashboard with "Replay misses" per theme.
+- **Admin:** `ch_settings.puzzles` (`ahead` 5–30, `streak` on or off) in a Puzzles section of /admin/chaal/settings, audited; the `puzzles` switch refuses every function.
+- **Server and client:** `src/server/chaal/puzzles/service.ts`; `puzzleAnswer` and friends in `lichess/schemas.ts` (the PGN replayed to the puzzle's position); the client takes a JSON body (`json`); the lab's daily-puzzle check now uses the same schema as the page (they share a cache key). Functions `src/functions/chaal/puzzles.ts` (public) and `puzzle-attempts.ts` (personal), with Storybook mocks, guard-test entries and access-matrix rows.
+- **The fake Lichess** (`e2e/harness/lichess-puzzles.ts`): puzzles by id, batches from a recorded pool (`pnpm lichess:record puzzles` records only that), unseen ones for a token, posted solutions with rating changes, the dashboard and replays; `GET /e2e/lichess/puzzle-solutions?account=`.
+- **Shared:** Chaal's four identical page heads became one (`src/features/chaal/head.ts`), and the puzzles' loaders live in their queries module, to keep the entry small.
+- **Messages:** 164 new keys in en and ne (`ch_puzzle_*`, `ch_puzzles_*`, `ch_theme_*`, `ch_nav_puzzles`, `ch_admin_settings_puzzles*`; the glossary's Task 80 rows).
+- **Stories:** "Chaal/Puzzles": the daily puzzle played, the progress panel connected, loading, nothing left.
+- **Tests:** `tests/unit/chaal-puzzles.test.ts` (12: the mapping and a batch's bad puzzle, the trainer's moves, misses, any mate, hints and the solution, the streak's difficulties, progress, themes, limits), `tests/server/chaal-puzzles.test.ts` (13: the cache, the switch, visitors' rounds and sides, a player's own batch with results posted in one call, a refused token, the streak, posting at five by theme, idempotent records and activity, imports, the cap, progress with Lichess's dashboard, replays, the guest claim), 4 access-matrix rows, and e2e (4: the daily puzzle solved; training with a miss, a hint, the solution, Next and a new difficulty; the streak; a connected player's results posted at five, the dashboard and a replay).
+
+**Deviations:**
+- **The entry budget rises to 295 kB** (0270): the two routes took the entry to 290.9 kB; sharing the heads and moving the loaders brought it to 290.5, still over 290.
+- **A hint counts as a miss** (0269): it shows which piece moves.
+- **The streak's results don't go to Lichess,** and its puzzles are anyone's (rated at 1500), not the player's.
+- **A visitor's attempts stay in the browser** (no guest is started for them), like local games.
+- **"Results posted in batches"** happen with the next batch, at five waiting, or before Lichess's dashboard is read; nothing posts them when a player leaves with fewer than five waiting until they come back.
+- **Design flow:** the browser review at three widths in both languages and themes (60 views of the puzzle pages) and the stories' axe passes found the board's place unreadable in dark mode (text on the paper; fixed: a plate). No separate Playwright MCP pass; `ui-ux-pro-max` and impeccable's critique weren't run, as in Tasks 73–79 (the finish review is Task 85's).
+
+**Numbers:**
+- **Size:** the entry is 290.5 kB (289.9 before; budget now 295 kB), built by the e2e harness as CI builds. The puzzles page's chunk is 63.5 / 20.8 kB gzipped (with the themes' names).
+- **Tests:** 25 new unit and server tests, 4 access-matrix rows, 4 e2e flows. Related suites (`tests/unit/chaal-*`, `tests/server/chaal-*`, the guard, route-SEO, e2e-pages, strip-markers, i18n, sitemap, `tests/components/chaal`): 33 files, 512 tests, all passing (the message-usage test once timed out while e2e ran beside it; it passes alone). The full `pnpm test` runs in Task 85.
+- **Storybook:** every Chaal story in both passes, 102 of 102.
+- **e2e:** every Chaal flow and the browser review of every `/app/chaal` and `/admin/chaal` page, 352 of 352 (2 workers).
+- **Gates:** `typecheck`, `check`, `knip`, `i18n:check`, the bundle check, `build-storybook`.
+
+**Left for the owner:**
+- Run `pnpm db:migrate` on Neon (`0039`–`0045` are pending there).
+- On the deployment, connected with your Lichess account: train a few puzzles, check that the results and your puzzle rating reach Lichess, and open the dashboard and a replay; tell me if anything differs from the fake.
+- Have a Nepali speaker read the puzzle words (the glossary's Task 80 rows, `ch_puzzle_*`, `ch_theme_*`).
 
 ### Task 81: Players and games (planned)
 

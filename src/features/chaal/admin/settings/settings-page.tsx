@@ -22,6 +22,7 @@ import { chaalKeys } from "../../keys";
 import { BOARD_NAMES } from "../../labels";
 import { CHAAL_BOARD_THEMES } from "../../look/board-themes";
 import { QUICK_PAIR_MODES } from "../../play/controls";
+import { PUZZLE_AHEAD_BOUNDS } from "../../puzzles/limits";
 import { CHAAL_PIECE_SETS } from "../../settings/preferences";
 import { FEATURE_HINTS, FEATURE_TITLES, PIECE_SET_NAMES, QUICK_PAIR_LABELS } from "../labels";
 import { chaalAdminMutations, chaalAdminSettingsQueryOptions } from "../queries";
@@ -53,6 +54,7 @@ function SettingsForm({ settings }: { settings: ChaalAdminSettings }) {
 				guestsMayConnect: settings.guestsMayConnect,
 				extraScopes: settings.extraScopes,
 				play: settings.play,
+				puzzles: settings.puzzles,
 				defaults: settings.defaults,
 				engine: settings.engine,
 				banner: settings.banner,
@@ -119,6 +121,27 @@ function SettingsForm({ settings }: { settings: ChaalAdminSettings }) {
 				<form.AppField name="play.rated">
 					{(field) => (
 						<field.SwitchField label={m.ch_admin_settings_rated()} description={m.ch_admin_settings_rated_hint()} />
+					)}
+				</form.AppField>
+			</FormSection>
+			<FormSection title={m.ch_admin_settings_puzzles()} description={m.ch_admin_settings_puzzles_hint()}>
+				<div className="grid gap-6 sm:grid-cols-2">
+					<form.AppField name="puzzles.ahead">
+						{(field) => (
+							<field.NumberField
+								integer
+								label={m.ch_admin_settings_puzzles_ahead()}
+								description={m.ch_admin_settings_puzzles_ahead_hint(bounds(PUZZLE_AHEAD_BOUNDS))}
+							/>
+						)}
+					</form.AppField>
+				</div>
+				<form.AppField name="puzzles.streak">
+					{(field) => (
+						<field.SwitchField
+							label={m.ch_admin_settings_puzzles_streak()}
+							description={m.ch_admin_settings_puzzles_streak_hint()}
+						/>
 					)}
 				</form.AppField>
 			</FormSection>

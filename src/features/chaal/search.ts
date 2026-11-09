@@ -51,3 +51,22 @@ export const playSearch = z.object({
 	rated: z.boolean().optional().catch(undefined),
 });
 export type PlaySearch = z.infer<typeof playSearch>;
+
+/**
+ * The puzzles page's URL (Task 80, decision 0269): the daily puzzle without a mode, else
+ * training (a theme, a difficulty, a side), the streak, or replaying Lichess's misses in a
+ * theme. The theme is checked against Chaal's names on the page (the list's names aren't
+ * in every page's JavaScript); anything that doesn't read is dropped.
+ */
+export const puzzlesSearch = z.object({
+	mode: z.enum(["train", "streak", "replay"]).optional().catch(undefined),
+	theme: z
+		.string()
+		.max(40)
+		.regex(/^[A-Za-z0-9]+$/)
+		.optional()
+		.catch(undefined),
+	difficulty: z.enum(["easiest", "easier", "normal", "harder", "hardest"]).optional().catch(undefined),
+	color: z.enum(["white", "black"]).optional().catch(undefined),
+});
+export type PuzzlesSearch = z.infer<typeof puzzlesSearch>;

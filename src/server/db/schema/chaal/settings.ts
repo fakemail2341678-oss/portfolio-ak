@@ -3,6 +3,7 @@ import { boolean, check, integer, jsonb, pgTable, text, timestamp, uniqueIndex, 
 import type { EngineLimits } from "@/features/chaal/engine/limits";
 import type { ChaalFeatureSwitches } from "@/features/chaal/features";
 import type { PlayLimits } from "@/features/chaal/play/controls";
+import type { PuzzleLimits } from "@/features/chaal/puzzles/limits";
 import type { ChaalDefaults } from "@/features/chaal/settings/preferences";
 import { user } from "../auth";
 import { localizedText } from "../columns";
@@ -12,7 +13,7 @@ import { localizedText } from "../columns";
  * process (src/server/chaal/controls.ts). Columns arrive with the feature that needs them;
  * Task 71 has the feature switches, the connecting rules, the cache epoch and the public
  * lane's cooldown; Task 73 the notice under the top bar; Task 75 the engine's limits; Task 77
- * online play's; Task 79 players' defaults and maintenance. A missing row means the defaults;
+ * online play's; Task 79 players' defaults and maintenance; Task 80 puzzles'. A missing row means the defaults;
  * the admin edits it on /admin/chaal/settings.
  */
 export const chSettings = pgTable(
@@ -36,6 +37,8 @@ export const chSettings = pgTable(
 		engine: jsonb().$type<EngineLimits>().notNull().default({ maxDepth: 22, multiPv: 3, hashMb: 16 }),
 		/** Online play's limits (Task 77, decision 0266): the Lichess AI's highest level, rated games; quick pairing's paces (Task 79). */
 		play: jsonb().$type<PlayLimits>().notNull().default({ aiMaxLevel: 8, rated: true, quickPair: "all" }),
+		/** Puzzles' limits (Task 80, decision 0269): how many training keeps ready, and whether the streak is offered. */
+		puzzles: jsonb().$type<PuzzleLimits>().notNull().default({ ahead: 15, streak: true }),
 		/** The board, pieces and sound players start with until they choose (Task 79, decision 0268). */
 		defaults: jsonb().$type<ChaalDefaults>().notNull().default({ board: "diagram", pieces: "cburnett", sounds: true }),
 		/**

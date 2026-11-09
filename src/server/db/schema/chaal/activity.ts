@@ -2,7 +2,7 @@ import { sql } from "drizzle-orm";
 import { index, pgTable, text, timestamp, uniqueIndex, uuid } from "drizzle-orm/pg-core";
 import { user } from "../auth";
 
-/** What a row counts (PLAN 13.5, `ch_activity`). Puzzles join with Task 80. */
+/** What a row counts (PLAN 13.5, `ch_activity`): a puzzle once per player and puzzle (Task 80). */
 export type ChaalActivityKind = "connect" | "game" | "analysis" | "puzzle";
 
 /**
@@ -15,7 +15,7 @@ export type ChaalActivityMode = "ai" | "challenge" | "seek" | "lichess" | "local
 /**
  * Chaal's activity (PLAN 13.5; decision 0266): one row per thing a player did, for the
  * admin's overview and its daily rollups (Task 84). A deleted user's rows stay, without
- * the user. `ref` is the game's or the analysis's id, so a game the event stream restates
+ * the user. `ref` is the game's, the analysis's or the puzzle's id, so a game the event stream restates
  * on every reconnect is counted once. Pruned after 90 days by the daily job
  * (src/server/chaal/cron.ts).
  */

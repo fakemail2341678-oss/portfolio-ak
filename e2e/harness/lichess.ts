@@ -14,6 +14,8 @@
  * - Online play (Tasks 77 and 78, ./lichess-play.ts): challenges (kept open, open links, the
  *   AI), Board API games with clocks and a scripted AI, offers, endings and chat; seeks, the
  *   games in progress (`/api/account/playing`) and berserk in an arena game.
+ * - Puzzles (Task 80, ./lichess-puzzles.ts): by id, batches (unseen ones for a token),
+ *   posted solutions, the dashboard and replays, from a recorded pool.
  * - Everything else answers from tests/fixtures/lichess (`pnpm lichess:record`), by
  *   `lichessFixtureName`; the explorer asks for a token, as the real one does. A recorded
  *   stream (`.ndjson`: the player explorer, Task 75) is sent as ndjson and ends.
@@ -23,7 +25,8 @@
  * (`{ account }`: its streams break), `GET /e2e/lichess/streams?account=` (how many it has
  * open), the rival's `POST /e2e/lichess/challenge`, `/respond` and `/act`, `GET
  * /e2e/lichess/games`, quick pairing's `POST /e2e/lichess/seek-accept`, `GET /e2e/lichess/seeks`
- * and `POST /e2e/lichess/arena` (Task 78), and `DELETE /e2e/lichess`. Later tasks add the
+ * and `POST /e2e/lichess/arena` (Task 78), `GET /e2e/lichess/puzzle-solutions?account=` (Task 80),
+ * and `DELETE /e2e/lichess`. Later tasks add the
  * rest (PLAN 13.5, "Fixtures").
  */
 import { createHash, randomBytes } from "node:crypto";
@@ -31,6 +34,7 @@ import { existsSync, readFileSync } from "node:fs";
 import type { IncomingMessage, ServerResponse } from "node:http";
 import path from "node:path";
 import { type Account, createPlay } from "./lichess-play.ts";
+import { createPuzzles } from "./lichess-puzzles.ts";
 
 const FIXTURES = path.resolve(import.meta.dirname, "../../tests/fixtures/lichess");
 
@@ -88,6 +92,7 @@ const emit = (account: Account, event: unknown) => {
 	}
 };
 const play = createPlay({ emit });
+const puzzles = createPuzzles({ read: (name) => readLichessFixture(name) });
 
 /** The fake's own address, as the links it gives out (an open challenge's) carry it. */
 const baseOf = (request: IncomingMessage) => `http://${request.headers.host ?? "127.0.0.1"}/lichess`;
@@ -168,6 +173,7 @@ export async function serveLichess(url: URL, request: IncomingMessage, response:
 
 	if (route === "DELETE /e2e/lichess") {
 		play.reset();
+		puzzles.reset();
 		codes.clear();
 		tokens.clear();
 		for (const stream of streams.values()) stream.end();
@@ -207,6 +213,7 @@ export async function serveLichess(url: URL, request: IncomingMessage, response:
 		json(response, 200, { events, games: account ? play.gameStreams(account) : 0 });
 		return true;
 	}
+	if (puzzles.control(route, url, response)) return true;
 	if (url.pathname.startsWith("/e2e/lichess/")) {
 		const body =
 			request.method === "POST" ? (JSON.parse((await readBody(request)) || "{}") as Record<string, unknown>) : {};
@@ -307,6 +314,20 @@ export async function serveLichess(url: URL, request: IncomingMessage, response:
 		}
 		if (await play.serve(pathname, request, response, known.token.account, baseOf(request))) return true;
 	}
+
+	// Puzzles (Task 80, ./lichess-puzzles.ts): by id, batches, solutions, the dashboard and replays.
+	if (
+		host === "api" &&
+		(await puzzles.serve(
+			pathname,
+			url,
+			request,
+			response,
+			tokenOf(request)?.token.account ?? null,
+			bearer(request) !== null,
+		))
+	)
+		return true;
 
 	if (request.method !== "GET") {
 		json(response, 404, { error: "Not found" });

@@ -1,5 +1,6 @@
 import "@tanstack/react-start/server-only";
 import { z } from "zod";
+import { play, START_FEN, turnOf } from "@/features/chaal/chess/rules";
 import type {
 	ChaalChallengeLine,
 	ChaalEvent,
@@ -11,6 +12,7 @@ import type {
 	ChaalGamePlayer,
 	ChaalGameState,
 } from "@/features/chaal/live/events";
+import type { ChaalPuzzle, LichessPuzzleDashboard, PuzzleGlicko } from "@/features/chaal/puzzles/schema";
 import type {
 	ChaalCloudEval,
 	ChaalExplorer,
@@ -577,3 +579,159 @@ export const chatHistoryAnswer = z
 	.transform((lines) =>
 		lines.flatMap((line) => (line ? [{ room: "player" as const, username: line.user, text: line.text }] : [])),
 	);
+
+// --- Puzzles (Task 80, decision 0269) --------------------------------------------------------
+
+const puzzlePlayer = z.object({
+	name: z.string().max(60),
+	title: z.string().max(8).nullish(),
+	rating: z.number().nullish(),
+	color: z.enum(["white", "black"]),
+});
+
+const puzzleAndGame = z.object({
+	game: z.object({
+		id: z.string().max(12),
+		perf: z.object({ key: z.string().max(20) }).nullish(),
+		clock: z.string().max(20).nullish(),
+		pgn: z.string().max(20_000),
+		players: z.array(puzzlePlayer).length(2),
+	}),
+	puzzle: z.object({
+		id: z.string().regex(/^[A-Za-z0-9]{4,10}$/),
+		rating: z.number(),
+		plays: z.number().nullish(),
+		solution: z
+			.array(z.string().regex(/^[a-h][1-8][a-h][1-8][qrbn]?$/))
+			.min(1)
+			.max(40),
+		themes: z.array(z.string().max(40)).max(30),
+	}),
+});
+
+/**
+ * A puzzle as Chaal shows it. Lichess's game PGN ends where the puzzle starts, so replaying
+ * it gives the position before the opponent's last move and that move (the batch's puzzles
+ * carry no FEN); the solution must then play out from there. Null when it doesn't.
+ */
+function puzzleOf(answer: z.output<typeof puzzleAndGame>): ChaalPuzzle | null {
+	const sans = answer.game.pgn
+		.split(/\s+/)
+		.filter((token) => token !== "" && !/^\d+\.+$/.test(token) && !/^(1-0|0-1|1\/2-1\/2|\*)$/.test(token));
+	let fen = START_FEN;
+	let before = fen;
+	let last: { uci: string; san: string } | null = null;
+	for (const san of sans) {
+		const played = play(fen, san);
+		if (!played) return null;
+		before = fen;
+		fen = played.fen;
+		last = { uci: played.uci, san: played.san };
+	}
+	if (!last) return null;
+	let position = fen;
+	for (const uci of answer.puzzle.solution) {
+		const played = play(position, uci);
+		if (!played) return null;
+		position = played.fen;
+	}
+	const player = (color: "white" | "black") => {
+		const found = answer.game.players.find((entry) => entry.color === color);
+		return { name: found?.name ?? "?", title: found?.title ?? null, rating: found?.rating ?? null };
+	};
+	return {
+		id: answer.puzzle.id,
+		rating: Math.round(answer.puzzle.rating),
+		plays: answer.puzzle.plays ?? 0,
+		themes: answer.puzzle.themes,
+		before,
+		lastMove: last,
+		fen,
+		color: turnOf(fen),
+		solution: answer.puzzle.solution,
+		game: {
+			id: answer.game.id,
+			perf: answer.game.perf?.key ?? "",
+			clock: answer.game.clock ?? null,
+			white: player("white"),
+			black: player("black"),
+		},
+	};
+}
+
+/** GET /api/puzzle/daily and /api/puzzle/{id}. */
+export const puzzleAnswer = puzzleAndGame.transform((answer, context) => {
+	const puzzle = puzzleOf(answer);
+	if (!puzzle) {
+		context.addIssue({ code: "custom", message: "The puzzle doesn't replay" });
+		return z.NEVER;
+	}
+	return puzzle;
+});
+
+/** Each puzzle of a batch on its own: one that doesn't replay is dropped, not the batch. */
+const puzzleList = z
+	.array(z.unknown())
+	.max(50)
+	.transform((list) =>
+		list.flatMap((item) => {
+			const read = puzzleAnswer.safeParse(item);
+			return read.success ? [read.data] : [];
+		}),
+	);
+
+const glicko = z
+	.object({ rating: z.number(), provisional: z.boolean().nullish() })
+	.nullish()
+	.transform((value): PuzzleGlicko | null =>
+		value ? { rating: Math.round(value.rating), provisional: value.provisional === true } : null,
+	);
+
+/** GET /api/puzzle/batch/{angle}. */
+export const puzzleBatchAnswer = z.object({ puzzles: puzzleList, glicko });
+
+/** POST /api/puzzle/batch/{angle}: each solution's rating change, and the next batch when `nb` asked for one. */
+export const puzzleSolveAnswer = z.object({
+	puzzles: puzzleList.nullish().transform((list) => list ?? []),
+	glicko,
+	rounds: z
+		.array(z.object({ id: z.string(), win: z.boolean(), ratingDiff: z.number().nullish() }))
+		.nullish()
+		.transform((rounds) => (rounds ?? []).map((round) => ({ id: round.id, ratingDiff: round.ratingDiff ?? null }))),
+});
+
+const puzzlePerformance = z.object({ nb: z.number(), firstWins: z.number(), performance: z.number() });
+
+/** GET /api/puzzle/dashboard/{days}: the totals, then each theme, the most played first. */
+export const puzzleDashboardAnswer = z
+	.object({
+		days: z.number(),
+		global: puzzlePerformance,
+		themes: z.record(z.string(), z.object({ results: puzzlePerformance })).nullish(),
+	})
+	.transform(
+		(answer): LichessPuzzleDashboard => ({
+			days: answer.days,
+			nb: answer.global.nb,
+			firstWins: answer.global.firstWins,
+			performance: answer.global.performance,
+			themes: Object.entries(answer.themes ?? {})
+				.map(([key, entry]) => ({
+					key,
+					nb: entry.results.nb,
+					firstWins: entry.results.firstWins,
+					performance: entry.results.performance,
+				}))
+				.sort((a, b) => b.nb - a.nb || a.key.localeCompare(b.key)),
+		}),
+	);
+
+/** GET /api/puzzle/replay/{days}/{theme}: the misses still to replay. */
+export const puzzleReplayAnswer = z
+	.object({
+		replay: z.object({
+			theme: z.string(),
+			remaining: z.array(z.string().regex(/^[A-Za-z0-9]{4,10}$/)).max(1_000),
+		}),
+	})
+	.transform((answer) => ({ theme: answer.replay.theme, remaining: answer.replay.remaining }));

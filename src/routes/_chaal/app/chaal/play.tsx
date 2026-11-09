@@ -1,7 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { chaalPlayHead } from "@/features/chaal/local/head";
+import { chaalPageHead } from "@/features/chaal/head";
+import { CHAAL_PATHS } from "@/features/chaal/links";
 import { ChaalPlayHub } from "@/features/chaal/local/play-hub";
 import { playSearch } from "@/features/chaal/search";
+import { m } from "@/paraglide/messages";
 
 /**
  * /app/chaal/play: the play hub (PLAN Tasks 76 and 77). Indexable. Online on Lichess (the
@@ -32,6 +34,6 @@ export const Route = createFileRoute("/_chaal/app/chaal/play")({
 			challenges(),
 		]);
 	},
-	head: () => chaalPlayHead(),
+	head: () => chaalPageHead(CHAAL_PATHS.play, m.ch_play_title(), m.ch_play_description()),
 	component: ChaalPlayHub,
 });

@@ -2,6 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useNavigate, useRouterState } from "@tanstack/react-router";
 import {
 	ChartSplineIcon,
+	FlameIcon,
 	HouseIcon,
 	InfoIcon,
 	KeyboardIcon,
@@ -9,6 +10,7 @@ import {
 	LinkIcon,
 	LogInIcon,
 	LogOutIcon,
+	PuzzleIcon,
 	SettingsIcon,
 	SwordsIcon,
 } from "lucide-react";
@@ -91,6 +93,22 @@ export function ChaalPalette({
 					>
 						<SwordsIcon aria-hidden />
 						<span>{m.ch_play_title()}</span>
+					</CommandItem>
+					<CommandItem
+						value="go puzzles"
+						keywords={[m.ch_nav_puzzles(), m.ch_puzzle_daily(), m.ch_puzzle_streak()]}
+						onSelect={() => go(() => navigate(chaalLinks.puzzles()))}
+					>
+						<PuzzleIcon aria-hidden />
+						<span>{m.ch_puzzles_title()}</span>
+					</CommandItem>
+					<CommandItem
+						value="go puzzle streak"
+						keywords={[m.ch_puzzle_streak()]}
+						onSelect={() => go(() => navigate(chaalLinks.puzzles({ mode: "streak" })))}
+					>
+						<FlameIcon aria-hidden />
+						<span>{m.ch_puzzle_streak()}</span>
 					</CommandItem>
 					<CommandItem
 						value="go analysis"

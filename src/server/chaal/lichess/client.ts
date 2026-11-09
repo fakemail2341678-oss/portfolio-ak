@@ -44,6 +44,8 @@ export type LichessRequest = {
 	form?: Readonly<Record<string, string>>;
 	/** A `text/plain` body. */
 	text?: string;
+	/** An `application/json` body (the puzzle batch's solutions, Task 80). */
+	json?: unknown;
 	/** The user's token (decrypted inside a service call only), or the app's for the explorer. */
 	token?: string | null;
 	lane: LaneKey;
@@ -131,6 +133,9 @@ export function createLichess(config: LichessConfig, fetcher: typeof fetch = fet
 		} else if (request.text !== undefined) {
 			headers["content-type"] = "text/plain";
 			body = request.text;
+		} else if (request.json !== undefined) {
+			headers["content-type"] = "application/json";
+			body = JSON.stringify(request.json);
 		}
 		return { method: request.method ?? "GET", headers, body, signal, redirect: "manual" };
 	};

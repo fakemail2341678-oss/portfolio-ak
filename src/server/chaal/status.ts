@@ -2,6 +2,7 @@ import "@tanstack/react-start/server-only";
 import { readEngineLimits } from "@/features/chaal/engine/limits";
 import { CHAAL_FEATURES, type ChaalFeature, featureOn } from "@/features/chaal/features";
 import { readPlayLimits } from "@/features/chaal/play/controls";
+import { readPuzzleLimits } from "@/features/chaal/puzzles/limits";
 import type { ChaalStatus } from "@/features/chaal/schema";
 import { readDefaults } from "@/features/chaal/settings/preferences";
 import type { Session } from "@/lib/session";
@@ -27,6 +28,7 @@ export function chaalStatus(chaal: ChaalPublic, session: Session | null): ChaalS
 		banner: chaal.settings.banner?.en.trim() ? chaal.settings.banner : null,
 		engine: readEngineLimits(chaal.settings.engine),
 		play: readPlayLimits(chaal.settings.play),
+		puzzles: readPuzzleLimits(chaal.settings.puzzles),
 		defaults: readDefaults(settings.defaults),
 		maintenance: maintenance
 			? { message: settings.maintenanceMessage?.en.trim() ? settings.maintenanceMessage : null }

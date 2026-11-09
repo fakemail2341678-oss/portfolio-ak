@@ -1,6 +1,7 @@
 import "@tanstack/react-start/server-only";
 import { DEFAULT_ENGINE_LIMITS } from "@/features/chaal/engine/limits";
 import { DEFAULT_PLAY_LIMITS } from "@/features/chaal/play/controls";
+import { DEFAULT_PUZZLE_LIMITS } from "@/features/chaal/puzzles/limits";
 import { DEFAULT_CHAAL_DEFAULTS } from "@/features/chaal/settings/preferences";
 import { chBlock, chSettings } from "@/server/db/schema";
 import type { Db } from "@/server/db/types";
@@ -25,6 +26,7 @@ export const DEFAULT_CHAAL_SETTINGS: ChaalSettingsRow = {
 	banner: null,
 	engine: DEFAULT_ENGINE_LIMITS,
 	play: DEFAULT_PLAY_LIMITS,
+	puzzles: DEFAULT_PUZZLE_LIMITS,
 	defaults: DEFAULT_CHAAL_DEFAULTS,
 	maintenance: false,
 	maintenanceMessage: null,

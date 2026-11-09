@@ -7,6 +7,7 @@ import { ENGINE_BOUNDS, type EngineLimits } from "../engine/limits";
 import { CHAAL_FEATURES, type ChaalFeature, LICHESS_SCOPES } from "../features";
 import { CHAAL_BOARD_THEMES } from "../look/board-themes";
 import { AI_LEVELS, type PlayLimits, QUICK_PAIR_MODES } from "../play/controls";
+import { PUZZLE_AHEAD_BOUNDS, type PuzzleLimits } from "../puzzles/limits";
 import { CHAAL_PIECE_SETS, type ChaalDefaults } from "../settings/preferences";
 
 /**
@@ -25,6 +26,7 @@ export type ChaalAdminSettings = {
 	guestsMayConnect: boolean;
 	extraScopes: string[];
 	play: PlayLimits;
+	puzzles: PuzzleLimits;
 	defaults: ChaalDefaults;
 	engine: EngineLimits;
 	banner: Localized;
@@ -54,6 +56,7 @@ export const chaalSettingsInput = z.strictObject({
 		rated: z.boolean(),
 		quickPair: z.enum(QUICK_PAIR_MODES),
 	}),
+	puzzles: z.strictObject({ ahead: between(PUZZLE_AHEAD_BOUNDS), streak: z.boolean() }),
 	defaults: z.strictObject({
 		board: z.enum(CHAAL_BOARD_THEMES),
 		pieces: z.enum(CHAAL_PIECE_SETS),

@@ -4,7 +4,7 @@ import type { ChaalLabState, ChaalLaneCheck } from "@/features/chaal/schema";
 import { serverEnv } from "@/server/env";
 import { redirectUriFor } from "../connect/oauth";
 import { untilUtcMidnight } from "../lichess/cache";
-import { dailyPuzzleAnswer } from "../lichess/schemas";
+import { puzzleAnswer } from "../lichess/schemas";
 import { chaalCache, chaalConnectDeps, chaalControls, chaalLichess } from "../store";
 import { STREAM_WINDOW_MS } from "../stream";
 
@@ -40,14 +40,17 @@ export async function labState(): Promise<ChaalLabState> {
 	};
 }
 
-/** Reads the daily puzzle through the public lane and the cache: proves the client, the lane and the cache work here. */
+/**
+ * Reads the daily puzzle through the public lane and the cache: proves the client, the lane and
+ * the cache work here. The answer is the puzzles page's (`puzzleAnswer`), as they share the key (Task 80).
+ */
 export async function checkPublicLane(now: () => number = Date.now): Promise<ChaalLaneCheck> {
 	const settings = await chaalControls.settings();
 	const started = now();
 	const puzzle = await chaalCache.read(
 		{ endpoint: "puzzle-daily", path: "/api/puzzle/daily", epoch: settings.cacheEpoch },
 		untilUtcMidnight(started),
-		() => chaalLichess.json({ endpoint: "puzzle-daily", path: "/api/puzzle/daily", lane: "public" }, dailyPuzzleAnswer),
+		() => chaalLichess.json({ endpoint: "puzzle-daily", path: "/api/puzzle/daily", lane: "public" }, puzzleAnswer),
 	);
 	return { puzzleId: puzzle.id, rating: puzzle.rating, ms: now() - started };
 }

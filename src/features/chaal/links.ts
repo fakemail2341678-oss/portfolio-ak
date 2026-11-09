@@ -1,5 +1,5 @@
 import { linkOptions } from "@tanstack/react-router";
-import type { PlaySearch } from "./search";
+import type { PlaySearch, PuzzlesSearch } from "./search";
 
 /**
  * Where Chaal lives (PLAN 13.2): its base path is here and nowhere else, so a rename is
@@ -22,6 +22,10 @@ export const chaalLinks = {
 	 * online play (Task 77), with a setup filled in ("Play again" with a player).
 	 */
 	play: (search: PlaySearch = {}) => linkOptions({ to: "/app/chaal/play", search }),
+	/** Puzzles (Task 80): the daily puzzle, or training, the streak or replaying misses. */
+	puzzles: (search: PuzzlesSearch = {}) => linkOptions({ to: "/app/chaal/puzzles", search }),
+	/** One puzzle by its Lichess id (Task 80, noindex). */
+	puzzle: (id: string) => linkOptions({ to: "/app/chaal/puzzles/$id", params: { id } }),
 	/** A game the player plays on Lichess (Task 77, noindex). */
 	game: (id: string) => linkOptions({ to: "/app/chaal/game/$id", params: { id } }),
 	/** A local game (Task 76, noindex): its board, to play on or look back at. */
@@ -39,6 +43,7 @@ export const CHAAL_PATHS = {
 	home: CHAAL_BASE,
 	play: `${CHAAL_BASE}/play`,
 	analysis: `${CHAAL_BASE}/analysis`,
+	puzzles: `${CHAAL_BASE}/puzzles`,
 	about: `${CHAAL_BASE}/about`,
 	settings: `${CHAAL_BASE}/settings`,
 } as const;
@@ -48,6 +53,7 @@ export const CHAAL_SITEMAP: ReadonlyArray<string> = [
 	CHAAL_PATHS.home,
 	CHAAL_PATHS.play,
 	CHAAL_PATHS.analysis,
+	CHAAL_PATHS.puzzles,
 	CHAAL_PATHS.about,
 ];
 

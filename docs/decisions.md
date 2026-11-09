@@ -273,6 +273,8 @@ Record every non-obvious choice here: **What**, **Why**, **Alternatives consider
 - [0266](#0266-chaals-online-play-lichesss-streams-through-our-server-one-tab-holding-the-event-stream-challenges-kept-open-by-a-stream): Chaal's online play: Lichess's streams through our server, one tab holding the event stream, challenges kept open by a stream
 - [0267](#0267-chaals-quick-pairing-and-notifications-seeks-kept-open-by-a-stream-your-move-read-from-the-games-in-progress-notices-drawn-from-the-event-store): Chaal's quick pairing and notifications: seeks kept open by a stream, "your move" read from the games in progress, notices drawn from the event store
 - [0268](#0268-chaals-admin-one-versioned-settings-row-with-maintenance-as-its-own-switch-revoking-keeps-the-row-call-stats-flushed-after-each-call): Chaal's admin: one versioned settings row with maintenance as its own switch, revoking keeps the row, call stats flushed after each call
+- [0269](#0269-chaals-puzzles-lichesss-puzzles-replayed-from-their-pgn-a-trainer-of-our-own-attempts-kept-where-the-player-is-and-posted-to-lichess-in-batches): Chaal's puzzles: Lichess's puzzles replayed from their PGN, a trainer of our own, attempts kept where the player is and posted to Lichess in batches
+- [0270](#0270-the-entry-budget-rises-to-295-kb-for-tasks-8084s-routes): The entry budget rises to 295 kB for Tasks 80–84's routes
 </details>
 
 ---
@@ -3698,3 +3700,42 @@ Measured on the owner's Windows machine (Node 24.11, 12 threads, 11.7 GB), 2026-
 - **A route for the block form** (`/admin/chaal/blocks/new`, as Parda's takedowns): each route definition is in every page's JavaScript (0217), and Task 79's five took the entry to 290.1 kB, over the 290 kB budget (0260). The form is three fields; a dialog does it in place. For the same reason the blocks list has no layout route of its own, and the palette has no "Block a player" command (a command links to a page).
 
 **Numbers:** see PLAN Task 79's summary.
+
+## 0269: Chaal's puzzles: Lichess's puzzles replayed from their PGN, a trainer of our own, attempts kept where the player is and posted to Lichess in batches
+
+**What** (Task 80, 2026-11-09; `src/features/chaal/puzzles/`, `src/server/chaal/puzzles/service.ts`, `src/functions/chaal/{puzzles,puzzle-attempts}.ts`, `/app/chaal/puzzles` and `/app/chaal/puzzles/$id`, the fake Lichess's `e2e/harness/lichess-puzzles.ts`):
+- **The puzzle** (`puzzleAnswer` in `lichess/schemas.ts`): Lichess's game PGN ends where the puzzle starts, so the server replays it to get the position before the opponent's last move and that move, and checks that the solution plays out from there. A batch's puzzles carry no FEN (the daily one does, and they agree); one that doesn't replay is dropped, not the batch.
+- **The trainer** (`trainer.ts`, pure; `use-trainer.ts` adds the timing): the board opens one move early and plays the opponent's move; the player's right moves bring the replies; a wrong move shows, then goes back for another try; any checkmate solves it (as on Lichess); a hint rings the piece to move; the solution plays a move at a time. The first miss, hint or solution makes the attempt a loss (recorded at once, so leaving doesn't lose it); a clean solve is a win. Afterwards: the puzzle's rating and plays, its themes (our own names, linking to training on them), the game it came from, Analyse (the line from before the opponent's move) and "Open on Lichess".
+- **Choosing** (`?mode=train&theme=&difficulty=&color=`): Lichess's theme keys (`angles.ts`) with our own names in both languages (`themes.ts`: 72 themes in seven groups, PLAN 13.6), Lichess's five difficulties, and a side. Each choice is a URL.
+- **Batches and the queue** (`use-queue.ts`): the page is drawn with the first batch (the admin's `ahead`, 15 by default); when fewer than five are left ahead, the next is asked for. Lichess picks colours itself for more than one puzzle, so a side asks for twice as many and keeps that side's. A visitor's batches are anyone's, on the public lane, cached by the page's `round` (ten minutes for the first, so first paints don't each ask Lichess; a minute after). A player connected with the puzzle scopes gets their own (unseen, at their rating, with their Lichess puzzle rating), never cached; the streak's are always anyone's.
+- **The streak** (`?mode=streak`, our own): `mix` puzzles, easiest first and a difficulty harder every five solved, the next difficulty read two puzzles before it's needed; no hints; one miss ends it (the solution shows). The best streak is the highest `streak` among the player's attempts.
+- **Attempts** (`ch_puzzle_attempt`, migration `0045_chaal_puzzles`): with a session (guests too) on the account, else in this browser (`chaal:puzzles`, the 200 latest), imported into a new session by the frame and moved by the guest claim; 1,000 per player. The id comes from the browser, so a retried write or an import is one attempt. A connected player's (not the streak's) are `pending` until posted to Lichess (`POST /api/puzzle/batch/{angle}`, under the theme they were trained on): with the next batch (one call answers both), at five waiting, or before the progress panel reads Lichess's dashboard; each gets its rating change back. Each puzzle counts once in `ch_activity`.
+- **Progress** (the panel under the choices): the last 30 days from the attempts (`progress.ts`, the same for the server's rows and the browser's: solved, the first-try share, the best streak, themes to work on, the latest five), then, connected, Lichess's dashboard (`/api/puzzle/dashboard/30`, cached per player and keyed by how many attempts were posted) with "Replay misses" per theme (`?mode=replay&theme=`, `/api/puzzle/replay/30/{theme}`; the puzzles are then read by id, the next one ahead).
+- **The admin's controls:** the `puzzles` switch (every function refuses), and `ch_settings.puzzles` (`ahead` 5 to 30, `streak` on or off) on /admin/chaal/settings.
+
+**Why:**
+- **Replaying the PGN on the server:** it's the only position a batch gives, and checking the solution there means the board never meets a move it can't play.
+- **Our own trainer, not Lichess's page:** Lichess's training page can't be embedded (and mustn't be imitated, PLAN 13.2); the API gives the data, and its rules (any mate wins, a miss is a loss) are simple to keep.
+- **A loss recorded at the first help:** Lichess counts a puzzle once, by its first try; recording at the end would lose the attempts of players who leave mid-puzzle.
+- **Visitors' batches cached by round:** a crawler or a hundred visitors opening training would each ask Lichess for a batch ("not for mass download"); a round shared for a minute or ten keeps that to a few calls, while one visitor's next batch is still a new one. Server-function calls without a session are also limited per IP (0234's rule in `chaalPublic`).
+- **Posting in batches, with the next batch:** "one request at a time", and the batch call takes solutions and returns puzzles together, so one call per fifteen puzzles is the usual cost.
+- **The streak never posted:** its puzzles aren't chosen at the player's rating, and Lichess's own streak isn't rated either.
+- **A visitor's attempts in the browser, not a guest:** starting a guest for every visitor who tries a puzzle would fill the users table with sessions that never come back; local games (0265) already work this way.
+
+**Alternatives considered:**
+- **`/api/puzzle/next` one at a time:** a call per puzzle, and no way to post results with it.
+- **The streak at the player's rating:** the batch call's difficulty is relative to the player's rating, which a visitor doesn't have; anyone's (rated at 1500) makes the same streak for everyone.
+- **A row per streak run:** the attempts already say how long each run got.
+- **Hints that don't count:** a hint shows which piece moves, most of the answer in a short puzzle; it would make a clean record meaningless.
+
+**Not checked against Lichess itself** (they need a live account; left for the owner): a connected player's batch (unseen puzzles, the glicko), posting solutions and the rating changes, the dashboard and replays. Built against the spec (v2.0.178) and the fake Lichess.
+
+## 0270: The entry budget rises to 295 kB for Tasks 80–84's routes
+
+**What** (Task 80): `ENTRY_BUDGET_KB` in `scripts/check-bundle.ts` goes from 290 to 295 kB. Tasks 74–79 used 0260's room (289.9 kB after Task 79); the puzzles' two routes took the entry to 290.9 kB, and sharing Chaal's four identical page heads (`src/features/chaal/head.ts`) and moving the puzzles' loaders into their queries module brought it to 290.5 kB.
+
+**Why:** PLAN 13.5 lists about ten more routes for Tasks 81–84 (players, games, TV, broadcasts, tournaments, teams, studies, curation), each definition about 0.3 kB in every page's JavaScript (0151, 0217). Part 6 raised its budget the same way mid-part (0235, 0240), and its wrap-up measured and trimmed; Task 85 does that for Part 7.
+
+**Alternatives considered:**
+- **`/puzzles?id=` instead of `/puzzles/$id`** (PLAN 13.5 allows merging into params when the budget is tight): about 0.3 kB, and a puzzle's address would need a noindex that depends on its search; the next task would be over again.
+- **Trimming other layers' routes now:** that's Task 85's whole-app pass, not a puzzles change.

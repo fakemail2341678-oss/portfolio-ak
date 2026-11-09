@@ -27,6 +27,12 @@ export const chaalKeys = {
 	/** Local games on the account (Task 76). */
 	localGames: () => [...all, "local-games"] as const,
 	localGame: (id: string) => [...all, "local-games", id] as const,
+	/** Puzzles (Task 80): the daily one, one by id, a batch, the progress panel, misses to replay. */
+	dailyPuzzle: () => [...all, "puzzles", "daily"] as const,
+	puzzle: (id: string) => [...all, "puzzles", "id", id] as const,
+	puzzleBatch: (input: Readonly<Record<string, unknown>>) => [...all, "puzzles", "batch", input] as const,
+	puzzleProgress: () => [...all, "puzzles", "progress"] as const,
+	puzzleReplay: (theme: string) => [...all, "puzzles", "replay", theme] as const,
 	/** Online play (Task 77): the player's challenges, a game they play, its chat. */
 	challenges: () => [...all, "challenges"] as const,
 	liveGame: (id: string) => [...all, "live-game", id] as const,

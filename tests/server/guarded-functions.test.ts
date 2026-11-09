@@ -516,6 +516,7 @@ const PARDA_FUNCTIONS: Record<string, ReadonlyArray<string>> = {
 const CHAAL_PUBLIC_FUNCTIONS: Record<string, ReadonlyArray<string>> = {
 	"chaal/status.ts": ["getChaalStatus"],
 	"chaal/analysis.ts": ["getChaalCloudEval", "getChaalExplorer", "getChaalTablebase", "importChaalGame"],
+	"chaal/puzzles.ts": ["getChaalDailyPuzzle", "getChaalPuzzle", "getChaalPuzzleBatch"],
 };
 
 /**
@@ -546,6 +547,12 @@ const CHAAL_FUNCTIONS: Record<string, ReadonlyArray<string>> = {
 		"getChaalPlaying",
 	],
 	"chaal/live-game.ts": ["getChaalLiveGame", "playChaalMove", "actOnChaalGame", "getChaalChat", "sendChaalChat"],
+	"chaal/puzzle-attempts.ts": [
+		"recordChaalPuzzleAttempt",
+		"importChaalPuzzleAttempts",
+		"getChaalPuzzleProgress",
+		"getChaalPuzzleReplay",
+	],
 };
 // chaal:end
 
