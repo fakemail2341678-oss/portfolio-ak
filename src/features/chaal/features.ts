@@ -2,7 +2,7 @@
  * Chaal's feature switches and the Lichess scopes they need (PLAN 13.5, "Scopes by
  * feature"; decision 0254). The switches live in `ch_settings.features` (on unless the
  * admin turns one off, so a feature added later needs no migration), each feature's
- * server check arrives with the feature, and their admin UI with Task 79.
+ * server check arrives with the feature, and their switches are on /admin/chaal/settings (Task 79).
  */
 export const CHAAL_FEATURES = [
 	"play",

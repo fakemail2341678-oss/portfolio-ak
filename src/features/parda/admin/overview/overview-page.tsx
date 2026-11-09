@@ -4,6 +4,7 @@ import { ActivityIcon, ClockIcon, FlagIcon, PlayIcon, TriangleAlertIcon, UsersIc
 import { BarChart } from "@/components/charts";
 import { StatCard } from "@/components/data-display/stat-card";
 import { DataTable, type DataTableColumn } from "@/components/data-table";
+import { SegmentNav } from "@/components/navigation/segment-nav";
 import { Page, PageHeader } from "@/components/page/page";
 import { formatDayMonth, formatNumber } from "@/lib/i18n/intl";
 import { localizedValue } from "@/lib/i18n/localized";
@@ -12,7 +13,6 @@ import { PARDA_NAME } from "../../brand";
 import { pardaOverviewQueryOptions } from "../queries";
 import type { AdminOverview } from "../schema";
 import { PARDA_OVERVIEW_RANGES, type PardaOverviewRange } from "../search";
-import { SegmentNav } from "../segment-nav";
 import { TitleCell, titleText } from "../title-cell";
 
 const route = getRouteApi("/_admin/admin/parda/");

@@ -105,6 +105,14 @@ export const AUDIT_ACTION_LABELS: Record<AuditAction, () => string> = {
 	"parda.collection.delete": m.audit_action_parda_collection_delete,
 	"parda.layout.update": m.audit_action_parda_layout_update,
 	// parda:end
+	// chaal:start
+	"chaal.settings.update": m.audit_action_chaal_settings_update,
+	"chaal.maintenance": m.audit_action_chaal_maintenance,
+	"chaal.cache.purge": m.audit_action_chaal_cache_purge,
+	"chaal.connection.revoke": m.audit_action_chaal_connection_revoke,
+	"chaal.block.create": m.audit_action_chaal_block_create,
+	"chaal.block.delete": m.audit_action_chaal_block_delete,
+	// chaal:end
 	// @new-feature:audit-action-labels
 };
 
@@ -144,6 +152,11 @@ export const AUDIT_TARGET_LABELS: Record<AuditTarget, () => string> = {
 	"parda-collection": m.audit_target_parda_collection,
 	"parda-layout": m.audit_target_parda_layout,
 	// parda:end
+	// chaal:start
+	"chaal-settings": m.audit_target_chaal_settings,
+	"chaal-connection": m.audit_target_chaal_connection,
+	"chaal-block": m.audit_target_chaal_block,
+	// chaal:end
 	// @new-feature:audit-target-labels
 };
 

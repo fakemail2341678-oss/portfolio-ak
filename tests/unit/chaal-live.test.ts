@@ -238,8 +238,11 @@ describe("Board-legal controls", () => {
 		expect(paceOfKey("60+0")).toBeNull();
 		expect(paceOfKey("d3")).toEqual({ kind: "days", days: 3 });
 		expect(paceOfKey("d4")).toBeNull();
-		expect(readPlayLimits({ aiMaxLevel: 12, rated: false })).toEqual({ aiMaxLevel: 8, rated: false });
-		expect(readPlayLimits(null)).toEqual({ aiMaxLevel: 8, rated: true });
+		expect(readPlayLimits({ aiMaxLevel: 12, rated: false })).toEqual({ aiMaxLevel: 8, rated: false, quickPair: "all" });
+		expect(readPlayLimits(null)).toEqual({ aiMaxLevel: 8, rated: true, quickPair: "all" });
+		// Task 79: quick pairing's paces, a stored value it doesn't know falling back.
+		expect(readPlayLimits({ quickPair: "days" }).quickPair).toBe("days");
+		expect(readPlayLimits({ quickPair: "bullet" as never }).quickPair).toBe("all");
 	});
 
 	it("inputs: a Lichess name, a Board-legal pace", () => {

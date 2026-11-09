@@ -2,6 +2,7 @@ import type { Localized } from "@/lib/i18n/localized";
 import type { EngineLimits } from "./engine/limits";
 import type { ChaalFeature } from "./features";
 import type { PlayLimits } from "./play/controls";
+import type { ChaalDefaults } from "./settings/preferences";
 
 /** Shapes Chaal's server functions return (Task 71). */
 
@@ -16,8 +17,15 @@ export type ChaalStatus = {
 	banner: Localized | null;
 	/** The engine's limits in the browser (Task 75). */
 	engine: EngineLimits;
-	/** Online play's limits (Task 77): the Lichess AI's highest level, whether rated games may be asked for. */
+	/** Online play's limits (Task 77): the Lichess AI's highest level, whether rated games may be asked for; quick pairing's paces (Task 79). */
 	play: PlayLimits;
+	/** The board, pieces and sound a player starts with until they choose (Task 79). */
+	defaults: ChaalDefaults;
+	/**
+	 * Maintenance (Task 79, decision 0268): nothing uses a player's token (connect is "off",
+	 * play and chat show as off), and every page shows the admin's message (null: the default one).
+	 */
+	maintenance: { message: Localized | null } | null;
 };
 
 /** A connected Lichess account as a page sees it: never the token (src/server/chaal/connect/service.ts). */

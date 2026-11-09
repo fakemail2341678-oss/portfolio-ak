@@ -12,6 +12,8 @@ import {
 	type OnlinePace,
 	paceKey,
 	QUICK_PAIRS,
+	type QuickPairMode,
+	quickPairAllows,
 	RATING_RANGES,
 	type RatingRange,
 	SEEK_MAX_INCREMENT,
@@ -50,12 +52,15 @@ const elapsed = (ms: number) => {
 export function QuickPair({
 	calls,
 	rated: ratedAllowed,
+	mode = "all",
 	stream,
 	store = liveStore,
 }: {
 	calls: Pick<PlayCalls, "seekDays">;
 	/** The admin's switch: without rated play, seeks are casual and the choice isn't offered. */
 	rated: boolean;
+	/** The admin's choice of paces (Task 79): every tile, only clocks or only correspondence. */
+	mode?: QuickPairMode;
 	/** Stories and tests pass their own. */
 	stream?: (url: string, options: KeepOptions) => { stop: () => void };
 	store?: LiveStore;
@@ -113,7 +118,7 @@ export function QuickPair({
 				aria-label={m.ch_quick_tiles()}
 				data-testid="chaal-quick-tiles"
 			>
-				{QUICK_PAIRS.map((pace) => {
+				{QUICK_PAIRS.filter((pace) => quickPairAllows(mode, pace.kind)).map((pace) => {
 					const key = paceKey(pace);
 					const tile = tileOf(pace);
 					const mine = seek.state !== "idle" && seek.key === key;
@@ -134,19 +139,21 @@ export function QuickPair({
 						</li>
 					);
 				})}
-				<li className="flex">
-					<button
-						type="button"
-						onClick={() => setCustom((open) => !open)}
-						disabled={!ready || seeking}
-						aria-expanded={custom}
-						className="ch-press flex min-h-16 flex-1 flex-col items-center justify-center gap-0.5 bg-ch-ground px-2 py-2 text-center outline-none focus-visible:z-10 focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:cursor-not-allowed disabled:text-ch-muted"
-						data-testid="chaal-quick-custom"
-					>
-						<span className="font-semibold">{m.ch_quick_custom()}</span>
-						<span className="text-xs opacity-75">{m.ch_quick_custom_hint()}</span>
-					</button>
-				</li>
+				{quickPairAllows(mode, "clock") ? (
+					<li className="flex">
+						<button
+							type="button"
+							onClick={() => setCustom((open) => !open)}
+							disabled={!ready || seeking}
+							aria-expanded={custom}
+							className="ch-press flex min-h-16 flex-1 flex-col items-center justify-center gap-0.5 bg-ch-ground px-2 py-2 text-center outline-none focus-visible:z-10 focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:cursor-not-allowed disabled:text-ch-muted"
+							data-testid="chaal-quick-custom"
+						>
+							<span className="font-semibold">{m.ch_quick_custom()}</span>
+							<span className="text-xs opacity-75">{m.ch_quick_custom_hint()}</span>
+						</button>
+					</li>
+				) : null}
 			</ul>
 			{custom && !seeking ? <CustomSeek onSeek={go} disabled={!ready} /> : null}
 			<SeekStatus seek={seek} ready={ready} refused={live.status === "refused"} onCancel={cancel} />

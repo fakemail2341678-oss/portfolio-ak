@@ -238,6 +238,25 @@ const GUARDED_FUNCTIONS: Record<string, ReadonlyArray<[name: string, permission:
 		["getChaalLab", "chaal:configure"],
 		["checkChaalPublicLane", "chaal:configure"],
 	],
+	"chaal-admin/settings.ts": [
+		["getChaalAdminSettings", "chaal:read"],
+		["updateChaalSettings", "chaal:configure"],
+		["setChaalMaintenance", "chaal:configure"],
+		["purgeChaalCache", "chaal:configure"],
+	],
+	"chaal-admin/connections.ts": [
+		["listChaalConnections", "chaal:read"],
+		["revokeChaalConnections", "chaal:moderate"],
+	],
+	"chaal-admin/blocks.ts": [
+		["listChaalBlocks", "chaal:read"],
+		["blockChaal", "chaal:moderate"],
+		["unblockChaal", "chaal:moderate"],
+	],
+	"chaal-admin/health.ts": [
+		["getChaalHealth", "chaal:read"],
+		["pingChaalLichess", "chaal:configure"],
+	],
 	// chaal:end
 	// @new-feature:guarded-functions
 };

@@ -3,7 +3,7 @@ import type { z } from "zod";
 import { AppError } from "@/lib/errors";
 import { log } from "@/server/log";
 import { type Counters, createCounters } from "./counters";
-import { cooldownKey, createLanes, type LaneKey, type Lanes } from "./lanes";
+import { cooldownKey, createLanes, type LaneKey, type Lanes, laneKind } from "./lanes";
 
 /**
  * Chaal's only way to Lichess (PLAN 13.5, decision 0255). Every call is logged with its
@@ -137,12 +137,13 @@ export function createLichess(config: LichessConfig, fetcher: typeof fetch = fet
 
 	const note = (request: LichessRequest, status: number, started: number) => {
 		const ms = now() - started;
-		counters.record(request.endpoint, { status, ms });
+		const lane = laneKind(request.lane);
+		counters.record(request.endpoint, { status, ms, lane, at: started });
 		log(status === 0 || status >= 500 || status === 429 ? "warn" : "info", "lichess call", {
 			endpoint: request.endpoint,
 			status,
 			ms,
-			lane: request.lane === "public" ? "public" : request.lane.split(":")[0],
+			lane,
 		});
 	};
 

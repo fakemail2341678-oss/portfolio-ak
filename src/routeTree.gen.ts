@@ -88,7 +88,10 @@ import { Route as DevTestCrudIndexRouteImport } from './routes/dev/test-crud/ind
 import { Route as DevTestCrudSlugRouteImport } from './routes/dev/test-crud/$slug'
 import { Route as AdminAdminAuditIndexRouteImport } from './routes/_admin/admin/audit/index'
 import { Route as AdminAdminChaalIndexRouteImport } from './routes/_admin/admin/chaal/index'
+import { Route as AdminAdminChaalConnectionsRouteImport } from './routes/_admin/admin/chaal/connections'
+import { Route as AdminAdminChaalHealthRouteImport } from './routes/_admin/admin/chaal/health'
 import { Route as AdminAdminChaalLabRouteImport } from './routes/_admin/admin/chaal/lab'
+import { Route as AdminAdminChaalSettingsRouteImport } from './routes/_admin/admin/chaal/settings'
 import { Route as AdminAdminPardaIndexRouteImport } from './routes/_admin/admin/parda/index'
 import { Route as AdminAdminPardaBillboardRouteRouteImport } from './routes/_admin/admin/parda/billboard/route'
 import { Route as AdminAdminPardaCollectionsRouteRouteImport } from './routes/_admin/admin/parda/collections/route'
@@ -163,6 +166,7 @@ import { Route as TasklineAppsKanbanIndexRouteImport } from './routes/_taskline/
 import { Route as TasklineAppsKanbanBoardIdRouteImport } from './routes/_taskline/apps/kanban/$boardId'
 import { Route as DevExamplesMaskingIndexRouteImport } from './routes/dev/examples/masking/index'
 import { Route as DevExamplesMaskingIdRouteImport } from './routes/dev/examples/masking/$id'
+import { Route as AdminAdminChaalBlocksIndexRouteImport } from './routes/_admin/admin/chaal/blocks/index'
 import { Route as AdminAdminPardaBillboardIndexRouteImport } from './routes/_admin/admin/parda/billboard/index'
 import { Route as AdminAdminPardaBillboardIdRouteImport } from './routes/_admin/admin/parda/billboard/$id'
 import { Route as AdminAdminPardaBillboardNewRouteImport } from './routes/_admin/admin/parda/billboard/new'
@@ -620,9 +624,25 @@ const AdminAdminChaalIndexRoute = AdminAdminChaalIndexRouteImport.update({
   path: '/',
   getParentRoute: () => AdminAdminChaalRouteRoute,
 } as any)
+const AdminAdminChaalConnectionsRoute =
+  AdminAdminChaalConnectionsRouteImport.update({
+    id: '/connections',
+    path: '/connections',
+    getParentRoute: () => AdminAdminChaalRouteRoute,
+  } as any)
+const AdminAdminChaalHealthRoute = AdminAdminChaalHealthRouteImport.update({
+  id: '/health',
+  path: '/health',
+  getParentRoute: () => AdminAdminChaalRouteRoute,
+} as any)
 const AdminAdminChaalLabRoute = AdminAdminChaalLabRouteImport.update({
   id: '/lab',
   path: '/lab',
+  getParentRoute: () => AdminAdminChaalRouteRoute,
+} as any)
+const AdminAdminChaalSettingsRoute = AdminAdminChaalSettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
   getParentRoute: () => AdminAdminChaalRouteRoute,
 } as any)
 const AdminAdminPardaIndexRoute = AdminAdminPardaIndexRouteImport.update({
@@ -1027,6 +1047,12 @@ const DevExamplesMaskingIdRoute = DevExamplesMaskingIdRouteImport.update({
   path: '/$id',
   getParentRoute: () => DevExamplesMaskingRouteRoute,
 } as any)
+const AdminAdminChaalBlocksIndexRoute =
+  AdminAdminChaalBlocksIndexRouteImport.update({
+    id: '/blocks/',
+    path: '/blocks/',
+    getParentRoute: () => AdminAdminChaalRouteRoute,
+  } as any)
 const AdminAdminPardaBillboardIndexRoute =
   AdminAdminPardaBillboardIndexRouteImport.update({
     id: '/',
@@ -1513,7 +1539,10 @@ export interface FileRoutesByFullPath {
   '/admin/taskline/projects': typeof AdminAdminTasklineProjectsRouteRouteWithChildren
   '/admin/taskline/timesheets': typeof AdminAdminTasklineTimesheetsRouteRouteWithChildren
   '/app/taskline': typeof TasklineAppTasklineShellRouteRouteWithChildren
+  '/admin/chaal/connections': typeof AdminAdminChaalConnectionsRoute
+  '/admin/chaal/health': typeof AdminAdminChaalHealthRoute
   '/admin/chaal/lab': typeof AdminAdminChaalLabRoute
+  '/admin/chaal/settings': typeof AdminAdminChaalSettingsRoute
   '/admin/parda/layout': typeof AdminAdminPardaLayoutRoute
   '/admin/parda/player-lab': typeof AdminAdminPardaPlayerLabRoute
   '/admin/parda/reports': typeof AdminAdminPardaReportsRoute
@@ -1609,6 +1638,7 @@ export interface FileRoutesByFullPath {
   '/app/taskline/home': typeof TasklineAppTasklineShellHomeRoute
   '/app/taskline/inbox': typeof TasklineAppTasklineShellInboxRoute
   '/app/taskline/settings': typeof TasklineAppTasklineShellSettingsRoute
+  '/admin/chaal/blocks/': typeof AdminAdminChaalBlocksIndexRoute
   '/admin/parda/billboard/': typeof AdminAdminPardaBillboardIndexRoute
   '/admin/parda/collections/': typeof AdminAdminPardaCollectionsIndexRoute
   '/admin/parda/sources/': typeof AdminAdminPardaSourcesIndexRoute
@@ -1709,7 +1739,10 @@ export interface FileRoutesByTo {
   '/dev/examples': typeof DevExamplesIndexRoute
   '/dev/test-crud': typeof DevTestCrudIndexRoute
   '/app/taskline': typeof TasklineAppTasklineIndexRoute
+  '/admin/chaal/connections': typeof AdminAdminChaalConnectionsRoute
+  '/admin/chaal/health': typeof AdminAdminChaalHealthRoute
   '/admin/chaal/lab': typeof AdminAdminChaalLabRoute
+  '/admin/chaal/settings': typeof AdminAdminChaalSettingsRoute
   '/admin/parda/layout': typeof AdminAdminPardaLayoutRoute
   '/admin/parda/player-lab': typeof AdminAdminPardaPlayerLabRoute
   '/admin/parda/reports': typeof AdminAdminPardaReportsRoute
@@ -1802,6 +1835,7 @@ export interface FileRoutesByTo {
   '/app/taskline/home': typeof TasklineAppTasklineShellHomeRoute
   '/app/taskline/inbox': typeof TasklineAppTasklineShellInboxRoute
   '/app/taskline/settings': typeof TasklineAppTasklineShellSettingsRoute
+  '/admin/chaal/blocks': typeof AdminAdminChaalBlocksIndexRoute
   '/admin/parda/billboard': typeof AdminAdminPardaBillboardIndexRoute
   '/admin/parda/collections': typeof AdminAdminPardaCollectionsIndexRoute
   '/admin/parda/sources': typeof AdminAdminPardaSourcesIndexRoute
@@ -1930,7 +1964,10 @@ export interface FileRoutesById {
   '/_admin/admin/taskline/projects': typeof AdminAdminTasklineProjectsRouteRouteWithChildren
   '/_admin/admin/taskline/timesheets': typeof AdminAdminTasklineTimesheetsRouteRouteWithChildren
   '/_taskline/app/taskline/_shell': typeof TasklineAppTasklineShellRouteRouteWithChildren
+  '/_admin/admin/chaal/connections': typeof AdminAdminChaalConnectionsRoute
+  '/_admin/admin/chaal/health': typeof AdminAdminChaalHealthRoute
   '/_admin/admin/chaal/lab': typeof AdminAdminChaalLabRoute
+  '/_admin/admin/chaal/settings': typeof AdminAdminChaalSettingsRoute
   '/_admin/admin/parda/layout': typeof AdminAdminPardaLayoutRoute
   '/_admin/admin/parda/player-lab': typeof AdminAdminPardaPlayerLabRoute
   '/_admin/admin/parda/reports': typeof AdminAdminPardaReportsRoute
@@ -2026,6 +2063,7 @@ export interface FileRoutesById {
   '/_taskline/app/taskline/_shell/home': typeof TasklineAppTasklineShellHomeRoute
   '/_taskline/app/taskline/_shell/inbox': typeof TasklineAppTasklineShellInboxRoute
   '/_taskline/app/taskline/_shell/settings': typeof TasklineAppTasklineShellSettingsRoute
+  '/_admin/admin/chaal/blocks/': typeof AdminAdminChaalBlocksIndexRoute
   '/_admin/admin/parda/billboard/': typeof AdminAdminPardaBillboardIndexRoute
   '/_admin/admin/parda/collections/': typeof AdminAdminPardaCollectionsIndexRoute
   '/_admin/admin/parda/sources/': typeof AdminAdminPardaSourcesIndexRoute
@@ -2148,7 +2186,10 @@ export interface FileRouteTypes {
     | '/admin/taskline/projects'
     | '/admin/taskline/timesheets'
     | '/app/taskline'
+    | '/admin/chaal/connections'
+    | '/admin/chaal/health'
     | '/admin/chaal/lab'
+    | '/admin/chaal/settings'
     | '/admin/parda/layout'
     | '/admin/parda/player-lab'
     | '/admin/parda/reports'
@@ -2244,6 +2285,7 @@ export interface FileRouteTypes {
     | '/app/taskline/home'
     | '/app/taskline/inbox'
     | '/app/taskline/settings'
+    | '/admin/chaal/blocks/'
     | '/admin/parda/billboard/'
     | '/admin/parda/collections/'
     | '/admin/parda/sources/'
@@ -2344,7 +2386,10 @@ export interface FileRouteTypes {
     | '/dev/examples'
     | '/dev/test-crud'
     | '/app/taskline'
+    | '/admin/chaal/connections'
+    | '/admin/chaal/health'
     | '/admin/chaal/lab'
+    | '/admin/chaal/settings'
     | '/admin/parda/layout'
     | '/admin/parda/player-lab'
     | '/admin/parda/reports'
@@ -2437,6 +2482,7 @@ export interface FileRouteTypes {
     | '/app/taskline/home'
     | '/app/taskline/inbox'
     | '/app/taskline/settings'
+    | '/admin/chaal/blocks'
     | '/admin/parda/billboard'
     | '/admin/parda/collections'
     | '/admin/parda/sources'
@@ -2564,7 +2610,10 @@ export interface FileRouteTypes {
     | '/_admin/admin/taskline/projects'
     | '/_admin/admin/taskline/timesheets'
     | '/_taskline/app/taskline/_shell'
+    | '/_admin/admin/chaal/connections'
+    | '/_admin/admin/chaal/health'
     | '/_admin/admin/chaal/lab'
+    | '/_admin/admin/chaal/settings'
     | '/_admin/admin/parda/layout'
     | '/_admin/admin/parda/player-lab'
     | '/_admin/admin/parda/reports'
@@ -2660,6 +2709,7 @@ export interface FileRouteTypes {
     | '/_taskline/app/taskline/_shell/home'
     | '/_taskline/app/taskline/_shell/inbox'
     | '/_taskline/app/taskline/_shell/settings'
+    | '/_admin/admin/chaal/blocks/'
     | '/_admin/admin/parda/billboard/'
     | '/_admin/admin/parda/collections/'
     | '/_admin/admin/parda/sources/'
@@ -3279,11 +3329,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminAdminChaalIndexRouteImport
       parentRoute: typeof AdminAdminChaalRouteRoute
     }
+    '/_admin/admin/chaal/connections': {
+      id: '/_admin/admin/chaal/connections'
+      path: '/connections'
+      fullPath: '/admin/chaal/connections'
+      preLoaderRoute: typeof AdminAdminChaalConnectionsRouteImport
+      parentRoute: typeof AdminAdminChaalRouteRoute
+    }
+    '/_admin/admin/chaal/health': {
+      id: '/_admin/admin/chaal/health'
+      path: '/health'
+      fullPath: '/admin/chaal/health'
+      preLoaderRoute: typeof AdminAdminChaalHealthRouteImport
+      parentRoute: typeof AdminAdminChaalRouteRoute
+    }
     '/_admin/admin/chaal/lab': {
       id: '/_admin/admin/chaal/lab'
       path: '/lab'
       fullPath: '/admin/chaal/lab'
       preLoaderRoute: typeof AdminAdminChaalLabRouteImport
+      parentRoute: typeof AdminAdminChaalRouteRoute
+    }
+    '/_admin/admin/chaal/settings': {
+      id: '/_admin/admin/chaal/settings'
+      path: '/settings'
+      fullPath: '/admin/chaal/settings'
+      preLoaderRoute: typeof AdminAdminChaalSettingsRouteImport
       parentRoute: typeof AdminAdminChaalRouteRoute
     }
     '/_admin/admin/parda/': {
@@ -3803,6 +3874,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/dev/examples/masking/$id'
       preLoaderRoute: typeof DevExamplesMaskingIdRouteImport
       parentRoute: typeof DevExamplesMaskingRouteRoute
+    }
+    '/_admin/admin/chaal/blocks/': {
+      id: '/_admin/admin/chaal/blocks/'
+      path: '/blocks'
+      fullPath: '/admin/chaal/blocks/'
+      preLoaderRoute: typeof AdminAdminChaalBlocksIndexRouteImport
+      parentRoute: typeof AdminAdminChaalRouteRoute
     }
     '/_admin/admin/parda/billboard/': {
       id: '/_admin/admin/parda/billboard/'
@@ -4640,13 +4718,21 @@ const AdminAdminAuditRouteRouteWithChildren =
   AdminAdminAuditRouteRoute._addFileChildren(AdminAdminAuditRouteRouteChildren)
 
 interface AdminAdminChaalRouteRouteChildren {
+  AdminAdminChaalConnectionsRoute: typeof AdminAdminChaalConnectionsRoute
+  AdminAdminChaalHealthRoute: typeof AdminAdminChaalHealthRoute
   AdminAdminChaalLabRoute: typeof AdminAdminChaalLabRoute
+  AdminAdminChaalSettingsRoute: typeof AdminAdminChaalSettingsRoute
   AdminAdminChaalIndexRoute: typeof AdminAdminChaalIndexRoute
+  AdminAdminChaalBlocksIndexRoute: typeof AdminAdminChaalBlocksIndexRoute
 }
 
 const AdminAdminChaalRouteRouteChildren: AdminAdminChaalRouteRouteChildren = {
+  AdminAdminChaalConnectionsRoute: AdminAdminChaalConnectionsRoute,
+  AdminAdminChaalHealthRoute: AdminAdminChaalHealthRoute,
   AdminAdminChaalLabRoute: AdminAdminChaalLabRoute,
+  AdminAdminChaalSettingsRoute: AdminAdminChaalSettingsRoute,
   AdminAdminChaalIndexRoute: AdminAdminChaalIndexRoute,
+  AdminAdminChaalBlocksIndexRoute: AdminAdminChaalBlocksIndexRoute,
 }
 
 const AdminAdminChaalRouteRouteWithChildren =

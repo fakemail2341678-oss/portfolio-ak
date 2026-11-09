@@ -84,7 +84,7 @@ export async function connectionView(deps: ConnectDeps, userId: string): Promise
 export async function connectRefusal(deps: ConnectDeps, user: ChaalUser): Promise<ConnectResult | null> {
 	if (!deps.vault) return "off";
 	const [settings, blocks] = await Promise.all([deps.controls.settings(), deps.controls.blocks()]);
-	if (user.isGuest && !settings.guestsMayConnect) return "off";
+	if (settings.maintenance || (user.isGuest && !settings.guestsMayConnect)) return "off";
 	if (blocks.users.has(user.id)) return "blocked";
 	return null;
 }
@@ -267,6 +267,11 @@ export async function disconnect(deps: ConnectDeps, userId: string): Promise<voi
 
 const reconnect = (message: string) => new AppError("FORBIDDEN", message, { reason: "lichess-reconnect" });
 
+/** Refuses what uses a player's token while the admin has Chaal in maintenance (Task 79, decision 0268). */
+export function requireNoMaintenance(settings: ChaalSettingsRow): void {
+	if (settings.maintenance) throw new AppError("FORBIDDEN", "Chaal is in maintenance");
+}
+
 /** Refuses a call to a feature the admin turned off. */
 export function requireFeature(settings: ChaalSettingsRow, feature: ChaalFeature): void {
 	if (!featureOn(settings.features, feature)) throw new AppError("FORBIDDEN", `Chaal's ${feature} is off`);
@@ -276,8 +281,8 @@ export function requireFeature(settings: ChaalSettingsRow, feature: ChaalFeature
 const USE_WRITE_MS = 5 * 60_000;
 
 /**
- * Runs `use` with the user's token, for a feature: refused when the feature is off, the user
- * has no connection, Lichess revoked it, or it lacks the feature's scopes. A 401 from Lichess
+ * Runs `use` with the user's token, for a feature: refused in maintenance, when the feature
+ * is off, the user has no connection, Lichess revoked it, or it lacks the feature's scopes. A 401 from Lichess
  * inside `use` marks the connection revoked, so the UI says "Reconnect".
  */
 export async function withToken<T>(
@@ -287,6 +292,7 @@ export async function withToken<T>(
 	use: (token: string, connection: ChaalConnectionRow) => Promise<T>,
 ): Promise<T> {
 	const [row, settings] = await Promise.all([connectionOf(deps.db, userId), deps.controls.settings()]);
+	requireNoMaintenance(settings);
 	requireFeature(settings, feature);
 	if (!row) throw reconnect("Lichess isn't connected");
 	const now = clock(deps)();

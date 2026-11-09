@@ -2878,7 +2878,7 @@ As 12.1, with these differences:
 | 76 | Play offline: the computer and over the board | high | Done (decision 0265) |
 | 77 | Play online I: streams, challenges, the Lichess AI, the live game | xhigh | Done (decision 0266) |
 | 78 | Play online II: quick pairing, correspondence, notifications | high | Done (decision 0267) |
-| 79 | Admin I: settings, connections and blocks, API health | high | Planned |
+| 79 | Admin I: settings, connections and blocks, API health | high | Done (decision 0268) |
 | 80 | Puzzles | high | Planned |
 | 81 | Players and games | high | Planned |
 | 82 | Watch: TV, live games, broadcasts | high | Planned |
@@ -2956,7 +2956,7 @@ As 12.1, with these differences:
   - the dnd-kit model in `src/features/taskline/calendar/calendar.tsx` (`useDraggable`, `useDroppable`, `Accessibility.configure`);
   - `enforceRateLimit` (`src/server/http/rate-limit.ts`);
   - env in `src/server/env.ts`, plus the dev-offline `OFF` list, `tests/setup/env.ts`, the harness `APP_ENV` regex and `tests/unit/env.test.ts`.
-- **Bundle:** the entry was 283.7 kB after Part 6, 284.4 after Tasks 71 and 72, 286.3 after Task 73, 286.9 after Task 75, 287.7 after Task 76, 288.5 after Task 77 and 288.6 after Task 78 (built as CI builds, without Sentry or PostHog keys); each route definition adds about 0.3 kB (0217). Task 73 raised the budget to 290 kB for Part 7's routes (0260); Task 85 measures and trims.
+- **Bundle:** the entry was 283.7 kB after Part 6, 284.4 after Tasks 71 and 72, 286.3 after Task 73, 286.9 after Task 75, 287.7 after Task 76, 288.5 after Task 77, 288.6 after Task 78 and 289.9 after Task 79 (built as CI builds, without Sentry or PostHog keys); each route definition adds about 0.3 kB (0217). Task 73 raised the budget to 290 kB for Part 7's routes (0260); Task 85 measures and trims.
 
 ### 13.5 Architecture (every task follows it)
 
@@ -3112,7 +3112,7 @@ As 12.1, with these differences:
   - `/studies` and `/studies/$id`;
   - `/about`.
 - **Personal:** `/local/$id`, `/settings`, `/sign-in`, `/sign-up`.
-- **Admin:** `/admin/chaal` (overview; until Task 84 it redirects to the lab), plus `settings`, `connections`, `health` and `curation`, with a temporary `lab` page.
+- **Admin:** `/admin/chaal` (overview; until Task 84 it redirects to the settings, Task 79), plus `settings`, `connections`, `health` and `curation`, with a temporary `lab` page.
 
 **SEO:**
 - **Indexable:** home, play, analysis, puzzles, watch, broadcasts, players (leaderboards), tournaments and about. They use `seo({ siteName: "Chaal" })` and JSON-LD (`WebApplication`), and are listed in `INDEXABLE` and the sitemap.
@@ -3430,7 +3430,7 @@ As 12.1, with these differences:
 - **Size:** the entry is 288.6 kB (288.5 before; budget 290 kB), built by the e2e harness as CI builds. The play hub's chunk is 65.2 / 20.1 kB gzipped (47.9 / 14.9 before: quick pairing and My games); the game page's 36.9 / 13.6 kB; the tab leader's 2.6 / 1.2 kB; the frame's section chunk (with the bell) 44.8 / 15.2 kB.
 - **Tests:** 21 new (`chaal-quick` 11, `chaal-play` 6, the components' `quick-pair` 2, 2 access-matrix rows) plus 4 e2e flows. `pnpm test`: 180 files, 2,023 tests, all passing.
 - **Storybook:** both passes, 637 of 640 before the bell's name was fixed; then the Online stories pass in both. The one other failure, `UI/Primitives` → Overlays (light), fails on `main` too (3 of 3 runs here): not this task's.
-- **e2e:** every Chaal flow and the browser review of every `/app/chaal` page, 237 of 237 (2 workers). The full suite was stopped at 1,627 of 2,853 when this machine ran out of memory (6 workers' Chromes); its two failures outside Chaal (the Test CRUD conflict flow, `/admin/portfolio/journal`'s layout shift at dark 768) pass when run alone (37 of 37). Run it with `--workers=2` here.
+- **e2e:** every Chaal flow and the browser review of every `/app/chaal` page, 237 of 237 (2 workers). The full suite runs when Part 7 ends (Task 85), not per task; a full run started here by mistake was stopped at 1,627 of 2,853 when the machine ran out of memory, and its two failures outside Chaal (the Test CRUD conflict flow, `/admin/portfolio/journal`'s layout shift at dark 768) pass when run alone (37 of 37).
 - **Gates:** `typecheck`, `check`, `knip`, `i18n:check`, `build` and the bundle check, `build-storybook`.
 
 **Left for the owner:**
@@ -3438,27 +3438,41 @@ As 12.1, with these differences:
 - On the deployment, connected with your Lichess account: quick pair at 10+5 and by days (with a rating range), play a correspondence move from another device and see the bell and the toast here, and try berserk in an arena; tell me if anything differs from the fake.
 - Have a Nepali speaker read the new words (the glossary's Task 78 rows, `ch_quick_*`, `ch_notices_*`, `ch_time_*`, `ch_zen_exit`, `ch_live_berserk`).
 
-### Task 79: Admin I: settings, connections and API health (planned)
+### Task 79: Admin I: settings, connections and blocks, API health (done)
 
-- **`settings`:**
-  - feature switches, showing the scopes each one adds;
-  - quick-pair controls, the AI's max level, rated play, chat, whether guests may connect;
-  - defaults, engine limits, the banner and maintenance mode (en/ne);
-  - purge the cache (epoch).
-- **`connections`** (the CRUD standard):
-  - site user, Lichess user, scopes, dates, status;
-  - revoke one or many;
-  - block a user or a username;
-  - CSV.
-- **`health`:**
-  - calls, errors and 429s by hour and endpoint class;
-  - current cooldowns, recent errors;
-  - a "test Lichess" ping.
-- **Wiring:** permissions, sections and commands; every write audited. The lab stays or goes.
-- **e2e:**
-  - play off → pages show "off" and functions refuse;
-  - revoke → the user sees Reconnect;
-  - block → connecting is refused.
+**Done** (decision 0268; the guide's "The admin").
+
+**What changed:**
+- **Settings** (`/admin/chaal/settings`; `chaal:read` sees it, `chaal:configure` changes it): one form saved from the row's `version`: every feature switch with what it does and the scopes it adds (only the ones off are stored), guests may connect, extra scopes, quick pairing's paces (new `play.quickPair`: all, clocks, correspondence or off; the hub's tiles and `seekForm` follow it), the Lichess AI's highest level, rated play, players' defaults (new `defaults`: board, pieces, sound; a player who hasn't chosen starts from them), the engine's limits, the banner and the maintenance message in both languages. **Maintenance** (new `maintenance`, `maintenance_message`) is its own switch, asked first: nothing uses a player's token (`withToken` refuses first), nobody connects, `play` and `chat` read as off, and every page shows the message (or a default one) above the banner; public pages, analysis, the engine and local games go on. **Purge** bumps the cache epoch. Every write audited.
+- **Connections** (`/admin/chaal/connections`, the CRUD standard): site user (a guest's made-up email hidden), Lichess account (linked), state (active, revoked, expired, plus blocked and waiting badges), scopes and dates; filters by state and by members or guests, a search, CSV. **Revoke** (one or many, `chaal:moderate`) ends each token at Lichess (best effort) and marks it revoked: the player sees Reconnect.
+- **Blocks** (`/admin/chaal/blocks`, a tab beside connections): by Lichess username or site user's email, with a reason, in a dialog loaded on demand (also a connection's "Block this account", filled in). Blocking revokes the connection it names; a second block or an unknown email is a field error; deleting a block lets them connect again.
+- **Health** (`/admin/chaal/health`): calls, errors and 429s by hour (24 hours or 7 days, a stacked bar chart) and by endpoint class, the cooldowns running now, the last 50 failed calls, and "Test Lichess" (`chaal:configure`: the daily puzzle through the public lane, past the cache, timed). New tables `ch_api_stat` (hourly counts per endpoint class) and `ch_api_error` (the last 500 failures: endpoint, status, time, lane kind; never a user, token or URL), filled after each call by a coalescing flush under `waitUntil` (`src/server/chaal/stats.ts`); the daily job prunes hours older than 30 days.
+- **Wiring:** sections Settings, Connections and API health in the admin's Chaal group (the lab stays: connecting and timing the stream on a deployment); `/admin/chaal` redirects to the settings until the overview; audit actions `chaal.settings.update`, `chaal.maintenance`, `chaal.cache.purge`, `chaal.connection.revoke`, `chaal.block.create`, `chaal.block.delete` and their targets; four functions files (`settings`, `connections`, `blocks`, `health`) with guard-test entries and Storybook mocks. Migration `0044_chaal_admin`.
+- **Shared:** `SegmentNav` moved from Parda's admin to `src/components/navigation/segment-nav.tsx` (now used twice); the feature and board names moved to `src/features/chaal/labels.ts`.
+- **Also fixed:** `tests/unit/chaal-quick.test.ts` (Task 78) was missing from `SPECS.chaal`, so stripping Chaal would have left it broken.
+- **Messages:** 195 new keys in en and ne (`ch_admin_*`, `ch_maintenance_*`, `admin_nav_chaal_*`, `admin_keywords_chaal_*`, `audit_*_chaal_*`).
+- **Stories:** "Chaal/Admin": the settings page, the block dialog filled in, the health page with a day of calls.
+- **Tests:** `tests/server/chaal-admin.test.ts` (12: settings saved from their version and audited, a stale save refused, maintenance refusing the token and connecting, the purge; the connections list and its filters with no token in it, revoking at Lichess and here; blocks by username and email, refused twice, unblocking; the stats' flush, coalescing and the 500 kept, the health figures, the prune, the ping), quick pairing's limit in `chaal-live`, the guard test, and e2e (3: play off makes the play page say so and the event stream refuse; revoking on the list leaves the lab "Reconnect needed"; a blocked account's connecting refused, then allowed once unblocked).
+
+**Deviations:**
+- **"Quick-pair controls"** became one choice of paces (all, clocks, correspondence, off); the rating ranges stay the player's.
+- **Maintenance pauses what uses a player's token,** not the whole of Chaal (decision 0268): what runs without Lichess keeps working.
+- **No route for the block form and no palette command:** Task 79's five route definitions took the entry to 290.1 kB, over the budget; the form became a dialog and the blocks list lost its layout route (289.9 kB).
+- **Settings reach the Nitro routes (the streams, OAuth) within 5 s:** they're their own bundle with their own controls; the admin's write clears only the server functions'. e2e waits past it.
+- **The lab stays,** its counters showing this instance; the health page shows every instance's.
+- **Design flow:** the browser review's three widths in both languages and themes found the health page's tables needing focusable scroll regions and its sections repeating the regions' names (fixed). No separate Playwright MCP pass; `ui-ux-pro-max` and impeccable's critique weren't run, as in Tasks 73–78 (the finish review is Task 85's). The health chart uses the kit's `BarChart` (its validated palette, legend, tooltip and screen-reader table).
+
+**Numbers:**
+- **Size:** the entry is 289.9 kB (288.6 before; budget 290 kB), built as CI builds. Chunks: settings 21.9 / 7.7 kB gzipped, connections 15.5 / 6.2, health 14.0 / 5.0 (Recharts loads with the kit's chart), blocks 5.9 / 2.6, the block dialog 4.3 / 2.0.
+- **Tests:** 12 new server tests plus 3 e2e flows. `pnpm test`: 181 files, 2,039 tests, all passing.
+- **Storybook:** both passes, 643 of 643 (the "Chaal/Admin" stories with axe); one Taskline file failed to load its setup once (a Vite reload) and passed when run again.
+- **e2e:** every Chaal flow and the browser review of every `/app/chaal` and `/admin/chaal` page, 288 of 288 (2 workers).
+- **Gates:** `typecheck`, `check`, `knip`, `i18n:check`, `build` and the bundle check, `build-storybook`.
+
+**Left for the owner:**
+- Run `pnpm db:migrate` on Neon (`0039`–`0044` are pending there).
+- On the deployment: turn a feature off and on, try maintenance, revoke your own connection (you should see Reconnect), and look at the health page after some play; tell me if anything differs.
+- Have a Nepali speaker read the admin's words (`ch_admin_*`, `ch_maintenance_*`).
 
 ### Task 80: Puzzles (planned)
 

@@ -11,6 +11,7 @@ import {
 	FolderKanbanIcon, // @portfolio
 	GalleryHorizontalIcon, // @parda
 	GaugeIcon, // @taskline
+	HeartPulseIcon, // @chaal
 	HistoryIcon, // @taskline
 	ImagesIcon, // @portfolio
 	InboxIcon, // @portfolio
@@ -23,10 +24,12 @@ import {
 	type LucideIcon,
 	NotebookPenIcon, // @portfolio
 	PaletteIcon,
+	PlugIcon, // @chaal
 	QuoteIcon, // @portfolio
 	RowsIcon, // @parda
 	ScrollTextIcon,
 	ServerIcon, // @parda
+	Settings2Icon, // @chaal
 	SettingsIcon, // @taskline
 	ShieldCheckIcon,
 	SlidersHorizontalIcon, // @parda
@@ -394,6 +397,34 @@ export const ADMIN_SECTIONS: ReadonlyArray<AdminSection> = [
 	},
 	// parda:end
 	// chaal:start
+	{
+		...linkOptions({ to: "/admin/chaal/settings" }),
+		label: m.admin_nav_chaal_settings,
+		description: m.ch_admin_settings_description,
+		icon: Settings2Icon,
+		permission: "chaal:read",
+		group: "chaal",
+		keywords: m.admin_keywords_chaal_settings,
+	},
+	{
+		// Connections and blocks, two tabs of one section (Task 79).
+		...linkOptions({ to: "/admin/chaal/connections" }),
+		label: m.admin_nav_chaal_connections,
+		description: m.ch_admin_connections_description,
+		icon: PlugIcon,
+		permission: "chaal:read",
+		group: "chaal",
+		keywords: m.admin_keywords_chaal_connections,
+	},
+	{
+		...linkOptions({ to: "/admin/chaal/health" }),
+		label: m.admin_nav_chaal_health,
+		description: m.ch_admin_health_description,
+		icon: HeartPulseIcon,
+		permission: "chaal:read",
+		group: "chaal",
+		keywords: m.admin_keywords_chaal_health,
+	},
 	{
 		// Task 71's lab (decision 0254): connect Lichess, see the account and scopes, time the event stream.
 		...linkOptions({ to: "/admin/chaal/lab" }),

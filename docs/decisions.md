@@ -272,6 +272,7 @@ Record every non-obvious choice here: **What**, **Why**, **Alternatives consider
 - [0265](#0265-chaals-local-games-played-in-the-browser-kept-where-the-player-is-pgn-checked-on-the-server): Chaal's local games: played in the browser, kept where the player is, PGN checked on the server
 - [0266](#0266-chaals-online-play-lichesss-streams-through-our-server-one-tab-holding-the-event-stream-challenges-kept-open-by-a-stream): Chaal's online play: Lichess's streams through our server, one tab holding the event stream, challenges kept open by a stream
 - [0267](#0267-chaals-quick-pairing-and-notifications-seeks-kept-open-by-a-stream-your-move-read-from-the-games-in-progress-notices-drawn-from-the-event-store): Chaal's quick pairing and notifications: seeks kept open by a stream, "your move" read from the games in progress, notices drawn from the event store
+- [0268](#0268-chaals-admin-one-versioned-settings-row-with-maintenance-as-its-own-switch-revoking-keeps-the-row-call-stats-flushed-after-each-call): Chaal's admin: one versioned settings row with maintenance as its own switch, revoking keeps the row, call stats flushed after each call
 </details>
 
 ---
@@ -3669,3 +3670,31 @@ Measured on the owner's Windows machine (Node 24.11, 12 threads, 11.7 GB), 2026-
 **Not checked against Lichess itself** (left for the owner, as 0266): a seek accepted by a real opponent, the rating range's effect, `/api/account/playing` on a live account, and berserk in a real arena.
 
 **Numbers:** the entry rose 0.1 kB to 288.6 kB (the frame's hooks; the bell and the notices are in the frame's chunk, 44.8 kB, 15.2 gzipped); the play hub's chunk grew to 65.2 kB (20.1 gzipped) with quick pairing and My games; the game page's is 36.9 kB (13.6 gzipped); the tab leader's 2.6 kB (1.2 gzipped).
+
+## 0268: Chaal's admin: one versioned settings row with maintenance as its own switch, revoking keeps the row, call stats flushed after each call
+
+**What** (Task 79, 2026-11-09; `src/server/chaal/admin/`, `src/features/chaal/admin/`, `src/functions/chaal-admin/`, `src/server/chaal/stats.ts`, `/admin/chaal/{settings,connections,blocks,health}`):
+- **Settings:** one form over `ch_settings`, saved only from the `version` it opened at (a stale save is the form's "reload"): every feature switch with what it does and the scopes it adds, guests may connect, extra scopes, quick pairing's paces (`play.quickPair`: all, clocks, correspondence or off), the AI's highest level, rated play, players' defaults (new `defaults`: board, pieces, sound), the engine's limits, the banner and the maintenance message (both languages). The switches store only those that are off. The purge (the cache epoch) and maintenance are separate writes.
+- **Maintenance** (new `maintenance`, `maintenance_message`): `withToken` refuses first (`requireNoMaintenance`), `connectRefusal` says `off`, and the status reports connect off, `play` and `chat` off, and the message, which the frame shows above the banner (a default sentence when it's empty). Public reads, analysis, the engine and local games go on.
+- **Connections:** the CRUD list (site user, Lichess account, state, scopes, dates; filters, search, CSV). Revoke ends the token at Lichess (best effort, outside the transaction) and sets `revoked_at`; the row stays.
+- **Blocks:** by Lichess username or by a site user's email, with a reason, in a dialog loaded on demand (from the blocks list, or a connection's "Block this account", filled in); blocking revokes the connection it names; deleting a block lets them connect again.
+- **Health:** `ch_api_stat` (hourly counts per endpoint class) and `ch_api_error` (the last 500 failed calls: endpoint, status, time, lane kind), the cooldowns running now, and "Test Lichess" (the daily puzzle through the public lane, past the cache).
+- **Also:** `/admin/chaal` redirects to the settings (not the lab) until the overview (Task 84): every admin can read the settings, only `chaal:configure` the lab. `SegmentNav` moved from Parda's admin to `src/components/navigation` (now used twice). The lab stays: connecting and timing the stream on a deployment has no other home.
+
+**Why:**
+- **Maintenance pauses the token, not the site:** Chaal's own pages, analysis and local games don't depend on Lichess's goodwill; what can go wrong during an incident (on Lichess's side or ours) is what acts for a player there. One check in `withToken` covers every function and stream, since all of them go through it.
+- **Maintenance and the purge outside the form:** an admin flipping maintenance in an incident mustn't hit "changed since loaded" from a form someone else left open, nor save that form's other fields by accident (Parda's kill switch, 0237).
+- **Only the switches that are off are stored:** the rule from 0254 (a feature added later starts on) holds after an admin saves.
+- **Revoking keeps the row:** the player sees "Reconnect" (the state Lichess's own 401 leaves) instead of a connection that silently vanished; reconnecting replaces the row, and a block keeps them from it.
+- **A block revokes:** blocks were checked only when connecting, so a player already connected kept playing.
+- **Stats flushed after each call, one flush at a time:** Vercel's instances are short-lived and many, so in-memory counters alone (the lab's) see one instance; a write per call would double Chaal's database traffic under load. Coalescing turns a burst into a few upserts, and `waitUntil` keeps the answer from waiting. Losing a batch to a failed write costs a few counts on a health view, nothing more.
+- **No user, token or URL in `ch_api_error`:** the endpoint class, status, time and lane kind are enough to see what fails; anything more would be personal data in a table that admins browse.
+
+**Alternatives considered:**
+- **Maintenance as a full-page notice:** it would take down what keeps working without Lichess.
+- **Flushing from the daily job or on a timer:** the job runs on another instance, which never saw the counts; a timer keeps a function alive (and billed) for nothing.
+- **Deleting a revoked connection:** the player would see "Connect" with no hint of why.
+- **Blocks as a page of their own in the sidebar:** they're about the same people as connections; two tabs keep the admin's list short.
+- **A route for the block form** (`/admin/chaal/blocks/new`, as Parda's takedowns): each route definition is in every page's JavaScript (0217), and Task 79's five took the entry to 290.1 kB, over the 290 kB budget (0260). The form is three fields; a dialog does it in place. For the same reason the blocks list has no layout route of its own, and the palette has no "Block a player" command (a command links to a page).
+
+**Numbers:** see PLAN Task 79's summary.

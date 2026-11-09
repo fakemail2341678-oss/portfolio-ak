@@ -1,6 +1,6 @@
 /**
  * The engine's limits in the browser (PLAN 13.5, "Lifecycle"; decision 0263), set by the
- * admin in `ch_settings.engine` (its form arrives with Task 79) and sent to every page
+ * admin in `ch_settings.engine` (set on /admin/chaal/settings, Task 79) and sent to every page
  * with the status. Stored values are read through `readEngineLimits`, which clamps them
  * to what the lite single-threaded build can do on a phone.
  */

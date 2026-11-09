@@ -473,6 +473,9 @@ export async function serveHarness(port: number, query: DemoQuery) {
 				await query(`delete from "ch_preference"`);
 				// Task 75: and no saved analyses.
 				await query(`delete from "ch_analysis"`);
+				// Task 79: no blocks, and the default settings (the server rereads them within 5 s).
+				await query(`delete from "ch_block"`);
+				await query(`delete from "ch_settings"`);
 				return send(response, 200, { ok: true });
 			}
 			// chaal:end

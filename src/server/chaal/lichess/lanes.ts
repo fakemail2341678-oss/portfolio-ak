@@ -12,6 +12,10 @@ export type LaneKey = "public" | `user:${string}` | `play:${string}`;
 export const userLane = (connectionId: string): LaneKey => `user:${connectionId}`;
 export const playLane = (connectionId: string): LaneKey => `play:${connectionId}`;
 
+/** A lane's kind, for logs and the health page: never the connection it belongs to. */
+export const laneKind = (lane: LaneKey): "public" | "user" | "play" =>
+	lane === "public" ? "public" : lane.startsWith("play:") ? "play" : "user";
+
 /** A lane's cooldown key: the public lane's own, or the connection's (its two lanes share one). */
 export const cooldownKey = (lane: LaneKey): string => (lane === "public" ? "public" : `conn:${lane.split(":")[1]}`);
 

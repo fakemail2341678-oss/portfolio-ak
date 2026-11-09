@@ -7,7 +7,7 @@ import * as data from "@/server/chaal/analysis/lichess";
 import * as analyses from "@/server/chaal/analysis/service";
 import { createVault, type Vault } from "@/server/chaal/connect/vault";
 import type { ChaalPublic } from "@/server/chaal/context";
-import { createChaalControls } from "@/server/chaal/controls";
+import { createChaalControls, DEFAULT_CHAAL_SETTINGS } from "@/server/chaal/controls";
 import { createChaalGuestData } from "@/server/chaal/guest-data";
 import { createChaalCache } from "@/server/chaal/lichess/cache";
 import { createLichess } from "@/server/chaal/lichess/client";
@@ -62,20 +62,7 @@ function chaal(overrides: Partial<ChaalPublic> = {}, now = () => 0): ChaalPublic
 		lichess,
 		cache: createChaalCache({ now }),
 		controls,
-		settings: {
-			id: 1,
-			features: {},
-			guestsMayConnect: true,
-			extraScopes: [],
-			cacheEpoch: 0,
-			publicCooldownUntil: null,
-			publicCooldownMs: 0,
-			banner: null,
-			engine: { maxDepth: 22, multiPv: 3, hashMb: 16 },
-			play: { aiMaxLevel: 8, rated: true },
-			version: 1,
-			updatedAt: new Date(0),
-		},
+		settings: DEFAULT_CHAAL_SETTINGS,
 		appToken: "lip_app",
 		connectConfigured: true,
 		connectDeps: async () => ({ db: env.db, lichess, vault, controls }),

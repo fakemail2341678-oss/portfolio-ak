@@ -141,11 +141,24 @@ The play hub's first part is "On Lichess": play the Lichess AI, challenge a play
 
 - `features`: `{ play: false }` turns a feature off; a feature not listed is on. The list and each feature's scopes are in `src/features/chaal/features.ts`. `local` (Task 76) is the games against the computer and over the board, apart from online `play`; `chat` (Task 77) is the players' chat in an online game. Each feature's server check arrives with the feature; `withToken(…, feature, …)` checks the switch for anything that uses a token.
 - `guests_may_connect`, `extra_scopes`, `cache_epoch`, and the public lane's cooldown.
-- `engine`: the engine's limits in the browser (`{ maxDepth, multiPv, hashMb }`, Task 75); its form arrives with Task 79.
-- `play`: online play's limits (`{ aiMaxLevel, rated }`, Task 77); its form arrives with Task 79.
-- `banner`: the admin's notice under the top bar, `{ en, ne }` (Nepali falls back to English), shown when its English isn't empty. Its form arrives with Task 79.
+- `engine`: the engine's limits in the browser (`{ maxDepth, multiPv, hashMb }`, Task 75).
+- `play`: online play's limits (`{ aiMaxLevel, rated, quickPair }`, Tasks 77 and 79). `quickPair` is `all`, `clock`, `days` or `off`: the hub shows only those tiles (none and no section for `off`), and `seekForm` refuses a pace it doesn't allow.
+- `defaults`: the board, pieces and sound a player starts with until they choose (`{ board, pieces, sounds }`, Task 79). The status carries them; `useChaalPreferences` starts from `startingPreferences(status.defaults)`.
+- `banner`: the admin's notice under the top bar, `{ en, ne }` (Nepali falls back to English), shown when its English isn't empty.
+- `maintenance` and `maintenance_message` (Task 79, decision 0268): on, `withToken` refuses everything (`requireNoMaintenance`, before the feature's switch), `connectRefusal` says `off`, and the status reports `connect: "off"`, `play` and `chat` off, and `maintenance: { message }`; the frame shows the message (or `m.ch_maintenance_default`) above the banner. Public reads and what runs in the browser go on.
 
-`ch_block` holds a site user or a Lichess account (its lowercase id). A blocked user's personal calls are refused (`chaalUserOf`), and neither can connect. Their admin pages arrive with Task 79.
+All of these are set on `/admin/chaal/settings` (below). `ch_block` holds a site user or a Lichess account (its lowercase id). A blocked user's personal calls are refused (`chaalUserOf`), and neither can connect; they're listed on `/admin/chaal/blocks`.
+
+## The admin (Task 79, decision 0268)
+
+Under `/admin/chaal` (`chaal:read` for every page; it redirects to the settings until the overview, Task 84). Services in `src/server/chaal/admin/` take `chaalAdmin(services)` (the controls to invalidate, the connection service's dependencies, whether `CHAAL_TOKEN_KEY` is set); functions in `src/functions/chaal-admin/`; pages in `src/features/chaal/admin/`. Every write is audited (`chaal.*` actions; targets `chaal-settings`, `chaal-connection`, `chaal-block`) and clears this server's controls (others within 5 s).
+
+- **Settings** (`chaal:configure` to change): one form saved from the row's `version` (a stale save is the form's "reload"): the feature switches (each with what it does and the scopes it adds; only the ones off are stored, so a feature added later starts on), guests may connect, extra scopes, quick pairing, the AI's highest level, rated play, players' defaults, the engine's limits, the banner and the maintenance message. Maintenance and the purge (the cache epoch) are their own writes, so they never make an open form stale; turning maintenance on asks first.
+- **Connections** (the CRUD standard; `chaal:moderate` to act): the site user (a guest has no email shown), the Lichess account (linked to lichess.org), the state (active, revoked, expired; blocked and "waiting" badges), scopes and dates; filters by state and members or guests, a search over the username, name and email, CSV. **Revoke** (one or many) asks Lichess to end each token (best effort, outside the transaction) and sets `revoked_at`: the player sees Reconnect. **Block this account** opens the block dialog filled in.
+- **Blocks** (a tab beside connections; "Block" opens a dialog there and on the connections list, and a connection's "Block this account" opens it filled in): a Lichess username or a site user's email, with a reason. Blocking revokes the connection it names (its own audit entry); a second block or an email no account has is a field error on the target. Deleting a block lets them connect again.
+- **Health:** the calls, errors and 429s by hour (24 hours or 7 days) and by endpoint class from `ch_api_stat`, the cooldowns running now (the public lane's and each connection's), the last 50 of `ch_api_error`'s 500 failed calls, and "Test Lichess" (`chaal:configure`): the daily puzzle through the public lane, past the cache, timed, or "Lichess asked us to wait" during a cooldown.
+
+**The call stats** (`src/server/chaal/stats.ts`): the counters keep, besides the lab's running totals, a pending batch by hour and endpoint plus the failed calls. After each call the store's flush writes it (an upsert adding to the hour's row; failures inserted, then all but the newest 500 deleted) under `waitUntil`; one flush runs at a time per instance and the calls made meanwhile go in the next. A failed write is logged and dropped. The daily job prunes hours older than 30 days.
 
 ## The Lichess client
 
@@ -170,7 +183,7 @@ const puzzle = await chaal.cache.read(
 
 **The cache** (`cache.ts`, on the shared LRU): a TTL per read, stale-while-revalidate, one call for concurrent readers, and keys with the endpoint, path, parameters, `cache_epoch` and, for a personal read, `owner` (the user's id: one user's answers never reach another). During a cooldown or an outage, a read serves what the cache still holds, however old, before failing. Each TTL arrives with its feature (PLAN 13.5, "Cache TTLs"); the daily puzzle's is `untilUtcMidnight`. A TTL may depend on the answer (`(answer) => ms`): a position the cloud hasn't evaluated is kept an hour, a found one a day.
 
-**Logging and counters:** every call logs `lichess call` with the endpoint, status, milliseconds and lane kind, never a token. `chaalLichess.counters.snapshot()` holds this instance's calls, errors, 429s and time per endpoint; the lab shows them, and Task 79 flushes them to `ch_api_stat`.
+**Logging and counters:** every call logs `lichess call` with the endpoint, status, milliseconds and lane kind, never a token. `chaalLichess.counters.snapshot()` holds this instance's calls, errors, 429s and time per endpoint; the lab shows them, and the store flushes them to `ch_api_stat` and `ch_api_error` after each call for the health page (Task 79).
 
 ## Connecting Lichess
 
@@ -379,3 +392,5 @@ Chess words are Chaal's own messages, in both languages, and must read the same 
 - **A seek's game comes on the event stream, not the seek's:** Lichess closes the seek's request with nothing in it. The hook watches the event store for a new game that hasn't moved.
 - **Zen must not be set by a page's effect:** it would hide the bars after the first paint (a layout shift); `useZen` reads the router's path and the preference, both known on the server.
 - **e2e: online play runs as `member`, never the viewer:** the review opens Chaal's pages as the viewer while the flows run, and Lichess (and the fake) allows one event stream per token, so the two would knock each other off. The online-play groups also clear the fake Lichess and the connections when they finish.
+- **The admin's settings write invalidates only the server functions' controls:** the Nitro routes (the streams, OAuth) are their own bundle with their own `chaalControls`, and other instances have theirs, so they see a change within 5 s (the TTL). e2e polls for it (the play-off flow); the harness's reset deletes `ch_settings`, which a running server may keep for those 5 s.
+- **Features named in a sentence are lowercase** (`m.ch_feature_play` reads "play" in "Reconnect to allow play"): the admin's switches use their own title-case names (`FEATURE_TITLES`).

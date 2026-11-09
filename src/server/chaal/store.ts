@@ -7,15 +7,21 @@ import { createChaalControls } from "./controls";
 import { createChaalCache } from "./lichess/cache";
 import { createLichess } from "./lichess/client";
 import { createDbCooldowns } from "./lichess/cooldown";
+import { createCounters } from "./lichess/counters";
+import { createCallsFlush } from "./stats";
 
 /**
  * This process's Chaal services (PLAN 13.5): the Lichess client with its lanes, cooldowns
- * and counters, the cache, the controls, and the vault (null without CHAAL_TOKEN_KEY).
+ * and counters (flushed to ch_api_stat), the cache, the controls, and the vault (null without CHAAL_TOKEN_KEY).
  * Bump the client version when Chaal's use of the API changes, so Lichess can tell.
  */
 const CLIENT_VERSION = "1";
 
 export const chaalControls = createChaalControls(db);
+
+/** The calls' counters, added to ch_api_stat after each call (../stats.ts, Task 79). */
+const callsFlush = createCallsFlush(db, () => counters);
+const counters = createCounters({ onRecord: callsFlush.schedule });
 
 export const chaalLichess = createLichess(
 	{
@@ -25,7 +31,7 @@ export const chaalLichess = createLichess(
 		userAgent: `Chaal/${CLIENT_VERSION} (+${new URL("/app/chaal/about", serverEnv.BETTER_AUTH_URL).toString()})`,
 	},
 	fetch,
-	{ cooldowns: createDbCooldowns(db, chaalControls) },
+	{ cooldowns: createDbCooldowns(db, chaalControls), counters },
 );
 
 export const chaalCache = createChaalCache();

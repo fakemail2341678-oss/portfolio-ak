@@ -3,6 +3,7 @@ import { boolean, check, integer, jsonb, pgTable, text, timestamp, uniqueIndex, 
 import type { EngineLimits } from "@/features/chaal/engine/limits";
 import type { ChaalFeatureSwitches } from "@/features/chaal/features";
 import type { PlayLimits } from "@/features/chaal/play/controls";
+import type { ChaalDefaults } from "@/features/chaal/settings/preferences";
 import { user } from "../auth";
 import { localizedText } from "../columns";
 
@@ -11,7 +12,8 @@ import { localizedText } from "../columns";
  * process (src/server/chaal/controls.ts). Columns arrive with the feature that needs them;
  * Task 71 has the feature switches, the connecting rules, the cache epoch and the public
  * lane's cooldown; Task 73 the notice under the top bar; Task 75 the engine's limits; Task 77
- * online play's. A missing row means the defaults.
+ * online play's; Task 79 players' defaults and maintenance. A missing row means the defaults;
+ * the admin edits it on /admin/chaal/settings.
  */
 export const chSettings = pgTable(
 	"ch_settings",
@@ -28,12 +30,21 @@ export const chSettings = pgTable(
 		/** The public lane's cooldown after a 429 (src/server/chaal/lichess/client.ts), and its length for doubling. */
 		publicCooldownUntil: timestamp({ withTimezone: true }),
 		publicCooldownMs: integer().notNull().default(0),
-		/** The admin's notice under Chaal's top bar, in both languages (its form arrives with Task 79). */
+		/** The admin's notice under Chaal's top bar, in both languages (set on /admin/chaal/settings, Task 79). */
 		banner: localizedText(),
-		/** The engine's limits in the browser (Task 75, decision 0263): depth, lines and hash. Its form arrives with Task 79. */
+		/** The engine's limits in the browser (Task 75, decision 0263): depth, lines and hash. */
 		engine: jsonb().$type<EngineLimits>().notNull().default({ maxDepth: 22, multiPv: 3, hashMb: 16 }),
-		/** Online play's limits (Task 77, decision 0266): the Lichess AI's highest level, rated games. Its form arrives with Task 79. */
-		play: jsonb().$type<PlayLimits>().notNull().default({ aiMaxLevel: 8, rated: true }),
+		/** Online play's limits (Task 77, decision 0266): the Lichess AI's highest level, rated games; quick pairing's paces (Task 79). */
+		play: jsonb().$type<PlayLimits>().notNull().default({ aiMaxLevel: 8, rated: true, quickPair: "all" }),
+		/** The board, pieces and sound players start with until they choose (Task 79, decision 0268). */
+		defaults: jsonb().$type<ChaalDefaults>().notNull().default({ board: "diagram", pieces: "cburnett", sounds: true }),
+		/**
+		 * Maintenance (Task 79, decision 0268): nothing reaches Lichess with a player's token
+		 * (connecting, online play, the streams), and every page says why in `maintenanceMessage`.
+		 * Public pages and what runs in the browser (analysis, the engine, local games) go on.
+		 */
+		maintenance: boolean().notNull().default(false),
+		maintenanceMessage: localizedText(),
 		version: integer().notNull().default(1),
 		updatedAt: timestamp({ withTimezone: true })
 			.defaultNow()
@@ -45,7 +56,7 @@ export const chSettings = pgTable(
 
 /**
  * Blocks (PLAN 13.5): a site user or a Lichess account Chaal refuses. A blocked user's calls
- * are refused and neither can connect. The admin's page for them arrives with Task 79.
+ * are refused and neither can connect. They are listed on /admin/chaal/blocks (Task 79).
  */
 export const chBlock = pgTable(
 	"ch_block",

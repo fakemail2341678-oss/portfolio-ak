@@ -45,6 +45,30 @@ export const DEFAULT_CHAAL_PREFERENCES: ChaalPreferences = {
 };
 
 /**
+ * What the admin picks for players who haven't chosen (`ch_settings.defaults`, Task 79;
+ * decision 0268): the board, the pieces and whether there's sound.
+ */
+export type ChaalDefaults = Pick<ChaalPreferences, "board" | "pieces" | "sounds">;
+
+export const DEFAULT_CHAAL_DEFAULTS: ChaalDefaults = {
+	board: DEFAULT_CHAAL_PREFERENCES.board,
+	pieces: DEFAULT_CHAAL_PREFERENCES.pieces,
+	sounds: DEFAULT_CHAAL_PREFERENCES.sounds,
+};
+
+/** Reads the stored defaults field by field (a board theme since removed falls back). */
+export function readDefaults(value: unknown): ChaalDefaults {
+	const { board, pieces, sounds } = readPreferences({ ...DEFAULT_CHAAL_DEFAULTS, ...(value as object | null) });
+	return { board, pieces, sounds };
+}
+
+/** A player's starting preferences: the built-in ones with the admin's defaults over them. */
+export const startingPreferences = (defaults: ChaalDefaults | null | undefined): ChaalPreferences => ({
+	...DEFAULT_CHAAL_PREFERENCES,
+	...(defaults ?? {}),
+});
+
+/**
  * Reads stored preferences (a row, or this browser's copy) field by field: a value that no
  * longer fits (a board theme since removed, a hand-edited copy) falls back to its default
  * rather than losing the rest.

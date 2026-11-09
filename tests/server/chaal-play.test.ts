@@ -161,7 +161,7 @@ describe("challenges and the Lichess AI", () => {
 
 	it("the admin's limits: the AI's highest level and rated games", async () => {
 		await connect();
-		await env.db.insert(schema.chSettings).values({ id: 1, play: { aiMaxLevel: 4, rated: false } });
+		await env.db.insert(schema.chSettings).values({ id: 1, play: { aiMaxLevel: 4, rated: false, quickPair: "all" } });
 		await expect(
 			play.challengeAi(deps(), "member", { level: 5, pace: { kind: "days", days: 3 }, color: "white" }),
 		).rejects.toMatchObject({ code: "BAD_REQUEST" });
@@ -450,7 +450,7 @@ describe("activity", () => {
 			{ userId: "member", kind: "connect", at: new Date(now - 91 * 86_400_000) },
 			{ userId: "member", kind: "connect", at: new Date(now - 89 * 86_400_000) },
 		]);
-		expect(await runChaalCron(env.db, now)).toEqual({ activityPruned: 1 });
+		expect(await runChaalCron(env.db, now)).toEqual({ activityPruned: 1, callStatsPruned: 0 });
 		expect(await pruneActivity(env.db, now)).toBe(0);
 		expect(await activity()).toHaveLength(1);
 	});
@@ -527,7 +527,7 @@ describe("quick pairing and the games in progress (Task 78)", () => {
 		).rejects.toMatchObject({
 			code: "BAD_REQUEST",
 		});
-		await env.db.insert(schema.chSettings).values({ id: 1, play: { aiMaxLevel: 8, rated: false } });
+		await env.db.insert(schema.chSettings).values({ id: 1, play: { aiMaxLevel: 8, rated: false, quickPair: "all" } });
 		expect((await seekStream(deps(), member, { pace: RAPID, rated: true, range: "any" })).status).toBe(403);
 		expect((await seekStream(deps(), null, { pace: RAPID, rated: false, range: "any" })).status).toBe(401);
 		expect(lichess.calls).toHaveLength(0);

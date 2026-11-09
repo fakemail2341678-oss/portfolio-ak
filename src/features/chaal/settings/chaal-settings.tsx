@@ -19,7 +19,7 @@ import { MiniBoard } from "../board/mini-board";
 import { playSound } from "../board/sounds";
 import { canConnect, connectionState, useConnectLichess } from "../connect/use-connect";
 import { useDisconnectLichess } from "../connect/use-disconnect";
-import type { ChaalFeature } from "../features";
+import { BOARD_NAMES, FEATURE_NAMES } from "../labels";
 import type { ConnectResult } from "../links";
 import { chaalLinks } from "../links";
 import { CHAAL_BOARD_THEMES } from "../look/board-themes";
@@ -32,12 +32,6 @@ import { useChaalPreferences } from "./use-preferences";
 const route = getRouteApi("/_chaal/app/chaal/settings");
 
 const focusRing = "outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50";
-
-const BOARD_NAMES: Readonly<Record<ChaalPreferences["board"], () => string>> = {
-	diagram: m.ch_board_diagram,
-	print: m.ch_board_print,
-	stone: m.ch_board_stone,
-};
 
 const NOTATION_NAMES: Readonly<Record<ChaalPreferences["notation"], () => string>> = {
 	figurine: m.ch_settings_notation_figurine,
@@ -53,23 +47,6 @@ const RESULT_TEXT: Readonly<Record<ConnectResult, () => string>> = {
 	expired: m.ch_connect_result_expired,
 	failed: m.ch_connect_result_failed,
 	"no-session": m.ch_connect_result_no_session,
-};
-
-const FEATURE_NAMES: Readonly<Record<ChaalFeature, () => string>> = {
-	play: m.ch_feature_play,
-	chat: m.ch_feature_chat,
-	local: m.ch_feature_local,
-	puzzles: m.ch_feature_puzzles,
-	analysis: m.ch_feature_analysis,
-	engine: m.ch_feature_engine,
-	explorer: m.ch_feature_explorer,
-	watch: m.ch_feature_watch,
-	players: m.ch_feature_players,
-	social: m.ch_feature_social,
-	tournaments: m.ch_feature_tournaments,
-	teams: m.ch_feature_teams,
-	studies: m.ch_feature_studies,
-	preferences: m.ch_feature_preferences,
 };
 
 /** A corner of the opening, enough to judge a board theme by. */

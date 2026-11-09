@@ -112,6 +112,14 @@ export const AUDIT_ACTIONS = [
 	"parda.collection.delete",
 	"parda.layout.update",
 	// parda:end
+	// chaal:start
+	"chaal.settings.update",
+	"chaal.maintenance",
+	"chaal.cache.purge",
+	"chaal.connection.revoke",
+	"chaal.block.create",
+	"chaal.block.delete",
+	// chaal:end
 	// @new-feature:audit-actions
 ] as const;
 export type AuditAction = (typeof AUDIT_ACTIONS)[number];
@@ -152,6 +160,11 @@ export const AUDIT_TARGETS = [
 	"parda-collection",
 	"parda-layout",
 	// parda:end
+	// chaal:start
+	"chaal-settings",
+	"chaal-connection",
+	"chaal-block",
+	// chaal:end
 	// @new-feature:audit-targets
 ] as const;
 export type AuditTarget = (typeof AUDIT_TARGETS)[number];

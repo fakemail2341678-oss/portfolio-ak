@@ -2,7 +2,7 @@ import "@tanstack/react-start/server-only";
 import { featureOn } from "@/features/chaal/features";
 import type { ChaalColor, ChaalEventChallenge } from "@/features/chaal/live/events";
 import { ndjsonLines, parseLine } from "@/features/chaal/live/ndjson";
-import { ratingRangeOf, readPlayLimits } from "@/features/chaal/play/controls";
+import { quickPairAllows, ratingRangeOf, readPlayLimits } from "@/features/chaal/play/controls";
 import type {
 	ChaalChallenges,
 	ChaalLiveGame,
@@ -335,6 +335,9 @@ export async function seekForm(
 	input: SeekInput,
 ): Promise<Record<string, string>> {
 	await requireRated(deps, input.rated);
+	const { quickPair } = readPlayLimits((await deps.controls.settings()).play);
+	if (!quickPairAllows(quickPair, input.pace.kind))
+		throw new AppError("FORBIDDEN", "Quick pairing is off at this pace");
 	let range: string | null = null;
 	if (input.range !== "any") {
 		const ratings = await deps.lichess.json(

@@ -65,7 +65,9 @@ export function OnlinePlay({ calls = playCalls, search = {} }: { calls?: PlayCal
 		body = (
 			<div className="grid gap-8 lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)] lg:gap-10">
 				<div className="flex min-w-0 flex-col gap-8">
-					<QuickPair calls={calls} rated={status?.play.rated !== false} />
+					{status?.play.quickPair === "off" ? null : (
+						<QuickPair calls={calls} rated={status?.play.rated !== false} mode={status?.play.quickPair ?? "all"} />
+					)}
 					<OnlineSetup calls={calls} search={search} />
 				</div>
 				<LiveNow me={connection.lichessId} calls={calls} />

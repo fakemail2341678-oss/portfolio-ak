@@ -10,6 +10,8 @@
  * Task 77 (decision 0266): online play against the fake Lichess: the Lichess AI to mate, a
  * challenge with offers, chat, a reconnect mid-game and a claimed win, a real-time challenge
  * kept open, an open link, and two tabs sharing one event stream.
+ * Task 79 (decision 0268): the admin turns play off (pages say so, the streams refuse), revokes
+ * a connection (the lab says reconnect), and blocks an account (connecting it is refused).
  */
 import type { Page } from "@playwright/test";
 import { E2E } from "../harness/config.ts";
@@ -125,9 +127,9 @@ test.describe("Chaal's lab as the admin", () => {
 		await expect(page.getByTestId("ch-lab-state")).toHaveText("Reconnect needed");
 	});
 
-	test("/admin/chaal opens the lab until the overview arrives", async ({ page }) => {
+	test("/admin/chaal opens the settings until the overview arrives", async ({ page }) => {
 		await page.goto("/admin/chaal", { waitUntil: "networkidle" });
-		await expect(page).toHaveURL(/\/admin\/chaal\/lab$/);
+		await expect(page).toHaveURL(/\/admin\/chaal\/settings$/);
 	});
 
 	test("the public lane reads the daily puzzle through the client and counts the call", async ({ page }) => {
@@ -746,5 +748,116 @@ test.describe("Chaal's online play II (Task 78)", () => {
 		expect(top.x).toBeGreaterThanOrEqual(board.x + board.width);
 		expect(bottom.y + bottom.height).toBeLessThanOrEqual(390);
 		await expect(page.getByTestId("chaal-tab-bar")).toBeHidden();
+	});
+});
+
+test.describe("Chaal's admin (Task 79)", () => {
+	test.use(signedIn("admin"));
+	test.describe.configure({ mode: "serial" });
+
+	const reset = async () => {
+		await harness("/e2e/lichess", "DELETE");
+		await harness("/e2e/chaal-connections", "DELETE");
+	};
+	test.beforeEach(reset);
+	// Play back on and nothing blocked for the flows and pages after these.
+	test.afterAll(reset);
+
+	/** Past the 5 s the Nitro routes keep the settings and blocks (src/server/chaal/controls.ts). */
+	const CONTROLS_TTL_MS = 5_500;
+
+	/** Connects the admin's session to the fake Lichess from the lab. */
+	const connectFromLab = async (page: Page) => {
+		await page.goto("/admin/chaal/lab", { waitUntil: "networkidle" });
+		await page.getByRole("link", { name: "Connect Lichess" }).click();
+		await page.getByRole("button", { name: "Approve" }).click();
+		await page.waitForURL(/\/admin\/chaal\/lab\?lichess=/);
+		await page.waitForLoadState("networkidle");
+	};
+
+	/** Sets the play switch on the settings page and saves. */
+	const setPlay = async (page: Page, on: boolean) => {
+		await page.goto("/admin/chaal/settings", { waitUntil: "networkidle" });
+		const toggle = page.getByTestId("chaal-settings-form").getByRole("switch", { name: "Online play" });
+		if ((await toggle.isChecked()) !== on) await toggle.click();
+		const saved = page.waitForResponse(
+			(response) => response.url().includes("/_serverFn/") && response.request().method() === "POST",
+		);
+		await page.getByRole("button", { name: "Save changes" }).click();
+		expect((await saved).ok()).toBe(true);
+	};
+
+	test("play off: the play page says so and the streams refuse; back on, the page offers play again", async ({
+		page,
+		guard,
+	}) => {
+		guard.allow(RESOURCE_STATUS(403));
+		await connectFromLab(page);
+		await expect(page.getByTestId("ch-lab-state")).toHaveText("Connected");
+		await setPlay(page, false);
+		await page.goto("/app/chaal/play", { waitUntil: "networkidle" });
+		await expect(page.getByTestId("chaal-online-off")).toBeVisible();
+		// The stream routes are their own bundle with their own 5 s cache of the settings: they refuse within 5 s.
+		const openEvents = () =>
+			page.evaluate(async () => {
+				const controller = new AbortController();
+				const response = await fetch("/api/chaal/stream/events", { signal: controller.signal });
+				const body = response.status === 200 ? null : await response.json();
+				controller.abort();
+				return { status: response.status, body };
+			});
+		await expect.poll(openEvents, { timeout: 10_000, intervals: [1_000] }).toEqual({
+			status: 403,
+			body: { error: "FORBIDDEN" },
+		});
+
+		await setPlay(page, true);
+		await page.goto("/app/chaal/play", { waitUntil: "networkidle" });
+		await expect(page.getByTestId("chaal-online-off")).toHaveCount(0);
+	});
+
+	test("revoking a connection on the admin's list leaves its player Reconnect", async ({ page }) => {
+		await connectFromLab(page);
+		await page.goto("/admin/chaal/connections", { waitUntil: "networkidle" });
+		const table = page.getByTestId("chaal-connections-table");
+		await expect(table.getByTestId("chaal-connection-lichess")).toHaveText("E2E_Player");
+		await table.getByRole("button", { name: "Actions for E2E_Player" }).click();
+		await page.getByRole("menuitem", { name: "Revoke" }).click();
+		const done = page.waitForResponse(
+			(response) => response.url().includes("/_serverFn/") && response.request().method() === "POST",
+		);
+		await page.getByRole("alertdialog").getByRole("button", { name: "Revoke" }).click();
+		expect((await done).ok()).toBe(true);
+		await expect(table.getByText("Revoked")).toBeVisible();
+		await page.goto("/admin/chaal/lab", { waitUntil: "networkidle" });
+		await expect(page.getByTestId("ch-lab-state")).toHaveText("Reconnect needed");
+	});
+
+	test("blocking a Lichess account refuses connecting it; unblocking lets it connect", async ({ page }) => {
+		await page.goto("/admin/chaal/blocks", { waitUntil: "networkidle" });
+		await page.getByTestId("chaal-block-open").first().click();
+		const dialog = page.getByTestId("chaal-block-dialog");
+		await dialog.getByLabel("Lichess username").fill("e2e_player");
+		await dialog.getByLabel("Reason").fill("e2e: a block");
+		await dialog.getByRole("button", { name: "Block", exact: true }).click();
+		await expect(dialog).toBeHidden();
+		await expect(page.getByTestId("chaal-blocks-table").getByText("e2e: a block")).toBeVisible();
+
+		// The OAuth routes are their own bundle, with their own 5 s cache of the blocks (decision 0268).
+		await page.waitForTimeout(CONTROLS_TTL_MS);
+		await connectFromLab(page);
+		await expect(page).toHaveURL(/\?lichess=blocked$/);
+		await expect(page.getByTestId("ch-lab-result")).toContainText("This account can't connect Lichess here.");
+		await expect(page.getByTestId("ch-lab-not-connected")).toBeVisible();
+
+		await page.goto("/admin/chaal/blocks", { waitUntil: "networkidle" });
+		const table = page.getByTestId("chaal-blocks-table");
+		await table.getByRole("button", { name: "Actions for e2e_player" }).click();
+		await page.getByRole("menuitem", { name: "Delete" }).click();
+		await page.getByRole("alertdialog").getByRole("button", { name: "Delete" }).click();
+		await expect(table.getByText("e2e: a block")).toHaveCount(0);
+		await page.waitForTimeout(CONTROLS_TTL_MS);
+		await connectFromLab(page);
+		await expect(page).toHaveURL(/\?lichess=connected$/);
 	});
 });

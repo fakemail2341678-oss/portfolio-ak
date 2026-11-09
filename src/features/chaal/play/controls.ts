@@ -92,22 +92,38 @@ export function ratingRangeOf(range: RatingRange, rating: number | null): string
 export const AI_LEVELS = [1, 2, 3, 4, 5, 6, 7, 8] as const;
 
 /**
- * The admin's limits on online play (`ch_settings.play`, its form arrives with Task 79): the
- * Lichess AI's highest level and whether rated games may be asked for. Read stored values
- * through `readPlayLimits`, which falls back field by field.
+ * Which seeks quick pairing offers (Task 79, decision 0268): every pace, only clocks, only
+ * correspondence, or none (the tiles go and the seek calls refuse).
  */
-export type PlayLimits = { aiMaxLevel: number; rated: boolean };
+export const QUICK_PAIR_MODES = ["all", "clock", "days", "off"] as const;
+export type QuickPairMode = (typeof QUICK_PAIR_MODES)[number];
 
-export const DEFAULT_PLAY_LIMITS: PlayLimits = { aiMaxLevel: 8, rated: true };
+/** Whether quick pairing may seek at this pace. */
+export const quickPairAllows = (mode: QuickPairMode, kind: OnlinePace["kind"]): boolean =>
+	mode === "all" || (mode === "clock" && kind === "clock") || (mode === "days" && kind === "days");
+
+/**
+ * The admin's limits on online play (`ch_settings.play`, set on /admin/chaal/settings): the
+ * Lichess AI's highest level, whether rated games may be asked for, and which seeks quick
+ * pairing offers (Task 79). Read stored values through `readPlayLimits`, which falls back
+ * field by field.
+ */
+export type PlayLimits = { aiMaxLevel: number; rated: boolean; quickPair: QuickPairMode };
+
+export const DEFAULT_PLAY_LIMITS: PlayLimits = { aiMaxLevel: 8, rated: true, quickPair: "all" };
 
 export function readPlayLimits(value: Partial<PlayLimits> | null | undefined): PlayLimits {
 	const level = value?.aiMaxLevel;
+	const quickPair = value?.quickPair;
 	return {
 		aiMaxLevel:
 			typeof level === "number" && Number.isInteger(level) && level >= 1 && level <= 8
 				? level
 				: DEFAULT_PLAY_LIMITS.aiMaxLevel,
 		rated: typeof value?.rated === "boolean" ? value.rated : DEFAULT_PLAY_LIMITS.rated,
+		quickPair: (QUICK_PAIR_MODES as ReadonlyArray<unknown>).includes(quickPair)
+			? (quickPair as QuickPairMode)
+			: DEFAULT_PLAY_LIMITS.quickPair,
 	};
 }
 
