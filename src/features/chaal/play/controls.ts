@@ -47,6 +47,47 @@ export const ONLINE_CLOCKS: ReadonlyArray<TimeControl> = [
 /** The days per move the setup offers (PLAN Task 78's tiles: 1, 3, 7 and 14). */
 export const ONLINE_DAYS: ReadonlyArray<CorrespondenceDays> = [1, 3, 7, 14];
 
+/**
+ * Quick pairing (Task 78, decision 0267): a seek in Lichess's lobby, which the Board API
+ * allows only at rapid, classical or correspondence pace. Its clock is whole minutes
+ * (0–180) plus an increment of 0–180 s; correspondence is days per move.
+ */
+export const SEEK_MAX_MINUTES = 180;
+export const SEEK_MAX_INCREMENT = 180;
+
+/** Whether the Board API can seek on this clock: whole minutes, Lichess's ranges, rapid or slower. */
+export function seekLegal({ initial, increment }: TimeControl): boolean {
+	if (!Number.isInteger(initial) || !Number.isInteger(increment)) return false;
+	if (initial % 60 !== 0 || initial < 0 || initial > SEEK_MAX_MINUTES * 60) return false;
+	if (increment < 0 || increment > SEEK_MAX_INCREMENT || initial + increment <= 0) return false;
+	const speed = speedOf({ initial, increment });
+	return speed === "rapid" || speed === "classical";
+}
+
+/** The quick-pair tiles (PLAN Task 78): Rapid 10+0, 10+5, 15+10; Classical 30+0, 30+20; 1, 3, 7 or 14 days. */
+export const QUICK_PAIRS: ReadonlyArray<OnlinePace> = [
+	{ kind: "clock", clock: { initial: 600, increment: 0 } },
+	{ kind: "clock", clock: { initial: 600, increment: 5 } },
+	{ kind: "clock", clock: { initial: 900, increment: 10 } },
+	{ kind: "clock", clock: { initial: 1800, increment: 0 } },
+	{ kind: "clock", clock: { initial: 1800, increment: 20 } },
+	{ kind: "days", days: 1 },
+	{ kind: "days", days: 3 },
+	{ kind: "days", days: 7 },
+	{ kind: "days", days: 14 },
+];
+
+/** How far from the player's rating an opponent may be: any, or within ± this many points. */
+export const RATING_RANGES = ["any", "100", "200", "400"] as const;
+export type RatingRange = (typeof RATING_RANGES)[number];
+
+/** Lichess's `ratingRange` ("1400-1800") around a rating, or null for anyone. */
+export function ratingRangeOf(range: RatingRange, rating: number | null): string | null {
+	if (range === "any" || rating === null) return null;
+	const spread = Number(range);
+	return `${Math.max(400, Math.round(rating - spread))}-${Math.round(rating + spread)}`;
+}
+
 /** The Lichess AI's levels. */
 export const AI_LEVELS = [1, 2, 3, 4, 5, 6, 7, 8] as const;
 

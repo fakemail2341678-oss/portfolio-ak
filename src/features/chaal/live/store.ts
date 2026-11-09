@@ -36,6 +36,10 @@ export type LiveState = {
 	declined: Readonly<Record<string, string>>;
 	/** Keys (`c:<id>`, `g:<id>`) held from before the stream last opened, not restated yet. */
 	stale: ReadonlyArray<string>;
+	/** Whether the restatement after the stream last opened is over: what arrives now is new (Task 78's notices). */
+	settled: boolean;
+	/** When each game's turn and time left were read (Date.now()), by id: its clock counts down from there. */
+	readAt: Readonly<Record<string, number>>;
 };
 
 export const IDLE: LiveState = {
@@ -47,6 +51,8 @@ export const IDLE: LiveState = {
 	finished: {},
 	declined: {},
 	stale: [],
+	settled: false,
+	readAt: {},
 };
 
 const without = <T extends { id: string }>(items: ReadonlyArray<T>, id: string) =>
@@ -58,8 +64,13 @@ const upsert = <T extends { id: string }>(items: ReadonlyArray<T>, item: T) => {
 const unmark = (stale: ReadonlyArray<string>, key: string) =>
 	stale.includes(key) ? stale.filter((other) => other !== key) : stale;
 
-/** One of Lichess's events applied to the state. */
-export function applyEvent(state: LiveState, event: ChaalEvent): LiveState {
+const omit = (record: Readonly<Record<string, number>>, id: string) => {
+	if (!(id in record)) return record;
+	return Object.fromEntries(Object.entries(record).filter(([key]) => key !== id));
+};
+
+/** One of Lichess's events applied to the state, received at `now`. */
+export function applyEvent(state: LiveState, event: ChaalEvent, now: number = Date.now()): LiveState {
 	switch (event.type) {
 		case "challenge":
 			return {
@@ -82,12 +93,14 @@ export function applyEvent(state: LiveState, event: ChaalEvent): LiveState {
 				challenges: without(state.challenges, event.game.id),
 				games: upsert(state.games, event.game),
 				stale: unmark(state.stale, `g:${event.game.id}`),
+				readAt: { ...state.readAt, [event.game.id]: now },
 			};
 		case "gameFinish":
 			return {
 				...state,
 				games: without(state.games, event.game.id),
 				finished: { ...state.finished, [event.game.id]: event.game },
+				readAt: omit(state.readAt, event.game.id),
 			};
 		default:
 			return state;
@@ -97,19 +110,63 @@ export function applyEvent(state: LiveState, event: ChaalEvent): LiveState {
 /** The stream opened again: what's held waits to be restated. */
 export const markStale = (state: LiveState): LiveState => ({
 	...state,
+	settled: false,
 	stale: [...state.challenges.map((challenge) => `c:${challenge.id}`), ...state.games.map((game) => `g:${game.id}`)],
 });
 
 /** The restatement is over: what wasn't restated has gone. */
 export const settle = (state: LiveState): LiveState =>
 	state.stale.length === 0
-		? state
+		? state.settled
+			? state
+			: { ...state, settled: true }
 		: {
 				...state,
 				challenges: state.challenges.filter((challenge) => !state.stale.includes(`c:${challenge.id}`)),
 				games: state.games.filter((game) => !state.stale.includes(`g:${game.id}`)),
 				stale: [],
+				settled: true,
 			};
+
+/**
+ * The games in progress as Lichess lists them (GET /api/account/playing, Task 78): fresher
+ * turns and times than the event stream's, which says only when a game starts or ends. A
+ * game the list has is updated (or added); one it lacks stays until the event stream ends it.
+ */
+export function applyPlaying(state: LiveState, games: ReadonlyArray<ChaalEventGame>, now: number): LiveState {
+	let next = state.games;
+	const readAt = { ...state.readAt };
+	for (const game of games) {
+		if (game.status && game.status !== "started" && game.status !== "created") continue;
+		next = upsert(next, game);
+		readAt[game.id] = now;
+	}
+	return { ...state, games: next, readAt };
+}
+
+/** The games where it's the player's move, the most urgent first: the least time left, then correspondence by days. */
+export function myTurnGames(state: Pick<LiveState, "games" | "readAt">, now: number): ChaalEventGame[] {
+	return orderGames(state, now).filter((game) => game.isMyTurn);
+}
+
+/** Seconds left on a game's clock now, counted from when it was read; null when Lichess didn't say. */
+export function secondsLeftOf(game: ChaalEventGame, readAt: number | undefined, now: number): number | null {
+	if (game.secondsLeft === null) return null;
+	if (!game.isMyTurn || readAt === undefined) return game.secondsLeft;
+	return Math.max(0, game.secondsLeft - Math.floor((now - readAt) / 1000));
+}
+
+/** "My games" (Task 78): the player's move first, then the least time left; real-time before correspondence on a tie. */
+export function orderGames(state: Pick<LiveState, "games" | "readAt">, now: number): ChaalEventGame[] {
+	const left = (game: ChaalEventGame) => secondsLeftOf(game, state.readAt[game.id], now) ?? Number.POSITIVE_INFINITY;
+	return [...state.games].sort(
+		(a, b) => Number(b.isMyTurn) - Number(a.isMyTurn) || left(a) - left(b) || a.id.localeCompare(b.id),
+	);
+}
+
+/** The challenges waiting for the player's answer (not their own, and not an open link). */
+export const incomingChallenges = (state: Pick<LiveState, "challenges">, me: string | null) =>
+	state.challenges.filter((challenge) => challenge.destUser !== null && challenge.challenger?.id !== me);
 
 /** The real-time games in progress: what fair play locks for (correspondence doesn't, PLAN 13.5). */
 export const realTimeGames = (state: LiveState): string[] =>

@@ -106,7 +106,7 @@ const LOCAL_OPERATIONS: Record<string, (userId: string, id: string) => Promise<u
 
 const DAYS = { kind: "days", days: 3 } as const;
 
-/** Every online play function's service call (src/functions/chaal/challenges.ts and live-game.ts, Task 77). */
+/** Every online play function's service call (src/functions/chaal/challenges.ts and live-game.ts, Tasks 77 and 78). */
 const PLAY_OPERATIONS: Record<string, (userId: string) => Promise<unknown>> = {
 	getChaalChallenges: (userId) => play.listChallenges(deps(), userId),
 	challengeChaalPlayer: (userId) =>
@@ -116,6 +116,9 @@ const PLAY_OPERATIONS: Record<string, (userId: string) => Promise<unknown>> = {
 	declineChaalChallenge: (userId) => play.declineChallenge(deps(), userId, "chal1234", "later"),
 	cancelChaalChallenge: (userId) => play.cancelChallenge(deps(), userId, "chal1234"),
 	challengeChaalAi: (userId) => play.challengeAi(deps(), userId, { level: 1, pace: DAYS, color: "white" }),
+	seekChaalCorrespondence: (userId) =>
+		play.seekCorrespondence(deps(), userId, { pace: DAYS, rated: false, range: "any" }),
+	getChaalPlaying: (userId) => play.playingGames(deps(), userId),
 	getChaalLiveGame: (userId) => play.liveGame(deps(), userId, "game1234"),
 	playChaalMove: (userId) => play.playMove(deps(), userId, "game1234", "e2e4"),
 	actOnChaalGame: (userId) => play.gameAction(deps(), userId, "game1234", "resign"),

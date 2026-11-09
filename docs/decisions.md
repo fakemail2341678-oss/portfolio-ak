@@ -271,6 +271,7 @@ Record every non-obvious choice here: **What**, **Why**, **Alternatives consider
 - [0264](#0264-chaals-analysis-board-the-url-is-the-line-lichesss-data-through-our-server-a-checked-tree-saved-as-jsonb): Chaal's analysis board: the URL is the line, Lichess's data through our server, a checked tree saved as jsonb
 - [0265](#0265-chaals-local-games-played-in-the-browser-kept-where-the-player-is-pgn-checked-on-the-server): Chaal's local games: played in the browser, kept where the player is, PGN checked on the server
 - [0266](#0266-chaals-online-play-lichesss-streams-through-our-server-one-tab-holding-the-event-stream-challenges-kept-open-by-a-stream): Chaal's online play: Lichess's streams through our server, one tab holding the event stream, challenges kept open by a stream
+- [0267](#0267-chaals-quick-pairing-and-notifications-seeks-kept-open-by-a-stream-your-move-read-from-the-games-in-progress-notices-drawn-from-the-event-store): Chaal's quick pairing and notifications: seeks kept open by a stream, "your move" read from the games in progress, notices drawn from the event store
 </details>
 
 ---
@@ -3642,3 +3643,29 @@ Measured on the owner's Windows machine (Node 24.11, 12 threads, 11.7 GB), 2026-
 **Not checked against Lichess itself** (they need a real account and opponent; left for the owner): the kept-open challenge's first line (both a plain and a wrapped challenge are read), accepting one's own open challenge with `color`, and claiming a win or a draw after the opponent leaves. The fake Lichess (`e2e/harness/lichess-play.ts`) follows the spec.
 
 **Numbers:** the entry rose 0.8 kB to 288.5 kB (a route definition and the frame's hook, which loads the tab leader, 2.0 kB, only for a player connected for play); the play hub's chunk grew to 47.9 kB (14.9 gzipped) with the online part; the game page's is 34.9 kB (12.8 gzipped) beside the board kit and chess.js.
+
+## 0267: Chaal's quick pairing and notifications: seeks kept open by a stream, "your move" read from the games in progress, notices drawn from the event store
+
+**What** (Task 78, 2026-11-09; `src/features/chaal/{play,live,shell}/`, `src/server/chaal/{play/service.ts,stream.ts}`, `/app/chaal/play`, the frame, `/app/chaal/game/$id` and `/app/chaal/local/$id`):
+- **Quick pairing** (`play/quick-pair.tsx`, `play/use-seek.ts`): tiles for the paces the Board API may seek on (Rapid 10+0, 10+5, 15+10; Classical 30+0, 30+20; 1, 3, 7 and 14 days) and a custom clock (whole minutes 0–180, increment 0–180 s, rapid or slower: `seekLegal`), rated or casual (the admin's switch), and a rating range (any, ±100, ±200, ±400) read around the player's rating at the seek's speed from `/api/account` (`seekForm`). A seek on a clock goes through `POST /api/chaal/stream/seek`: Lichess keeps it while the request is open and closes it when someone accepts (the relay says `ended`); our window running out says `reconnect` and the page seeks again at once; Cancel or leaving closes it, which cancels it at Lichess. The game arrives on the event stream: the hook opens the first new game that hasn't moved. A correspondence seek is a function (`seekChaalCorrespondence`) that returns Lichess's id; it waits in the lobby. The tiles wait for the event stream (Lichess: open it first).
+- **The games in progress** (`getChaalPlaying`, `GET /api/account/playing`, mapped like the event stream's games): the tab leader reads it once the stream settles, 1.5 s after a game starts or ends, and every minute while a correspondence game is going on, and shares it over the channel (`applyPlaying`; `readAt` per game, so time left counts down from when it was read). "My games" on the hub: the player's move first, then the least time left, with a small diagram.
+- **Notices** (`live/notices.ts`, `shell/live-notices.tsx`): a bell in the top bar (challenges to answer and games on the player's move), a count on Play (top bar and tab bar), and a toast with the notify sound for a new challenge, the player's move in a correspondence game, or a correspondence game that started. They're computed from the event store before and after each change (`newNotices`): nothing while the stream restates, nor in the first state after it (a `settled` flag), and only in a visible tab.
+- **Berserk** (`canBerserk`, the `berserk` action): an arena game with a clock, before the player's first move; the button goes once it's done.
+- **Zen** (`shell/zen.ts`): the `zen` preference applies on a game's page (`PLAY_PAGE`, from the router's path, so it's on the first paint); `z` and a "Leave zen" button turn it on and off; the frame drops the bars, the notice and the footer, the page its controls, move lists and side column. A finished game gives the page back.
+- **A phone on its side** (`land:` in `chaal.css`: landscape and at most 32rem tall; `shell/play-layout.tsx`): the board's column becomes two, the board sized by the height left under the top bar beside the strips and the controls; the tab bar hides, the top bar shows the sections, and on a game's page the notice and the fair-play banner give their height back.
+
+**Why:**
+- **A seek through a stream:** Lichess's spec keeps a real-time seek only while its request is open, and the token can't reach the browser (0256). Re-seeking after each window keeps the player in the lobby with a gap of a moment, which a seek (unlike a challenge, 0266) can afford: nobody sees it as a new invitation.
+- **Reading the games in progress:** the event stream has only `gameStart`, `gameFinish` and the challenge events (spec checked 2026-11-09), so nothing says a correspondence opponent moved. One read a minute per player, only while a correspondence game is on and only from the leader, is gentle on Lichess; real-time games have their own page and stream.
+- **Notices without storage:** what waits for the player is the event store's state; a bell with read and unread marks would need a table for something Lichess already holds.
+- **Zen from the path, not a store set by the page:** a page's effect runs after hydration, so the bars would vanish after the first paint (layout shift); the path and a session's preference are known on the server.
+
+**Alternatives considered:**
+- **Lichess's pools or bulk pairing:** pools aren't open to the Board API; bulk pairing is for organisers.
+- **A rating range in absolute numbers:** the player would need to know their rating per speed; reading it from the account takes one call per seek.
+- **Polling the games list from every tab, or through React Query:** each tab would ask Lichess; the leader already shares the events.
+- **A media query on width for the phone on its side:** a wide phone held sideways is 844 or 932 px wide, a tablet's width; height is what runs out.
+
+**Not checked against Lichess itself** (left for the owner, as 0266): a seek accepted by a real opponent, the rating range's effect, `/api/account/playing` on a live account, and berserk in a real arena.
+
+**Numbers:** the entry rose 0.1 kB to 288.6 kB (the frame's hooks; the bell and the notices are in the frame's chunk, 44.8 kB, 15.2 gzipped); the play hub's chunk grew to 65.2 kB (20.1 gzipped) with quick pairing and My games; the game page's is 36.9 kB (13.6 gzipped); the tab leader's 2.6 kB (1.2 gzipped).

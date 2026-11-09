@@ -484,8 +484,15 @@ const choose = (page: Page, row: string, value: string) =>
 	page.getByTestId(row).locator(`label:has(input[value="${value}"])`).click();
 
 test.describe("Chaal's online play (Task 77)", () => {
-	test.use(signedIn("viewer"));
+	// Not the review's viewer: Lichess allows one event stream per token, and the review opens Chaal's pages as the viewer meanwhile.
+	test.use(signedIn("member"));
 	test.describe.configure({ mode: "serial" });
+
+	// Nothing stays connected or in play for the pages the review visits meanwhile (Task 78).
+	test.afterAll(async () => {
+		await harness("/e2e/lichess", "DELETE");
+		await harness("/e2e/chaal-connections", "DELETE");
+	});
 
 	test.beforeEach(async ({ page }) => {
 		await harness("/e2e/lichess", "DELETE");
@@ -626,5 +633,118 @@ test.describe("Chaal's online play (Task 77)", () => {
 		await harness("/e2e/lichess/challenge", "POST", { from: "e2e_rival", to: "e2e_player", days: 7 });
 		await expect(second.getByTestId("chaal-challenge-in")).toHaveCount(2);
 		await second.close();
+	});
+});
+
+test.describe("Chaal's online play II (Task 78)", () => {
+	// Not the review's viewer: Lichess allows one event stream per token, and the review opens Chaal's pages as the viewer meanwhile.
+	test.use(signedIn("member"));
+	test.describe.configure({ mode: "serial" });
+
+	// Nothing stays connected or in play for the pages the review visits meanwhile (Task 78).
+	test.afterAll(async () => {
+		await harness("/e2e/lichess", "DELETE");
+		await harness("/e2e/chaal-connections", "DELETE");
+	});
+
+	test.beforeEach(async ({ page }) => {
+		await harness("/e2e/lichess", "DELETE");
+		await harness("/e2e/chaal-connections", "DELETE");
+		await page.goto("/app/chaal/play", { waitUntil: "networkidle" });
+		await page.getByTestId("chaal-online-connect-button").click();
+		await page.getByRole("button", { name: "Approve" }).click();
+		const opened = eventStreamOpened(page);
+		await page.waitForURL(/\/app\/chaal\/play\?lichess=connected$/);
+		await opened;
+	});
+
+	type Seek = { id: string; clock: { initial: number; increment: number } | null; days: number | null; open: boolean };
+	const seeks = async () => (await (await harness("/e2e/lichess/seeks", "GET")).json()) as Seek[];
+	const tile = (page: Page, pace: string) => page.locator(`[data-testid="chaal-quick-tile"][data-pace="${pace}"]`);
+
+	test("quick pairing on a clock: the seek waits while the page is open, Cancel takes it back, and an accepted one opens the game", async ({
+		page,
+	}) => {
+		const status = page.getByTestId("chaal-quick-status");
+		await expect(status).toHaveAttribute("data-state", "ready");
+		await tile(page, "600+5").click();
+		await expect(status).toHaveAttribute("data-state", "seeking");
+		await expect
+			.poll(seeks)
+			.toEqual([expect.objectContaining({ clock: { initial: 600_000, increment: 5_000 }, open: true })]);
+		await page.getByTestId("chaal-quick-cancel").click();
+		await expect(status).toHaveAttribute("data-state", "ready");
+		// Closing the stream cancelled the seek at Lichess.
+		await expect.poll(seeks).toEqual([]);
+
+		await tile(page, "1800+20").click();
+		await expect.poll(seeks).toHaveLength(1);
+		const accepted = await harness("/e2e/lichess/seek-accept", "POST", { account: "e2e_player" });
+		const { id } = (await accepted.json()) as { id: string };
+		await page.waitForURL(new RegExp(`/app/chaal/game/${id}$`));
+		await expect(page.getByTestId("chaal-game-link")).toHaveAttribute("data-link", "open");
+	});
+
+	test("a correspondence seek waits on Lichess; its game starting is a toast, and the player's move shows on the bell, Play and My games", async ({
+		page,
+	}) => {
+		await tile(page, "d3").click();
+		await expect(page.getByTestId("chaal-quick-status")).toHaveAttribute("data-state", "posted");
+		await expect.poll(seeks).toEqual([expect.objectContaining({ days: 3, open: false })]);
+		// The rival takes it as White.
+		const accepted = await harness("/e2e/lichess/seek-accept", "POST", { account: "e2e_player", color: "black" });
+		const { id } = (await accepted.json()) as { id: string };
+		await expect(page.getByText("Your game with E2E_Rival has started")).toBeVisible();
+		await expect(page.getByTestId("chaal-bell")).toHaveAttribute("data-count", "0");
+		await expect.poll(async () => (await rival(id, "move", { uci: "e2e4" })).status).toBe(200);
+
+		// The event stream never says a move was made: a fresh page reads the games in progress.
+		const opened = eventStreamOpened(page);
+		await page.reload();
+		await opened;
+		await expect(page.getByTestId("chaal-bell")).toHaveAttribute("data-count", "1");
+		await expect(page.getByTestId("chaal-header").getByTestId("chaal-play-badge")).toContainText("1");
+		const row = page.getByTestId("chaal-online-game").first();
+		await expect(row).toHaveAttribute("data-my-turn", "true");
+		await expect(row.getByTestId("chaal-online-game-left")).toContainText("left");
+		await page.getByTestId("chaal-bell").click();
+		await page.getByTestId("chaal-bell-game").click();
+		await page.waitForURL(new RegExp(`/app/chaal/game/${id}$`));
+	});
+
+	test("an arena game: berserk halves the clock; zen leaves only the board, and z brings the page back", async ({
+		page,
+	}) => {
+		const created = await harness("/e2e/lichess/arena", "POST", { clock: { limit: 300, increment: 0 } });
+		const { id } = (await created.json()) as { id: string };
+		await page.goto(`/app/chaal/game/${id}`);
+		await expect(page.getByTestId("chaal-game-link")).toHaveAttribute("data-link", "open");
+		await page.getByTestId("chaal-game-berserk").click();
+		await expect(page.getByTestId("chaal-game-berserk")).toBeHidden();
+		await expect(page.getByTestId("chaal-game-bottom")).toContainText("2:30");
+
+		await page.keyboard.press("z");
+		await expect(page.getByTestId("chaal-frame")).toHaveAttribute("data-zen", "true");
+		await expect(page.getByTestId("chaal-header")).toHaveCount(0);
+		await expect(page.getByTestId("chaal-game-board")).toBeVisible();
+		await page.keyboard.press("z");
+		await expect(page.getByTestId("chaal-header")).toBeVisible();
+	});
+
+	test("on a phone on its side, the board, both clocks and the controls fit without a scroll", async ({ page }) => {
+		const created = await harness("/e2e/lichess/arena", "POST", { clock: { limit: 600, increment: 0 } });
+		const { id } = (await created.json()) as { id: string };
+		await page.setViewportSize({ width: 844, height: 390 });
+		await page.goto(`/app/chaal/game/${id}`);
+		await expect(page.getByTestId("chaal-game-link")).toHaveAttribute("data-link", "open");
+		const board = await page.getByTestId("chaal-game-board").boundingBox();
+		const bottom = await page.getByTestId("chaal-game-bottom").boundingBox();
+		const top = await page.getByTestId("chaal-game-top").boundingBox();
+		if (!board || !bottom || !top) throw new Error("not laid out");
+		expect(board.y + board.height).toBeLessThanOrEqual(390);
+		// The strips sit beside the board, on screen.
+		expect(top.x).toBeGreaterThanOrEqual(board.x + board.width);
+		expect(bottom.y + bottom.height).toBeLessThanOrEqual(390);
+		await expect(page.getByTestId("chaal-tab-bar")).toBeHidden();
 	});
 });

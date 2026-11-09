@@ -11,8 +11,9 @@
  * - `/lichess/api/stream/event`: the account's event stream. It opens with the account's
  *   current challenges and games, as Lichess restates them, then sends a keepalive every
  *   second. One stream per token, as Lichess: a new one closes the previous.
- * - Online play (Task 77, ./lichess-play.ts): challenges (kept open, open links, the AI),
- *   Board API games with clocks and a scripted AI, offers, endings and chat.
+ * - Online play (Tasks 77 and 78, ./lichess-play.ts): challenges (kept open, open links, the
+ *   AI), Board API games with clocks and a scripted AI, offers, endings and chat; seeks, the
+ *   games in progress (`/api/account/playing`) and berserk in an arena game.
  * - Everything else answers from tests/fixtures/lichess (`pnpm lichess:record`), by
  *   `lichessFixtureName`; the explorer asks for a token, as the real one does. A recorded
  *   stream (`.ndjson`: the player explorer, Task 75) is sent as ndjson and ends.
@@ -21,8 +22,9 @@
  * /e2e/lichess/event` (`{ account, event }` to its open streams), `POST /e2e/lichess/drop`
  * (`{ account }`: its streams break), `GET /e2e/lichess/streams?account=` (how many it has
  * open), the rival's `POST /e2e/lichess/challenge`, `/respond` and `/act`, `GET
- * /e2e/lichess/games`, and `DELETE /e2e/lichess`. Later tasks add seeks and the rest (PLAN
- * 13.5, "Fixtures").
+ * /e2e/lichess/games`, quick pairing's `POST /e2e/lichess/seek-accept`, `GET /e2e/lichess/seeks`
+ * and `POST /e2e/lichess/arena` (Task 78), and `DELETE /e2e/lichess`. Later tasks add the
+ * rest (PLAN 13.5, "Fixtures").
  */
 import { createHash, randomBytes } from "node:crypto";
 import { existsSync, readFileSync } from "node:fs";
@@ -278,7 +280,8 @@ export async function serveLichess(url: URL, request: IncomingMessage, response:
 		const account = LICHESS_ACCOUNTS[known.token.account];
 		json(response, 200, {
 			...account,
-			perfs: {},
+			// The ratings a seek's range is read around (Task 78).
+			perfs: { rapid: { rating: 1600, games: 12 }, classical: { rating: 1650, games: 3 } },
 			createdAt: 1_700_000_000_000,
 			url: `https://lichess.org/@/${account.username}`,
 		});
@@ -293,7 +296,10 @@ export async function serveLichess(url: URL, request: IncomingMessage, response:
 		openEventStream(response, known.value, known.token.account, baseOf(request));
 		return true;
 	}
-	if (host === "api" && (pathname.startsWith("/api/board/") || pathname.startsWith("/api/challenge"))) {
+	if (
+		host === "api" &&
+		(pathname.startsWith("/api/board/") || pathname.startsWith("/api/challenge") || pathname === "/api/account/playing")
+	) {
 		const known = tokenOf(request);
 		if (!known) {
 			json(response, 401, { error: "No such token" });

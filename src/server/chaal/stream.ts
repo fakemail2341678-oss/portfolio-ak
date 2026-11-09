@@ -1,15 +1,15 @@
 import "@tanstack/react-start/server-only";
 import { featureOn } from "@/features/chaal/features";
-import type { ChaalChallengeLine, ChaalEvent, ChaalGameLine } from "@/features/chaal/live/events";
+import type { ChaalChallengeLine, ChaalEvent, ChaalGameLine, ChaalSeekLine } from "@/features/chaal/live/events";
 import { ndjsonLines, parseLine } from "@/features/chaal/live/ndjson";
-import { challengePlayerInput } from "@/features/chaal/play/schema";
+import { challengePlayerInput, seekInput } from "@/features/chaal/play/schema";
 import { isAppError } from "@/lib/errors";
 import { errorFields, log } from "@/server/log";
 import { modeOfSource, recordActivity } from "./activity";
 import { type ChaalUser, type ConnectDeps, withToken } from "./connect/service";
 import { userLane } from "./lichess/lanes";
 import { mapChallengeLine, mapGameLine, mapStreamEvent } from "./lichess/schemas";
-import { cancelChallenge, challengeForm, checkChallenge } from "./play/service";
+import { cancelChallenge, challengeForm, checkChallenge, seekForm } from "./play/service";
 
 /**
  * Chaal's streams through our server (PLAN 13.5, "Live play"; decisions 0256 and 0266), so
@@ -17,7 +17,8 @@ import { cancelChallenge, challengeForm, checkChallenge } from "./play/service";
  * - GET /api/chaal/stream/events: the user's Lichess event stream;
  * - GET /api/chaal/stream/game/{id}: a Board API game's stream (Task 77);
  * - POST /api/chaal/stream/challenge: a real-time challenge to a player, kept open by
- *   Lichess's `keepAliveStream` while this response lasts (Task 77).
+ *   Lichess's `keepAliveStream` while this response lasts (Task 77);
+ * - POST /api/chaal/stream/seek: a seek in the lobby on a clock, open while it waits (Task 78).
  * Each line is mapped to Chaal's lean shape (unknown types are dropped) and keepalives pass
  * through. A stream closes itself before the function's time limit; the event and game
  * streams then say `reconnect` and the client opens them again at once (Lichess restates
@@ -278,6 +279,52 @@ export async function challengeStream(
 				log("warn", "chaal challenge cancel failed", errorFields(error)),
 			);
 		},
+	});
+}
+
+/**
+ * A seek in Lichess's lobby on a clock (quick pairing, Task 78, decision 0267): Lichess keeps
+ * it while this response is open, sends nothing but keepalives, and closes it when someone
+ * accepts it (the game arrives on the event stream) or it expires: `ended`. Our window
+ * running out or the stream breaking says `reconnect`, and the page seeks again at once.
+ * Closing the response (the player cancels or leaves) cancels the seek at Lichess.
+ */
+export async function seekStream(
+	deps: ConnectDeps,
+	user: ChaalUser | null,
+	body: unknown,
+	{ windowMs = STREAM_WINDOW_MS }: StreamOptions = {},
+): Promise<Response> {
+	const refused = await gate(deps, user);
+	if (refused || !user) return refused ?? json(401, { error: "UNAUTHORIZED" });
+	const parsed = seekInput.safeParse(body);
+	if (!parsed.success || parsed.data.pace.kind !== "clock") return json(400, { error: "BAD_REQUEST" });
+	const input = parsed.data;
+	const abort = new AbortController();
+	let upstream: ReadableStream<Uint8Array>;
+	try {
+		upstream = await withToken(deps, user.id, "play", async (token) =>
+			deps.lichess.stream({
+				endpoint: "stream:seek",
+				method: "POST",
+				path: "/api/board/seek",
+				form: await seekForm(deps, user.id, token, input),
+				token,
+				lane: userLane(user.id),
+				signal: abort.signal,
+			}),
+		);
+	} catch (error) {
+		return refusal(error);
+	}
+	return relay<ChaalSeekLine>({
+		name: "seek",
+		upstream,
+		abort,
+		// Lichess sends only keepalives: anything else isn't ours to pass on.
+		map: () => null,
+		windowMs,
+		closing: (ending) => (ending === "ended" ? { type: "ended" } : reconnect(ending)),
 	});
 }
 

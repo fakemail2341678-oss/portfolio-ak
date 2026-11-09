@@ -15,19 +15,23 @@ import {
 import { Input } from "@/components/ui/input";
 import { sessionQueryOptions } from "@/features/auth/queries";
 import { m } from "@/paraglide/messages";
+import { MiniBoard } from "../board/mini-board";
 import { formatTimeControl } from "../chess/clock";
 import { sideName } from "../chess/speech";
 import { canConnect, useConnectLichess } from "../connect/use-connect";
 import { chaalKeys } from "../keys";
 import { chaalLinks } from "../links";
-import type { ChaalEventChallenge, ChaalEventGame } from "../live/events";
-import { useLive } from "../live/store";
+import type { ChaalEventGame } from "../live/events";
+import { orderGames, secondsLeftOf, useLive } from "../live/store";
 import { Choice } from "../local/choice";
 import { chaalConnectionQueryOptions, chaalStatusQueryOptions } from "../queries";
 import type { ChaalConnection } from "../schema";
 import type { PlaySearch } from "../search";
+import { useChaalPreferences } from "../settings/use-preferences";
 import { AI_LEVELS, ONLINE_CLOCKS, ONLINE_DAYS, type OnlinePace, paceKey, paceOfKey } from "./controls";
+import { challengePace, eventPlayerName } from "./labels";
 import { challengesQueryOptions, type PlayCalls, playCalls } from "./queries";
+import { QuickPair } from "./quick-pair";
 import { type ChallengeColor, DECLINE_REASONS, type DeclineReason, lichessUsername } from "./schema";
 import { type SentChallenge, useChallengeStream } from "./use-challenge-stream";
 
@@ -40,8 +44,9 @@ export const canPlay = (connection: ChaalConnection | null | undefined): connect
 /**
  * The play hub's online part (PLAN Task 77; decision 0266): play the Lichess AI, challenge
  * a player by name, or send a friend a link; and what's live now (games in progress, the
- * challenges to answer and those waiting). Every state is said: online play off, not
- * connected (connect), a connection to renew (reconnect).
+ * challenges to answer and those waiting). Quick pairing (Task 78) comes first, and the
+ * games in progress are "My games", the player's move first with the time left. Every state
+ * is said: online play off, not connected (connect), a connection to renew (reconnect).
  */
 export function OnlinePlay({ calls = playCalls, search = {} }: { calls?: PlayCalls; search?: PlaySearch }) {
 	const { data: session } = useQuery(sessionQueryOptions());
@@ -59,7 +64,10 @@ export function OnlinePlay({ calls = playCalls, search = {} }: { calls?: PlayCal
 	} else {
 		body = (
 			<div className="grid gap-8 lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)] lg:gap-10">
-				<OnlineSetup calls={calls} search={search} />
+				<div className="flex min-w-0 flex-col gap-8">
+					<QuickPair calls={calls} rated={status?.play.rated !== false} />
+					<OnlineSetup calls={calls} search={search} />
+				</div>
 				<LiveNow me={connection.lichessId} calls={calls} />
 			</div>
 		);
@@ -553,18 +561,6 @@ function LinkSetup({ calls }: { calls: PlayCalls }) {
 	);
 }
 
-/** "10+5 · Rated", "3 days · Casual". */
-function challengePace(challenge: ChaalEventChallenge): string {
-	const { timeControl } = challenge;
-	const pace =
-		timeControl.type === "clock" && timeControl.limit !== null
-			? formatTimeControl({ initial: timeControl.limit, increment: timeControl.increment ?? 0 })
-			: timeControl.daysPerTurn
-				? m.ch_online_days_short({ days: String(timeControl.daysPerTurn) })
-				: m.ch_online_unlimited();
-	return `${pace} · ${challenge.rated ? m.ch_online_rated() : m.ch_online_casual()}`;
-}
-
 /** What's live now: games in progress, challenges to answer, challenges waiting. */
 function LiveNow({ me, calls }: { me: string; calls: PlayCalls }) {
 	const live = useLive();
@@ -593,7 +589,7 @@ function LiveNow({ me, calls }: { me: string; calls: PlayCalls }) {
 
 	return (
 		<div className="flex flex-col gap-5" data-testid="chaal-online-now">
-			<LiveGames games={live.games} />
+			<MyGames />
 			<ChallengeList
 				title={m.ch_challenges_incoming()}
 				empty={m.ch_challenges_incoming_empty()}
@@ -715,28 +711,87 @@ function ChallengeList({
 	);
 }
 
-/** The player's games in progress on Lichess: theirs to move first. */
-function LiveGames({ games }: { games: ReadonlyArray<ChaalEventGame> }) {
-	const sorted = [...games].sort((a, b) => Number(b.isMyTurn) - Number(a.isMyTurn));
+/** Ticks while it's shown: every second when a clock under an hour is running down, else every half minute. */
+function useNow(fast: boolean): number {
+	const [now, setNow] = useState(() => Date.now());
+	useEffect(() => {
+		setNow(Date.now());
+		const timer = setInterval(() => setNow(Date.now()), fast ? 1_000 : 30_000);
+		return () => clearInterval(timer);
+	}, [fast]);
+	return now;
+}
+
+/** Time left in short words: "2 d 4 h", "5 h 10 min", "12 min", "45 s". */
+export function timeLeftText(seconds: number): string {
+	const days = Math.floor(seconds / 86_400);
+	const hours = Math.floor((seconds % 86_400) / 3_600);
+	const minutes = Math.floor((seconds % 3_600) / 60);
+	if (days > 0) return m.ch_time_days_hours({ days: String(days), hours: String(hours) });
+	if (hours > 0) return m.ch_time_hours_minutes({ hours: String(hours), minutes: String(minutes) });
+	if (minutes > 0) return m.ch_time_minutes({ minutes: String(minutes) });
+	return m.ch_time_seconds({ seconds: String(Math.max(0, Math.floor(seconds))) });
+}
+
+/** A game's pace in a list: "Rapid · Rated", "Correspondence · Casual". */
+function gamePace(game: ChaalEventGame): string {
+	const speeds: Readonly<Record<string, () => string>> = {
+		blitz: m.ch_speed_blitz,
+		rapid: m.ch_speed_rapid,
+		classical: m.ch_speed_classical,
+		correspondence: m.ch_speed_correspondence,
+	};
+	const speed = speeds[game.speed]?.() ?? game.speed;
+	return `${speed} · ${game.rated ? m.ch_online_rated() : m.ch_online_casual()}`;
+}
+
+/**
+ * "My games" (PLAN Task 78): the player's games in progress on Lichess, their move first and
+ * then the least time left, each with its position, whose move it is and the time left.
+ * Correspondence turns come from the games' list the tab leader reads (decision 0267).
+ */
+export function MyGames() {
+	const live = useLive();
+	const { preferences } = useChaalPreferences();
+	const fast = live.games.some((game) => game.isMyTurn && (game.secondsLeft ?? Number.POSITIVE_INFINITY) < 3_600);
+	const now = useNow(fast);
+	const games = orderGames(live, now);
 	return (
 		<ChallengeList title={m.ch_online_games()} empty={m.ch_online_games_empty()} testId="chaal-online-games">
-			{sorted.map((game) => (
-				<li key={game.id} className="ch-hairline py-3" data-testid="chaal-online-game">
-					<Link
-						{...chaalLinks.game(game.id)}
-						className="flex items-center justify-between gap-2 underline-offset-4 hover:underline"
-					>
-						<span className="truncate font-semibold">
-							{game.opponent.aiLevel !== null
-								? m.ch_live_ai_name({ level: String(game.opponent.aiLevel) })
-								: game.opponent.name}
-						</span>
-						<span className="shrink-0 text-ch-muted text-xs">
-							{game.isMyTurn ? m.ch_local_your_move() : m.ch_online_their_move()}
-						</span>
-					</Link>
-				</li>
-			))}
+			{games.map((game) => {
+				const left = secondsLeftOf(game, live.readAt[game.id], now);
+				const name = eventPlayerName(game.opponent);
+				return (
+					<li key={game.id} className="ch-hairline py-2" data-testid="chaal-online-game" data-my-turn={game.isMyTurn}>
+						<Link {...chaalLinks.game(game.id)} className="flex items-center gap-3 underline-offset-4 hover:underline">
+							<MiniBoard
+								fen={game.fen}
+								orientation={game.color}
+								coordinates={false}
+								theme={preferences.board}
+								pieces={preferences.pieces}
+								className="w-14 shrink-0"
+							/>
+							<span className="flex min-w-0 flex-1 flex-col">
+								<span className="truncate font-semibold">{name}</span>
+								<span className="text-ch-muted text-xs">{gamePace(game)}</span>
+							</span>
+							<span className="flex shrink-0 flex-col items-end text-xs">
+								{game.isMyTurn ? (
+									<span className="font-semibold">{m.ch_local_your_move()}</span>
+								) : (
+									<span className="text-ch-muted">{m.ch_online_their_move()}</span>
+								)}
+								{left !== null ? (
+									<span className="ch-figures text-ch-muted" data-testid="chaal-online-game-left">
+										{m.ch_games_left({ time: timeLeftText(left) })}
+									</span>
+								) : null}
+							</span>
+						</Link>
+					</li>
+				);
+			})}
 		</ChallengeList>
 	);
 }

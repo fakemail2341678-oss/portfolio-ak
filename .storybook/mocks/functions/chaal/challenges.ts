@@ -1,6 +1,11 @@
 import { fn } from "storybook/test";
 import type { ChaalEventChallenge } from "../../../../src/features/chaal/live/events";
-import type { ChaalChallenges, ChaalOpenChallenge } from "../../../../src/features/chaal/play/schema";
+import type {
+	ChaalChallenges,
+	ChaalOpenChallenge,
+	ChaalPlaying,
+	ChaalSeek,
+} from "../../../../src/features/chaal/play/schema";
 
 // Stand-ins for src/functions/chaal/challenges.ts.
 export const SAMPLE_CHALLENGE: ChaalEventChallenge = {
@@ -36,3 +41,7 @@ export const acceptChaalChallenge = fn(async ({ data }: { data: { id: string } }
 export const declineChaalChallenge = fn(async (): Promise<void> => {}).mockName("declineChaalChallenge");
 export const cancelChaalChallenge = fn(async (): Promise<void> => {}).mockName("cancelChaalChallenge");
 export const challengeChaalAi = fn(async () => ({ id: "aiGame12" })).mockName("challengeChaalAi");
+export const seekChaalCorrespondence = fn(async (): Promise<ChaalSeek> => ({ id: "seek1234" })).mockName(
+	"seekChaalCorrespondence",
+);
+export const getChaalPlaying = fn(async (): Promise<ChaalPlaying> => ({ games: [] })).mockName("getChaalPlaying");

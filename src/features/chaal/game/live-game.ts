@@ -172,6 +172,17 @@ export const againstAi = (game: LiveGame): boolean => opponentOf(game).aiLevel !
 /** Until both sides have moved, a game is aborted rather than resigned. */
 export const canAbort = (game: LiveGame): boolean => !isOver(game.state.status) && game.moves.length < 2;
 
+/**
+ * Berserk (Task 78): an arena game with a clock, before the player's own first move. It
+ * halves the player's clock for an extra point if they win; Lichess refuses it otherwise.
+ */
+export const canBerserk = (game: LiveGame): boolean =>
+	game.full.tournamentId !== null &&
+	game.full.clock !== null &&
+	!isOver(game.state.status) &&
+	!game.pending &&
+	game.moves.length < (game.color === "white" ? 1 : 2);
+
 /** A takeback asks for the player's own last move back: there must be one. */
 export const canTakeBack = (game: LiveGame): boolean => {
 	if (isOver(game.state.status) || game.pending) return false;

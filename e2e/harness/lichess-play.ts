@@ -4,6 +4,11 @@
  * moves checked by chess.js, a scripted Lichess AI, offers, endings, chat and "opponent
  * gone", in the shapes Lichess sends. The rival's side is played by the tests through
  * `/e2e/lichess/*` controls. Everything lives in memory until `DELETE /e2e/lichess`.
+ *
+ * Task 78 adds seeks (a clock's held open with keepalives and cancelled when it closes, a
+ * correspondence one answered with its id; the rival accepts one through
+ * `POST /e2e/lichess/seek-accept`), `GET /api/account/playing`, and arena games
+ * (`POST /e2e/lichess/arena`) with berserk.
  */
 import type { IncomingMessage, ServerResponse } from "node:http";
 import { Chess } from "chess.js";
@@ -38,7 +43,8 @@ type Game = {
 	clock: Clock | null;
 	days: number | null;
 	rated: boolean;
-	source: "ai" | "friend";
+	source: "ai" | "friend" | "lobby";
+	tournamentId: string | null;
 	chess: Chess;
 	moves: string[];
 	wtime: number;
@@ -51,6 +57,16 @@ type Game = {
 	streams: Map<Account, Set<ServerResponse>>;
 	timer?: ReturnType<typeof setTimeout>;
 	createdAt: number;
+};
+
+/** A seek in the lobby: a clock's keeps its response open; a correspondence one waits. */
+type Seek = {
+	id: string;
+	account: Account;
+	clock: Clock | null;
+	days: number | null;
+	rated: boolean;
+	response: ServerResponse | null;
 };
 
 type Challenge = {
@@ -99,6 +115,7 @@ const speedOf = (clock: Clock | null) => {
 export function createPlay({ emit }: PlayDeps) {
 	const games = new Map<string, Game>();
 	const challenges = new Map<string, Challenge>();
+	const seeks = new Map<string, Seek>();
 
 	const accountOf = (side: Side): Account | null => ("account" in side ? side.account : null);
 	const colorOf = (game: Game, account: Account): Color | null =>
@@ -139,6 +156,17 @@ export function createPlay({ emit }: PlayDeps) {
 		};
 	};
 
+	/** A side's time now: its clock, or for correspondence the days a move less the time since the last one. */
+	const timeLeft = (game: Game, color: Color) => {
+		if (!game.clock) {
+			const allowed = (game.days ?? 3) * 86_400_000;
+			return !over(game) && turn(game) === color ? Math.max(0, allowed - (Date.now() - game.lastMoveAt)) : allowed;
+		}
+		const base = color === "white" ? game.wtime : game.btime;
+		const running = !over(game) && game.moves.length >= 2 && turn(game) === color;
+		return running ? Math.max(0, base - (Date.now() - game.lastMoveAt)) : base;
+	};
+
 	const fullOf = (game: Game) => ({
 		type: "gameFull",
 		id: game.id,
@@ -151,6 +179,7 @@ export function createPlay({ emit }: PlayDeps) {
 		black: player(game.black),
 		initialFen: "startpos",
 		...(game.clock ? { clock: game.clock } : { daysPerTurn: game.days }),
+		...(game.tournamentId ? { tournamentId: game.tournamentId } : {}),
 		state: stateOf(game),
 	});
 
@@ -181,7 +210,8 @@ export function createPlay({ emit }: PlayDeps) {
 						ai: "ai" in opponent ? opponent.ai : 1,
 					},
 			isMyTurn: !over(game) && turn(game) === color,
-			...(game.clock ? { secondsLeft: Math.round((color === "white" ? game.wtime : game.btime) / 1000) } : {}),
+			secondsLeft: Math.round(timeLeft(game, color) / 1000),
+			...(game.tournamentId ? { tournamentId: game.tournamentId } : {}),
 			...(game.winner ? { winner: game.winner } : {}),
 			...(over(game) && game.rated ? { ratingDiff: game.winner === color ? 8 : game.winner ? -8 : 0 } : {}),
 			compat: { bot: false, board: true },
@@ -273,7 +303,14 @@ export function createPlay({ emit }: PlayDeps) {
 	const startGame = (
 		white: Side,
 		black: Side,
-		from: { clock: Clock | null; days: number | null; rated: boolean; source: "ai" | "friend"; id?: string },
+		from: {
+			clock: Clock | null;
+			days: number | null;
+			rated: boolean;
+			source: "ai" | "friend" | "lobby";
+			id?: string;
+			tournamentId?: string;
+		},
 	) => {
 		const day = 86_400_000;
 		const game: Game = {
@@ -284,6 +321,7 @@ export function createPlay({ emit }: PlayDeps) {
 			days: from.days,
 			rated: from.rated,
 			source: from.source,
+			tournamentId: from.tournamentId ?? null,
 			chess: new Chess(),
 			moves: [],
 			wtime: from.clock?.initial ?? (from.days ?? 3) * day,
@@ -422,6 +460,15 @@ export function createPlay({ emit }: PlayDeps) {
 				game.offers[`${theirs}takeback`] = false;
 				broadcast(game, stateOf(game));
 				return true;
+			case "berserk": {
+				// An arena game with a clock, before this side's first move: half the time.
+				const moved = game.moves.length > (color === "white" ? 0 : 1);
+				if (!game.tournamentId || !game.clock || moved) return false;
+				if (color === "white") game.wtime = game.clock.initial / 2;
+				else game.btime = game.clock.initial / 2;
+				broadcast(game, stateOf(game));
+				return true;
+			}
 			case "resign":
 				finish(game, "resign", other(color));
 				return true;
@@ -454,7 +501,7 @@ export function createPlay({ emit }: PlayDeps) {
 	};
 
 	const BOARD =
-		/^\/api\/board\/game\/([A-Za-z0-9]{8})\/(move\/[a-h1-8qrbn]+|draw\/(yes|no|true|false)|takeback\/(yes|no|true|false)|resign|abort|claim-victory|claim-draw|chat)$/;
+		/^\/api\/board\/game\/([A-Za-z0-9]{8})\/(move\/[a-h1-8qrbn]+|draw\/(yes|no|true|false)|takeback\/(yes|no|true|false)|resign|abort|claim-victory|claim-draw|chat|berserk)$/;
 
 	return {
 		/** What the event stream restates when it opens: the account's challenges, then its games. */
@@ -476,8 +523,10 @@ export function createPlay({ emit }: PlayDeps) {
 				for (const set of game.streams.values()) for (const response of set) response.end();
 			}
 			for (const challenge of challenges.values()) challenge.keepAlive?.end();
+			for (const seek of seeks.values()) seek.response?.end();
 			games.clear();
 			challenges.clear();
+			seeks.clear();
 		},
 
 		/** Ends every game stream of an account: a dropped connection, or Lichess restarting. */
@@ -562,6 +611,49 @@ export function createPlay({ emit }: PlayDeps) {
 				const game = games.get(chatRead[1] ?? "");
 				if (!game || !colorOf(game, account)) json(response, 404, { error: "No such game" });
 				else json(response, 200, game.chat);
+				return true;
+			}
+			if (pathname === "/api/board/seek" && method === "POST") {
+				const form = await readForm(request);
+				const days = form.get("days");
+				const time = form.get("time");
+				const seek: Seek = {
+					id: `seek${newId()}`,
+					account,
+					clock:
+						time === null
+							? null
+							: { initial: Number(time) * 60_000, increment: Number(form.get("increment") ?? 0) * 1000 },
+					days: days === null ? null : Number(days),
+					rated: form.get("rated") === "true",
+					response: null,
+				};
+				if (!seek.clock && !seek.days) {
+					json(response, 400, { error: "time and increment, or days" });
+					return true;
+				}
+				seeks.set(seek.id, seek);
+				if (!seek.clock) {
+					json(response, 200, { id: seek.id });
+					return true;
+				}
+				seek.response = response;
+				response.writeHead(200, { "content-type": "application/x-ndjson" });
+				response.write("\n");
+				const keepalive = setInterval(() => !response.writableEnded && response.write("\n"), 2_000);
+				response.on("close", () => {
+					clearInterval(keepalive);
+					// Closing the connection cancels the seek, as on Lichess.
+					seeks.delete(seek.id);
+				});
+				return true;
+			}
+			if (pathname === "/api/account/playing" && method === "GET") {
+				const mine = [...games.values()].filter((game) => !over(game) && colorOf(game, account));
+				const nowPlaying = mine
+					.map((game) => ({ ...eventGame(game, account), rating: ACCOUNTS[account].rating }))
+					.sort((a, b) => Number(b.isMyTurn) - Number(a.isMyTurn) || a.secondsLeft - b.secondsLeft);
+				json(response, 200, { nowPlaying, nbMyTurn: nowPlaying.filter((game) => game.isMyTurn).length });
 				return true;
 			}
 			if (pathname === "/api/challenge" && method === "GET") {
@@ -726,6 +818,60 @@ export function createPlay({ emit }: PlayDeps) {
 						})
 					: false;
 				json(response, ok ? 200 : 400, { ok });
+				return true;
+			}
+			if (route === "POST /e2e/lichess/seek-accept") {
+				// The rival accepts the account's oldest seek: the game starts, the seek's stream closes.
+				const account = (body.account as Account) ?? "e2e_player";
+				const seek = [...seeks.values()].find((candidate) => candidate.account === account);
+				if (!seek) {
+					json(response, 404, { error: "No seek" });
+					return true;
+				}
+				seeks.delete(seek.id);
+				const seekerWhite = body.color !== "black";
+				const seeker: Side = { account };
+				const rival: Side = { account: account === "e2e_player" ? "e2e_rival" : "e2e_player" };
+				const game = startGame(seekerWhite ? seeker : rival, seekerWhite ? rival : seeker, {
+					clock: seek.clock,
+					days: seek.days,
+					rated: seek.rated,
+					source: "lobby",
+				});
+				seek.response?.end();
+				json(response, 200, { id: game.id });
+				return true;
+			}
+			if (route === "GET /e2e/lichess/seeks") {
+				json(
+					response,
+					200,
+					[...seeks.values()].map((seek) => ({
+						id: seek.id,
+						account: seek.account,
+						clock: seek.clock,
+						days: seek.days,
+						rated: seek.rated,
+						open: seek.response !== null,
+					})),
+				);
+				return true;
+			}
+			if (route === "POST /e2e/lichess/arena") {
+				// An arena game between the player (White) and the rival, before either has moved.
+				const clock = (body.clock as { limit: number; increment: number } | undefined) ?? { limit: 300, increment: 0 };
+				const game = startGame(
+					{ account: "e2e_player" },
+					{ account: "e2e_rival" },
+					{
+						clock: { initial: clock.limit * 1000, increment: clock.increment * 1000 },
+						days: null,
+						rated: true,
+						source: "friend",
+						tournamentId: "arena123",
+					},
+				);
+				json(response, 200, { id: game.id });
 				return true;
 			}
 			if (route === "GET /e2e/lichess/challenges") {

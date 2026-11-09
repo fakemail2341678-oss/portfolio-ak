@@ -7,6 +7,7 @@ import {
 	FlagIcon,
 	HandshakeIcon,
 	RotateCcwIcon,
+	SwordIcon,
 	TrophyIcon,
 	Undo2Icon,
 } from "lucide-react";
@@ -40,11 +41,14 @@ import { liveGameQueryOptions, playCalls } from "../play/queries";
 import type { ChaalLiveGame } from "../play/schema";
 import { chaalConnectionQueryOptions, chaalStatusQueryOptions } from "../queries";
 import { useChaalPreferences } from "../settings/use-preferences";
+import { LAND_BOARD, LAND_SIDE, PLACE, PLAY_COLUMN, playGrid, STRIP, ZenExit } from "../shell/play-layout";
+import { useZen } from "../shell/zen";
 import { LiveChat } from "./live-chat";
 import {
 	againstAi,
 	analysisLineOfLive,
 	canAbort,
+	canBerserk,
 	canTakeBack,
 	clockOf,
 	endingOf,
@@ -60,8 +64,6 @@ import {
 import { type LiveCalls, type LiveGameView, useLiveGame } from "./use-live-game";
 
 const route = getRouteApi("/_chaal/app/chaal/game/$id");
-
-const PLACE = "w-full lg:max-w-[calc(100dvh-15rem)]";
 
 /** The Lichess page of a game, for every state of this one. */
 export const lichessGameUrl = (id: string) => `https://lichess.org/${id}`;
@@ -230,6 +232,9 @@ export function LiveGameBoard({
 	const opponent = opponentOf(game);
 	const ai = againstAi(game);
 	const offers = offersOf(game);
+	const { zen: zenOn, toggle: toggleZen } = useZen();
+	// The game over asks for a choice (Analyse, Play again): zen gives the page back then.
+	const zen = zenOn && !over;
 
 	// Node ids in a line are its plies ("0" the start), as the local games' (local/game.ts).
 	const tree = treeOf({ startFen: game.startFen, moves });
@@ -288,12 +293,13 @@ export function LiveGameBoard({
 				{m.ch_game_title()}: {playerLabel(opponent)}
 			</h1>
 			<ReconnectBanner view={view} />
-			<div className="mx-auto grid w-full max-w-7xl gap-x-8 gap-y-3 pt-2 pb-8 sm:px-6 lg:grid-cols-[minmax(0,1fr)_minmax(18rem,24rem)] lg:px-8 lg:pt-6">
-				<div className="flex min-w-0 flex-col gap-1 lg:items-end">
-					<div className="w-full px-4 sm:px-0 lg:max-w-[calc(100dvh-15rem)]" data-testid="chaal-game-top">
+			{zen ? <ZenExit onExit={toggleZen} /> : null}
+			<div className={playGrid(zen)}>
+				<div className={`${PLAY_COLUMN} ${zen ? "lg:items-center" : "lg:items-end"}`}>
+					<div className={`${STRIP} land:row-start-1`} data-testid="chaal-game-top">
 						{strip(opposite(orientation))}
 					</div>
-					<div className={PLACE} data-testid="chaal-game-board">
+					<div className={`${PLACE} ${LAND_BOARD}`} data-testid="chaal-game-board">
 						<Board
 							fen={shownFen}
 							orientation={orientation}
@@ -310,40 +316,59 @@ export function LiveGameBoard({
 							label={m.ch_live_board_label()}
 						/>
 					</div>
-					<div className="w-full px-4 sm:px-0 lg:max-w-[calc(100dvh-15rem)]" data-testid="chaal-game-bottom">
+					<div className={`${STRIP} land:row-start-2`} data-testid="chaal-game-bottom">
 						{strip(orientation)}
 					</div>
-					<div className="flex w-full flex-col gap-2 px-4 sm:px-0 lg:max-w-[calc(100dvh-15rem)]">
-						<GameControls
-							onStep={step}
-							canBack={shownPly > 0}
-							canForward={!following}
-							onFlip={() => setFlipped((value) => !value)}
-						>
-							{over ? null : (
-								<GameActions
-									game={game}
-									ai={ai}
-									onAct={(action) => void view.act(action)}
-									onResign={() => void resign()}
-								/>
-							)}
-						</GameControls>
+					<div
+						className={`flex w-full flex-col gap-2 px-4 sm:px-0 lg:max-w-[calc(100dvh-15rem)] ${LAND_SIDE} land:row-start-3`}
+					>
+						{zen ? null : (
+							<GameControls
+								onStep={step}
+								canBack={shownPly > 0}
+								canForward={!following}
+								onFlip={() => setFlipped((value) => !value)}
+							>
+								{over ? null : (
+									<GameActions
+										game={game}
+										ai={ai}
+										onAct={(action) => void view.act(action)}
+										onResign={() => void resign()}
+									/>
+								)}
+							</GameControls>
+						)}
+						{!zen && canBerserk(game) && !view.berserked ? (
+							<Button
+								type="button"
+								variant="outline"
+								size="sm"
+								onClick={() => void view.berserk()}
+								className="self-start"
+								data-testid="chaal-game-berserk"
+							>
+								<SwordIcon aria-hidden />
+								{m.ch_live_berserk()}
+							</Button>
+						) : null}
 						{/* What asks for an answer sits within reach, under the controls, on a phone too. */}
 						{!over ? <Offers game={game} offers={offers} onAct={(action) => void view.act(action)} /> : null}
 						{!over && game.gone ? <OpponentGone game={game} onAct={(action) => void view.act(action)} /> : null}
-						<MoveList
-							tree={tree}
-							current={String(shownPly)}
-							onSelect={select}
-							layout="strip"
-							notation={preferences.notation}
-							className="lg:hidden"
-						/>
+						{zen ? null : (
+							<MoveList
+								tree={tree}
+								current={String(shownPly)}
+								onSelect={select}
+								layout="strip"
+								notation={preferences.notation}
+								className="lg:hidden"
+							/>
+						)}
 					</div>
 				</div>
 
-				<div className="flex min-w-0 flex-col gap-4 px-4 sm:px-0">
+				<div className={`flex min-w-0 flex-col gap-4 px-4 sm:px-0 ${zen ? "hidden" : ""}`}>
 					<div className="ch-rule flex flex-col gap-1 pt-3">
 						<p className="ch-display text-ch-head">{playerLabel(opponent)}</p>
 						<p className="flex flex-wrap items-center gap-x-3 gap-y-1 text-ch-muted text-sm">

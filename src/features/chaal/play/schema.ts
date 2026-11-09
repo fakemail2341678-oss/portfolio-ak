@@ -1,6 +1,6 @@
 import { z } from "zod";
-import type { ChaalColor, ChaalEventChallenge, ChaalGameFull } from "../live/events";
-import { boardLegal, CORRESPONDENCE_DAYS } from "./controls";
+import type { ChaalColor, ChaalEventChallenge, ChaalEventGame, ChaalGameFull } from "../live/events";
+import { boardLegal, CORRESPONDENCE_DAYS, RATING_RANGES, seekLegal } from "./controls";
 
 /**
  * Online play's inputs and answers (Task 77, decision 0266): what the functions and the
@@ -50,6 +50,23 @@ export type ChallengeAiInput = z.infer<typeof challengeAiInput>;
 export const openChallengeInput = z.strictObject({ pace: onlinePace, color: challengeColor, rated: z.boolean() });
 export type OpenChallengeInput = z.infer<typeof openChallengeInput>;
 
+/**
+ * A seek in the lobby (quick pairing, Task 78): a clock the Board API may seek on, or days.
+ * A clock's seek is kept open by its stream route; a correspondence seek is a function call.
+ */
+const seekClock = z
+	.strictObject({
+		kind: z.literal("clock"),
+		clock: z.strictObject({ initial: z.number().int(), increment: z.number().int() }),
+	})
+	.refine((pace) => seekLegal(pace.clock), { message: "not-seekable" });
+export const seekInput = z.strictObject({
+	pace: z.union([seekClock, daysPace]),
+	rated: z.boolean(),
+	range: z.enum(RATING_RANGES),
+});
+export type SeekInput = z.infer<typeof seekInput>;
+
 /** Why a challenge is declined: Lichess's reasons a person would give (it translates them for the challenger). */
 export const DECLINE_REASONS = ["generic", "later", "tooFast", "tooSlow", "timeControl", "rated", "casual"] as const;
 export type DeclineReason = (typeof DECLINE_REASONS)[number];
@@ -67,6 +84,8 @@ export const GAME_ACTIONS = [
 	"takeback-decline",
 	"claim-victory",
 	"claim-draw",
+	/** An arena game only, before the player's first move (Task 78). */
+	"berserk",
 ] as const;
 export type GameAction = (typeof GAME_ACTIONS)[number];
 
@@ -89,3 +108,9 @@ export type ChaalLiveGame = { game: ChaalGameFull; color: ChaalColor };
 
 /** An open challenge's link for the friend, and the side the caller took. */
 export type ChaalOpenChallenge = { id: string; link: string; color: ChaalColor };
+
+/** The player's games in progress on Lichess (GET /api/account/playing, Task 78): the most urgent first. */
+export type ChaalPlaying = { games: ChaalEventGame[] };
+
+/** A correspondence seek waiting in Lichess's lobby: its id (Lichess has no call to take one back). */
+export type ChaalSeek = { id: string };

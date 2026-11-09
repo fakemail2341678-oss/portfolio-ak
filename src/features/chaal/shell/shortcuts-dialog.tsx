@@ -6,7 +6,7 @@ import { m } from "@/paraglide/messages";
 /**
  * Every keyboard shortcut in Chaal (PLAN 13.6, "Keyboard"), opened with `?` or from the
  * palette. Shortcuts go through `useHotkeys` and are listed here: the board's (←/→, Home,
- * End, `f`, `/`) came with the board kit (Task 74); zen (`z`) joins with play.
+ * End, `f`, `/`) came with the board kit (Task 74); zen (`z`) with Task 78.
  */
 export function ChaalShortcutsDialog({ open, onOpenChange }: { open: boolean; onOpenChange: (open: boolean) => void }) {
 	const palette = useHotkeyLabel("mod+k");
@@ -20,6 +20,8 @@ export function ChaalShortcutsDialog({ open, onOpenChange }: { open: boolean; on
 		{ keys: ["Home", "End"], label: m.ch_shortcut_ends() },
 		{ keys: ["f"], label: m.ch_control_flip() },
 		{ keys: ["/"], label: m.ch_move_input_label() },
+		// Zen on a game's page (Task 78).
+		{ keys: ["z"], label: m.ch_shortcut_zen() },
 	];
 	return (
 		<Dialog open={open} onOpenChange={onOpenChange}>

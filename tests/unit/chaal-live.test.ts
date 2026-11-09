@@ -511,6 +511,7 @@ describe("two tabs", () => {
 			stream: streamFor("first"),
 			now: () => 0,
 			onLiveGames: () => {},
+			playing: async () => ({ games: [] }),
 		});
 		await vi.waitFor(() => expect(opened).toHaveLength(1));
 		opened[0]?.push({ type: "gameStart", game: eventGame("game1111", "rapid") });
@@ -521,6 +522,7 @@ describe("two tabs", () => {
 			stream: streamFor("second"),
 			now: () => 0,
 			onLiveGames: locked,
+			playing: async () => ({ games: [] }),
 		});
 		// The second tab got the state so far, opened no stream of its own, and follows the first's events.
 		await vi.waitFor(() => expect(second.get().games.map((game) => game.id)).toEqual(["game1111"]));

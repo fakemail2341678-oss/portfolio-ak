@@ -6,7 +6,9 @@ import {
 	challengeChaalPlayer,
 	declineChaalChallenge,
 	getChaalChallenges,
+	getChaalPlaying,
 	openChaalChallenge,
+	seekChaalCorrespondence,
 } from "@/functions/chaal/challenges";
 import {
 	actOnChaalGame,
@@ -16,7 +18,14 @@ import {
 	sendChaalChat,
 } from "@/functions/chaal/live-game";
 import { chaalKeys } from "../keys";
-import type { ChallengeAiInput, ChallengePlayerInput, DeclineReason, GameAction, OpenChallengeInput } from "./schema";
+import type {
+	ChallengeAiInput,
+	ChallengePlayerInput,
+	DeclineReason,
+	GameAction,
+	OpenChallengeInput,
+	SeekInput,
+} from "./schema";
 
 /**
  * Online play's reads and writes (Task 77). The play hub's loader ensures the challenges
@@ -55,5 +64,8 @@ export const playCalls = {
 	accept: (id: string) => acceptChaalChallenge({ data: { id } }),
 	decline: (id: string, reason: DeclineReason) => declineChaalChallenge({ data: { id, reason } }),
 	cancel: (id: string) => cancelChaalChallenge({ data: { id } }),
+	/** A correspondence seek (Task 78); a clock's goes through the seek stream. */
+	seekDays: (input: SeekInput) => seekChaalCorrespondence({ data: input }),
+	playing: () => getChaalPlaying(),
 };
 export type PlayCalls = typeof playCalls;

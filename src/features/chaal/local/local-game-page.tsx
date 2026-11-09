@@ -31,6 +31,8 @@ import type { Engine } from "../engine/engine";
 import { chaalLinks } from "../links";
 import { useFairPlay } from "../live/fair-play";
 import { useChaalPreferences } from "../settings/use-preferences";
+import { LAND_BOARD, LAND_SIDE, PLAY_COLUMN, playGrid, STRIP, ZenExit } from "../shell/play-layout";
+import { useZen } from "../shell/zen";
 import { analysisLineOf, fromRecord, localGamePgn, treeOf } from "./game";
 import { clockLabel, opponentOf, pgnNames, playerName } from "./labels";
 import { localGameQueryOptions } from "./queries";
@@ -145,6 +147,9 @@ export function LocalGameBoard({
 	const turn = turnOf(fen);
 	const orientation = orientationOf(game, turn, flipped);
 	const over = game.result !== null;
+	const { zen: zenOn, toggle: toggleZen } = useZen();
+	// The game over asks for a choice (Analyse, Export, Play again): zen gives the page back then.
+	const zen = zenOn && !over;
 
 	const step = (to: Step) => {
 		const target = to === "first" ? 0 : to === "prev" ? shownPly - 1 : to === "next" ? shownPly + 1 : last;
@@ -211,12 +216,13 @@ export function LocalGameBoard({
 			<h1 className="sr-only">
 				{m.ch_local_title()}: {opponentOf(game)}
 			</h1>
-			<div className="mx-auto grid w-full max-w-7xl gap-x-8 gap-y-3 pt-2 pb-8 sm:px-6 lg:grid-cols-[minmax(0,1fr)_minmax(18rem,24rem)] lg:px-8 lg:pt-6">
-				<div className="flex min-w-0 flex-col gap-1 lg:items-end">
-					<div className="w-full px-4 sm:px-0 lg:max-w-[calc(100dvh-15rem)]" data-testid="chaal-local-top">
+			{zen ? <ZenExit onExit={toggleZen} /> : null}
+			<div className={playGrid(zen)}>
+				<div className={`${PLAY_COLUMN} ${zen ? "lg:items-center" : "lg:items-end"}`}>
+					<div className={`${STRIP} land:row-start-1`} data-testid="chaal-local-top">
 						{strip(top, tablet)}
 					</div>
-					<div className="w-full lg:max-w-[calc(100dvh-15rem)]" data-testid="chaal-local-board">
+					<div className={`w-full lg:max-w-[calc(100dvh-15rem)] ${LAND_BOARD}`} data-testid="chaal-local-board">
 						<Board
 							fen={shownFen}
 							orientation={orientation}
@@ -231,30 +237,38 @@ export function LocalGameBoard({
 							label={m.ch_local_board_label()}
 						/>
 					</div>
-					<div className="w-full px-4 sm:px-0 lg:max-w-[calc(100dvh-15rem)]" data-testid="chaal-local-bottom">
+					<div className={`${STRIP} land:row-start-2`} data-testid="chaal-local-bottom">
 						{strip(bottom, false)}
 					</div>
-					<div className="flex w-full flex-col gap-2 px-4 sm:px-0 lg:max-w-[calc(100dvh-15rem)]">
-						<GameControls
-							onStep={step}
-							canBack={shownPly > 0}
-							canForward={!live}
-							onFlip={() => setFlipped((value) => !value)}
-						>
-							{over ? null : <GameActions view={view} onResign={() => void resign()} onAgree={() => void agree()} />}
-						</GameControls>
-						<MoveList
-							tree={tree}
-							current={String(shownPly)}
-							onSelect={(id) => setViewing(Number(id) >= last ? null : Number(id))}
-							layout="strip"
-							notation={notation}
-							className="lg:hidden"
-						/>
+					<div
+						className={`flex w-full flex-col gap-2 px-4 sm:px-0 lg:max-w-[calc(100dvh-15rem)] ${LAND_SIDE} land:row-start-3`}
+					>
+						{zen ? null : (
+							<>
+								<GameControls
+									onStep={step}
+									canBack={shownPly > 0}
+									canForward={!live}
+									onFlip={() => setFlipped((value) => !value)}
+								>
+									{over ? null : (
+										<GameActions view={view} onResign={() => void resign()} onAgree={() => void agree()} />
+									)}
+								</GameControls>
+								<MoveList
+									tree={tree}
+									current={String(shownPly)}
+									onSelect={(id) => setViewing(Number(id) >= last ? null : Number(id))}
+									layout="strip"
+									notation={notation}
+									className="lg:hidden"
+								/>
+							</>
+						)}
 					</div>
 				</div>
 
-				<div className="flex min-w-0 flex-col gap-4 px-4 sm:px-0">
+				<div className={`flex min-w-0 flex-col gap-4 px-4 sm:px-0 ${zen ? "hidden" : ""}`}>
 					<div className="ch-rule flex flex-col gap-1 pt-3">
 						<p className="ch-display text-ch-head">{opponentOf(game)}</p>
 						<p className="text-ch-muted text-sm">

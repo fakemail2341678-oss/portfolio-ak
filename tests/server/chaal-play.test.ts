@@ -1,5 +1,5 @@
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
-import type { ChaalChallengeLine, ChaalGameLine } from "@/features/chaal/live/events";
+import type { ChaalChallengeLine, ChaalGameLine, ChaalSeekLine } from "@/features/chaal/live/events";
 import { ndjsonLines, parseLine } from "@/features/chaal/live/ndjson";
 import { pruneActivity } from "@/server/chaal/activity";
 import type { ConnectDeps } from "@/server/chaal/connect/service";
@@ -8,7 +8,7 @@ import { createChaalControls } from "@/server/chaal/controls";
 import { runChaalCron } from "@/server/chaal/cron";
 import { createLichess } from "@/server/chaal/lichess/client";
 import * as play from "@/server/chaal/play/service";
-import { challengeStream, eventStream, gameStream, sameOrigin } from "@/server/chaal/stream";
+import { challengeStream, eventStream, gameStream, sameOrigin, seekStream } from "@/server/chaal/stream";
 import * as schema from "@/server/db/schema";
 import { createTestDb } from "../utils/test-db";
 
@@ -45,7 +45,8 @@ function fakeLichess() {
 		if (
 			url.pathname.startsWith("/api/board/game/stream/") ||
 			url.pathname === "/api/stream/event" ||
-			form?.get("keepAliveStream")
+			form?.get("keepAliveStream") ||
+			(url.pathname === "/api/board/seek" && form?.get("time"))
 		) {
 			const key = `${method} ${url.pathname}`;
 			const stream = new ReadableStream<Uint8Array>({
@@ -452,5 +453,131 @@ describe("activity", () => {
 		expect(await runChaalCron(env.db, now)).toEqual({ activityPruned: 1 });
 		expect(await pruneActivity(env.db, now)).toBe(0);
 		expect(await activity()).toHaveLength(1);
+	});
+});
+
+describe("quick pairing and the games in progress (Task 78)", () => {
+	const RAPID = { kind: "clock", clock: { initial: 600, increment: 5 } } as const;
+
+	it("a seek on a clock is kept open by its stream, in minutes and seconds; Lichess closing it says ended", async () => {
+		await connect();
+		const response = await seekStream(deps(), member, { pace: RAPID, rated: true, range: "any" });
+		expect(response.status).toBe(200);
+		const reading = lines(response);
+		const key = "POST /api/board/seek";
+		await vi.waitFor(() => expect(lichess.streams.has(key)).toBe(true));
+		const call = lichess.calls.at(-1);
+		expect(call?.token).toBe("lio_me");
+		expect(Object.fromEntries(call?.form ?? [])).toEqual({
+			time: "10",
+			increment: "5",
+			rated: "true",
+			variant: "standard",
+		});
+		lichess.end(key);
+		expect((await reading) as ChaalSeekLine[]).toEqual([{ type: "ended" }]);
+	});
+
+	it("the window running out asks for a new seek; the page going away cancels it at Lichess", async () => {
+		await connect();
+		const response = await seekStream(deps(), member, { pace: RAPID, rated: false, range: "any" }, { windowMs: 100 });
+		const reading = lines(response);
+		expect((await reading) as ChaalSeekLine[]).toEqual([{ type: "reconnect", afterMs: 0 }]);
+		const second = await seekStream(deps(), member, { pace: RAPID, rated: false, range: "any" });
+		await vi.waitFor(() => expect(lichess.streams.has("POST /api/board/seek")).toBe(true));
+		const fetched = lichess.fetcher.mock.calls.at(-1)?.[1]?.signal;
+		await second.body?.cancel();
+		expect(fetched?.aborted).toBe(true);
+	});
+
+	it("a rating range is read around the player's rating at the seek's speed", async () => {
+		await connect();
+		lichess.answers.set("GET /api/account", () =>
+			Response.json({ id: "me", username: "me", perfs: { rapid: { rating: 1500 }, classical: { rating: 1700 } } }),
+		);
+		lichess.answers.set("POST /api/board/seek", () => Response.json({ id: "seekAbcd" }));
+		const seek = await play.seekCorrespondence(deps(), "member", {
+			pace: { kind: "days", days: 3 },
+			rated: false,
+			range: "200",
+		});
+		expect(seek).toEqual({ id: "seekAbcd" });
+		expect(Object.fromEntries(lichess.calls.at(-1)?.form ?? [])).toMatchObject({ days: "3" });
+		// No correspondence rating: anyone may join.
+		expect(lichess.calls.at(-1)?.form?.has("ratingRange")).toBe(false);
+		const response = await seekStream(deps(), member, {
+			pace: { kind: "clock", clock: { initial: 1800, increment: 0 } },
+			rated: false,
+			range: "200",
+		});
+		lichess.answers.delete("POST /api/board/seek");
+		expect(response.status).toBe(200);
+		expect(lichess.calls.at(-1)?.form?.get("ratingRange")).toBe("1500-1900");
+	});
+
+	it("refuses what the Board API can't seek: blitz, a clock as a call, days as a stream, rated when it's off", async () => {
+		await connect();
+		const blitz = { kind: "clock", clock: { initial: 300, increment: 0 } };
+		expect((await seekStream(deps(), member, { pace: blitz, rated: false, range: "any" })).status).toBe(400);
+		expect(
+			(await seekStream(deps(), member, { pace: { kind: "days", days: 3 }, rated: false, range: "any" })).status,
+		).toBe(400);
+		await expect(
+			play.seekCorrespondence(deps(), "member", { pace: RAPID, rated: false, range: "any" }),
+		).rejects.toMatchObject({
+			code: "BAD_REQUEST",
+		});
+		await env.db.insert(schema.chSettings).values({ id: 1, play: { aiMaxLevel: 8, rated: false } });
+		expect((await seekStream(deps(), member, { pace: RAPID, rated: true, range: "any" })).status).toBe(403);
+		expect((await seekStream(deps(), null, { pace: RAPID, rated: false, range: "any" })).status).toBe(401);
+		expect(lichess.calls).toHaveLength(0);
+	});
+
+	it("the games in progress: Lichess's list mapped, a game that doesn't read dropped", async () => {
+		await connect();
+		lichess.answers.set("GET /api/account/playing", () =>
+			Response.json({
+				nbMyTurn: 1,
+				nowPlaying: [
+					{
+						gameId: "corr1234",
+						fullId: "corr1234abcd",
+						color: "black",
+						fen: "rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq - 0 1",
+						lastMove: "e2e4",
+						source: "lobby",
+						status: { id: 20, name: "started" },
+						variant: { key: "standard", name: "Standard" },
+						speed: "correspondence",
+						perf: "correspondence",
+						rated: true,
+						rating: 1500,
+						hasMoved: false,
+						isMyTurn: true,
+						secondsLeft: 259_000,
+						opponent: { id: "them", username: "Them", rating: 1550 },
+					},
+					{ gameId: 42 },
+				],
+			}),
+		);
+		const { games } = await play.playingGames(deps(), "member");
+		expect(lichess.calls.at(-1)?.search).toBe("?nb=50");
+		expect(games).toEqual([
+			expect.objectContaining({
+				id: "corr1234",
+				color: "black",
+				speed: "correspondence",
+				isMyTurn: true,
+				secondsLeft: 259_000,
+				opponent: expect.objectContaining({ id: "them", name: "Them" }),
+			}),
+		]);
+	});
+
+	it("berserk goes to the Board API's path on the play lane", async () => {
+		await connect();
+		await play.gameAction(deps(), "member", "game1234", "berserk");
+		expect(lichess.calls.at(-1)).toMatchObject({ method: "POST", path: "/api/board/game/game1234/berserk" });
 	});
 });

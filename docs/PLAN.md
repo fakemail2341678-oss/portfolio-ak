@@ -2877,7 +2877,7 @@ As 12.1, with these differences:
 | 75 | Analysis board and the engine | xhigh | Done (decisions 0263, 0264) |
 | 76 | Play offline: the computer and over the board | high | Done (decision 0265) |
 | 77 | Play online I: streams, challenges, the Lichess AI, the live game | xhigh | Done (decision 0266) |
-| 78 | Play online II: quick pairing, correspondence, notifications | high | Planned |
+| 78 | Play online II: quick pairing, correspondence, notifications | high | Done (decision 0267) |
 | 79 | Admin I: settings, connections and blocks, API health | high | Planned |
 | 80 | Puzzles | high | Planned |
 | 81 | Players and games | high | Planned |
@@ -2935,7 +2935,7 @@ As 12.1, with these differences:
   - the explorer needs a token (above);
   - every public stream answers `access-control-allow-origin: *`, and preflights allow `Authorization`;
   - the TV feed sends `featured` then `fen` lines; a spectated game sends every position so far before the live ones; a broadcast round streams PGN with `[%eval]` and `[%clk]`.
-- **Still not checked on Lichess itself** (they need a live account; left for the owner, decision 0266): Board API seeks (Task 78), the kept-open challenge's first line (both shapes are read), joining one's own open challenge with `color`, chat and the claims after an opponent leaves. Task 77 built them against the spec and the fake Lichess. There's no Board API rematch: "Play again" starts a new challenge.
+- **Still not checked on Lichess itself** (they need a live account; left for the owner, decisions 0266 and 0267): Board API seeks and their rating range, `/api/account/playing` and berserk (Task 78), the kept-open challenge's first line (both shapes are read), joining one's own open challenge with `color`, chat and the claims after an opponent leaves. Task 77 built them against the spec and the fake Lichess. There's no Board API rematch: "Play again" starts a new challenge.
 
 **The repo** (as of Part 5; check after Part 6):
 - **CSP:**
@@ -2956,7 +2956,7 @@ As 12.1, with these differences:
   - the dnd-kit model in `src/features/taskline/calendar/calendar.tsx` (`useDraggable`, `useDroppable`, `Accessibility.configure`);
   - `enforceRateLimit` (`src/server/http/rate-limit.ts`);
   - env in `src/server/env.ts`, plus the dev-offline `OFF` list, `tests/setup/env.ts`, the harness `APP_ENV` regex and `tests/unit/env.test.ts`.
-- **Bundle:** the entry was 283.7 kB after Part 6, 284.4 after Tasks 71 and 72, 286.3 after Task 73, 286.9 after Task 75, 287.7 after Task 76 and 288.5 after Task 77 (built as CI builds, without Sentry or PostHog keys); each route definition adds about 0.3 kB (0217). Task 73 raised the budget to 290 kB for Part 7's routes (0260); Task 85 measures and trims.
+- **Bundle:** the entry was 283.7 kB after Part 6, 284.4 after Tasks 71 and 72, 286.3 after Task 73, 286.9 after Task 75, 287.7 after Task 76, 288.5 after Task 77 and 288.6 after Task 78 (built as CI builds, without Sentry or PostHog keys); each route definition adds about 0.3 kB (0217). Task 73 raised the budget to 290 kB for Part 7's routes (0260); Task 85 measures and trims.
 
 ### 13.5 Architecture (every task follows it)
 
@@ -2969,7 +2969,7 @@ As 12.1, with these differences:
 | Server | `src/server/chaal/`: `lichess/` (client, queue, ndjson, schemas, cache, store), `connect/` (`oauth.ts`, `vault.ts`, repository, service), `play/`, `puzzles/`, `analysis/`, `local/`, `admin/`, `stats.ts`, `guest-data.ts`, `cron.ts`, `manifest.ts` |
 | Functions | `src/functions/chaal/*.ts` (public reads: `withChaalPublic`; personal: `requireChaalUser` → `withChaalServices`), `src/functions/chaal-admin/*.ts` (`requirePermission` → `withServices`) |
 | Middleware | `src/middleware/chaal.ts` |
-| Nitro routes | `src/server/routes/chaal-{oauth,stream,manifest}.ts` and `cron-chaal.ts`: `/api/chaal/oauth/{start,callback}`, `/api/chaal/stream/{events,game/:id,challenge,seek}` (the challenge stream keeps a real-time challenge open, Task 77; seek arrives with Task 78), the manifest and `/api/cron/chaal`; `vite.config.ts` and `vercel.json` with `// @chaal`, and knip entries. These aren't in the client route tree, so they don't cost entry bytes |
+| Nitro routes | `src/server/routes/chaal-{oauth,stream,manifest}.ts` and `cron-chaal.ts`: `/api/chaal/oauth/{start,callback}`, `/api/chaal/stream/{events,game/:id,challenge,seek}` (the challenge stream keeps a real-time challenge open, Task 77; the seek stream a seek on a clock, Task 78), the manifest and `/api/cron/chaal`; `vite.config.ts` and `vercel.json` with `// @chaal`, and knip entries. These aren't in the client route tree, so they don't cost entry bytes |
 | Schema | `src/server/db/schema/chaal/*.ts`, tables `ch_*`, exported with `// @chaal` |
 | Assets | `public/chaal/` (icons, pieces, sounds); `public/chaal/engine/` is filled from the `stockfish` package by `pnpm engine:copy` (hashed names, gitignored, `COPYING` included) |
 | Styles | `src/styles/chaal.css`, scoped to `html[data-section=chaal]` |
@@ -3402,14 +3402,41 @@ As 12.1, with these differences:
 - On the deployment, connected with your Lichess account: play the Lichess AI, challenge a friend (with a clock, and by days), make a link, offer a draw, chat, and let an opponent leave to claim the win; tell me if anything differs from the fake.
 - Have a Nepali speaker read the online words (the glossary's Task 77 rows, `ch_online_*`, `ch_challenge*`, `ch_decline_*`, `ch_live_*`, `ch_game_*`).
 
-### Task 78: Play online II: quick pairing, correspondence and notifications (planned)
+### Task 78: Play online II: quick pairing, correspondence and notifications (done)
 
-- **Quick-pair tiles,** with allowed controls only: Rapid 10+0, 10+5, 15+10; Classical 30+0, 30+20; correspondence 1/3/7/14 days; custom within the limits.
-  - Uses the seek stream (cancelled on leave), with rated or casual and a rating range.
-- **Correspondence:** "My games" ordered by your turn, with time left and a nav badge.
-- **Notifications:** toasts and a bell for challenges and your turn, from the event stream, plus sounds.
-- **Also:** berserk in arena games, and the phone play layout (portrait and landscape).
-- **Tests.**
+**Done** (decision 0267; the guide's "Quick pairing, correspondence and notifications").
+
+**What changed:**
+- **Quick pairing** (`play/quick-pair.tsx`, `play/use-seek.ts`, first in the hub's "On Lichess"): tiles for Rapid 10+0, 10+5, 15+10, Classical 30+0, 30+20 and 1, 3, 7 or 14 days, and Custom (whole minutes 0–180, increment 0–180 s, rapid or slower: `seekLegal`); rated or casual (when the admin allows rated play); the opponent's rating (any, ±100, ±200, ±400 around the player's rating at that speed, read from `/api/account`). A seek on a clock goes through the new `POST /api/chaal/stream/seek` (kept open while it waits; Cancel or leaving cancels it; a new seek after each window); the game opens when it arrives on the event stream. A correspondence seek is `seekChaalCorrespondence` and waits in Lichess's lobby.
+- **Correspondence:** `getChaalPlaying` (`/api/account/playing`), read by the tab leader once the stream settles, after a game starts or ends, and every minute while a correspondence game is on, and shared with the other tabs; "My games" on the hub, the player's move first and then the least time left, with a small diagram and the time left.
+- **Notifications:** the bell in the top bar (challenges to answer, games on the player's move), the count on Play (top bar and tab bar), and toasts with the notify sound for a new challenge, the player's move in a correspondence game and a correspondence game that started; nothing during a restatement, nothing in a hidden tab, nothing stored.
+- **Also:** berserk in arena games (before the player's first move); zen (`z`, "Leave zen", the `zen` preference; on a game's page the frame and the page keep only the board and the strips); the phone's play layout on its side (`land:` variant: the board beside the strips and controls, sized by the height; the tab bar gives way to the top bar's sections), shared by the game and local game pages (`shell/play-layout.tsx`).
+- **The fake Lichess:** seeks (a clock's held open, cancelled on close; a correspondence one answered with its id), `/api/account/playing`, ratings on `/api/account`, arena games and berserk; controls `POST /e2e/lichess/seek-accept`, `GET /e2e/lichess/seeks`, `POST /e2e/lichess/arena`.
+- **Messages:** 35 new keys in en and ne (the glossary's Task 78 rows).
+- **Stories:** "Chaal/Online" gains QuickPairing, MyGamesAndTheBell and Berserk.
+- **Tests:** `tests/unit/chaal-quick.test.ts` (11: seekable paces and the rating range, the games in progress in the store, notices, the leader's reads, berserk, zen's pages), `tests/server/chaal-play.test.ts` (6 more: the seek stream, its window and cancel, the rating range, refusals, the games in progress, berserk), `tests/components/chaal/quick-pair.test.tsx` (2), 2 access-matrix rows, the guard test, and e2e (4: quick pairing with Cancel and an accepted seek; a correspondence seek's game, its toast, then the bell, Play's count and My games after the rival's move; berserk and zen; the phone on its side).
+
+**Deviations:**
+- **"Your move" isn't from the event stream:** Lichess's event stream has no move events, so the leader reads the games in progress (0267). A turn toast comes within a minute of the move.
+- **No unread marks on the bell:** it shows what waits now; nothing is stored.
+- **A correspondence seek can't be cancelled from Chaal:** Lichess has no call for it; the hub says it waits on Lichess.
+- **No colour choice for a seek:** Lichess balances colours and advises leaving it empty.
+- **Zen keeps what asks for an answer** (offers, the opponent leaving) and gives the page back when the game ends; the step buttons and actions come back with `z`.
+- **No admin controls:** Task 79 adds them (quick pairing follows the `play` switch and the rated limit).
+- **Design flow:** the e2e run's screenshot of a game on a phone on its side found the fair-play banner pushing the board off the screen (fixed: the notices give their height back there), and the review found the bell overflowing the phone's top bar (fixed: on a phone the theme lives in the account menu). No separate Playwright MCP pass; `ui-ux-pro-max` and impeccable's critique weren't run, as in Tasks 73–77 (the finish review is Task 85's).
+- **The online-play flows run as `member`** (Tasks 77 and 78): Lichess allows one event stream per token, and the review opens Chaal's pages as the viewer at the same time, knocking the flows' stream off. They clean up after themselves.
+
+**Numbers:**
+- **Size:** the entry is 288.6 kB (288.5 before; budget 290 kB), built by the e2e harness as CI builds. The play hub's chunk is 65.2 / 20.1 kB gzipped (47.9 / 14.9 before: quick pairing and My games); the game page's 36.9 / 13.6 kB; the tab leader's 2.6 / 1.2 kB; the frame's section chunk (with the bell) 44.8 / 15.2 kB.
+- **Tests:** 21 new (`chaal-quick` 11, `chaal-play` 6, the components' `quick-pair` 2, 2 access-matrix rows) plus 4 e2e flows. `pnpm test`: 180 files, 2,023 tests, all passing.
+- **Storybook:** both passes, 637 of 640 before the bell's name was fixed; then the Online stories pass in both. The one other failure, `UI/Primitives` → Overlays (light), fails on `main` too (3 of 3 runs here): not this task's.
+- **e2e:** every Chaal flow and the browser review of every `/app/chaal` page, 237 of 237 (2 workers). The full suite was stopped at 1,627 of 2,853 when this machine ran out of memory (6 workers' Chromes); its two failures outside Chaal (the Test CRUD conflict flow, `/admin/portfolio/journal`'s layout shift at dark 768) pass when run alone (37 of 37). Run it with `--workers=2` here.
+- **Gates:** `typecheck`, `check`, `knip`, `i18n:check`, `build` and the bundle check, `build-storybook`.
+
+**Left for the owner:**
+- Run `pnpm db:migrate` on Neon (`0039`–`0043` are still pending there; this task adds no migration).
+- On the deployment, connected with your Lichess account: quick pair at 10+5 and by days (with a rating range), play a correspondence move from another device and see the bell and the toast here, and try berserk in an arena; tell me if anything differs from the fake.
+- Have a Nepali speaker read the new words (the glossary's Task 78 rows, `ch_quick_*`, `ch_notices_*`, `ch_time_*`, `ch_zen_exit`, `ch_live_berserk`).
 
 ### Task 79: Admin I: settings, connections and API health (planned)
 

@@ -174,6 +174,29 @@ export function mapStreamEvent(value: unknown): ChaalEvent | null {
 	return parsed.success ? parsed.data : null;
 }
 
+/** GET /api/account/playing (Task 78): the games in progress, as the event stream shapes them; one that doesn't read is dropped. */
+export const playingAnswer = z
+	.object({ nowPlaying: z.array(eventGame.nullable().catch(null)) })
+	.transform((answer) => ({
+		games: answer.nowPlaying.filter((game): game is ChaalEventGame => game !== null),
+	}));
+
+/** GET /api/account with its ratings (Task 78): the player's rating by speed, for a seek's rating range. */
+export const accountRatingsAnswer = z
+	.object({
+		perfs: z.record(z.string(), z.object({ rating: z.number().nullish() }).nullable().catch(null)).nullish(),
+	})
+	.transform((account) => {
+		const ratings: Record<string, number> = {};
+		for (const [speed, perf] of Object.entries(account.perfs ?? {})) {
+			if (perf?.rating) ratings[speed] = perf.rating;
+		}
+		return ratings;
+	});
+
+/** POST /api/board/seek with days: the correspondence seek's id. */
+export const seekAnswer = z.object({ id: z.string().min(1).max(32) }).transform((seek) => ({ id: seek.id }));
+
 // --- Small public answers the lab reads ----------------------------------------------------
 
 /** GET /api/puzzle/daily: the lab's public-lane check reads only the puzzle's id and rating. */

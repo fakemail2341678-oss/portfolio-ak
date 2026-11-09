@@ -91,7 +91,7 @@ export function ChaalUserMenu() {
 				<Button
 					variant="outline"
 					size="sm"
-					className="h-9 max-w-44 gap-2 border-ch-ink px-3 font-medium"
+					className="h-9 max-w-32 gap-2 border-ch-ink px-3 font-medium sm:max-w-44"
 					data-testid="user-menu"
 				>
 					<ConnectionDot state={state} />

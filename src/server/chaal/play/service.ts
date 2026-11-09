@@ -2,29 +2,35 @@ import "@tanstack/react-start/server-only";
 import { featureOn } from "@/features/chaal/features";
 import type { ChaalColor, ChaalEventChallenge } from "@/features/chaal/live/events";
 import { ndjsonLines, parseLine } from "@/features/chaal/live/ndjson";
-import { readPlayLimits } from "@/features/chaal/play/controls";
+import { ratingRangeOf, readPlayLimits } from "@/features/chaal/play/controls";
 import type {
 	ChaalChallenges,
 	ChaalLiveGame,
 	ChaalOpenChallenge,
+	ChaalPlaying,
+	ChaalSeek,
 	ChallengeAiInput,
 	ChallengeColor,
 	ChallengePlayerInput,
 	DeclineReason,
 	GameAction,
 	OpenChallengeInput,
+	SeekInput,
 } from "@/features/chaal/play/schema";
 import { AppError } from "@/lib/errors";
 import { recordActivity } from "../activity";
 import { type ConnectDeps, requireFeature, withToken } from "../connect/service";
 import { playLane, userLane } from "../lichess/lanes";
 import {
+	accountRatingsAnswer,
 	aiGameAnswer,
 	challengeAnswer,
 	challengeListAnswer,
 	chatHistoryAnswer,
 	gameFullAnswer,
 	openChallengeAnswer,
+	playingAnswer,
+	seekAnswer,
 } from "../lichess/schemas";
 
 /**
@@ -263,9 +269,14 @@ const ACTION_PATHS: Readonly<Record<GameAction, string>> = {
 	"takeback-decline": "takeback/no",
 	"claim-victory": "claim-victory",
 	"claim-draw": "claim-draw",
+	berserk: "berserk",
 };
 
-/** Resigning, aborting, offering or answering a draw or a takeback, and the claims when the opponent has gone. */
+/**
+ * Resigning, aborting, offering or answering a draw or a takeback, the claims when the
+ * opponent has gone, and berserk (an arena game before the player's first move: Lichess
+ * refuses it anywhere else, BAD_REQUEST).
+ */
 export function gameAction(deps: ConnectDeps, userId: string, gameId: string, action: GameAction): Promise<void> {
 	return withToken(deps, userId, "play", (token) =>
 		deps.lichess.send({
@@ -300,6 +311,72 @@ export async function chatHistory(deps: ConnectDeps, userId: string, gameId: str
 		deps.lichess.json(
 			{ endpoint: "board-chat-read", path: `/api/board/game/${gameId}/chat`, token, lane: userLane(userId) },
 			chatHistoryAnswer,
+		),
+	);
+}
+
+// --- Quick pairing and the games in progress (Task 78, decision 0267) ----------------------
+
+/** The speed a seek's pace plays at, as Lichess names its ratings. */
+export function seekSpeed(pace: SeekInput["pace"]): "rapid" | "classical" | "correspondence" {
+	if (pace.kind === "days") return "correspondence";
+	return pace.clock.initial + 40 * pace.clock.increment < 1_500 ? "rapid" : "classical";
+}
+
+/**
+ * The form of a seek (POST /api/board/seek): a clock in minutes and seconds, or days, and no
+ * colour (Lichess balances it). A rating range is read around the player's own rating at the
+ * seek's speed (their account); without one there yet, anyone may join.
+ */
+export async function seekForm(
+	deps: ConnectDeps,
+	userId: string,
+	token: string,
+	input: SeekInput,
+): Promise<Record<string, string>> {
+	await requireRated(deps, input.rated);
+	let range: string | null = null;
+	if (input.range !== "any") {
+		const ratings = await deps.lichess.json(
+			{ endpoint: "account-ratings", path: "/api/account", token, lane: userLane(userId) },
+			accountRatingsAnswer,
+		);
+		range = ratingRangeOf(input.range, ratings[seekSpeed(input.pace)] ?? null);
+	}
+	const pace: Record<string, string> =
+		input.pace.kind === "clock"
+			? { time: String(input.pace.clock.initial / 60), increment: String(input.pace.clock.increment) }
+			: { days: String(input.pace.days) };
+	return { ...pace, rated: String(input.rated), variant: "standard", ...(range ? { ratingRange: range } : {}) };
+}
+
+/**
+ * A correspondence seek: Lichess answers at once with its id, and it waits in the lobby
+ * until someone joins (the game arrives on the event stream; Lichess has no call to take
+ * it back). A clock's seek is kept open by the stream route (src/server/chaal/stream.ts).
+ */
+export async function seekCorrespondence(deps: ConnectDeps, userId: string, input: SeekInput): Promise<ChaalSeek> {
+	if (input.pace.kind !== "days") throw new AppError("BAD_REQUEST", "A clock seek is kept open by its stream");
+	return withToken(deps, userId, "play", async (token) => {
+		const form = await seekForm(deps, userId, token, input);
+		return deps.lichess.json(
+			{ endpoint: "board-seek", method: "POST", path: "/api/board/seek", form, token, lane: userLane(userId) },
+			seekAnswer,
+		);
+	});
+}
+
+/**
+ * GET /api/account/playing: the player's games in progress, real-time and correspondence,
+ * the most urgent first, with whose turn it is and the time left. The event stream says
+ * when a game starts or ends, never when a move is made, so the tab leader reads this for
+ * correspondence turns (decision 0267).
+ */
+export function playingGames(deps: ConnectDeps, userId: string): Promise<ChaalPlaying> {
+	return withToken(deps, userId, "play", (token) =>
+		deps.lichess.json(
+			{ endpoint: "account-playing", path: "/api/account/playing", params: { nb: 50 }, token, lane: userLane(userId) },
+			playingAnswer,
 		),
 	);
 }

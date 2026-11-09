@@ -132,3 +132,12 @@ export type ChaalChallengeLine =
 	| { type: "done"; done: ChallengeDone }
 	/** Ours: nobody answered while the stream could stay open; the challenge was cancelled. */
 	| { type: "expired" };
+
+// --- A seek in the lobby (POST /api/chaal/stream/seek, Task 78) -----------------------------
+
+/**
+ * Lichess sends a seek's stream nothing but keepalives, and closes it when someone accepts
+ * it (the game arrives on the event stream) or it expires. Ours: `ended` when Lichess closed
+ * it; `reconnect` when our window ran out or the stream broke, and the seek goes on in a new one.
+ */
+export type ChaalSeekLine = { type: "ended" } | ChaalReconnect;

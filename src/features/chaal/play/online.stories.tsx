@@ -1,22 +1,26 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import type { ReactNode } from "react";
-import { expect, fn, mocked, waitFor } from "storybook/test";
+import { expect, fn, mocked, waitFor, within } from "storybook/test";
 import { getChaalStatus } from "@/functions/chaal/status";
 import { withChaal } from "../../../../.storybook/mocks/chaal";
 import { sampleUser } from "../../../../.storybook/mocks/data";
 import { DEFAULT_ENGINE_LIMITS } from "../engine/limits";
 import { CHAAL_FEATURES, type ChaalFeature } from "../features";
 import { LiveGameBoard } from "../game/live-game-page";
-import type { ChaalGameState } from "../live/events";
+import type { ChaalEventGame, ChaalGameState } from "../live/events";
 import type { KeepOptions } from "../live/reader";
+import { IDLE, liveStore } from "../live/store";
+import { NoticeBell } from "../shell/live-notices";
 import { DEFAULT_PLAY_LIMITS } from "./controls";
-import { OnlinePlay } from "./online-play";
+import { MyGames, OnlinePlay } from "./online-play";
+import { QuickPair } from "./quick-pair";
 import type { ChaalLiveGame } from "./schema";
 
 /**
- * Online play (Task 77): the hub's online part (connected, not connected, off; the AI, a
- * player, a link; challenges to answer) and a game on Lichess (your move, the opponent's
- * offers and their leaving, against the AI, over). Play functions find things by test id
+ * Online play (Tasks 77 and 78): the hub's online part (connected, not connected, off; the
+ * AI, a player, a link; challenges to answer; quick pairing; my games), the bell, and a game
+ * on Lichess (your move, the opponent's offers and their leaving, against the AI, berserk,
+ * over). Play functions find things by test id
  * or role, never by English text (the second pass is Nepali).
  */
 
@@ -46,6 +50,8 @@ const calls = () => ({
 	accept: fn(async (id: string) => ({ id })),
 	decline: fn(async () => {}),
 	cancel: fn(async () => {}),
+	seekDays: fn(async () => ({ id: "seek1234" })),
+	playing: fn(async () => ({ games: [] })),
 });
 
 export const Setup: Story = {
@@ -234,5 +240,121 @@ export const Over: Story = {
 		await expect(await canvas.findByTestId("chaal-result")).toBeVisible();
 		await expect(canvas.getByTestId("chaal-game-rating")).toBeVisible();
 		await expect(canvas.getByTestId("chaal-game-analyse")).toBeVisible();
+	},
+};
+
+// --- Task 78: quick pairing, my games, the bell, berserk -----------------------------------
+
+const eventGame = (overrides: Partial<ChaalEventGame>): ChaalEventGame => ({
+	id: "corr1234",
+	color: "white",
+	fen: "rnbqkbnr/pppp1ppp/8/4p3/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 2",
+	lastMove: "e7e5",
+	source: "lobby",
+	status: "started",
+	variant: "standard",
+	speed: "correspondence",
+	rated: true,
+	hasMoved: true,
+	isMyTurn: true,
+	secondsLeft: 200_000,
+	opponent: { id: "e2e_rival", name: "E2E_Rival", title: "FM", rating: 2210, aiLevel: null },
+	winner: null,
+	ratingDiff: null,
+	boardCompatible: true,
+	tournamentId: null,
+	...overrides,
+});
+
+/** The event store as an open stream holding these games and an incoming challenge. */
+const followed = (games: ChaalEventGame[]) => () => {
+	liveStore.set({
+		...IDLE,
+		status: "open",
+		downSince: null,
+		settled: true,
+		games,
+		readAt: Object.fromEntries(games.map((game) => [game.id, Date.now()])),
+		challenges: [
+			{
+				id: "chal5678",
+				status: "created",
+				challenger: { id: "e2e_rival", name: "E2E_Rival", title: "FM", rating: 2210, aiLevel: null },
+				destUser: { id: "e2e_player", name: "E2E_Player", title: null, rating: 1603, aiLevel: null },
+				variant: "standard",
+				rated: false,
+				speed: "correspondence",
+				timeControl: { type: "correspondence", limit: null, increment: null, daysPerTurn: 3 },
+				color: "random",
+				finalColor: null,
+				declineReasonKey: null,
+			},
+		],
+	});
+	return () => liveStore.set(IDLE);
+};
+
+/** A seek stream that opens and stays quiet until stopped. */
+const quietStream = (_url: string, options: KeepOptions) => {
+	options.onStatus?.({ state: "open" });
+	return { stop: () => {} };
+};
+
+export const QuickPairing: Story = {
+	parameters: SIGNED_IN,
+	beforeEach: followed([]),
+	render: () => (
+		<Ground>
+			<QuickPair calls={calls()} rated stream={quietStream} />
+		</Ground>
+	),
+	play: async ({ canvas, userEvent }) => {
+		await expect(await canvas.findByTestId("chaal-quick-status")).toHaveAttribute("data-state", "ready");
+		const tile = canvas.getAllByTestId("chaal-quick-tile").find((button) => button.dataset.pace === "600+5");
+		if (!tile) throw new Error("no 10+5 tile");
+		await userEvent.click(tile);
+		await expect(canvas.getByTestId("chaal-quick-status")).toHaveAttribute("data-state", "seeking");
+		await expect(tile).toHaveAttribute("aria-pressed", "true");
+		await userEvent.click(canvas.getByTestId("chaal-quick-cancel"));
+		await expect(canvas.getByTestId("chaal-quick-status")).toHaveAttribute("data-state", "ready");
+	},
+};
+
+export const MyGamesAndTheBell: Story = {
+	parameters: SIGNED_IN,
+	beforeEach: followed([
+		eventGame({ id: "theirs12", isMyTurn: false, secondsLeft: 400_000 }),
+		eventGame({ id: "mine1234", isMyTurn: true, secondsLeft: 90_000 }),
+		eventGame({ id: "rapid123", speed: "rapid", isMyTurn: false, secondsLeft: 420, source: "friend" }),
+	]),
+	render: () => (
+		<Ground>
+			<div className="flex justify-end">
+				<NoticeBell />
+			</div>
+			<MyGames />
+		</Ground>
+	),
+	play: async ({ canvas, userEvent }) => {
+		const rows = await canvas.findAllByTestId("chaal-online-game");
+		await expect(rows[0]).toHaveAttribute("data-my-turn", "true");
+		const bell = await canvas.findByTestId("chaal-bell");
+		await expect(bell).toHaveAttribute("data-count", "2");
+		await userEvent.click(bell);
+		await expect(await within(document.body).findByTestId("chaal-bell-panel")).toBeVisible();
+	},
+};
+
+export const Berserk: Story = {
+	parameters: SIGNED_IN,
+	render: () => {
+		const game = GAME({ moves: [], wtime: 300_000, btime: 300_000 });
+		return board({
+			...game,
+			game: { ...game.game, tournamentId: "arena123", clock: { initial: 300_000, increment: 0 } },
+		});
+	},
+	play: async ({ canvas }) => {
+		await expect(await canvas.findByTestId("chaal-game-berserk")).toBeVisible();
 	},
 };

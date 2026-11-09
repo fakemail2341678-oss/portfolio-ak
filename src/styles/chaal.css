@@ -223,6 +223,13 @@ html[data-section="chaal"] ::selection {
 	--text-ch-head: 1.5rem;
 }
 
+/*
+ * A phone on its side (Task 78, decision 0267): wide but short, so the play pages put the
+ * board beside the strips and the controls, sized by the height, and the tab bar gives its
+ * height back (the top bar carries the sections there).
+ */
+@custom-variant land (@media (orientation: landscape) and (max-height: 32rem));
+
 /* Display type: Mukta 800, tight. Nepali drops the negative tracking and opens the leading. */
 @utility ch-display {
 	font-family: var(--font-ch-display);

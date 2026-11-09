@@ -27,8 +27,10 @@ import { ChaalWordmark } from "./chaal-mark";
 import { ChaalPalette } from "./chaal-palette";
 import { ChaalUserMenu } from "./chaal-user-menu";
 import { FairPlayBanner } from "./fair-play-banner";
+import { NoticeBell, PlayBadge, useLiveNotices } from "./live-notices";
 import { ChaalNoticeBanner } from "./notice-banner";
 import { ChaalShortcutsDialog } from "./shortcuts-dialog";
+import { useZen, useZenKey } from "./zen";
 
 /**
  * Chaal's sections: the top bar's links on wide screens, the tab bar on phones (PLAN Task
@@ -69,17 +71,18 @@ function ChaalHeader({ onOpenPalette }: { onOpenPalette: () => void }) {
 					<ChaalWordmark />
 					<span className="sr-only">{m.ch_nav_home()}</span>
 				</Link>
-				<nav aria-label={m.ch_nav_label()} className="max-md:hidden">
+				<nav aria-label={m.ch_nav_label()} className="max-md:hidden land:block">
 					<ul className="flex items-center gap-1">
 						{SECTIONS.map((section) => (
 							<li key={section.testId}>
 								<Link
 									{...section.link}
 									activeOptions={{ exact: section.exact ?? false }}
-									className={`block whitespace-nowrap px-2 py-[1.125rem] text-ch-muted transition-colors hover:text-ch-ink aria-[current=page]:text-ch-ink aria-[current=page]:shadow-[inset_0_-2px_0_var(--ch-ink)] ${focusRing}`}
+									className={`relative block whitespace-nowrap px-2 py-[1.125rem] text-ch-muted transition-colors hover:text-ch-ink aria-[current=page]:text-ch-ink aria-[current=page]:shadow-[inset_0_-2px_0_var(--ch-ink)] ${focusRing}`}
 									data-testid={section.testId}
 								>
 									{section.label()}
+									{section.testId === "chaal-nav-play" ? <PlayBadge /> : null}
 								</Link>
 							</li>
 						))}
@@ -100,7 +103,11 @@ function ChaalHeader({ onOpenPalette }: { onOpenPalette: () => void }) {
 						</Kbd>
 					</Button>
 					<LanguageSwitcher className="max-lg:hidden" />
-					<ThemeToggle />
+					{/* On a phone the account menu holds the theme, which leaves room for the bell (Task 78). */}
+					<span className="max-sm:hidden">
+						<ThemeToggle />
+					</span>
+					<NoticeBell />
 					<ChaalUserMenu />
 				</div>
 			</div>
@@ -172,7 +179,7 @@ function ChaalTabBar({ onOpenPalette }: { onOpenPalette: () => void }) {
 	return (
 		<nav
 			aria-label={m.ch_tabs_label()}
-			className="fixed inset-x-0 bottom-0 z-40 border-ch-ink border-t-2 bg-ch-ground pb-[env(safe-area-inset-bottom)] md:hidden"
+			className="fixed inset-x-0 bottom-0 z-40 border-ch-ink border-t-2 bg-ch-ground pb-[env(safe-area-inset-bottom)] md:hidden land:hidden"
 			data-testid="chaal-tab-bar"
 		>
 			<ul className="grid h-14 auto-cols-fr grid-flow-col">
@@ -185,7 +192,10 @@ function ChaalTabBar({ onOpenPalette }: { onOpenPalette: () => void }) {
 								activeOptions={{ exact: section.exact ?? false }}
 								className={`flex flex-1 flex-col items-center justify-center gap-1 text-[0.6875rem] text-ch-muted aria-[current=page]:font-semibold aria-[current=page]:text-ch-ink ${focusRing}`}
 							>
-								<Icon aria-hidden className="size-5" />
+								<span className="relative">
+									<Icon aria-hidden className="size-5" />
+									{section.testId === "chaal-nav-play" ? <PlayBadge /> : null}
+								</span>
 								{section.label()}
 							</Link>
 						</li>
@@ -239,7 +249,9 @@ function ChaalFooter() {
  * Chaal's frame on every page (PLAN Task 73): the top bar, the admin's notice, the page, the
  * footer, and on phones the tab bar, whose height the page keeps clear. The palette (⌘K) and
  * the shortcuts (`?`) open from anywhere. A player connected for play follows their Lichess
- * events from every page (Task 77). The page renders its own <main>.
+ * events from every page (Task 77), with the bell, the count on Play and toasts (Task 78).
+ * Zen mode on a game's page leaves the game alone: no bars, notices or footer (Task 78).
+ * The page renders its own <main>.
  */
 export function ChaalFrame({ children }: { children: ReactNode }) {
 	const [paletteOpen, setPaletteOpen] = useState(false);
@@ -247,6 +259,9 @@ export function ChaalFrame({ children }: { children: ReactNode }) {
 	useImportLocalPreferences();
 	useImportLocalGames();
 	useLiveEvents();
+	useLiveNotices();
+	useZenKey();
+	const { zen, playing } = useZen();
 	useHotkeys({
 		"mod+k": () => setPaletteOpen((open) => !open),
 		"shift+?": () => setShortcutsOpen(true),
@@ -254,16 +269,28 @@ export function ChaalFrame({ children }: { children: ReactNode }) {
 	const openPalette = () => setPaletteOpen(true);
 	return (
 		<div
-			className="flex min-h-dvh flex-col bg-ch-ground text-ch-ink max-md:pb-[calc(3.5rem+env(safe-area-inset-bottom))]"
+			className={`flex min-h-dvh flex-col bg-ch-ground text-ch-ink ${zen ? "" : "max-md:pb-[calc(3.5rem+env(safe-area-inset-bottom))] land:pb-0"}`}
 			data-testid="chaal-frame"
+			data-zen={zen || undefined}
 		>
 			<NavigationProgress />
-			<ChaalHeader onOpenPalette={openPalette} />
-			<ChaalNoticeBanner />
-			<FairPlayBanner />
+			{zen ? null : (
+				<>
+					<ChaalHeader onOpenPalette={openPalette} />
+					{/* A phone on its side has no height to spare beside a game: the notices wait for the other pages. */}
+					<div className={playing ? "land:hidden" : undefined}>
+						<ChaalNoticeBanner />
+						<FairPlayBanner />
+					</div>
+				</>
+			)}
 			<div className="flex flex-1 flex-col">{children}</div>
-			<ChaalFooter />
-			<ChaalTabBar onOpenPalette={openPalette} />
+			{zen ? null : (
+				<>
+					<ChaalFooter />
+					<ChaalTabBar onOpenPalette={openPalette} />
+				</>
+			)}
 			<ChaalPalette open={paletteOpen} onOpenChange={setPaletteOpen} onOpenShortcuts={() => setShortcutsOpen(true)} />
 			<ChaalShortcutsDialog open={shortcutsOpen} onOpenChange={setShortcutsOpen} />
 		</div>

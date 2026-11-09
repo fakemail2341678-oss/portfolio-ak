@@ -523,6 +523,8 @@ const CHAAL_FUNCTIONS: Record<string, ReadonlyArray<string>> = {
 		"declineChaalChallenge",
 		"cancelChaalChallenge",
 		"challengeChaalAi",
+		"seekChaalCorrespondence",
+		"getChaalPlaying",
 	],
 	"chaal/live-game.ts": ["getChaalLiveGame", "playChaalMove", "actOnChaalGame", "getChaalChat", "sendChaalChat"],
 };

@@ -31,6 +31,9 @@ export type LiveGameView = {
 	move: (played: PlayedMove) => void;
 	act: (action: GameAction) => Promise<boolean>;
 	sendChat: (text: string) => Promise<boolean>;
+	/** Whether the player went berserk in this arena game (Task 78): the button goes. */
+	berserked: boolean;
+	berserk: () => Promise<boolean>;
 };
 
 export const gameStreamUrl = (id: string) => `/api/chaal/stream/game/${id}`;
@@ -57,6 +60,7 @@ export function useLiveGame({
 	const [link, setLink] = useState<GameLink>("connecting");
 	const [downSince, setDownSince] = useState<number | null>(null);
 	const [premove, setPremove] = useState<Premove | null>(null);
+	const [berserked, setBerserked] = useState(false);
 	const latest = useRef(game);
 	latest.current = game;
 	const id = initial.full.id;
@@ -112,6 +116,16 @@ export function useLiveGame({
 		if (played) sending.current({ uci: played.uci, san: played.san, fen: played.fen });
 	}, [game, premove]);
 
+	const act = async (action: GameAction) => {
+		try {
+			await calls.act(id, action);
+			return true;
+		} catch (error) {
+			toast.error(errorMessage(error));
+			return false;
+		}
+	};
+
 	return {
 		game,
 		link,
@@ -122,14 +136,12 @@ export function useLiveGame({
 			if (!myTurn(latest.current)) return;
 			send({ uci: played.uci, san: played.san, fen: played.fen });
 		},
-		act: async (action) => {
-			try {
-				await calls.act(id, action);
-				return true;
-			} catch (error) {
-				toast.error(errorMessage(error));
-				return false;
-			}
+		act,
+		berserked,
+		berserk: async () => {
+			const done = await act("berserk");
+			if (done) setBerserked(true);
+			return done;
 		},
 		sendChat: async (text) => {
 			try {
