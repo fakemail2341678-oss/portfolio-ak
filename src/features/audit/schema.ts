@@ -119,6 +119,12 @@ export const AUDIT_ACTIONS = [
 	"chaal.connection.revoke",
 	"chaal.block.create",
 	"chaal.block.delete",
+	"chaal.featured.create",
+	"chaal.featured.update",
+	"chaal.featured.reorder",
+	"chaal.featured.delete",
+	"chaal.home.update",
+	"chaal.announcement",
 	// chaal:end
 	// @new-feature:audit-actions
 ] as const;
@@ -164,6 +170,8 @@ export const AUDIT_TARGETS = [
 	"chaal-settings",
 	"chaal-connection",
 	"chaal-block",
+	"chaal-featured",
+	"chaal-home",
 	// chaal:end
 	// @new-feature:audit-targets
 ] as const;

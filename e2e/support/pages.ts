@@ -403,6 +403,9 @@ export const REVIEWED_PAGES: ReadonlyArray<ReviewedPage> = [
 	{ route: "/admin/chaal/connections", as: "admin" },
 	{ route: "/admin/chaal/blocks", as: "admin" },
 	{ route: "/admin/chaal/health", as: "admin" },
+	// Task 84: the overview and curation.
+	{ route: "/admin/chaal", as: "admin" },
+	{ route: "/admin/chaal/curation", as: "admin" },
 	{ route: "/app/chaal" },
 	{ route: "/app/chaal", as: "viewer", label: "viewer" },
 	{ route: "/app/chaal/about" },
@@ -529,7 +532,6 @@ export const NOT_REVIEWED: Readonly<Record<string, string>> = {
 	"/l/$slug": "a redirect, or the 404 (checked by e2e/flows/apps.spec.ts)", // @apps
 	"/app/taskline/$ws": "a redirect to the workspace's projects (checked by e2e/flows/taskline.spec.ts)", // @taskline
 	"/app/parda/surprise": "a redirect to a random title (checked by e2e/flows/parda.spec.ts)", // @parda
-	"/admin/chaal": "a redirect to the settings until the overview arrives (checked by e2e/flows/chaal.spec.ts)", // @chaal
 	"/app/taskline/$ws/p/$key/settings": "a redirect to the settings' first section", // @taskline
 	"/apps/kanban": "Kanban's old address, a redirect to Taskline (checked by e2e/flows/taskline.spec.ts)", // @taskline
 	"/apps/kanban/$boardId": "an old board's address, a redirect to its project (checked by e2e/flows/taskline.spec.ts)", // @taskline

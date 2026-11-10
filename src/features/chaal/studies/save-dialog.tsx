@@ -96,7 +96,7 @@ export function SaveToStudyDialog({
 						</a>
 					</div>
 				) : (
-					<form onSubmit={submit} className="flex flex-col gap-4" data-testid="chaal-save-study-form">
+					<form method="post" onSubmit={submit} className="flex flex-col gap-4" data-testid="chaal-save-study-form">
 						<div className="flex flex-col gap-1.5">
 							<Label htmlFor={`${field}-study`}>{m.ch_study_save_study()}</Label>
 							<NativeSelect id={`${field}-study`} name="study" required data-testid="chaal-save-study-pick">

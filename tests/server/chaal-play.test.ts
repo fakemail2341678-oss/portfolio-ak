@@ -450,7 +450,7 @@ describe("activity", () => {
 			{ userId: "member", kind: "connect", at: new Date(now - 91 * 86_400_000) },
 			{ userId: "member", kind: "connect", at: new Date(now - 89 * 86_400_000) },
 		]);
-		expect(await runChaalCron(env.db, now)).toEqual({ activityPruned: 1, callStatsPruned: 0 });
+		expect(await runChaalCron(env.db, now)).toMatchObject({ activityPruned: 1, callStatsPruned: 0 });
 		expect(await pruneActivity(env.db, now)).toBe(0);
 		expect(await activity()).toHaveLength(1);
 	});

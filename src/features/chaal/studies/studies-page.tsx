@@ -124,7 +124,7 @@ function Toolbar({ search, by }: { search: StudiesSearch; by: string }) {
 						</div>
 					</form>
 				</search>
-				<form onSubmit={open} className="flex flex-col gap-1.5">
+				<form method="post" onSubmit={open} className="flex flex-col gap-1.5">
 					<label htmlFor="chaal-studies-open" className="text-sm">
 						{m.ch_studies_open_label()}
 					</label>

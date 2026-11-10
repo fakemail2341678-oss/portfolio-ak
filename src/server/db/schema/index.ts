@@ -29,6 +29,7 @@ export * from "./chaal/activity"; // @chaal
 export * from "./chaal/analysis"; // @chaal
 export * from "./chaal/api-stat"; // @chaal
 export * from "./chaal/connection"; // @chaal
+export * from "./chaal/curation"; // @chaal
 export * from "./chaal/local-game"; // @chaal
 export * from "./chaal/preference"; // @chaal
 export * from "./chaal/puzzle-attempt"; // @chaal

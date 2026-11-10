@@ -266,7 +266,7 @@ function JoinForm({
 		join.mutate({ ...(password ? { password } : {}), ...(team ? { team } : {}) });
 	};
 	return (
-		<form onSubmit={submit} className="flex flex-col gap-3" data-testid="chaal-tournament-join-form">
+		<form method="post" onSubmit={submit} className="flex flex-col gap-3" data-testid="chaal-tournament-join-form">
 			{teams && teams.length > 0 ? (
 				<div className="flex flex-col gap-1.5">
 					<Label htmlFor={`${field}-team`}>{m.ch_tournament_team()}</Label>

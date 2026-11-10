@@ -2883,7 +2883,7 @@ As 12.1, with these differences:
 | 81 | Players and games | high | Done (decision 0271) |
 | 82 | Watch: TV, live games, broadcasts | high | Done (decision 0272) |
 | 83 | Community: tournaments, teams, studies | high | Done (decision 0273) |
-| 84 | Admin II: overview and curation | high | Planned |
+| 84 | Admin II: overview and curation | high | Done (decision 0274) |
 | 85 | Wrap-up: full e2e, accessibility pass, template matrix, finish review | medium | Planned |
 
 - **Order is fixed.** The feature switches exist from Task 71, and the admin gets their UI in Task 79, right after online play.
@@ -3113,7 +3113,7 @@ As 12.1, with these differences:
   - `/studies` and `/studies/$id`;
   - `/about`.
 - **Personal:** `/local/$id`, `/settings`, `/sign-in`, `/sign-up`.
-- **Admin:** `/admin/chaal` (overview; until Task 84 it redirects to the settings, Task 79), plus `settings`, `connections`, `health` and `curation`, with a temporary `lab` page.
+- **Admin:** `/admin/chaal` (the overview, Task 84; a redirect to the settings before it, Task 79), plus `settings`, `connections`, `health` and `curation`, with a temporary `lab` page.
 
 **SEO:**
 - **Indexable:** home, play, analysis, puzzles, watch, broadcasts, players (leaderboards), tournaments and about. They use `seo({ siteName: "Chaal" })` and JSON-LD (`WebApplication`), and are listed in `INDEXABLE` and the sitemap.
@@ -3180,7 +3180,7 @@ As 12.1, with these differences:
 - **Fixtures:** `pnpm lichess:record` (the daily puzzle, the TV channels, a cloud eval, a tablebase position, the TV feed's first lines; the explorer with `LICHESS_APP_TOKEN`), `events.ndjson` by hand from the API's examples, and the fake Lichess in `e2e/harness/lichess.ts`.
 - **Connecting:** the OAuth routes (`/api/chaal/oauth/{start,callback}`, PKCE, a sealed state cookie, safe return paths), the vault (AES-256-GCM, key ids, rotation by listing keys), `ch_connection`, `ch_settings`, `ch_block` (migration `0039_chaal_foundation`), disconnect, 401 → revoked, scopes by feature, `withToken`, the middleware (`withChaalPublic`, `requireChaalUser`, `withChaalServices`), `CHAAL_GUEST_DATA` and its claim, the error reasons `lichess-wait` and `lichess-reconnect`.
 - **Streams:** `/api/chaal/stream/events`, the user's event stream through our server, mapped, closing itself at 270 s with a `reconnect` event.
-- **Lab** `/admin/chaal/lab` (`chaal:configure`): connect, the account, scopes and state, disconnect, open and time the event stream, the setup (never a key), this server's Lichess calls and a check of the public lane. `/admin/chaal` redirects there until the overview (Task 84).
+- **Lab** `/admin/chaal/lab` (`chaal:configure`): connect, the account, scopes and state, disconnect, open and time the event stream, the setup (never a key), this server's Lichess calls and a check of the public lane. `/admin/chaal` redirected there until the overview (Task 84).
 - **Functions:** `getChaalStatus` (public), `getChaalConnection` and `disconnectChaal` (personal), `getChaalLab` and `checkChaalPublicLane` (admin), each with its Storybook mock, guard-test entry and access-matrix row.
 
 **Spikes** (decision 0257): streams pass through Nitro unbuffered; Vercel allows 300 s on Hobby; the engine is 1.85 MB and never needs a page-level `'wasm-unsafe-eval'`; the explorer needs a token; public streams allow CORS; the TV, spectator and broadcast payloads are recorded in the guide. Board API seeks, chat and endings need a live account and wait for Task 77.
@@ -3623,19 +3623,27 @@ As 12.1, with these differences:
 - On the deployment, connected with your Lichess account: join an arena and pause, join and leave a team, save an analysis to one of your studies, and open one of your private studies; tell me if anything differs from the fake (an arena's `me` for a token was built from the website's JSON). Check too whether a joined blitz or bullet arena's games play here or only on lichess.org (the Board API's speeds).
 - Have a Nepali speaker read the community words (the glossary's Task 83 rows, `ch_tournament*`, `ch_swiss_*`, `ch_team*`, `ch_stud*`).
 
-### Task 84: Admin II: overview and curation (planned)
+### Task 84: Admin II: overview and curation (done)
 
-- **Overview:**
-  - connected players and active users at 7 and 30 days;
-  - games by mode, puzzles solved, analyses;
-  - the API health summary;
-  - charts with `dataviz`.
-  - Built on the rollup cron (`ch_daily_stat`) and the prunes.
-- **Curation:**
-  - featured broadcasts, tournaments, studies and puzzle themes (en/ne titles, order, dates);
-  - the home sections' order (dnd-kit), the announcement;
-  - the home page reads them.
-- **Tests.**
+**Done** (decision 0274; the guide's "The overview and curation").
+
+**What changed:**
+- **Tables** (migration `0048_chaal_curation`): `ch_featured`, `ch_home_section`, `ch_daily_stat`, and `ch_settings.announcement`.
+- **Daily job:** `src/server/chaal/daily.ts` rolls `ch_activity` (and the solved puzzles of `ch_puzzle_attempt`) per UTC day into `ch_daily_stat` before the prunes; a missed run fills in.
+- **Overview** `/admin/chaal` (`?range=today|7d|30d`; it was a redirect): connections in use, active players over 7 and 30 days, the range's games, puzzles solved of played, analyses and new connections, players a day and games a day (online and local) over 30 days, games by mode, and the API's last 24 hours.
+- **Curation** `/admin/chaal/curation` (`?tab=`): featured broadcasts, tournaments (arena or Swiss), studies and puzzle themes (an id or Lichess address, en/ne title, dates, order by dragging), and the Home tab: the sections' order and switches (dnd-kit) and the announcement.
+- **The home** reads them (`getChaalHome`, public): its sections under the hero in the admin's order, each featured section's items showing today, the announcement.
+- **Functions:** `src/functions/chaal-admin/overview.ts` and `curation.ts` (`chaal:read`, `chaal:curate`), `src/functions/chaal/home.ts` (`CHAAL_PUBLIC_FUNCTIONS`), each with its Storybook mock. Six audit actions, two targets, two sections.
+- **Tests:** `tests/server/chaal-curation.test.ts` (addresses, inputs, featured items, the home on a day, the rollup, the job's order, the overview), four stories, two e2e flows and the overview flow, the review of the two new pages and of the curated home.
+
+**Deviations (0274):**
+- **Curation is one page** with tabs and a dialog, not a route per list: the entry had 1 kB left.
+- **Titles are typed, not read from Lichess,** and ids aren't checked against Lichess on save.
+- **No commands** for the palette: Chaal's admin has none yet.
+
+**Numbers:** entry 294.6 of 295 kB (294.0 before), built by the e2e harness as CI builds. Run: typecheck, check, knip, i18n:check, db:check, `pnpm test` (190 files, 2,210 tests), the `Chaal/Admin` stories in en/light and ne/dark (14 of 14), build-storybook, the bundle check, and e2e for this task's flows and pages with `--workers=2` (38: the overview flow, two curation flows, the review of `/admin/chaal`, `/admin/chaal/curation` and `/app/chaal` in every language, theme and width, and of the curated home). `pnpm test` also caught Task 83's forms without `method` and its three GET search forms missing from `form-method.test.ts`'s list: fixed here. No screenshots taken and the `dataviz` validator not run (the charts use the shared kit's palette, 0242). The full suites wait for Task 85.
+
+**Left for the owner:** run `pnpm db:migrate` on Neon (`0048_chaal_curation`). Until the first daily run after that, the overview's past days are empty; that run fills in the last 90 days from the activity.
 
 ### Task 85: Wrap-up (planned)
 

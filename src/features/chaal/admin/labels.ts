@@ -1,10 +1,18 @@
 import { defineStatuses } from "@/components/data-display/status-badge";
 import { m } from "@/paraglide/messages";
 import type { ChaalFeature } from "../features";
+import type { ChaalFeaturedKind, ChaalHomeSectionKey, FeaturedState } from "../home/curation";
 import type { QuickPairMode } from "../play/controls";
 import type { CHAAL_PIECE_SETS } from "../settings/preferences";
-import type { BlockKind, ConnectionState } from "./schema";
-import type { BlockKindFilter, ChaalHealthRange, ConnectionStateFilter, ConnectionWhoFilter } from "./search";
+import type { BlockKind, ChaalGameMode, ConnectionState } from "./schema";
+import type {
+	BlockKindFilter,
+	ChaalCurationTab,
+	ChaalHealthRange,
+	ChaalOverviewRange,
+	ConnectionStateFilter,
+	ConnectionWhoFilter,
+} from "./search";
 
 /** The admin's words for Chaal's values (Task 79). */
 
@@ -88,3 +96,52 @@ export const HEALTH_RANGE_LABELS: Readonly<Record<ChaalHealthRange, () => string
 	"24h": m.ch_admin_health_range_24h,
 	"7d": m.ch_admin_health_range_7d,
 };
+
+// ---- Overview and curation (Task 84) ----------------------------------------------------------
+
+export const OVERVIEW_RANGE_LABELS: Readonly<Record<ChaalOverviewRange, () => string>> = {
+	today: m.ch_admin_range_today,
+	"7d": m.ch_admin_range_week,
+	"30d": m.ch_admin_range_month,
+};
+
+export const GAME_MODE_LABELS: Readonly<Record<ChaalGameMode, () => string>> = {
+	ai: m.ch_admin_mode_ai,
+	challenge: m.ch_admin_mode_challenge,
+	seek: m.ch_admin_mode_seek,
+	lichess: m.ch_admin_mode_lichess,
+	"local-engine": m.ch_admin_mode_local_engine,
+	"local-board": m.ch_admin_mode_local_board,
+};
+
+export const FEATURED_KIND_LABELS: Readonly<Record<ChaalFeaturedKind, () => string>> = {
+	broadcast: m.ch_admin_featured_kind_broadcast,
+	arena: m.ch_admin_featured_kind_arena,
+	swiss: m.ch_admin_featured_kind_swiss,
+	study: m.ch_admin_featured_kind_study,
+	theme: m.ch_admin_featured_kind_theme,
+};
+
+/** The home's sections, as the admin and the home name them. */
+export const HOME_SECTION_LABELS: Readonly<Record<ChaalHomeSectionKey, () => string>> = {
+	announcement: m.ch_home_section_announcement,
+	start: m.ch_home_start,
+	broadcasts: m.ch_home_section_broadcasts,
+	tournaments: m.ch_home_section_tournaments,
+	studies: m.ch_home_section_studies,
+	themes: m.ch_home_section_themes,
+};
+
+export const CURATION_TAB_LABELS: Readonly<Record<ChaalCurationTab, () => string>> = {
+	broadcasts: m.ch_home_section_broadcasts,
+	tournaments: m.ch_home_section_tournaments,
+	studies: m.ch_home_section_studies,
+	themes: m.ch_home_section_themes,
+	home: m.ch_admin_curation_tab_home,
+};
+
+export const FEATURED_STATES = defineStatuses<FeaturedState>({
+	live: { tone: "success", label: m.ch_admin_featured_live },
+	scheduled: { tone: "info", label: m.ch_admin_featured_scheduled },
+	ended: { tone: "neutral", label: m.ch_admin_featured_ended },
+});

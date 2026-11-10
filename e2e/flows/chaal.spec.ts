@@ -24,6 +24,7 @@
 import type { Page } from "@playwright/test";
 import { E2E } from "../harness/config.ts";
 import { expect, RESOURCE_STATUS, signedIn, test } from "../support/fixtures.ts";
+import { reviewPage } from "../support/review.ts";
 
 const harness = (path: string, method: string, body?: unknown) =>
 	fetch(`${E2E.harnessURL}${path}`, {
@@ -135,9 +136,12 @@ test.describe("Chaal's lab as the admin", () => {
 		await expect(page.getByTestId("ch-lab-state")).toHaveText("Reconnect needed");
 	});
 
-	test("/admin/chaal opens the settings until the overview arrives", async ({ page }) => {
+	test("/admin/chaal is the overview, its range in the URL", async ({ page }) => {
 		await page.goto("/admin/chaal", { waitUntil: "networkidle" });
-		await expect(page).toHaveURL(/\/admin\/chaal\/settings$/);
+		await expect(page.getByTestId("chaal-admin-overview")).toBeVisible();
+		await page.getByTestId("chaal-range-30d").click();
+		await expect(page).toHaveURL(/\/admin\/chaal\?range=30d$/);
+		await expect(page.getByTestId("chaal-overview-modes")).toBeVisible();
 	});
 
 	test("the public lane reads the daily puzzle through the client and counts the call", async ({ page }) => {
@@ -1295,6 +1299,8 @@ test.describe("Chaal's watch (Task 82)", () => {
 /** The fake's arena being played (e2e/harness/lichess-community.ts) and a recorded finished one. */
 const ARENA_PLAYED = "e2eArena";
 const ARENA_FINISHED = "aEMoQUDF";
+/** Task 84 features the recorded arena. */
+const TOUR_ARENA = ARENA_FINISHED;
 const RECORDED_TEAM = "lichess-swiss";
 const RECORDED_STUDY = "Zwqt6BdF";
 const NEXT_MOVE = /^Next move$/;
@@ -1434,5 +1440,71 @@ test.describe("Chaal's community connected to Lichess (Task 83)", () => {
 		await page.getByTestId("chaal-study-row").first().locator("a").click();
 		await page.getByTestId("chaal-study-chapter").nth(1).click();
 		await expect(page.getByTestId("chaal-study-chapter-name")).toHaveText("Open game");
+	});
+});
+
+test.describe("Chaal's curation (Task 84)", () => {
+	test.use(signedIn("admin"));
+	test.describe.configure({ mode: "serial" });
+
+	const reset = () => harness("/e2e/chaal-connections", "DELETE");
+	test.beforeEach(reset);
+	test.afterAll(reset);
+
+	/** Waits for the next server function's POST and checks it worked. */
+	const saved = (page: Page) =>
+		page.waitForResponse(
+			(response) => response.url().includes("/_serverFn/") && response.request().method() === "POST",
+		);
+
+	test("an arena featured from its Lichess address leads the home's tournaments and opens there", async ({ page }) => {
+		await page.goto("/admin/chaal/curation?tab=tournaments", { waitUntil: "networkidle" });
+		await page.getByTestId("chaal-featured-add").click();
+		const dialog = page.getByTestId("chaal-featured-dialog");
+		await dialog.getByLabel("Lichess id or address").fill(`https://lichess.org/tournament/${TOUR_ARENA}`);
+		await dialog
+			.getByRole("textbox", { name: /^Title/ })
+			.first()
+			.fill("Club arena");
+		const created = saved(page);
+		await dialog.getByRole("button", { name: "Feature" }).click();
+		expect((await created).ok()).toBe(true);
+		await expect(page.getByTestId("chaal-featured-row")).toContainText(TOUR_ARENA);
+
+		// The same arena twice is refused on its field.
+		await page.getByTestId("chaal-featured-add").click();
+		await dialog.getByLabel("Lichess id or address").fill(TOUR_ARENA);
+		await dialog
+			.getByRole("textbox", { name: /^Title/ })
+			.first()
+			.fill("Again");
+		await dialog.getByRole("button", { name: "Feature" }).click();
+		await expect(dialog.getByText("This is already featured.", { exact: true })).toBeVisible();
+		await dialog.getByRole("button", { name: "Cancel" }).click();
+
+		await page.goto("/app/chaal", { waitUntil: "networkidle" });
+		const tournaments = page.getByTestId("chaal-home-tournaments");
+		await expect(tournaments.getByRole("link", { name: /Club arena/ })).toBeVisible();
+		await tournaments.getByRole("link", { name: /Club arena/ }).click();
+		await page.waitForURL(new RegExp(`/app/chaal/tournaments/${TOUR_ARENA}$`));
+	});
+
+	test("the announcement and the sections' order reach the home; the review passes with them", async ({ page }) => {
+		await page.goto("/admin/chaal/curation?tab=home", { waitUntil: "networkidle" });
+		const form = page.getByTestId("chaal-announcement-form");
+		await form.getByRole("textbox").first().fill("Club night moves to Friday.");
+		const announced = saved(page);
+		await form.getByRole("button", { name: "Save" }).click();
+		expect((await announced).ok()).toBe(true);
+
+		await page.getByRole("switch", { name: "Show Start here" }).click();
+		const ordered = saved(page);
+		await page.getByTestId("chaal-home-sections-save").click();
+		expect((await ordered).ok()).toBe(true);
+
+		await page.goto("/app/chaal", { waitUntil: "networkidle" });
+		await expect(page.getByTestId("chaal-home-announcement")).toContainText("Club night moves to Friday.");
+		await expect(page.getByTestId("chaal-entry-play")).toHaveCount(0);
+		await reviewPage(page, "/app/chaal");
 	});
 });

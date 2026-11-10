@@ -43,6 +43,16 @@ export const CHAAL_HEALTH_RANGES = ["24h", "7d"] as const;
 export type ChaalHealthRange = (typeof CHAAL_HEALTH_RANGES)[number];
 export const chaalHealthSearch = z.object({ range: enumParam(CHAAL_HEALTH_RANGES, "24h") });
 
+/** /admin/chaal: the window the range's figures cover (Task 84). */
+export const CHAAL_OVERVIEW_RANGES = ["today", "7d", "30d"] as const;
+export type ChaalOverviewRange = (typeof CHAAL_OVERVIEW_RANGES)[number];
+export const chaalOverviewSearch = z.object({ range: enumParam(CHAAL_OVERVIEW_RANGES, "7d") });
+
+/** /admin/chaal/curation: a featured section's list, or the home's sections and announcement (Task 84). */
+export const CHAAL_CURATION_TABS = ["broadcasts", "tournaments", "studies", "themes", "home"] as const;
+export type ChaalCurationTab = (typeof CHAAL_CURATION_TABS)[number];
+export const chaalCurationSearch = z.object({ tab: enumParam(CHAAL_CURATION_TABS, "broadcasts") });
+
 /** The tables' preference keys (hidden columns, page size). */
 export const CHAAL_CONNECTIONS_TABLE_ID = "chaal-connections";
 export const CHAAL_BLOCKS_TABLE_ID = "chaal-blocks";

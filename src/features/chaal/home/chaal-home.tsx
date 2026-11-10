@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useSuspenseQuery } from "@tanstack/react-query";
 import { Link, type LinkOptions } from "@tanstack/react-router";
 import { ChartSplineIcon, InfoIcon, LinkIcon, type LucideIcon, PaletteIcon, SwordsIcon } from "lucide-react";
 import { MAIN_CONTENT } from "@/components/layout/skip-link";
@@ -10,6 +10,8 @@ import { canConnect, connectionState, useConnectLichess } from "../connect/use-c
 import { chaalLinks } from "../links";
 import { chaalConnectionQueryOptions, chaalStatusQueryOptions } from "../queries";
 import { useChaalPreferences } from "../settings/use-preferences";
+import { Announcement, FeaturedSection } from "./home-sections";
+import { chaalHomeQueryOptions } from "./queries";
 
 /** The hero's diagram: the Ruy Lopez after 3.Bb5, White's last move ringed. */
 const HERO = {
@@ -52,11 +54,63 @@ function Entry({
 	);
 }
 
+/** The ways into Chaal: a ruled tile for each. */
+function Start({ connection }: { connection: { username: string } | null | undefined }) {
+	return (
+		<section aria-labelledby="chaal-start" className="mx-auto w-full max-w-7xl px-4 pb-12 sm:px-6 lg:px-8">
+			<h2 id="chaal-start" className="ch-display ch-rule pt-4 text-ch-head">
+				{m.ch_home_start()}
+			</h2>
+			<ul className="mt-6 grid gap-3 md:grid-cols-2 lg:grid-cols-5">
+				<Entry
+					link={chaalLinks.play()}
+					icon={SwordsIcon}
+					title={m.ch_home_entry_play()}
+					body={m.ch_home_entry_play_body()}
+					testId="chaal-entry-play"
+				/>
+				<Entry
+					link={chaalLinks.analysis()}
+					icon={ChartSplineIcon}
+					title={m.ch_home_entry_analysis()}
+					body={m.ch_home_entry_analysis_body()}
+					testId="chaal-entry-analysis"
+				/>
+				<Entry
+					link={chaalLinks.settings("connection")}
+					icon={LinkIcon}
+					title={connection ? m.ch_home_entry_connected() : m.ch_home_entry_connect()}
+					body={
+						connection
+							? m.ch_home_entry_connected_body({ username: connection.username })
+							: m.ch_home_entry_connect_body()
+					}
+					testId="chaal-entry-connection"
+				/>
+				<Entry
+					link={chaalLinks.settings("board")}
+					icon={PaletteIcon}
+					title={m.ch_home_entry_board()}
+					body={m.ch_home_entry_board_body()}
+					testId="chaal-entry-board"
+				/>
+				<Entry
+					link={chaalLinks.about()}
+					icon={InfoIcon}
+					title={m.ch_home_entry_about()}
+					body={m.ch_home_entry_about_body()}
+					testId="chaal-entry-about"
+				/>
+			</ul>
+		</section>
+	);
+}
+
 /**
  * /app/chaal, the first version (PLAN Task 73): a hero with the diagram drawn on the server
  * in the player's board theme, the one thing to do next (connect Lichess, else set up the
- * board), and the entries to what exists. Play, puzzles, analysis and TV take this page over
- * as they arrive (the approved comp, decision 0258).
+ * board), then the sections in the admin's order (Task 84, decision 0274): the announcement,
+ * the entries to what exists, and the featured broadcasts, tournaments, studies and themes.
  */
 export function ChaalHome() {
 	const { data: session } = useQuery(sessionQueryOptions());
@@ -66,6 +120,7 @@ export function ChaalHome() {
 	const { connect, pending } = useConnectLichess();
 	const state = connectionState(connection);
 	const offerConnect = canConnect(status) && state !== "ok";
+	const { data: home } = useSuspenseQuery(chaalHomeQueryOptions());
 
 	return (
 		<main {...MAIN_CONTENT} className="flex flex-1 flex-col outline-none" data-testid="chaal-home">
@@ -109,52 +164,12 @@ export function ChaalHome() {
 					</figcaption>
 				</figure>
 			</section>
-			<section aria-labelledby="chaal-start" className="mx-auto w-full max-w-7xl px-4 pb-16 sm:px-6 lg:px-8">
-				<h2 id="chaal-start" className="ch-display ch-rule pt-4 text-ch-head">
-					{m.ch_home_start()}
-				</h2>
-				<ul className="mt-6 grid gap-3 md:grid-cols-2 lg:grid-cols-5">
-					<Entry
-						link={chaalLinks.play()}
-						icon={SwordsIcon}
-						title={m.ch_home_entry_play()}
-						body={m.ch_home_entry_play_body()}
-						testId="chaal-entry-play"
-					/>
-					<Entry
-						link={chaalLinks.analysis()}
-						icon={ChartSplineIcon}
-						title={m.ch_home_entry_analysis()}
-						body={m.ch_home_entry_analysis_body()}
-						testId="chaal-entry-analysis"
-					/>
-					<Entry
-						link={chaalLinks.settings("connection")}
-						icon={LinkIcon}
-						title={connection ? m.ch_home_entry_connected() : m.ch_home_entry_connect()}
-						body={
-							connection
-								? m.ch_home_entry_connected_body({ username: connection.username })
-								: m.ch_home_entry_connect_body()
-						}
-						testId="chaal-entry-connection"
-					/>
-					<Entry
-						link={chaalLinks.settings("board")}
-						icon={PaletteIcon}
-						title={m.ch_home_entry_board()}
-						body={m.ch_home_entry_board_body()}
-						testId="chaal-entry-board"
-					/>
-					<Entry
-						link={chaalLinks.about()}
-						icon={InfoIcon}
-						title={m.ch_home_entry_about()}
-						body={m.ch_home_entry_about_body()}
-						testId="chaal-entry-about"
-					/>
-				</ul>
-			</section>
+			{home.sections.map((key) => {
+				if (key === "start") return <Start key={key} connection={connection} />;
+				if (key === "announcement")
+					return home.announcement ? <Announcement key={key} text={home.announcement} /> : null;
+				return <FeaturedSection key={key} section={key} items={home.featured[key]} />;
+			})}
 		</main>
 	);
 }

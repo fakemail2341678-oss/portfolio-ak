@@ -476,6 +476,10 @@ export async function serveHarness(port: number, query: DemoQuery) {
 				// Task 79: no blocks, and the default settings (the server rereads them within 5 s).
 				await query(`delete from "ch_block"`);
 				await query(`delete from "ch_settings"`);
+				// Task 84: nothing featured, the home's default order, no rollups.
+				await query(`delete from "ch_featured"`);
+				await query(`delete from "ch_home_section"`);
+				await query(`delete from "ch_daily_stat"`);
 				return send(response, 200, { ok: true });
 			}
 			// chaal:end

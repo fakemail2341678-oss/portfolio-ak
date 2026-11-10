@@ -89,6 +89,7 @@ import { Route as DevTestCrudSlugRouteImport } from './routes/dev/test-crud/$slu
 import { Route as AdminAdminAuditIndexRouteImport } from './routes/_admin/admin/audit/index'
 import { Route as AdminAdminChaalIndexRouteImport } from './routes/_admin/admin/chaal/index'
 import { Route as AdminAdminChaalConnectionsRouteImport } from './routes/_admin/admin/chaal/connections'
+import { Route as AdminAdminChaalCurationRouteImport } from './routes/_admin/admin/chaal/curation'
 import { Route as AdminAdminChaalHealthRouteImport } from './routes/_admin/admin/chaal/health'
 import { Route as AdminAdminChaalLabRouteImport } from './routes/_admin/admin/chaal/lab'
 import { Route as AdminAdminChaalSettingsRouteImport } from './routes/_admin/admin/chaal/settings'
@@ -644,6 +645,11 @@ const AdminAdminChaalConnectionsRoute =
     path: '/connections',
     getParentRoute: () => AdminAdminChaalRouteRoute,
   } as any)
+const AdminAdminChaalCurationRoute = AdminAdminChaalCurationRouteImport.update({
+  id: '/curation',
+  path: '/curation',
+  getParentRoute: () => AdminAdminChaalRouteRoute,
+} as any)
 const AdminAdminChaalHealthRoute = AdminAdminChaalHealthRouteImport.update({
   id: '/health',
   path: '/health',
@@ -1633,6 +1639,7 @@ export interface FileRoutesByFullPath {
   '/admin/taskline/timesheets': typeof AdminAdminTasklineTimesheetsRouteRouteWithChildren
   '/app/taskline': typeof TasklineAppTasklineShellRouteRouteWithChildren
   '/admin/chaal/connections': typeof AdminAdminChaalConnectionsRoute
+  '/admin/chaal/curation': typeof AdminAdminChaalCurationRoute
   '/admin/chaal/health': typeof AdminAdminChaalHealthRoute
   '/admin/chaal/lab': typeof AdminAdminChaalLabRoute
   '/admin/chaal/settings': typeof AdminAdminChaalSettingsRoute
@@ -1847,6 +1854,7 @@ export interface FileRoutesByTo {
   '/dev/test-crud': typeof DevTestCrudIndexRoute
   '/app/taskline': typeof TasklineAppTasklineIndexRoute
   '/admin/chaal/connections': typeof AdminAdminChaalConnectionsRoute
+  '/admin/chaal/curation': typeof AdminAdminChaalCurationRoute
   '/admin/chaal/health': typeof AdminAdminChaalHealthRoute
   '/admin/chaal/lab': typeof AdminAdminChaalLabRoute
   '/admin/chaal/settings': typeof AdminAdminChaalSettingsRoute
@@ -2086,6 +2094,7 @@ export interface FileRoutesById {
   '/_admin/admin/taskline/timesheets': typeof AdminAdminTasklineTimesheetsRouteRouteWithChildren
   '/_taskline/app/taskline/_shell': typeof TasklineAppTasklineShellRouteRouteWithChildren
   '/_admin/admin/chaal/connections': typeof AdminAdminChaalConnectionsRoute
+  '/_admin/admin/chaal/curation': typeof AdminAdminChaalCurationRoute
   '/_admin/admin/chaal/health': typeof AdminAdminChaalHealthRoute
   '/_admin/admin/chaal/lab': typeof AdminAdminChaalLabRoute
   '/_admin/admin/chaal/settings': typeof AdminAdminChaalSettingsRoute
@@ -2322,6 +2331,7 @@ export interface FileRouteTypes {
     | '/admin/taskline/timesheets'
     | '/app/taskline'
     | '/admin/chaal/connections'
+    | '/admin/chaal/curation'
     | '/admin/chaal/health'
     | '/admin/chaal/lab'
     | '/admin/chaal/settings'
@@ -2536,6 +2546,7 @@ export interface FileRouteTypes {
     | '/dev/test-crud'
     | '/app/taskline'
     | '/admin/chaal/connections'
+    | '/admin/chaal/curation'
     | '/admin/chaal/health'
     | '/admin/chaal/lab'
     | '/admin/chaal/settings'
@@ -2774,6 +2785,7 @@ export interface FileRouteTypes {
     | '/_admin/admin/taskline/timesheets'
     | '/_taskline/app/taskline/_shell'
     | '/_admin/admin/chaal/connections'
+    | '/_admin/admin/chaal/curation'
     | '/_admin/admin/chaal/health'
     | '/_admin/admin/chaal/lab'
     | '/_admin/admin/chaal/settings'
@@ -3511,6 +3523,13 @@ declare module '@tanstack/react-router' {
       path: '/connections'
       fullPath: '/admin/chaal/connections'
       preLoaderRoute: typeof AdminAdminChaalConnectionsRouteImport
+      parentRoute: typeof AdminAdminChaalRouteRoute
+    }
+    '/_admin/admin/chaal/curation': {
+      id: '/_admin/admin/chaal/curation'
+      path: '/curation'
+      fullPath: '/admin/chaal/curation'
+      preLoaderRoute: typeof AdminAdminChaalCurationRouteImport
       parentRoute: typeof AdminAdminChaalRouteRoute
     }
     '/_admin/admin/chaal/health': {
@@ -5022,6 +5041,7 @@ const AdminAdminAuditRouteRouteWithChildren =
 
 interface AdminAdminChaalRouteRouteChildren {
   AdminAdminChaalConnectionsRoute: typeof AdminAdminChaalConnectionsRoute
+  AdminAdminChaalCurationRoute: typeof AdminAdminChaalCurationRoute
   AdminAdminChaalHealthRoute: typeof AdminAdminChaalHealthRoute
   AdminAdminChaalLabRoute: typeof AdminAdminChaalLabRoute
   AdminAdminChaalSettingsRoute: typeof AdminAdminChaalSettingsRoute
@@ -5031,6 +5051,7 @@ interface AdminAdminChaalRouteRouteChildren {
 
 const AdminAdminChaalRouteRouteChildren: AdminAdminChaalRouteRouteChildren = {
   AdminAdminChaalConnectionsRoute: AdminAdminChaalConnectionsRoute,
+  AdminAdminChaalCurationRoute: AdminAdminChaalCurationRoute,
   AdminAdminChaalHealthRoute: AdminAdminChaalHealthRoute,
   AdminAdminChaalLabRoute: AdminAdminChaalLabRoute,
   AdminAdminChaalSettingsRoute: AdminAdminChaalSettingsRoute,

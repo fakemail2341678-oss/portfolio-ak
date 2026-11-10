@@ -278,6 +278,7 @@ Record every non-obvious choice here: **What**, **Why**, **Alternatives consider
 - [0271](#0271-chaals-players-and-games-lichesss-public-reads-through-the-cache-the-viewers-token-only-for-following-a-replay-that-shares-the-analysis-imports-read): Chaal's players and games: Lichess's public reads through the cache, the viewer's token only for following, a replay that shares the analysis import's read
 - [0272](#0272-chaals-watch-the-first-paint-from-our-server-whats-live-read-by-the-browser-from-lichess-one-pgn-stream-per-round): Chaal's watch: the first paint from our server, what's live read by the browser from Lichess, one PGN stream per round
 - [0273](#0273-chaals-community-public-reads-through-the-cache-the-players-own-place-read-with-their-token-joining-and-saving-behind-the-admins-controls): Chaal's community: public reads through the cache, the player's own place read with their token, joining and saving behind the admin's controls
+- [0274](#0274-chaals-admin-ii-the-overview-from-a-daily-rollup-curation-as-one-page-the-home-in-the-admins-order): Chaal's admin II: the overview from a daily rollup, curation as one page, the home in the admin's order
 </details>
 
 ---
@@ -3828,3 +3829,24 @@ Measured on the owner's Windows machine (Node 24.11, 12 threads, 11.7 GB), 2026-
 - **Creating studies and tournaments here:** Lichess makes studies on its own site only (no API), and creating tournaments is out of Part 7's scope.
 
 **Not checked against Lichess itself** (left for the owner): an arena's `me` in the answer to a token (the website's JSON has it; the API's builder is the same), joining and withdrawing, joining a team and asking to, saving to a study, and whether Lichess's Board API plays a joined arena's faster games (bullet and blitz pairings may need lichess.org). Built against the API's spec and the fake; the lists, an arena of each state, a Swiss tournament, a team and a study were read from Lichess while building it.
+
+## 0274: Chaal's admin II: the overview from a daily rollup, curation as one page, the home in the admin's order
+
+**What** (Task 84, 2026-11-10; `src/server/chaal/daily.ts`, `src/server/chaal/admin/{overview,curation}.ts`, `src/server/chaal/home.ts`, `src/features/chaal/home/curation.ts`, `src/features/chaal/admin/{overview,curation}/`, `src/functions/chaal-admin/{overview,curation}.ts`, `src/functions/chaal/home.ts`, `/admin/chaal`, `/admin/chaal/curation`, migration `0048_chaal_curation`):
+- **The rollup:** the daily job (`cron.ts`) first rolls `ch_activity` per UTC day into `ch_daily_stat` (players as distinct users, connections, games by mode as one `jsonb`, puzzles played, analyses) with the day's solved puzzles from `ch_puzzle_attempt`, from the last stored day again (a missed run fills in, a second run replaces the day), then prunes the activity (90 days) and the call counts (30). The rollup is kept.
+- **The overview** `/admin/chaal` (`?range=today|7d|30d`, `chaal:read`; it was a redirect to the settings): Lichess connections in use, active players over 7 and 30 days, the range's games, puzzles solved (of played), analyses and new connections, players a day (a line) and games a day online and local (stacked bars) over 30 days, games by mode as meters, and the API's last 24 hours from the health page's figures with a link there.
+- **Curation** `/admin/chaal/curation` (`?tab=`): a tab per featured section (broadcasts, tournaments as arena or Swiss, studies, puzzle themes) and a Home tab. An item is `ch_featured`: Lichess's id (read out of the address the admin pastes; a theme from Chaal's list), an en/ne title (empty Nepali shows the English), dates in Kathmandu as Parda's billboard (0242), its place in its section. Added and changed in a dialog, dragged into order and saved as a whole section, removed after a confirm; versioned, refused twice, audited (four actions, target `chaal-featured`), the controls cleared.
+- **The home** reads `getChaalHome` (public, `withChaalPublic`) through the controls' 5 s cache (`controls.curation`): the sections under the hero in `ch_home_section`'s order with their switches (no rows: the default order; a section added in code joins at the end), each featured section's items showing today (six at most), and the announcement (`ch_settings.announcement`, its own audited write). A featured section with nothing showing, or the announcement without English, isn't drawn.
+
+**Why:**
+- **Players over 7 and 30 days from the activity itself:** a sum of daily distinct counts counts a player once a day; the activity is kept 90 days, so the windows the page shows are always there. The rollup holds what outlives the prune.
+- **Today live, the rest stored:** as Parda's (0242), so the page is right between runs.
+- **The announcement in `ch_settings`, not a section row:** it's one value, read with the settings the home already has; its own write never makes the settings form stale (as maintenance, 0268).
+- **Titles typed, not read from Lichess:** the home then needs no Lichess call to draw its sections, and a broadcast's or study's name is often long or English only; the admin writes what the home should say in both languages.
+- **One curation page with tabs, dialogs for items:** the entry was 294.0 of 295 kB; Parda's three routes per list (0242) would have cost about 1 kB. The dialog is the blocks' pattern (0268).
+
+**Alternatives considered:**
+- **Checking an id against Lichess on save:** a call per save for what the link itself shows at once; a wrong id opens Chaal's own not-found message.
+- **A section's items in `ch_home_section`:** featured items have their own dates and order; the sections are only order and switches.
+
+**Not checked:** the `dataviz` validator was not run; the charts use the shared kit's Graphite palette (`--chart-1…5`), validated for Parda's overview (0242).

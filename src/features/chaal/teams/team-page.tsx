@@ -202,7 +202,7 @@ function JoinTeam({ team }: { team: ChaalTeam }) {
 		join.mutate({ ...(message ? { message } : {}), ...(password ? { password } : {}) });
 	};
 	return (
-		<form onSubmit={submit} className="flex flex-col gap-3" data-testid="chaal-team-join-form">
+		<form method="post" onSubmit={submit} className="flex flex-col gap-3" data-testid="chaal-team-join-form">
 			{team.open ? null : (
 				<div className="flex flex-col gap-1.5">
 					<Label htmlFor={`${field}-message`}>{m.ch_team_message()}</Label>

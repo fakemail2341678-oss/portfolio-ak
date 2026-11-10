@@ -6,8 +6,18 @@ import { m } from "@/paraglide/messages";
 import { type CommunityLimits, LICHESS_USERNAME } from "../community/limits";
 import { ENGINE_BOUNDS, type EngineLimits } from "../engine/limits";
 import { CHAAL_FEATURES, type ChaalFeature, LICHESS_SCOPES } from "../features";
+import {
+	CHAAL_FEATURED_KINDS,
+	CHAAL_FEATURED_SECTIONS,
+	CHAAL_HOME_SECTIONS,
+	type ChaalFeaturedKind,
+	type ChaalHomeSectionKey,
+	type FeaturedState,
+	parseFeaturedRef,
+} from "../home/curation";
 import { CHAAL_BOARD_THEMES } from "../look/board-themes";
 import { AI_LEVELS, type PlayLimits, QUICK_PAIR_MODES } from "../play/controls";
+import { isPuzzleAngle } from "../puzzles/angles";
 import { PUZZLE_AHEAD_BOUNDS, type PuzzleLimits } from "../puzzles/limits";
 import { CHAAL_PIECE_SETS, type ChaalDefaults } from "../settings/preferences";
 import { TV_CHANNELS, type WatchLimits } from "../watch/limits";
@@ -199,3 +209,102 @@ export type ChaalHealth = {
 
 /** "Test Lichess": one call through the public lane, past the cache. */
 export type ChaalPing = { ok: true; status: number; ms: number } | { ok: false; reason: "wait" | "down"; ms: number };
+
+// ---- Overview (Task 84) ------------------------------------------------------------------------
+
+/** How a game started, as `ch_activity.mode` counts it (Task 77): online first, then local. */
+export const CHAAL_GAME_MODES = ["ai", "challenge", "seek", "lichess", "local-engine", "local-board"] as const;
+export type ChaalGameMode = (typeof CHAAL_GAME_MODES)[number];
+export const isLocalMode = (mode: ChaalGameMode) => mode === "local-engine" || mode === "local-board";
+
+/** One UTC day for the charts. */
+export type ChaalOverviewDay = {
+	day: string;
+	players: number;
+	online: number;
+	local: number;
+	puzzles: number;
+	analyses: number;
+};
+
+export type ChaalOverview = {
+	range: "today" | "7d" | "30d";
+	today: string;
+	/** Lichess connections in use now (not revoked). */
+	connected: number;
+	/** Distinct players with any activity in the last 7 and 30 days. */
+	players: { week: number; month: number };
+	/** The range's figures. */
+	totals: { games: number; puzzles: number; puzzlesSolved: number; analyses: number; connects: number };
+	modes: Record<ChaalGameMode, number>;
+	/** The last 30 days, oldest first. */
+	days: ChaalOverviewDay[];
+	/** Lichess calls in the last 24 hours, and the public lane's cooldown when one runs. */
+	api: { calls: number; errors: number; rateLimited: number; avgMs: number; cooldown: string | null };
+};
+
+// ---- Curation (Task 84) ------------------------------------------------------------------------
+
+export type ChaalAdminFeatured = {
+	id: string;
+	kind: ChaalFeaturedKind;
+	ref: string;
+	title: Localized;
+	startsOn: string;
+	endsOn: string;
+	state: FeaturedState;
+	/** The row's version, as the form sends it back. */
+	updatedAt: string;
+};
+
+export type ChaalAdminCuration = {
+	/** Every featured item, each section's in its order. */
+	featured: ChaalAdminFeatured[];
+	sections: Array<{ key: ChaalHomeSectionKey; visible: boolean }>;
+	announcement: Localized;
+};
+
+const dateField = () => z.iso.date().or(z.literal(""));
+
+const featuredFields = z.strictObject({
+	kind: z.enum(CHAAL_FEATURED_KINDS),
+	/** Lichess's id or the item's Lichess address; a theme's key. */
+	ref: required({ max: 200 }),
+	title: localizedText({ max: 120 }),
+	startsOn: dateField(),
+	endsOn: dateField(),
+});
+
+const checkFeatured = (value: z.output<typeof featuredFields>, context: z.RefinementCtx) => {
+	const ref = parseFeaturedRef(value.kind, value.ref);
+	if (ref === null || (value.kind === "theme" && (ref === "mix" || !isPuzzleAngle(ref)))) {
+		context.addIssue({ code: "custom", path: ["ref"], message: m.ch_admin_featured_ref_invalid() });
+	}
+	if (value.startsOn && value.endsOn && value.endsOn < value.startsOn) {
+		context.addIssue({ code: "custom", path: ["endsOn"], message: m.ch_admin_featured_dates_order() });
+	}
+};
+
+export const chaalFeaturedInput = featuredFields.superRefine(checkFeatured);
+export type ChaalFeaturedInput = z.output<typeof chaalFeaturedInput>;
+export type ChaalFeaturedFormValues = z.input<typeof chaalFeaturedInput>;
+export const chaalFeaturedUpdateInput = featuredFields
+	.extend({ id: z.uuid(), updatedAt: version() })
+	.superRefine(checkFeatured);
+
+/** A section's whole order at once. */
+export const chaalFeaturedOrderInput = z.strictObject({
+	section: z.enum(CHAAL_FEATURED_SECTIONS),
+	ids: z.array(z.uuid()).max(200),
+});
+
+/** Every home section once, in the new order. */
+export const chaalHomeSectionsInput = z.strictObject({
+	sections: z
+		.array(z.strictObject({ key: z.enum(CHAAL_HOME_SECTIONS), visible: z.boolean() }))
+		.length(CHAAL_HOME_SECTIONS.length)
+		.refine((sections) => new Set(sections.map((section) => section.key)).size === sections.length),
+});
+
+/** The home's announcement; empty English hides it. */
+export const chaalAnnouncementInput = z.strictObject({ announcement: localizedText({ max: 280, optional: true }) });

@@ -36,6 +36,8 @@ export const chSettings = pgTable(
 		publicCooldownMs: integer().notNull().default(0),
 		/** The admin's notice under Chaal's top bar, in both languages (set on /admin/chaal/settings, Task 79). */
 		banner: localizedText(),
+		/** The home's announcement, in both languages (set on /admin/chaal/curation, Task 84); empty English hides it. */
+		announcement: localizedText(),
 		/** The engine's limits in the browser (Task 75, decision 0263): depth, lines and hash. */
 		engine: jsonb().$type<EngineLimits>().notNull().default({ maxDepth: 22, multiPv: 3, hashMb: 16 }),
 		/** Online play's limits (Task 77, decision 0266): the Lichess AI's highest level, rated games; quick pairing's paces (Task 79). */

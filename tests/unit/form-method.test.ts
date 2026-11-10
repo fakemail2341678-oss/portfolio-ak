@@ -43,6 +43,10 @@ describe("<form> method", () => {
 			.map(({ file }) => file.split(path.sep).join("/"));
 		expect(gets).toEqual([
 			"src/components/filters/filter-bar.tsx",
+			// Chaal's searches by URL (Tasks 82 and 83): a study's author, teams, broadcasts.
+			"src/features/chaal/studies/studies-page.tsx", // @chaal
+			"src/features/chaal/teams/teams-page.tsx", // @chaal
+			"src/features/chaal/watch/broadcasts-page.tsx", // @chaal
 			"src/features/parda/search/search-page.tsx", // @parda
 			"src/features/taskline/find/search-page.tsx", // @taskline
 		]);

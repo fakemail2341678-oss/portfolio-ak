@@ -1,4 +1,9 @@
-import type { ChaalBlockListInput, ChaalConnectionListInput, ChaalHealthRange } from "./admin/search";
+import type {
+	ChaalBlockListInput,
+	ChaalConnectionListInput,
+	ChaalHealthRange,
+	ChaalOverviewRange,
+} from "./admin/search";
 
 /** Chaal's reads, under one root so a write can refresh what it touched. */
 const all = ["chaal"] as const;
@@ -17,6 +22,11 @@ export const chaalKeys = {
 	adminBlocks: () => [...all, "admin", "blocks"] as const,
 	adminBlockList: (input: ChaalBlockListInput) => [...all, "admin", "blocks", input] as const,
 	adminHealth: (range: ChaalHealthRange) => [...all, "admin", "health", range] as const,
+	/** The overview and curation (Task 84). */
+	adminOverview: (range: ChaalOverviewRange) => [...all, "admin", "overview", range] as const,
+	adminCuration: () => [...all, "admin", "curation"] as const,
+	/** The home's curated sections (Task 84). */
+	home: () => [...all, "home"] as const,
 	/** Lichess's analysis data, by position (Task 75). */
 	cloudEval: (fen: string, multiPv: number) => [...all, "cloud-eval", fen, multiPv] as const,
 	explorer: (query: Readonly<Record<string, unknown>>) => [...all, "explorer", query] as const,

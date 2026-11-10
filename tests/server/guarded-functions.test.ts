@@ -257,6 +257,16 @@ const GUARDED_FUNCTIONS: Record<string, ReadonlyArray<[name: string, permission:
 		["getChaalHealth", "chaal:read"],
 		["pingChaalLichess", "chaal:configure"],
 	],
+	"chaal-admin/overview.ts": [["getChaalOverview", "chaal:read"]],
+	"chaal-admin/curation.ts": [
+		["getChaalCuration", "chaal:read"],
+		["createChaalFeatured", "chaal:curate"],
+		["updateChaalFeatured", "chaal:curate"],
+		["reorderChaalFeatured", "chaal:curate"],
+		["deleteChaalFeatured", "chaal:curate"],
+		["saveChaalHomeSections", "chaal:curate"],
+		["saveChaalAnnouncement", "chaal:curate"],
+	],
 	// chaal:end
 	// @new-feature:guarded-functions
 };
@@ -515,6 +525,7 @@ const PARDA_FUNCTIONS: Record<string, ReadonlyArray<string>> = {
  */
 const CHAAL_PUBLIC_FUNCTIONS: Record<string, ReadonlyArray<string>> = {
 	"chaal/status.ts": ["getChaalStatus"],
+	"chaal/home.ts": ["getChaalHome"],
 	"chaal/analysis.ts": ["getChaalCloudEval", "getChaalExplorer", "getChaalTablebase", "importChaalGame"],
 	"chaal/puzzles.ts": ["getChaalDailyPuzzle", "getChaalPuzzle", "getChaalPuzzleBatch"],
 	"chaal/players.ts": [

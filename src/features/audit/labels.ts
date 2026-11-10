@@ -112,6 +112,12 @@ export const AUDIT_ACTION_LABELS: Record<AuditAction, () => string> = {
 	"chaal.connection.revoke": m.audit_action_chaal_connection_revoke,
 	"chaal.block.create": m.audit_action_chaal_block_create,
 	"chaal.block.delete": m.audit_action_chaal_block_delete,
+	"chaal.featured.create": m.audit_action_chaal_featured_create,
+	"chaal.featured.update": m.audit_action_chaal_featured_update,
+	"chaal.featured.reorder": m.audit_action_chaal_featured_reorder,
+	"chaal.featured.delete": m.audit_action_chaal_featured_delete,
+	"chaal.home.update": m.audit_action_chaal_home_update,
+	"chaal.announcement": m.audit_action_chaal_announcement,
 	// chaal:end
 	// @new-feature:audit-action-labels
 };
@@ -156,6 +162,8 @@ export const AUDIT_TARGET_LABELS: Record<AuditTarget, () => string> = {
 	"chaal-settings": m.audit_target_chaal_settings,
 	"chaal-connection": m.audit_target_chaal_connection,
 	"chaal-block": m.audit_target_chaal_block,
+	"chaal-featured": m.audit_target_chaal_featured,
+	"chaal-home": m.audit_target_chaal_home,
 	// chaal:end
 	// @new-feature:audit-target-labels
 };

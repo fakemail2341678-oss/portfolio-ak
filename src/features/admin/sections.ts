@@ -4,6 +4,7 @@ import {
 	BriefcaseIcon, // @portfolio
 	ChartColumnIcon, // @taskline
 	ChartNoAxesColumnIcon, // @parda
+	ChartNoAxesCombinedIcon, // @chaal
 	DatabaseIcon,
 	FlagIcon, // @parda
 	FlaskConicalIcon, // @parda
@@ -34,6 +35,7 @@ import {
 	ShieldCheckIcon,
 	SlidersHorizontalIcon, // @parda
 	SquareKanbanIcon, // @taskline
+	StarIcon, // @chaal
 	TablePropertiesIcon, // @taskline
 	TimerIcon, // @taskline
 	UserRoundIcon, // @portfolio
@@ -397,6 +399,25 @@ export const ADMIN_SECTIONS: ReadonlyArray<AdminSection> = [
 	},
 	// parda:end
 	// chaal:start
+	{
+		// Only on this exact path: the other Chaal sections are under it.
+		...linkOptions({ to: "/admin/chaal", activeOptions: { exact: true } }),
+		label: m.admin_nav_chaal_overview,
+		description: m.ch_admin_overview_description,
+		icon: ChartNoAxesCombinedIcon,
+		permission: "chaal:read",
+		group: "chaal",
+		keywords: m.admin_keywords_chaal_overview,
+	},
+	{
+		...linkOptions({ to: "/admin/chaal/curation" }),
+		label: m.admin_nav_chaal_curation,
+		description: m.ch_admin_curation_description,
+		icon: StarIcon,
+		permission: "chaal:read",
+		group: "chaal",
+		keywords: m.admin_keywords_chaal_curation,
+	},
 	{
 		...linkOptions({ to: "/admin/chaal/settings" }),
 		label: m.admin_nav_chaal_settings,

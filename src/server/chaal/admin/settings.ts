@@ -55,7 +55,7 @@ const toAdmin = (row: Row, connectConfigured: boolean): ChaalAdminSettings => ({
 });
 
 /** The row, made with its defaults when there's none yet (a missing row means the defaults). */
-async function settingsRow(db: Db | Tx): Promise<Row> {
+export async function settingsRow(db: Db | Tx): Promise<Row> {
 	const [row] = await db.select().from(chSettings).where(eq(chSettings.id, ID));
 	if (row) return row;
 	const [made] = await db.insert(chSettings).values({ id: ID }).onConflictDoNothing().returning();
