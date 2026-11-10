@@ -330,6 +330,13 @@
 			"when": 1794263141355,
 			"tag": "0046_chaal_watch",
 			"breakpoints": true
+		},
+		{
+			"idx": 47,
+			"version": "7",
+			"when": 1794283114757,
+			"tag": "0047_chaal_community",
+			"breakpoints": true
 		}
 	]
 }

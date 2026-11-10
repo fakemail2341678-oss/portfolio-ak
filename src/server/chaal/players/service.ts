@@ -1,5 +1,4 @@
 import "@tanstack/react-start/server-only";
-import { featureOn, missingScopes } from "@/features/chaal/features";
 import {
 	type ActivityDay,
 	type ChaalCrosstable,
@@ -24,7 +23,7 @@ import { isAppError } from "@/lib/errors";
 import type { Session } from "@/lib/session";
 import { log } from "@/server/log";
 import { exportedGame } from "../analysis/lichess";
-import { type ChaalConnectionRow, connectionOf } from "../connect/repository";
+import { connectionOf } from "../connect/repository";
 import { type ConnectDeps, requireFeature, withToken } from "../connect/service";
 import type { ChaalPublic } from "../context";
 import { userLane } from "../lichess/lanes";
@@ -40,6 +39,7 @@ import {
 	userAnswer,
 	userStatusAnswer,
 } from "../lichess/schemas";
+import { canUse } from "../viewer";
 
 /**
  * Players and games (PLAN Task 81, decision 0271). Everything here is public on Lichess and
@@ -103,17 +103,6 @@ async function userStatus(chaal: Public, id: string) {
 	return list.find((each) => each.id === id) ?? null;
 }
 
-/** A connection that may be used for a feature: there, not revoked, with its scopes, the feature on. */
-function usable(chaal: ChaalPublic, row: ChaalConnectionRow | null, feature: "social"): row is ChaalConnectionRow {
-	return Boolean(
-		row &&
-			!row.revokedAt &&
-			!chaal.settings.maintenance &&
-			featureOn(chaal.settings.features, feature) &&
-			missingScopes(feature, row.scopes).length === 0,
-	);
-}
-
 /**
  * A player's page: the profile, whether they're online or playing, and, for a viewer with
  * a connected account, whether they follow them and their score against them. NOT_FOUND
@@ -131,7 +120,7 @@ export async function playerPage(
 
 	let following: boolean | null = null;
 	let read: Awaited<ReturnType<typeof publicUser>> | null = null;
-	if (deps && session && usable(chaal, connected, "social") && connected.lichessId !== username.toLowerCase()) {
+	if (deps && session && canUse(chaal, connected, "social") && connected.lichessId !== username.toLowerCase()) {
 		// With the viewer's token Lichess says whether they follow this player; never cached.
 		try {
 			read = await withToken(deps, session.user.id, "social", (token) =>

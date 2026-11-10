@@ -2882,7 +2882,7 @@ As 12.1, with these differences:
 | 80 | Puzzles | high | Done (decisions 0269, 0270) |
 | 81 | Players and games | high | Done (decision 0271) |
 | 82 | Watch: TV, live games, broadcasts | high | Done (decision 0272) |
-| 83 | Community: tournaments, teams, studies | high | Planned |
+| 83 | Community: tournaments, teams, studies | high | Done (decision 0273) |
 | 84 | Admin II: overview and curation | high | Planned |
 | 85 | Wrap-up: full e2e, accessibility pass, template matrix, finish review | medium | Planned |
 
@@ -3588,19 +3588,40 @@ As 12.1, with these differences:
 - On the deployment, while a broadcast round is being played: open it and follow a board, and check the boards move with Lichess's; tell me if anything differs from the fake (no round was live while recording).
 - Have a Nepali speaker read the watch words (the glossary's Task 82 rows, `ch_watch_*`, `ch_tv_*`, `ch_broadcast*`, `ch_spectate_*`).
 
-### Task 83: Community: tournaments, teams and studies (planned)
+### Task 83: Community: tournaments, teams and studies (done)
 
-- **Arenas:**
-  - `/tournaments` (created, started, finished);
-  - `/tournaments/$id`: standings, podium, top game, join (password or team), withdraw, "pair me ASAP".
-- **Swiss** through teams.
-- **Teams:** search, my teams, and `/teams/$id` (description as text, members, tournaments, join or leave).
-- **Studies:**
-  - mine, by a user, and public;
-  - `/studies/$id`: chapters in the analysis viewer;
-  - "Save to study" from analysis (`study:write`).
-- **Each area's switch and admin controls.**
-- **Tests.**
+**Done** (decision 0273; the guide's "Community").
+
+**What changed:**
+- **`/app/chaal/tournaments`** (indexable; under More and in the palette): Lichess's arenas of standard chess, coming up, being played (`?view=started`) and finished (`?view=finished`). **`/app/chaal/tournaments/$id`** (noindex): an arena (what and when, the organiser's words as text, its conditions with Lichess's verdicts, the top game while it's played, the podium and numbers once over, the standings ten a page with `?page=`), read again every 10 s while it's played; joining (a password, a team for a team battle, "pair me ASAP"), pausing, the player's rank and game. **Swiss through teams:** `?kind=swiss` is a Swiss tournament with its first hundred players, joined and withdrawn from with a password.
+- **`/app/chaal/teams`** (noindex): popular teams, a search (`?q=`), "My teams" (`?view=mine`, with the player's token). **`/app/chaal/teams/$id`** (noindex): the description as text, leaders, the newest thirty members, its arenas and Swiss tournaments, joining (a message for a closed team, a password for a private one), asking, leaving.
+- **`/app/chaal/studies`** (noindex): an account's public studies (`?by=`, else the admin's account, Lichess's own), the player's own with private ones (`?view=mine`), opening any study by its address. **`/app/chaal/studies/$id`** (noindex): the chapters and the one shown (`?chapter=`) in the analysis viewer (the board with the author's arrows, the moves with variations and comments, the keys, "Analyse", the PGN). **"Save to study"** on the analysis board's menu (`study:write`): a chapter in one of the player's studies, opened from the toast.
+- **Server:** `src/server/chaal/events/`, `teams/`, `studies/` and `viewer.ts` (the viewer's token reads, never cached, falling back to the public read; players' `usable` became its `canUse`); the client's `lines(request, schema, max)` stops reading after `max` lines; the answers in `lichess/schemas.ts`. Functions `src/functions/chaal/tournaments.ts`, `teams.ts`, `studies.ts` (public) and `tournament-entry.ts`, `team-membership.ts`, `my-studies.ts` (personal), each with a Storybook mock, guard-test entries and access-matrix rows.
+- **Admin:** the `tournaments`, `teams` and `studies` switches turn an area off (the pages say so); `ch_settings.community` (`{ joinTournaments, joinTeams, saveToStudy, studiesBy }`, migration `0047_chaal_community`) in a Community section of /admin/chaal/settings, audited.
+- **Fixtures and the fake Lichess:** `pnpm lichess:record community` (the arenas' list and an arena of each state, the team `lichess-swiss` with its members, Swiss and arenas, a finished Swiss and its results, popular teams and a search, Lichess's studies and one study's PGN); `e2e/harness/lichess-community.ts`: joining and withdrawing, `me` for a joined account, `e2eArena` (the finished recording restated as being played), other standings pages, a coming Swiss from the team's list, joining and leaving teams, each account's own study to save to; `GET /e2e/lichess/community?account=`.
+- **Messages:** 156 new keys in en and ne (`ch_tournament*`, `ch_swiss_*`, `ch_team*`, `ch_stud*`, `ch_community_*`, `ch_palette_arena`, `ch_admin_settings_*` for community; the glossary's Task 83 rows).
+- **Stories:** "Chaal/Community": the arenas, an arena being played and finished, a Swiss tournament, a team, a study's chapter.
+- **Tests:** `tests/unit/chaal-community.test.ts` (17: every recorded answer as Chaal maps it, a token's `me` and a team battle's teams, a study read into chapters (each one `readPgn` reads), tags and chapter ids, a study's address, the chapter shown, the admin's controls, the inputs and URL contracts, the capped ndjson read), `tests/server/chaal-community.test.ts` (12: the list's minute, an arena's TTL by state, a viewer's arena with their token and uncached, a Swiss tournament and the viewer's place, joining's forms, a team with its members and tournaments, tournaments off, the player's teams, joining and leaving, an account's studies, a study's chapters from one read and a missing chapter's 404, a viewer's study kept apart, saving), 23 access-matrix tests (9 public functions; 7 personal ones, each refused without the area's scopes, its switch or the admin's control, and with the caller's token only), the admin's settings test with community, and e2e (6: an arena's podium and standings' pages, a team found and a Swiss tournament, a study's chapter and Analyse, joining an arena with "pair me ASAP" and pausing, joining and leaving a team, saving the analysis board to a study).
+
+**Numbers:**
+- **Size:** the entry is 294.0 kB (292.9 before; budget 295 kB), built by the e2e harness as CI builds; six routes and three More entries added 1.1 kB.
+- **Tests:** 29 new unit and server tests (17 + 12), 23 access-matrix tests. Related suites (`tests/unit/chaal-*`, `tests/server/chaal-*`, the guard, route-SEO, e2e-pages, strip-markers, CSP, env, `tests/i18n`, `tests/components/chaal`): 40 files, 660 tests, all passing. The full `pnpm test` runs in Task 85.
+- **Storybook:** every Chaal story in both passes, 134 of 134.
+- **e2e:** the community flows and the browser review of the new pages and /admin/chaal/settings (2 workers): 256 passed in the second run, then the community flows 6 of 6. The first run found a visitor sent to sign in (the connection asked for without a session), standings' page 2 and an arena being played missing from the fake; the second, a flow waiting for an idle network beside the open event stream.
+- **Gates:** `typecheck`, `check`, `knip`, `i18n:check`, the bundle check, `build-storybook`.
+- **Design flow:** the browser review at three widths in both languages and themes and the stories' axe passes; `ui-ux-pro-max` and impeccable's critique weren't run, as in Tasks 73–82 (the finish review is Task 85's).
+
+**Deviations:**
+- **"Public" studies are an account's** (Lichess's own by default, an admin's choice): Lichess's API lists no public studies; Task 84's curation can feature some.
+- **The arenas' list is standard chess only,** as the TV's channels (Chaal's boards don't play variants); a variant's arena still opens, without joining or its top game.
+- **A Swiss tournament's joined state is a guess past its first hundred players:** Lichess doesn't tell a token; Join stays offered then.
+- **Studies are made on Lichess** (no API to create one); "Save to study" sends a player without one there.
+- **Community is under More, not in the top bar** (the contract's four sections).
+
+**Left for the owner:**
+- Run `pnpm db:migrate` on Neon (`0039`–`0047` are pending there).
+- On the deployment, connected with your Lichess account: join an arena and pause, join and leave a team, save an analysis to one of your studies, and open one of your private studies; tell me if anything differs from the fake (an arena's `me` for a token was built from the website's JSON). Check too whether a joined blitz or bullet arena's games play here or only on lichess.org (the Board API's speeds).
+- Have a Nepali speaker read the community words (the glossary's Task 83 rows, `ch_tournament*`, `ch_swiss_*`, `ch_team*`, `ch_stud*`).
 
 ### Task 84: Admin II: overview and curation (planned)
 

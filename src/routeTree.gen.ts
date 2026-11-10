@@ -200,6 +200,12 @@ import { Route as ChaalAppChaalPlayersIndexRouteImport } from './routes/_chaal/a
 import { Route as ChaalAppChaalPlayersUsernameRouteImport } from './routes/_chaal/app/chaal/players/$username'
 import { Route as ChaalAppChaalPuzzlesIndexRouteImport } from './routes/_chaal/app/chaal/puzzles/index'
 import { Route as ChaalAppChaalPuzzlesIdRouteImport } from './routes/_chaal/app/chaal/puzzles/$id'
+import { Route as ChaalAppChaalStudiesIndexRouteImport } from './routes/_chaal/app/chaal/studies/index'
+import { Route as ChaalAppChaalStudiesIdRouteImport } from './routes/_chaal/app/chaal/studies/$id'
+import { Route as ChaalAppChaalTeamsIndexRouteImport } from './routes/_chaal/app/chaal/teams/index'
+import { Route as ChaalAppChaalTeamsIdRouteImport } from './routes/_chaal/app/chaal/teams/$id'
+import { Route as ChaalAppChaalTournamentsIndexRouteImport } from './routes/_chaal/app/chaal/tournaments/index'
+import { Route as ChaalAppChaalTournamentsIdRouteImport } from './routes/_chaal/app/chaal/tournaments/$id'
 import { Route as ChaalAppChaalWatchIndexRouteImport } from './routes/_chaal/app/chaal/watch/index'
 import { Route as ChaalAppChaalWatchChannelRouteImport } from './routes/_chaal/app/chaal/watch/$channel'
 import { Route as PardaAppPardaCSlugRouteImport } from './routes/_parda/app/parda/c/$slug'
@@ -1255,6 +1261,39 @@ const ChaalAppChaalPuzzlesIdRoute = ChaalAppChaalPuzzlesIdRouteImport.update({
   path: '/app/chaal/puzzles/$id',
   getParentRoute: () => ChaalRouteRoute,
 } as any)
+const ChaalAppChaalStudiesIndexRoute =
+  ChaalAppChaalStudiesIndexRouteImport.update({
+    id: '/app/chaal/studies/',
+    path: '/app/chaal/studies/',
+    getParentRoute: () => ChaalRouteRoute,
+  } as any)
+const ChaalAppChaalStudiesIdRoute = ChaalAppChaalStudiesIdRouteImport.update({
+  id: '/app/chaal/studies/$id',
+  path: '/app/chaal/studies/$id',
+  getParentRoute: () => ChaalRouteRoute,
+} as any)
+const ChaalAppChaalTeamsIndexRoute = ChaalAppChaalTeamsIndexRouteImport.update({
+  id: '/app/chaal/teams/',
+  path: '/app/chaal/teams/',
+  getParentRoute: () => ChaalRouteRoute,
+} as any)
+const ChaalAppChaalTeamsIdRoute = ChaalAppChaalTeamsIdRouteImport.update({
+  id: '/app/chaal/teams/$id',
+  path: '/app/chaal/teams/$id',
+  getParentRoute: () => ChaalRouteRoute,
+} as any)
+const ChaalAppChaalTournamentsIndexRoute =
+  ChaalAppChaalTournamentsIndexRouteImport.update({
+    id: '/app/chaal/tournaments/',
+    path: '/app/chaal/tournaments/',
+    getParentRoute: () => ChaalRouteRoute,
+  } as any)
+const ChaalAppChaalTournamentsIdRoute =
+  ChaalAppChaalTournamentsIdRouteImport.update({
+    id: '/app/chaal/tournaments/$id',
+    path: '/app/chaal/tournaments/$id',
+    getParentRoute: () => ChaalRouteRoute,
+  } as any)
 const ChaalAppChaalWatchIndexRoute = ChaalAppChaalWatchIndexRouteImport.update({
   id: '/app/chaal/watch/',
   path: '/app/chaal/watch/',
@@ -1686,6 +1725,9 @@ export interface FileRoutesByFullPath {
   '/app/chaal/local/$id': typeof ChaalAppChaalLocalIdRoute
   '/app/chaal/players/$username': typeof ChaalAppChaalPlayersUsernameRoute
   '/app/chaal/puzzles/$id': typeof ChaalAppChaalPuzzlesIdRoute
+  '/app/chaal/studies/$id': typeof ChaalAppChaalStudiesIdRoute
+  '/app/chaal/teams/$id': typeof ChaalAppChaalTeamsIdRoute
+  '/app/chaal/tournaments/$id': typeof ChaalAppChaalTournamentsIdRoute
   '/app/chaal/watch/$channel': typeof ChaalAppChaalWatchChannelRoute
   '/app/parda/c/$slug': typeof PardaAppPardaCSlugRoute
   '/app/parda/collection/$id': typeof PardaAppPardaCollectionIdRoute
@@ -1709,6 +1751,9 @@ export interface FileRoutesByFullPath {
   '/app/chaal/broadcasts/': typeof ChaalAppChaalBroadcastsIndexRoute
   '/app/chaal/players/': typeof ChaalAppChaalPlayersIndexRoute
   '/app/chaal/puzzles/': typeof ChaalAppChaalPuzzlesIndexRoute
+  '/app/chaal/studies/': typeof ChaalAppChaalStudiesIndexRoute
+  '/app/chaal/teams/': typeof ChaalAppChaalTeamsIndexRoute
+  '/app/chaal/tournaments/': typeof ChaalAppChaalTournamentsIndexRoute
   '/app/chaal/watch/': typeof ChaalAppChaalWatchIndexRoute
   '/admin/taskline/projects/$id/labels': typeof AdminAdminTasklineProjectsIdLabelsRoute
   '/admin/taskline/projects/$id/members': typeof AdminAdminTasklineProjectsIdMembersRoute
@@ -1891,6 +1936,9 @@ export interface FileRoutesByTo {
   '/app/chaal/local/$id': typeof ChaalAppChaalLocalIdRoute
   '/app/chaal/players/$username': typeof ChaalAppChaalPlayersUsernameRoute
   '/app/chaal/puzzles/$id': typeof ChaalAppChaalPuzzlesIdRoute
+  '/app/chaal/studies/$id': typeof ChaalAppChaalStudiesIdRoute
+  '/app/chaal/teams/$id': typeof ChaalAppChaalTeamsIdRoute
+  '/app/chaal/tournaments/$id': typeof ChaalAppChaalTournamentsIdRoute
   '/app/chaal/watch/$channel': typeof ChaalAppChaalWatchChannelRoute
   '/app/parda/c/$slug': typeof PardaAppPardaCSlugRoute
   '/app/parda/collection/$id': typeof PardaAppPardaCollectionIdRoute
@@ -1914,6 +1962,9 @@ export interface FileRoutesByTo {
   '/app/chaal/broadcasts': typeof ChaalAppChaalBroadcastsIndexRoute
   '/app/chaal/players': typeof ChaalAppChaalPlayersIndexRoute
   '/app/chaal/puzzles': typeof ChaalAppChaalPuzzlesIndexRoute
+  '/app/chaal/studies': typeof ChaalAppChaalStudiesIndexRoute
+  '/app/chaal/teams': typeof ChaalAppChaalTeamsIndexRoute
+  '/app/chaal/tournaments': typeof ChaalAppChaalTournamentsIndexRoute
   '/app/chaal/watch': typeof ChaalAppChaalWatchIndexRoute
   '/admin/taskline/projects/$id/labels': typeof AdminAdminTasklineProjectsIdLabelsRoute
   '/admin/taskline/projects/$id/members': typeof AdminAdminTasklineProjectsIdMembersRoute
@@ -2127,6 +2178,9 @@ export interface FileRoutesById {
   '/_chaal/app/chaal/local/$id': typeof ChaalAppChaalLocalIdRoute
   '/_chaal/app/chaal/players/$username': typeof ChaalAppChaalPlayersUsernameRoute
   '/_chaal/app/chaal/puzzles/$id': typeof ChaalAppChaalPuzzlesIdRoute
+  '/_chaal/app/chaal/studies/$id': typeof ChaalAppChaalStudiesIdRoute
+  '/_chaal/app/chaal/teams/$id': typeof ChaalAppChaalTeamsIdRoute
+  '/_chaal/app/chaal/tournaments/$id': typeof ChaalAppChaalTournamentsIdRoute
   '/_chaal/app/chaal/watch/$channel': typeof ChaalAppChaalWatchChannelRoute
   '/_parda/app/parda/c/$slug': typeof PardaAppPardaCSlugRoute
   '/_parda/app/parda/collection/$id': typeof PardaAppPardaCollectionIdRoute
@@ -2150,6 +2204,9 @@ export interface FileRoutesById {
   '/_chaal/app/chaal/broadcasts/': typeof ChaalAppChaalBroadcastsIndexRoute
   '/_chaal/app/chaal/players/': typeof ChaalAppChaalPlayersIndexRoute
   '/_chaal/app/chaal/puzzles/': typeof ChaalAppChaalPuzzlesIndexRoute
+  '/_chaal/app/chaal/studies/': typeof ChaalAppChaalStudiesIndexRoute
+  '/_chaal/app/chaal/teams/': typeof ChaalAppChaalTeamsIndexRoute
+  '/_chaal/app/chaal/tournaments/': typeof ChaalAppChaalTournamentsIndexRoute
   '/_chaal/app/chaal/watch/': typeof ChaalAppChaalWatchIndexRoute
   '/_admin/admin/taskline/projects/$id/labels': typeof AdminAdminTasklineProjectsIdLabelsRoute
   '/_admin/admin/taskline/projects/$id/members': typeof AdminAdminTasklineProjectsIdMembersRoute
@@ -2357,6 +2414,9 @@ export interface FileRouteTypes {
     | '/app/chaal/local/$id'
     | '/app/chaal/players/$username'
     | '/app/chaal/puzzles/$id'
+    | '/app/chaal/studies/$id'
+    | '/app/chaal/teams/$id'
+    | '/app/chaal/tournaments/$id'
     | '/app/chaal/watch/$channel'
     | '/app/parda/c/$slug'
     | '/app/parda/collection/$id'
@@ -2380,6 +2440,9 @@ export interface FileRouteTypes {
     | '/app/chaal/broadcasts/'
     | '/app/chaal/players/'
     | '/app/chaal/puzzles/'
+    | '/app/chaal/studies/'
+    | '/app/chaal/teams/'
+    | '/app/chaal/tournaments/'
     | '/app/chaal/watch/'
     | '/admin/taskline/projects/$id/labels'
     | '/admin/taskline/projects/$id/members'
@@ -2562,6 +2625,9 @@ export interface FileRouteTypes {
     | '/app/chaal/local/$id'
     | '/app/chaal/players/$username'
     | '/app/chaal/puzzles/$id'
+    | '/app/chaal/studies/$id'
+    | '/app/chaal/teams/$id'
+    | '/app/chaal/tournaments/$id'
     | '/app/chaal/watch/$channel'
     | '/app/parda/c/$slug'
     | '/app/parda/collection/$id'
@@ -2585,6 +2651,9 @@ export interface FileRouteTypes {
     | '/app/chaal/broadcasts'
     | '/app/chaal/players'
     | '/app/chaal/puzzles'
+    | '/app/chaal/studies'
+    | '/app/chaal/teams'
+    | '/app/chaal/tournaments'
     | '/app/chaal/watch'
     | '/admin/taskline/projects/$id/labels'
     | '/admin/taskline/projects/$id/members'
@@ -2797,6 +2866,9 @@ export interface FileRouteTypes {
     | '/_chaal/app/chaal/local/$id'
     | '/_chaal/app/chaal/players/$username'
     | '/_chaal/app/chaal/puzzles/$id'
+    | '/_chaal/app/chaal/studies/$id'
+    | '/_chaal/app/chaal/teams/$id'
+    | '/_chaal/app/chaal/tournaments/$id'
     | '/_chaal/app/chaal/watch/$channel'
     | '/_parda/app/parda/c/$slug'
     | '/_parda/app/parda/collection/$id'
@@ -2820,6 +2892,9 @@ export interface FileRouteTypes {
     | '/_chaal/app/chaal/broadcasts/'
     | '/_chaal/app/chaal/players/'
     | '/_chaal/app/chaal/puzzles/'
+    | '/_chaal/app/chaal/studies/'
+    | '/_chaal/app/chaal/teams/'
+    | '/_chaal/app/chaal/tournaments/'
     | '/_chaal/app/chaal/watch/'
     | '/_admin/admin/taskline/projects/$id/labels'
     | '/_admin/admin/taskline/projects/$id/members'
@@ -4215,6 +4290,48 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ChaalAppChaalPuzzlesIdRouteImport
       parentRoute: typeof ChaalRouteRoute
     }
+    '/_chaal/app/chaal/studies/': {
+      id: '/_chaal/app/chaal/studies/'
+      path: '/app/chaal/studies'
+      fullPath: '/app/chaal/studies/'
+      preLoaderRoute: typeof ChaalAppChaalStudiesIndexRouteImport
+      parentRoute: typeof ChaalRouteRoute
+    }
+    '/_chaal/app/chaal/studies/$id': {
+      id: '/_chaal/app/chaal/studies/$id'
+      path: '/app/chaal/studies/$id'
+      fullPath: '/app/chaal/studies/$id'
+      preLoaderRoute: typeof ChaalAppChaalStudiesIdRouteImport
+      parentRoute: typeof ChaalRouteRoute
+    }
+    '/_chaal/app/chaal/teams/': {
+      id: '/_chaal/app/chaal/teams/'
+      path: '/app/chaal/teams'
+      fullPath: '/app/chaal/teams/'
+      preLoaderRoute: typeof ChaalAppChaalTeamsIndexRouteImport
+      parentRoute: typeof ChaalRouteRoute
+    }
+    '/_chaal/app/chaal/teams/$id': {
+      id: '/_chaal/app/chaal/teams/$id'
+      path: '/app/chaal/teams/$id'
+      fullPath: '/app/chaal/teams/$id'
+      preLoaderRoute: typeof ChaalAppChaalTeamsIdRouteImport
+      parentRoute: typeof ChaalRouteRoute
+    }
+    '/_chaal/app/chaal/tournaments/': {
+      id: '/_chaal/app/chaal/tournaments/'
+      path: '/app/chaal/tournaments'
+      fullPath: '/app/chaal/tournaments/'
+      preLoaderRoute: typeof ChaalAppChaalTournamentsIndexRouteImport
+      parentRoute: typeof ChaalRouteRoute
+    }
+    '/_chaal/app/chaal/tournaments/$id': {
+      id: '/_chaal/app/chaal/tournaments/$id'
+      path: '/app/chaal/tournaments/$id'
+      fullPath: '/app/chaal/tournaments/$id'
+      preLoaderRoute: typeof ChaalAppChaalTournamentsIdRouteImport
+      parentRoute: typeof ChaalRouteRoute
+    }
     '/_chaal/app/chaal/watch/': {
       id: '/_chaal/app/chaal/watch/'
       path: '/app/chaal/watch'
@@ -4540,10 +4657,16 @@ interface ChaalRouteRouteChildren {
   ChaalAppChaalLocalIdRoute: typeof ChaalAppChaalLocalIdRoute
   ChaalAppChaalPlayersUsernameRoute: typeof ChaalAppChaalPlayersUsernameRoute
   ChaalAppChaalPuzzlesIdRoute: typeof ChaalAppChaalPuzzlesIdRoute
+  ChaalAppChaalStudiesIdRoute: typeof ChaalAppChaalStudiesIdRoute
+  ChaalAppChaalTeamsIdRoute: typeof ChaalAppChaalTeamsIdRoute
+  ChaalAppChaalTournamentsIdRoute: typeof ChaalAppChaalTournamentsIdRoute
   ChaalAppChaalWatchChannelRoute: typeof ChaalAppChaalWatchChannelRoute
   ChaalAppChaalBroadcastsIndexRoute: typeof ChaalAppChaalBroadcastsIndexRoute
   ChaalAppChaalPlayersIndexRoute: typeof ChaalAppChaalPlayersIndexRoute
   ChaalAppChaalPuzzlesIndexRoute: typeof ChaalAppChaalPuzzlesIndexRoute
+  ChaalAppChaalStudiesIndexRoute: typeof ChaalAppChaalStudiesIndexRoute
+  ChaalAppChaalTeamsIndexRoute: typeof ChaalAppChaalTeamsIndexRoute
+  ChaalAppChaalTournamentsIndexRoute: typeof ChaalAppChaalTournamentsIndexRoute
   ChaalAppChaalWatchIndexRoute: typeof ChaalAppChaalWatchIndexRoute
 }
 
@@ -4561,10 +4684,16 @@ const ChaalRouteRouteChildren: ChaalRouteRouteChildren = {
   ChaalAppChaalLocalIdRoute: ChaalAppChaalLocalIdRoute,
   ChaalAppChaalPlayersUsernameRoute: ChaalAppChaalPlayersUsernameRoute,
   ChaalAppChaalPuzzlesIdRoute: ChaalAppChaalPuzzlesIdRoute,
+  ChaalAppChaalStudiesIdRoute: ChaalAppChaalStudiesIdRoute,
+  ChaalAppChaalTeamsIdRoute: ChaalAppChaalTeamsIdRoute,
+  ChaalAppChaalTournamentsIdRoute: ChaalAppChaalTournamentsIdRoute,
   ChaalAppChaalWatchChannelRoute: ChaalAppChaalWatchChannelRoute,
   ChaalAppChaalBroadcastsIndexRoute: ChaalAppChaalBroadcastsIndexRoute,
   ChaalAppChaalPlayersIndexRoute: ChaalAppChaalPlayersIndexRoute,
   ChaalAppChaalPuzzlesIndexRoute: ChaalAppChaalPuzzlesIndexRoute,
+  ChaalAppChaalStudiesIndexRoute: ChaalAppChaalStudiesIndexRoute,
+  ChaalAppChaalTeamsIndexRoute: ChaalAppChaalTeamsIndexRoute,
+  ChaalAppChaalTournamentsIndexRoute: ChaalAppChaalTournamentsIndexRoute,
   ChaalAppChaalWatchIndexRoute: ChaalAppChaalWatchIndexRoute,
 }
 

@@ -1,6 +1,7 @@
 import "@tanstack/react-start/server-only";
 import { and, eq, sql } from "drizzle-orm";
 import type { ChaalAdminSettings, ChaalSettingsInput } from "@/features/chaal/admin/schema";
+import { readCommunityLimits } from "@/features/chaal/community/limits";
 import { readEngineLimits } from "@/features/chaal/engine/limits";
 import { CHAAL_FEATURES, type ChaalFeature, featureOn, isLichessScope } from "@/features/chaal/features";
 import { readPlayLimits } from "@/features/chaal/play/controls";
@@ -18,7 +19,7 @@ import type { ChaalAdminServices } from "./context";
 
 /**
  * /admin/chaal/settings (PLAN Task 79, decision 0268): the one `ch_settings` row. The form
- * saves the switches, connecting, online play, puzzles (Task 80), watch (Task 82), the defaults, the engine's
+ * saves the switches, connecting, online play, puzzles (Task 80), watch (Task 82), community (Task 83), the defaults, the engine's
  * limits, the banner and the maintenance message from the version it opened at; maintenance itself and the
  * purge are their own writes, so they never make an open form stale. Every write is audited
  * and clears the controls' cache.
@@ -42,6 +43,7 @@ const toAdmin = (row: Row, connectConfigured: boolean): ChaalAdminSettings => ({
 	play: readPlayLimits(row.play),
 	puzzles: readPuzzleLimits(row.puzzles),
 	watch: readWatchLimits(row.watch),
+	community: readCommunityLimits(row.community),
 	defaults: readDefaults(row.defaults),
 	engine: readEngineLimits(row.engine),
 	banner: row.banner ?? EMPTY,
@@ -78,6 +80,7 @@ function summary(row: Row) {
 	const engine = readEngineLimits(row.engine);
 	const puzzles = readPuzzleLimits(row.puzzles);
 	const watch = readWatchLimits(row.watch);
+	const community = readCommunityLimits(row.community);
 	const defaults = readDefaults(row.defaults);
 	return {
 		featuresOff: CHAAL_FEATURES.filter((feature) => !featureOn(row.features, feature)),
@@ -90,6 +93,10 @@ function summary(row: Row) {
 		puzzleStreak: puzzles.streak,
 		tvChannels: watch.channels.join(", "),
 		streamers: watch.streamers,
+		joinTournaments: community.joinTournaments,
+		joinTeams: community.joinTeams,
+		saveToStudy: community.saveToStudy,
+		studiesBy: community.studiesBy,
 		defaults: `${defaults.board}, ${defaults.pieces}, ${defaults.sounds ? "sound" : "silent"}`,
 		engine: `depth ${engine.maxDepth}, ${engine.multiPv} lines, ${engine.hashMb} MB`,
 		banner: row.banner?.en ?? "",
@@ -118,6 +125,7 @@ export async function updateSettings(
 				play: input.play,
 				puzzles: input.puzzles,
 				watch: readWatchLimits(input.watch),
+				community: readCommunityLimits(input.community),
 				defaults: input.defaults,
 				engine: input.engine,
 				banner: textOrNull(input.banner),

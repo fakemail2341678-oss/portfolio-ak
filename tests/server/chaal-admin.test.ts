@@ -94,6 +94,7 @@ async function formOf(): Promise<ChaalSettingsInput> {
 		play: current.play,
 		puzzles: current.puzzles,
 		watch: current.watch,
+		community: current.community,
 		defaults: current.defaults,
 		engine: current.engine,
 		banner: current.banner,
@@ -141,9 +142,17 @@ describe("settings", () => {
 			banner: { en: "Hello", ne: "" },
 			// Watch's controls (Task 82): kept in the grid's order.
 			watch: { channels: ["rapid", "blitz"], streamers: false },
+			// Community's controls (Task 83).
+			community: { joinTournaments: false, joinTeams: true, saveToStudy: false, studiesBy: "chessbrah" },
 		});
 		expect(saved.features.play).toBe(false);
 		expect(saved.watch).toEqual({ channels: ["blitz", "rapid"], streamers: false });
+		expect(saved.community).toEqual({
+			joinTournaments: false,
+			joinTeams: true,
+			saveToStudy: false,
+			studiesBy: "chessbrah",
+		});
 		expect(saved.updatedAt).toBe(String(Number(form.updatedAt) + 1));
 		const [row] = await env.db.select().from(schema.chSettings);
 		expect(row?.features).toEqual({ play: false, studies: false });
@@ -156,6 +165,8 @@ describe("settings", () => {
 			quickPair: "days",
 			tvChannels: "blitz, rapid",
 			streamers: false,
+			joinTournaments: false,
+			studiesBy: "chessbrah",
 		});
 		expect(invalidate).toHaveBeenCalledTimes(1);
 
@@ -173,6 +184,7 @@ describe("settings", () => {
 		expect(status.defaults.board).toBe("stone");
 		expect(status.play.quickPair).toBe("days");
 		expect(status.watch.streamers).toBe(false);
+		expect(status.community.saveToStudy).toBe(false);
 		expect(status.live).toBe("https://lichess.org");
 	});
 

@@ -58,6 +58,7 @@ function SettingsForm({ settings }: { settings: ChaalAdminSettings }) {
 				play: settings.play,
 				puzzles: settings.puzzles,
 				watch: settings.watch,
+				community: settings.community,
 				defaults: settings.defaults,
 				engine: settings.engine,
 				banner: settings.banner,
@@ -166,6 +167,44 @@ function SettingsForm({ settings }: { settings: ChaalAdminSettings }) {
 						/>
 					)}
 				</form.AppField>
+			</FormSection>
+			<FormSection title={m.ch_admin_settings_community()} description={m.ch_admin_settings_community_hint()}>
+				<form.AppField name="community.joinTournaments">
+					{(field) => (
+						<field.SwitchField
+							label={m.ch_admin_settings_join_tournaments()}
+							description={m.ch_admin_settings_join_tournaments_hint()}
+						/>
+					)}
+				</form.AppField>
+				<form.AppField name="community.joinTeams">
+					{(field) => (
+						<field.SwitchField
+							label={m.ch_admin_settings_join_teams()}
+							description={m.ch_admin_settings_join_teams_hint()}
+						/>
+					)}
+				</form.AppField>
+				<form.AppField name="community.saveToStudy">
+					{(field) => (
+						<field.SwitchField
+							label={m.ch_admin_settings_save_to_study()}
+							description={m.ch_admin_settings_save_to_study_hint()}
+						/>
+					)}
+				</form.AppField>
+				<div className="grid gap-6 sm:grid-cols-2">
+					<form.AppField name="community.studiesBy">
+						{(field) => (
+							<field.TextField
+								label={m.ch_admin_settings_studies_by()}
+								description={m.ch_admin_settings_studies_by_hint()}
+								maxLength={30}
+								autoComplete="off"
+							/>
+						)}
+					</form.AppField>
+				</div>
 			</FormSection>
 			<FormSection title={m.ch_admin_settings_defaults()} description={m.ch_admin_settings_defaults_hint()}>
 				<div className="grid gap-6 sm:grid-cols-2">

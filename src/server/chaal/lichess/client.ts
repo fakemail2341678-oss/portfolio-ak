@@ -58,8 +58,10 @@ export type Lichess = {
 	/**
 	 * A finite ndjson answer (a player's games, the players someone follows: Task 81), read
 	 * whole inside its lane, each line mapped by `schema`; a line that doesn't map is dropped.
+	 * With `max`, only the first `max` lines are read and the rest of the answer is left
+	 * (a team's members, an account's studies: Task 83).
 	 */
-	lines: <S extends z.ZodType>(request: LichessRequest, schema: S) => Promise<z.output<S>[]>;
+	lines: <S extends z.ZodType>(request: LichessRequest, schema: S, max?: number) => Promise<z.output<S>[]>;
 	/** A PGN answer (a broadcast's board, Task 82), as text; longer than `maxBytes` is an upstream fault. */
 	pgn: (request: LichessRequest, maxBytes: number) => Promise<string>;
 	/** A call whose answer has no body Chaal needs (a 204, a move's `{ ok: true }`). */
@@ -71,6 +73,29 @@ export type Lichess = {
 };
 
 /** The user's token was refused (revoked, expired, or the account closed): reconnect. */
+/** The first `max` lines of an ndjson answer; the rest is left unread (its connection freed). */
+async function firstLines(response: Response, max: number): Promise<string[]> {
+	if (!response.body) return [];
+	const reader = response.body.getReader();
+	const decoder = new TextDecoder();
+	const lines: string[] = [];
+	let buffer = "";
+	try {
+		while (lines.length < max) {
+			const { done, value } = await reader.read();
+			if (done) break;
+			buffer += decoder.decode(value, { stream: true });
+			const parts = buffer.split("\n");
+			buffer = parts.pop() ?? "";
+			lines.push(...parts.filter((line) => line.trim()));
+		}
+		if (lines.length < max && buffer.trim()) lines.push(buffer);
+	} finally {
+		await reader.cancel().catch(() => {});
+	}
+	return lines.slice(0, max);
+}
+
 export class LichessAuthError extends AppError {
 	constructor(endpoint: string) {
 		super("FORBIDDEN", `Lichess refused the token (${endpoint})`, { reason: "lichess-reconnect" });
@@ -223,20 +248,20 @@ export function createLichess(config: LichessConfig, fetcher: typeof fetch = fet
 				}
 				return parsed.data;
 			}),
-		lines: (request, schema) =>
+		lines: (request, schema, max) =>
 			lanes.run(request.lane, async () => {
 				// An export arrives at Lichess's pace (20 or 30 games a second), so it gets twice the time.
 				const timeout = AbortSignal.timeout(timeoutMs * 2);
 				const response = await call(request, "application/x-ndjson", () => timeout);
-				let text: string;
+				let raw: string[];
 				try {
-					text = await response.text();
+					raw = max === undefined ? (await response.text()).split("\n") : await firstLines(response, max);
 				} catch (error) {
 					throw unavailable(request.endpoint, "unreadable answer", error);
 				}
 				const out: z.output<typeof schema>[] = [];
 				let dropped = 0;
-				for (const line of text.split("\n")) {
+				for (const line of raw) {
 					if (!line.trim()) continue;
 					let value: unknown;
 					try {

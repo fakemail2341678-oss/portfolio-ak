@@ -1,9 +1,11 @@
 import { Link, type LinkOptions, useRouterState } from "@tanstack/react-router";
 import {
+	BookOpenIcon,
 	ChartSplineIcon,
 	HouseIcon,
 	InfoIcon,
 	type LucideIcon,
+	MedalIcon,
 	MenuIcon,
 	PuzzleIcon,
 	SearchIcon,
@@ -11,6 +13,7 @@ import {
 	SwordsIcon,
 	TrophyIcon,
 	TvIcon,
+	UsersIcon,
 } from "lucide-react";
 import { type ReactNode, useState } from "react";
 import { LanguageSwitcher } from "@/components/layout/language-switcher";
@@ -101,6 +104,9 @@ const focusRing = "outline-none focus-visible:ring-[3px] focus-visible:ring-ring
 /** The pages behind "More" on phones, and in the footer everywhere. */
 const MORE: ReadonlyArray<{ link: LinkOptions; label: () => string; icon: LucideIcon; testId: string }> = [
 	{ link: chaalLinks.players(), label: m.ch_nav_players, icon: TrophyIcon, testId: "chaal-more-players" },
+	{ link: chaalLinks.tournaments(), label: m.ch_tournaments_title, icon: MedalIcon, testId: "chaal-more-tournaments" },
+	{ link: chaalLinks.teams(), label: m.ch_teams_title, icon: UsersIcon, testId: "chaal-more-teams" },
+	{ link: chaalLinks.studies(), label: m.ch_studies_title, icon: BookOpenIcon, testId: "chaal-more-studies" },
 	{ link: chaalLinks.settings(), label: m.ch_settings_title, icon: SettingsIcon, testId: "chaal-more-settings" },
 	{ link: chaalLinks.about(), label: m.ch_about_title, icon: InfoIcon, testId: "chaal-more-about" },
 ];

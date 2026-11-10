@@ -12,7 +12,10 @@
  * rating history, details and activity, the latest games, a search; `pnpm lichess:record
  * players` records only those), and watch (Task 82: the TV's channels and their games, the live
  * streamers, the broadcasts' lists, a tournament, two rounds and a board of each; `pnpm
- * lichess:record watch` records only those). The
+ * lichess:record watch` records only those), and community (Task 83: the arenas' list, an arena
+ * of each state, a finished Swiss and its results, a team with its members and tournaments,
+ * popular teams and a search, an account's studies and one study's PGN; `pnpm lichess:record
+ * community` records only those). The
  * opening explorer refuses calls without a token: with LICHESS_APP_TOKEN in .env (a
  * personal token with no scopes) it records the masters and Lichess databases at the start
  * and after 1. e4, and a player's games (the stream's last line); without it, it keeps the
@@ -239,6 +242,86 @@ async function recordWatch() {
 	}
 }
 
+/** The team the fake Lichess knows (Task 83): Lichess's own Swiss team, with Swiss tournaments. */
+const COMMUNITY_TEAM = "lichess-swiss";
+/** What the teams page's search types in e2e. */
+const TEAM_TERM = "nepal";
+/** The account whose public studies the studies page shows first (`ch_settings.community.studiesBy`'s default). */
+const STUDIES_BY = "lichess";
+/** How many of a team's members, and of an account's studies, Chaal reads (src/features/chaal/community/schema.ts). */
+const MEMBERS_SHOWN = 30;
+const STUDIES_SHOWN = 100;
+/** A study's PGN the fake serves whole; a smaller one keeps the fixtures light. */
+const STUDY_MAX_BYTES = 120_000;
+
+/**
+ * Community (Task 83), as Chaal reads it (src/server/chaal/community/): the arenas' list and
+ * one arena of each state (created, started, finished: standard chess, the first in each),
+ * a finished Swiss and its results, the team's Swiss and arenas, popular teams, a search,
+ * the team and its first members, an account's studies and the first of them that's small.
+ */
+async function recordCommunity() {
+	await record("api", "/api/tournament");
+	const list =
+		readRecorded<Record<"created" | "started" | "finished", Array<{ id: string; variant: { key: string } }>>>(
+			"api_tournament.json",
+		);
+	for (const state of ["created", "started", "finished"] as const) {
+		const arena = list[state].find((each) => each.variant.key === "standard");
+		if (arena) await record("api", `/api/tournament/${arena.id}`, { page: "1" });
+	}
+	const team = `/api/team/${COMMUNITY_TEAM}`;
+	await recordStream({ pathname: `${team}/swiss`, params: { max: "10" }, lines: 10, keep: "first", maxMs: 30_000 });
+	await recordStream({ pathname: `${team}/arena`, params: { max: "10" }, lines: 10, keep: "first", maxMs: 30_000 });
+	// A finished Swiss for the results (the team's list opens with the coming ones).
+	const finished = new URL(`${BASES.api}${team}/swiss`);
+	finished.searchParams.set("max", "1");
+	finished.searchParams.set("status", "finished");
+	const swissLine = (
+		await (await fetch(finished, { headers: { ...HEADERS, accept: "application/x-ndjson" } })).text()
+	).split("\n")[0];
+	await pause();
+	const swiss = swissLine ? (JSON.parse(swissLine) as { id: string }).id : null;
+	if (swiss) {
+		await record("api", `/api/swiss/${swiss}`);
+		await recordStream({
+			pathname: `/api/swiss/${swiss}/results`,
+			params: { nb: "100" },
+			lines: 100,
+			keep: "first",
+			maxMs: 30_000,
+		});
+	}
+	await record("api", "/api/team/all", { page: "1" });
+	await record("api", "/api/team/search", { text: TEAM_TERM, page: "1" });
+	await record("api", team);
+	await recordStream({ pathname: `${team}/users`, lines: MEMBERS_SHOWN, keep: "first", maxMs: 30_000 });
+	await recordStream({
+		pathname: `/api/study/by/${STUDIES_BY}`,
+		lines: STUDIES_SHOWN,
+		keep: "first",
+		maxMs: 30_000,
+	});
+	const studies = readFileSync(
+		path.join(OUT, lichessFixtureName("api", `/api/study/by/${STUDIES_BY}`).replace(/\.json$/, ".ndjson")),
+		"utf8",
+	)
+		.split("\n")
+		.filter((line) => line.trim())
+		.map((line) => (JSON.parse(line) as { id: string }).id);
+	for (const id of studies.slice(0, 10)) {
+		const url = new URL(`${BASES.api}/api/study/${id}.pgn`);
+		const response = await fetch(url, { headers: { ...HEADERS, accept: "application/x-chess-pgn" } });
+		const text = await response.text();
+		await pause();
+		if (!response.ok || text.length > STUDY_MAX_BYTES) continue;
+		const name = lichessFixtureName("api", `/api/study/${id}.pgn`);
+		writeFileSync(path.join(OUT, name), text);
+		console.log(`  ${name}`);
+		break;
+	}
+}
+
 mkdirSync(OUT, { recursive: true });
 console.log("record-lichess-fixtures:");
 /** `pnpm lichess:record puzzles`: only the puzzle batch, leaving every other recording as it is. */
@@ -255,6 +338,10 @@ if (only === "watch") {
 	await recordWatch();
 	process.exit(0);
 }
+if (only === "community") {
+	await recordCommunity();
+	process.exit(0);
+}
 await record("api", "/api/puzzle/daily");
 await record("api", PUZZLE_BATCH.path, PUZZLE_BATCH.params);
 for (const fen of [START_FEN, SAMPLE_FEN]) await record("api", "/api/cloud-eval", { fen, multiPv: "3" });
@@ -265,6 +352,7 @@ const daily = JSON.parse(readFileSync(path.join(OUT, "api_puzzle_daily.json"), "
 await record("api", `/game/export/${daily.game.id}`, GAME_EXPORT);
 await recordPlayer();
 await recordWatch();
+await recordCommunity();
 if (APP_TOKEN) {
 	for (const fen of [START_FEN, SAMPLE_FEN]) {
 		await record("explorer", "/masters", { fen, topGames: "4", moves: "12" }, APP_TOKEN);

@@ -2,6 +2,19 @@ import "@tanstack/react-start/server-only";
 import { z } from "zod";
 import type { Score } from "@/features/chaal/chess/eval";
 import { play, START_FEN, turnOf } from "@/features/chaal/chess/rules";
+import {
+	type ArenaFeatured,
+	type ArenaPodium,
+	type ArenaStanding,
+	type ArenaSummary,
+	type ChaalArena,
+	type ChaalTournaments,
+	STANDING_PAGE_SIZE,
+	type SwissStanding,
+	type SwissSummary,
+	type TournamentCondition,
+	type TournamentStatus,
+} from "@/features/chaal/events/schema";
 import type {
 	ChaalChallengeLine,
 	ChaalEvent,
@@ -47,6 +60,8 @@ import type {
 	ExplorerDatabase,
 	TablebaseResult,
 } from "@/features/chaal/schema";
+import type { StudySummary } from "@/features/chaal/studies/schema";
+import type { ChaalTeams, TeamMember, TeamPerson, TeamSummary } from "@/features/chaal/teams/schema";
 import {
 	BOARD_RESULTS,
 	type BoardResult,
@@ -1595,3 +1610,437 @@ export const broadcastRoundAnswer = z
 			boards: answer.games ?? [],
 		}),
 	);
+
+// --- Community (Task 83, decision 0273) -------------------------------------------------------
+
+const LICHESS_SITE = "https://lichess.org";
+
+const ARENA_STATUS: Readonly<Record<number, TournamentStatus>> = { 10: "created", 20: "started", 30: "finished" };
+
+const tourClock = z.object({ limit: z.number().int().min(0), increment: z.number().int().min(0) });
+
+/** A time Lichess sends as milliseconds or as an ISO date. */
+const instant = z.union([z.number(), z.string()]).transform((value, context) => {
+	const at = typeof value === "number" ? value : Date.parse(value);
+	if (!Number.isFinite(at)) {
+		context.addIssue({ code: "custom", message: "not a time" });
+		return z.NEVER;
+	}
+	return at;
+});
+
+const verdicts = z
+	.object({
+		list: z.array(z.object({ condition: z.string().max(200), verdict: z.string().max(200) })).max(20),
+		accepted: z.boolean().nullish(),
+	})
+	.nullish()
+	.transform((value): { conditions: TournamentCondition[]; eligible: boolean | null } => ({
+		conditions: (value?.list ?? []).map((each) => ({ condition: each.condition, ok: each.verdict === "ok" })),
+		eligible: value?.accepted ?? null,
+	}));
+
+const keyOf = z
+	.union([z.string(), z.object({ key: z.string() })])
+	.transform((value) => (typeof value === "string" ? value : value.key));
+
+const tourId = z.string().regex(/^[A-Za-z0-9]{8}$/);
+
+/** An arena in Lichess's list (`/api/tournament`) or a team's (`/api/team/{id}/arena`). */
+const arenaSummary = z
+	.object({
+		id: tourId,
+		createdBy: z.string().max(40).nullish(),
+		fullName: z.string().max(200),
+		minutes: z.number().int().min(0),
+		clock: tourClock,
+		rated: z.boolean().nullish(),
+		nbPlayers: z.number().int().min(0).nullish(),
+		variant: keyOf,
+		perf: z.object({ key: z.string().max(30) }).nullish(),
+		startsAt: instant,
+		finishesAt: instant.nullish(),
+		status: z.number().int(),
+		winner: z.object({ name: z.string().max(40) }).nullish(),
+	})
+	.transform(
+		(arena): ArenaSummary => ({
+			id: arena.id,
+			name: arena.fullName,
+			status: ARENA_STATUS[arena.status] ?? "created",
+			clock: arena.clock,
+			minutes: arena.minutes,
+			rated: arena.rated ?? false,
+			perf: arena.perf?.key ?? "",
+			variant: arena.variant,
+			nbPlayers: arena.nbPlayers ?? 0,
+			startsAt: arena.startsAt,
+			finishesAt: arena.finishesAt ?? arena.startsAt + arena.minutes * 60_000,
+			winner: arena.winner?.name ?? null,
+			official: arena.createdBy === "lichess",
+		}),
+	);
+
+/** A line of GET /api/team/{id}/arena. */
+export const arenaLineAnswer = arenaSummary;
+
+const arenaList = z.array(arenaSummary).max(300).nullish();
+
+/** GET /api/tournament: the arenas coming up, being played and just finished. */
+export const tournamentListAnswer = z.object({ created: arenaList, started: arenaList, finished: arenaList }).transform(
+	(answer): ChaalTournaments => ({
+		created: answer.created ?? [],
+		started: answer.started ?? [],
+		finished: answer.finished ?? [],
+	}),
+);
+
+const sheet = z
+	.object({ scores: z.union([z.string(), z.array(z.unknown())]).nullish(), fire: z.boolean().nullish() })
+	.nullish();
+
+const standingPlayer = z
+	.object({
+		name: z.string().max(40),
+		title: z.string().max(5).nullish(),
+		rank: z.number().int(),
+		rating: z.number().nullish(),
+		score: z.number().nullish(),
+		sheet,
+		withdraw: z.boolean().nullish(),
+		team: z.string().max(80).nullish(),
+	})
+	.transform(
+		(player): ArenaStanding => ({
+			rank: player.rank,
+			name: player.name,
+			title: player.title ?? null,
+			rating: player.rating ?? 0,
+			score: player.score ?? 0,
+			sheet: typeof player.sheet?.scores === "string" ? player.sheet.scores.slice(0, 200) : "",
+			fire: player.sheet?.fire ?? false,
+			withdraw: player.withdraw ?? false,
+			team: player.team ?? null,
+		}),
+	);
+
+const podiumPlayer = z
+	.object({
+		name: z.string().max(40),
+		title: z.string().max(5).nullish(),
+		rank: z.number().int(),
+		rating: z.number().nullish(),
+		score: z.number().nullish(),
+		nb: z.object({ game: z.number(), berserk: z.number().nullish(), win: z.number() }).nullish(),
+		performance: z.number().nullish(),
+	})
+	.transform(
+		(player): ArenaPodium => ({
+			rank: player.rank,
+			name: player.name,
+			title: player.title ?? null,
+			rating: player.rating ?? 0,
+			score: player.score ?? 0,
+			games: player.nb?.game ?? 0,
+			wins: player.nb?.win ?? 0,
+			berserks: player.nb?.berserk ?? 0,
+			performance: player.performance ?? null,
+		}),
+	);
+
+const featuredPlayer = z
+	.object({ name: z.string().max(40), rating: z.number().nullish(), rank: z.number().nullish() })
+	.transform((player) => ({ name: player.name, rating: player.rating ?? null, rank: player.rank ?? null }));
+
+const featured = z
+	.object({
+		id: tourId,
+		fen: z.string().max(100),
+		orientation: color.nullish(),
+		lastMove: z.string().max(5).nullish(),
+		white: featuredPlayer,
+		black: featuredPlayer,
+	})
+	.transform(
+		(game): ArenaFeatured => ({
+			id: game.id,
+			fen: game.fen,
+			orientation: game.orientation ?? "white",
+			lastMove: game.lastMove ?? null,
+			white: game.white,
+			black: game.black,
+		}),
+	);
+
+const tourStats = z
+	.object({
+		games: z.number(),
+		whiteWins: z.number(),
+		blackWins: z.number(),
+		draws: z.number(),
+		averageRating: z.number().nullish(),
+		berserks: z.number().nullish(),
+	})
+	.nullish()
+	.transform((stats) =>
+		stats
+			? {
+					games: stats.games,
+					whiteWins: stats.whiteWins,
+					blackWins: stats.blackWins,
+					draws: stats.draws,
+					averageRating: stats.averageRating ?? null,
+					berserks: stats.berserks ?? null,
+				}
+			: null,
+	);
+
+/** A team battle's teams: Lichess sends each as its name, or as its name and flair. */
+const battleTeams = z
+	.object({ teams: z.record(z.string(), z.union([z.string(), z.array(z.string().nullish())])) })
+	.nullish()
+	.transform((battle) =>
+		battle
+			? Object.entries(battle.teams)
+					.slice(0, 200)
+					.map(([id, value]) => ({ id, name: (Array.isArray(value) ? value[0] : value) ?? id }))
+			: null,
+	);
+
+const arenaMe = z
+	.object({ rank: z.number().nullish(), withdraw: z.boolean().nullish(), gameId: z.string().max(12).nullish() })
+	.nullish();
+
+/** GET /api/tournament/{id}: an arena with a page of its standings; with a player's token, where they stand. */
+export const arenaAnswer = z
+	.object({
+		id: tourId,
+		createdBy: z.string().max(40).nullish(),
+		fullName: z.string().max(200),
+		minutes: z.number().int().min(0),
+		clock: tourClock,
+		rated: z.boolean().nullish(),
+		berserkable: z.boolean().nullish(),
+		nbPlayers: z.number().int().min(0).nullish(),
+		variant: keyOf,
+		perf: z.object({ key: z.string().max(30) }).nullish(),
+		startsAt: instant,
+		secondsToStart: z.number().nullish(),
+		secondsToFinish: z.number().nullish(),
+		isStarted: z.boolean().nullish(),
+		isFinished: z.boolean().nullish(),
+		description: clipped(2_000),
+		verdicts,
+		teamBattle: battleTeams,
+		standing: z.object({ page: z.number().int(), players: z.array(standingPlayer).max(50) }).nullish(),
+		podium: z.array(podiumPlayer).max(3).nullish(),
+		featured: featured.nullish(),
+		stats: tourStats,
+		me: arenaMe,
+	})
+	.transform((arena): ChaalArena => {
+		const nbPlayers = arena.nbPlayers ?? 0;
+		return {
+			id: arena.id,
+			name: arena.fullName,
+			status: arena.isFinished ? "finished" : arena.isStarted ? "started" : "created",
+			clock: arena.clock,
+			minutes: arena.minutes,
+			rated: arena.rated ?? false,
+			perf: arena.perf?.key ?? "",
+			variant: arena.variant,
+			nbPlayers,
+			startsAt: arena.startsAt,
+			finishesAt: arena.startsAt + arena.minutes * 60_000,
+			createdBy: arena.createdBy ?? "",
+			official: arena.createdBy === "lichess",
+			berserkable: arena.berserkable ?? false,
+			secondsToStart: arena.secondsToStart ?? null,
+			secondsToFinish: arena.secondsToFinish ?? null,
+			description: arena.description,
+			conditions: arena.verdicts.conditions,
+			eligible: arena.verdicts.eligible,
+			teams: arena.teamBattle,
+			standing: arena.standing ?? { page: 1, players: [] },
+			pages: Math.max(1, Math.ceil(nbPlayers / STANDING_PAGE_SIZE)),
+			podium: arena.podium && arena.podium.length > 0 ? arena.podium : null,
+			featured: arena.featured ?? null,
+			stats: arena.stats,
+			me: arena.me
+				? { rank: arena.me.rank ?? null, withdraw: arena.me.withdraw ?? false, gameId: arena.me.gameId ?? null }
+				: null,
+			url: `${LICHESS_SITE}/tournament/${arena.id}`,
+		};
+	});
+
+const SWISS_STATUS: Readonly<Record<string, TournamentStatus>> = {
+	created: "created",
+	started: "started",
+	finished: "finished",
+};
+
+const swissShape = z.object({
+	id: tourId,
+	createdBy: z.string().max(40).nullish(),
+	name: z.string().max(200),
+	clock: tourClock,
+	variant: keyOf,
+	rated: z.boolean().nullish(),
+	round: z.number().int().min(0),
+	nbRounds: z.number().int().min(0),
+	nbPlayers: z.number().int().min(0),
+	nbOngoing: z.number().int().min(0).nullish(),
+	status: z.string(),
+	startsAt: instant,
+	nextRound: z.object({ at: instant.nullish() }).nullish(),
+	verdicts,
+	stats: tourStats,
+});
+
+const swissSummaryOf = (swiss: z.output<typeof swissShape>): SwissSummary => ({
+	id: swiss.id,
+	name: swiss.name,
+	status: SWISS_STATUS[swiss.status] ?? "created",
+	clock: swiss.clock,
+	variant: swiss.variant,
+	rated: swiss.rated ?? false,
+	nbPlayers: swiss.nbPlayers,
+	round: swiss.round,
+	nbRounds: swiss.nbRounds,
+	startsAt: swiss.startsAt,
+	nextRoundAt: swiss.status === "finished" ? null : (swiss.nextRound?.at ?? null),
+});
+
+/** A Swiss tournament in a team's list (`/api/team/{id}/swiss`, ndjson). */
+export const swissLineAnswer = swissShape.transform(swissSummaryOf);
+
+/** GET /api/swiss/{id}: a Swiss tournament (its standings are its results, read apart). */
+export const swissAnswer = swissShape.transform((swiss) => ({
+	...swissSummaryOf(swiss),
+	createdBy: swiss.createdBy ?? "",
+	nbOngoing: swiss.nbOngoing ?? 0,
+	conditions: swiss.verdicts.conditions,
+	eligible: swiss.verdicts.eligible,
+	stats: swiss.stats,
+	url: `${LICHESS_SITE}/swiss/${swiss.id}`,
+}));
+
+/** A line of GET /api/swiss/{id}/results: a player's place. */
+export const swissResultAnswer = z
+	.object({
+		rank: z.number().int(),
+		points: z.number(),
+		tieBreak: z.number().nullish(),
+		rating: z.number().nullish(),
+		username: z.string().max(40),
+		title: z.string().max(5).nullish(),
+		performance: z.number().nullish(),
+	})
+	.transform(
+		(line): SwissStanding => ({
+			rank: line.rank,
+			name: line.username,
+			title: line.title ?? null,
+			rating: line.rating ?? 0,
+			points: line.points,
+			tieBreak: line.tieBreak ?? 0,
+			performance: line.performance ?? null,
+		}),
+	);
+
+const teamPerson = z
+	.object({ id: z.string().max(40), name: z.string().max(40), title: z.string().max(5).nullish() })
+	.transform((person): TeamPerson => ({ id: person.id, name: person.name, title: person.title ?? null }));
+
+const teamShape = z.object({
+	id: z.string().max(100),
+	name: z.string().max(200),
+	description: z.string().nullish(),
+	open: z.boolean().nullish(),
+	leader: teamPerson.nullish(),
+	leaders: z.array(teamPerson).max(50).nullish(),
+	nbMembers: z.number().int().min(0).nullish(),
+	joined: z.boolean().nullish(),
+	requested: z.boolean().nullish(),
+});
+
+const teamSummaryOf = (team: z.output<typeof teamShape>, max: number): TeamSummary => ({
+	id: team.id,
+	name: team.name,
+	description: clip(team.description, max),
+	open: team.open ?? false,
+	leader: team.leader ?? team.leaders?.[0] ?? null,
+	nbMembers: team.nbMembers ?? 0,
+});
+
+/** A team in a list: the start of its description only. */
+const teamListEntry = teamShape.transform((team) => teamSummaryOf(team, 280));
+
+/** GET /api/team/all and /api/team/search: a page of teams. */
+export const teamPageAnswer = z
+	.object({
+		currentPage: z.number().int(),
+		currentPageResults: z.array(teamListEntry).max(100),
+		nextPage: z.number().int().nullish(),
+		nbResults: z.number().int().nullish(),
+	})
+	.transform(
+		(answer): ChaalTeams => ({
+			teams: answer.currentPageResults,
+			page: answer.currentPage,
+			next: answer.nextPage ?? null,
+			total: answer.nbResults ?? answer.currentPageResults.length,
+		}),
+	);
+
+/** GET /api/team/of/{username}: the teams a player is in (Lichess wants a token for it). */
+export const teamsOfAnswer = z.array(teamListEntry).max(500);
+
+/** GET /api/team/{id}: a team, its description whole; with a player's token, whether they're in it. */
+export const teamAnswer = teamShape.transform((team) => ({
+	...teamSummaryOf(team, 4_000),
+	leaders: team.leaders ?? (team.leader ? [team.leader] : []),
+	joined: team.joined ?? false,
+	requested: team.requested ?? false,
+	url: `${LICHESS_SITE}/team/${team.id}`,
+}));
+
+/** A line of GET /api/team/{id}/users: a member, the newest first. */
+export const teamMemberAnswer = z
+	.object({
+		id: z.string().max(40),
+		name: z.string().max(40).nullish(),
+		username: z.string().max(40).nullish(),
+		title: z.string().max(5).nullish(),
+		joinedTeamAt: z.number().nullish(),
+	})
+	.transform(
+		(member): TeamMember => ({
+			id: member.id,
+			name: member.name ?? member.username ?? member.id,
+			title: member.title ?? null,
+			joinedAt: member.joinedTeamAt ?? null,
+		}),
+	);
+
+/** A line of GET /api/study/by/{username}: a study's name and dates. */
+export const studyLineAnswer = z
+	.object({
+		id: tourId,
+		name: z.string().max(200),
+		createdAt: z.number().nullish(),
+		updatedAt: z.number().nullish(),
+	})
+	.transform(
+		(study): StudySummary => ({
+			id: study.id,
+			name: study.name,
+			createdAt: study.createdAt ?? null,
+			updatedAt: study.updatedAt ?? null,
+		}),
+	);
+
+/** POST /api/study/{id}/import-pgn: the chapters it made. */
+export const studyImportAnswer = z
+	.object({ chapters: z.array(z.object({ id: tourId })).max(64) })
+	.transform((answer) => ({ chapter: answer.chapters[0]?.id ?? null }));

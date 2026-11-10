@@ -19,6 +19,8 @@
  * - Watch (Task 82, ./lichess-watch.ts): the TV's feeds, a game being played (`e2eWatch`, the
  *   rapid channel's) with its spectators' stream, and the recorded tournament's first round
  *   played live on its PGN stream.
+ * - Community (Task 83, ./lichess-community.ts): joining and withdrawing from tournaments, a
+ *   viewer's place in an arena, joining and leaving teams, an account's own study and saving to it.
  * - Everything else answers from tests/fixtures/lichess (`pnpm lichess:record`), by
  *   `lichessFixtureName`; the explorer asks for a token, as the real one does. A recorded
  *   stream (`.ndjson`: the player explorer, Task 75) is sent as ndjson and ends.
@@ -30,13 +32,15 @@
  * /e2e/lichess/games`, quick pairing's `POST /e2e/lichess/seek-accept`, `GET /e2e/lichess/seeks`
  * and `POST /e2e/lichess/arena` (Task 78), `GET /e2e/lichess/puzzle-solutions?account=` (Task 80),
  * watch's `POST /e2e/lichess/watch-move`, `/watch-end` and `/round-push` and `GET
- * /e2e/lichess/watch-streams` (Task 82), and `DELETE /e2e/lichess`. Later tasks add the
+ * /e2e/lichess/watch-streams` (Task 82), `GET /e2e/lichess/community?account=` (Task 83), and
+ * `DELETE /e2e/lichess`. Later tasks add the
  * rest (PLAN 13.5, "Fixtures").
  */
 import { createHash, randomBytes } from "node:crypto";
 import { existsSync, readFileSync } from "node:fs";
 import type { IncomingMessage, ServerResponse } from "node:http";
 import path from "node:path";
+import { createCommunity } from "./lichess-community.ts";
 import { type Account, createPlay } from "./lichess-play.ts";
 import { createPlayers } from "./lichess-players.ts";
 import { createPuzzles } from "./lichess-puzzles.ts";
@@ -108,6 +112,12 @@ const players = createPlayers({
 	read: (name) => readLichessFixture(name),
 	json: (response, status, body) => json(response, status, body),
 	recordedName: (pathname) => lichessFixtureName("api", pathname),
+});
+const community = createCommunity({
+	read: (name) => readLichessFixture(name),
+	json: (response, status, body) => json(response, status, body),
+	recordedName: (pathname, params) => lichessFixtureName("api", pathname, params),
+	readBody: (request) => readBody(request),
 });
 const watch = createWatch({
 	read: (name) => readLichessFixture(name),
@@ -195,6 +205,7 @@ export async function serveLichess(url: URL, request: IncomingMessage, response:
 		play.reset();
 		puzzles.reset();
 		players.reset();
+		community.reset();
 		watch.reset();
 		codes.clear();
 		tokens.clear();
@@ -237,6 +248,7 @@ export async function serveLichess(url: URL, request: IncomingMessage, response:
 	}
 	if (puzzles.control(route, url, response)) return true;
 	if (players.control(route, url, response)) return true;
+	if (community.control(route, url, response)) return true;
 	if (url.pathname.startsWith("/e2e/lichess/")) {
 		const body =
 			request.method === "POST" ? (JSON.parse((await readBody(request)) || "{}") as Record<string, unknown>) : {};
@@ -355,6 +367,13 @@ export async function serveLichess(url: URL, request: IncomingMessage, response:
 
 	// Players (Task 81, ./lichess-players.ts): following, the players followed, a crosstable.
 	if (host === "api" && players.serve(pathname, request, response, tokenOf(request)?.token.account ?? null))
+		return true;
+
+	// Community (Task 83, ./lichess-community.ts): joining, teams, an account's own study.
+	if (
+		host === "api" &&
+		(await community.serve(pathname, url, request, response, tokenOf(request)?.token.account ?? null))
+	)
 		return true;
 
 	// Watch (Task 82, ./lichess-watch.ts): the TV's feeds, a game being played, a live round's PGN stream.

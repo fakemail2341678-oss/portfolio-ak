@@ -1,4 +1,5 @@
 import "@tanstack/react-start/server-only";
+import { DEFAULT_COMMUNITY_LIMITS } from "@/features/chaal/community/limits";
 import { DEFAULT_ENGINE_LIMITS } from "@/features/chaal/engine/limits";
 import { DEFAULT_PLAY_LIMITS } from "@/features/chaal/play/controls";
 import { DEFAULT_PUZZLE_LIMITS } from "@/features/chaal/puzzles/limits";
@@ -29,6 +30,7 @@ export const DEFAULT_CHAAL_SETTINGS: ChaalSettingsRow = {
 	play: DEFAULT_PLAY_LIMITS,
 	puzzles: DEFAULT_PUZZLE_LIMITS,
 	watch: DEFAULT_WATCH_LIMITS,
+	community: DEFAULT_COMMUNITY_LIMITS,
 	defaults: DEFAULT_CHAAL_DEFAULTS,
 	maintenance: false,
 	maintenanceMessage: null,

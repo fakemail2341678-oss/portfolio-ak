@@ -1,6 +1,14 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { getRouteApi } from "@tanstack/react-router";
-import { EllipsisIcon, FilePlusIcon, FolderOpenIcon, SaveIcon, ShareIcon, UploadIcon } from "lucide-react";
+import {
+	BookOpenIcon,
+	EllipsisIcon,
+	FilePlusIcon,
+	FolderOpenIcon,
+	SaveIcon,
+	ShareIcon,
+	UploadIcon,
+} from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { errorMessage } from "@/components/errors/error-page";
@@ -38,6 +46,7 @@ import { useFairPlay } from "../live/fair-play";
 import { chaalConnectionQueryOptions, chaalStatusQueryOptions } from "../queries";
 import type { ChaalOpening } from "../schema";
 import { useChaalPreferences } from "../settings/use-preferences";
+import { SaveToStudyDialog } from "../studies/save-dialog";
 import { ExportDialog, ImportDialog, SaveDialog } from "./analysis-dialogs";
 import { EnginePanel, type ShownLine } from "./engine-panel";
 import { ExplorerPanel } from "./explorer-panel";
@@ -111,7 +120,7 @@ function AnalysisBoardPage({
 	const explorerAllowed = features?.explorer !== false;
 	const limits = status?.engine ?? DEFAULT_ENGINE_LIMITS;
 	const [tab, setTab] = useState<Tab>("moves");
-	const [dialog, setDialog] = useState<"import" | "export" | "save" | "analyses" | null>(null);
+	const [dialog, setDialog] = useState<"import" | "export" | "save" | "analyses" | "study" | null>(null);
 	const { connect } = useConnectLichess();
 	const ensureSession = useEnsureChaalSession();
 	const save = useMutation(saveAnalysisMutationOptions());
@@ -295,6 +304,11 @@ function AnalysisBoardPage({
 								onImport={() => setDialog("import")}
 								onExport={() => setDialog("export")}
 								onAnalyses={() => setDialog("analyses")}
+								onStudy={
+									status?.features.studies !== false && status?.community.saveToStudy !== false
+										? () => setDialog("study")
+										: undefined
+								}
 								onNew={() => board.reset()}
 							/>
 						</GameControls>
@@ -428,6 +442,13 @@ function AnalysisBoardPage({
 				onSave={(name) => void persist(name)}
 				pending={save.isPending}
 			/>
+			<SaveToStudyDialog
+				open={dialog === "study"}
+				onOpenChange={(open) => setDialog(open ? "study" : null)}
+				pgn={pgn}
+				orientation={board.orientation}
+				defaultName={title}
+			/>
 			<MyAnalyses
 				open={dialog === "analyses"}
 				onOpenChange={(open) => setDialog(open ? "analyses" : null)}
@@ -465,6 +486,7 @@ function BoardMenu({
 	onImport,
 	onExport,
 	onAnalyses,
+	onStudy,
 	onNew,
 }: {
 	onSave: () => void;
@@ -473,6 +495,8 @@ function BoardMenu({
 	onImport: () => void;
 	onExport: () => void;
 	onAnalyses: () => void;
+	/** "Save to study" (Task 83), when studies and saving are on. */
+	onStudy?: () => void;
 	onNew: () => void;
 }) {
 	return (
@@ -515,6 +539,12 @@ function BoardMenu({
 						<FolderOpenIcon aria-hidden />
 						{m.ch_analyses_title()}
 					</DropdownMenuItem>
+					{onStudy ? (
+						<DropdownMenuItem onSelect={onStudy} data-testid="chaal-save-study-open">
+							<BookOpenIcon aria-hidden />
+							{m.ch_study_save_title()}
+						</DropdownMenuItem>
+					) : null}
 					<DropdownMenuSeparator />
 					<DropdownMenuItem onSelect={onNew} data-testid="chaal-new-board">
 						<FilePlusIcon aria-hidden />

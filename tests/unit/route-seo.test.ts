@@ -204,6 +204,13 @@ const INDEXABLE: ReadonlyArray<{
 		path: "/app/chaal/broadcasts",
 		siteName: "Chaal",
 	},
+	{
+		to: "/app/chaal/tournaments",
+		label: "chaal tournaments",
+		context: {},
+		path: "/app/chaal/tournaments",
+		siteName: "Chaal",
+	},
 	// chaal:end
 	// @strip-demo:indexable (the neutral landing page goes here when the portfolio is stripped)
 	// @new-feature:indexable

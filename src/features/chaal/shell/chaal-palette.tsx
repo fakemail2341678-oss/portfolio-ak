@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { useNavigate, useRouterState } from "@tanstack/react-router";
 import {
+	BookOpenIcon,
 	ChartSplineIcon,
 	FlameIcon,
 	HouseIcon,
@@ -10,12 +11,14 @@ import {
 	LinkIcon,
 	LogInIcon,
 	LogOutIcon,
+	MedalIcon,
 	PuzzleIcon,
 	RadioTowerIcon,
 	SettingsIcon,
 	SwordsIcon,
 	TrophyIcon,
 	TvIcon,
+	UsersIcon,
 } from "lucide-react";
 import { lazy, Suspense, useState } from "react";
 import { THEME_ICONS, THEME_LABELS } from "@/components/layout/theme";
@@ -154,6 +157,30 @@ export function ChaalPalette({
 					>
 						<RadioTowerIcon aria-hidden />
 						<span>{m.ch_broadcasts_title()}</span>
+					</CommandItem>
+					<CommandItem
+						value="go tournaments"
+						keywords={[m.ch_tournaments_title(), m.ch_palette_arena()]}
+						onSelect={() => go(() => navigate(chaalLinks.tournaments()))}
+					>
+						<MedalIcon aria-hidden />
+						<span>{m.ch_tournaments_title()}</span>
+					</CommandItem>
+					<CommandItem
+						value="go teams"
+						keywords={[m.ch_teams_title()]}
+						onSelect={() => go(() => navigate(chaalLinks.teams()))}
+					>
+						<UsersIcon aria-hidden />
+						<span>{m.ch_teams_title()}</span>
+					</CommandItem>
+					<CommandItem
+						value="go studies"
+						keywords={[m.ch_studies_title()]}
+						onSelect={() => go(() => navigate(chaalLinks.studies()))}
+					>
+						<BookOpenIcon aria-hidden />
+						<span>{m.ch_studies_title()}</span>
 					</CommandItem>
 					<CommandItem
 						value="go analysis"

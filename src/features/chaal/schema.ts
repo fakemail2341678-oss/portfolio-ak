@@ -1,4 +1,5 @@
 import type { Localized } from "@/lib/i18n/localized";
+import type { CommunityLimits } from "./community/limits";
 import type { EngineLimits } from "./engine/limits";
 import type { ChaalFeature } from "./features";
 import type { PlayLimits } from "./play/controls";
@@ -25,6 +26,8 @@ export type ChaalStatus = {
 	puzzles: PuzzleLimits;
 	/** Watch's controls (Task 82): the TV channels shown, and whether live streamers are listed. */
 	watch: WatchLimits;
+	/** Community's controls (Task 83): joining tournaments and teams, "Save to study", whose studies open the page. */
+	community: CommunityLimits;
 	/**
 	 * Where the browser reads Lichess's public live data (Task 82: the TV's feeds, a game being
 	 * played, a broadcast round's PGN): LICHESS_API_BASE, lichess.org in production. Chaal's pages

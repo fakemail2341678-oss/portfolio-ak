@@ -3,6 +3,7 @@ import type { Localized } from "@/lib/i18n/localized";
 import type { Paged } from "@/lib/list/paging";
 import { email, localizedText, required } from "@/lib/validation";
 import { m } from "@/paraglide/messages";
+import { type CommunityLimits, LICHESS_USERNAME } from "../community/limits";
 import { ENGINE_BOUNDS, type EngineLimits } from "../engine/limits";
 import { CHAAL_FEATURES, type ChaalFeature, LICHESS_SCOPES } from "../features";
 import { CHAAL_BOARD_THEMES } from "../look/board-themes";
@@ -29,6 +30,7 @@ export type ChaalAdminSettings = {
 	play: PlayLimits;
 	puzzles: PuzzleLimits;
 	watch: WatchLimits;
+	community: CommunityLimits;
 	defaults: ChaalDefaults;
 	engine: EngineLimits;
 	banner: Localized;
@@ -66,6 +68,16 @@ export const chaalSettingsInput = z.strictObject({
 			.min(1, { error: () => m.ch_admin_settings_watch_channels_min() })
 			.max(TV_CHANNELS.length),
 		streamers: z.boolean(),
+	}),
+	/** Community (Task 83): joining tournaments and teams, "Save to study", and whose studies the page opens with. */
+	community: z.strictObject({
+		joinTournaments: z.boolean(),
+		joinTeams: z.boolean(),
+		saveToStudy: z.boolean(),
+		studiesBy: z
+			.string()
+			.trim()
+			.regex(LICHESS_USERNAME, { error: () => m.ch_admin_settings_studies_by_invalid() }),
 	}),
 	defaults: z.strictObject({
 		board: z.enum(CHAAL_BOARD_THEMES),
@@ -137,9 +149,6 @@ export type ChaalAdminBlock = {
 	createdAt: string;
 };
 export type ChaalAdminBlockPage = Paged<ChaalAdminBlock>;
-
-/** Lichess usernames: 2–30 letters, digits, `_` and `-`. */
-export const LICHESS_USERNAME = /^[A-Za-z0-9][\w-]{0,28}[A-Za-z0-9]$/;
 
 /** Block a Lichess account by its username, or a site user by their email. */
 export const chaalBlockInput = z.discriminatedUnion("kind", [

@@ -1,5 +1,6 @@
 import { fn } from "storybook/test";
 import type { ChaalAdminSettings } from "../../../../src/features/chaal/admin/schema";
+import { DEFAULT_COMMUNITY_LIMITS } from "../../../../src/features/chaal/community/limits";
 import { DEFAULT_ENGINE_LIMITS } from "../../../../src/features/chaal/engine/limits";
 import { CHAAL_FEATURES, type ChaalFeature } from "../../../../src/features/chaal/features";
 import { DEFAULT_PLAY_LIMITS } from "../../../../src/features/chaal/play/controls";
@@ -18,6 +19,7 @@ export const chaalAdminSettings: ChaalAdminSettings = {
 	play: DEFAULT_PLAY_LIMITS,
 	puzzles: DEFAULT_PUZZLE_LIMITS,
 	watch: DEFAULT_WATCH_LIMITS,
+	community: DEFAULT_COMMUNITY_LIMITS,
 	defaults: DEFAULT_CHAAL_DEFAULTS,
 	engine: DEFAULT_ENGINE_LIMITS,
 	banner: { en: "Lichess is upgrading on Sunday: games may pause for a few minutes.", ne: "" },

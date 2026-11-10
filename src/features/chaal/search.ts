@@ -129,3 +129,39 @@ export type BroadcastsSearch = z.infer<typeof broadcastsSearch>;
 /** A broadcast (Task 82): which round (else the one Lichess opens), and a board followed on its own. */
 export const broadcastPageSearch = z.object({ round: broadcastId, board: broadcastId });
 export type BroadcastPageSearch = z.infer<typeof broadcastPageSearch>;
+
+/** Lichess's arenas (Task 83, decision 0273): coming up (the default), being played, or finished. */
+export const tournamentsSearch = z.object({
+	view: z.enum(["started", "finished"]).optional().catch(undefined),
+});
+export type TournamentsSearch = z.infer<typeof tournamentsSearch>;
+
+/** A tournament (Task 83): an arena, or a Swiss one (`?kind=swiss`, reached through teams); an arena's standings' page. */
+export const tournamentPageSearch = z.object({
+	kind: z.enum(["swiss"]).optional().catch(undefined),
+	page: z.coerce.number().int().min(2).max(200).optional().catch(undefined),
+});
+export type TournamentPageSearch = z.infer<typeof tournamentPageSearch>;
+
+/** Teams (Task 83): popular ones a page at a time, a search (`q`), or the player's own (`?view=mine`). */
+export const teamsSearch = z.object({
+	view: z.enum(["mine"]).optional().catch(undefined),
+	q: z.string().trim().min(2).max(60).optional().catch(undefined),
+	page: z.coerce.number().int().min(2).max(20).optional().catch(undefined),
+});
+export type TeamsSearch = z.infer<typeof teamsSearch>;
+
+/** Studies (Task 83): an account's public ones (`by`, else the admin's account), or the player's own (`?view=mine`). */
+export const studiesSearch = z.object({
+	view: z.enum(["mine"]).optional().catch(undefined),
+	by: z
+		.string()
+		.regex(/^[A-Za-z0-9][A-Za-z0-9_-]{0,28}[A-Za-z0-9]$/)
+		.optional()
+		.catch(undefined),
+});
+export type StudiesSearch = z.infer<typeof studiesSearch>;
+
+/** A study (Task 83): the chapter shown (else the first). */
+export const studyPageSearch = z.object({ chapter: broadcastId });
+export type StudyPageSearch = z.infer<typeof studyPageSearch>;

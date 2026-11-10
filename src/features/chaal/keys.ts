@@ -54,6 +54,20 @@ export const chaalKeys = {
 	broadcastTour: (id: string) => [...all, "watch", "broadcast", id] as const,
 	broadcastRound: (id: string) => [...all, "watch", "round", id] as const,
 	broadcastGame: (round: string, board: string) => [...all, "watch", "round", round, "board", board] as const,
+	/** Community (Task 83): tournaments, teams, studies, and the player's own. */
+	tournaments: () => [...all, "community", "tournaments"] as const,
+	arena: (id: string, page: number) => [...all, "community", "arena", id, page] as const,
+	arenaAll: (id: string) => [...all, "community", "arena", id] as const,
+	swiss: (id: string) => [...all, "community", "swiss", id] as const,
+	teams: (page: number) => [...all, "community", "teams", "popular", page] as const,
+	teamSearch: (q: string, page: number) =>
+		[...all, "community", "teams", "search", q.trim().toLowerCase(), page] as const,
+	team: (id: string) => [...all, "community", "team", id] as const,
+	myTeams: () => [...all, "community", "teams", "mine"] as const,
+	studiesBy: (username: string) => [...all, "community", "studies", "by", username.toLowerCase()] as const,
+	myStudies: () => [...all, "community", "studies", "mine"] as const,
+	study: (id: string) => [...all, "community", "study", id] as const,
+	studyChapter: (id: string, chapter: string) => [...all, "community", "study", id, "chapter", chapter] as const,
 	/** Online play (Task 77): the player's challenges, a game they play, its chat. */
 	challenges: () => [...all, "challenges"] as const,
 	liveGame: (id: string) => [...all, "live-game", id] as const,

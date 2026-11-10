@@ -537,6 +537,9 @@ const CHAAL_PUBLIC_FUNCTIONS: Record<string, ReadonlyArray<string>> = {
 		"getChaalBroadcastRound",
 		"getChaalBroadcastGame",
 	],
+	"chaal/tournaments.ts": ["getChaalTournaments", "getChaalArena", "getChaalSwiss"],
+	"chaal/teams.ts": ["getChaalTeams", "searchChaalTeams", "getChaalTeam"],
+	"chaal/studies.ts": ["getChaalStudiesBy", "getChaalStudy", "getChaalStudyChapter"],
 };
 
 /**
@@ -574,6 +577,9 @@ const CHAAL_FUNCTIONS: Record<string, ReadonlyArray<string>> = {
 		"getChaalPuzzleReplay",
 	],
 	"chaal/follows.ts": ["getChaalFollowing", "followChaalPlayer"],
+	"chaal/tournament-entry.ts": ["joinChaalTournament", "withdrawChaalTournament"],
+	"chaal/team-membership.ts": ["getChaalMyTeams", "joinChaalTeam", "leaveChaalTeam"],
+	"chaal/my-studies.ts": ["getChaalMyStudies", "saveChaalToStudy"],
 };
 // chaal:end
 

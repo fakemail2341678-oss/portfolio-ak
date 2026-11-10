@@ -4,6 +4,7 @@ import { expect, fn, mocked, waitFor, within } from "storybook/test";
 import { getChaalStatus } from "@/functions/chaal/status";
 import { withChaal } from "../../../../.storybook/mocks/chaal";
 import { sampleUser } from "../../../../.storybook/mocks/data";
+import { DEFAULT_COMMUNITY_LIMITS } from "../community/limits";
 import { DEFAULT_ENGINE_LIMITS } from "../engine/limits";
 import { CHAAL_FEATURES, type ChaalFeature } from "../features";
 import { LiveGameBoard } from "../game/live-game-page";
@@ -120,6 +121,7 @@ export const Off: Story = {
 			play: DEFAULT_PLAY_LIMITS,
 			puzzles: DEFAULT_PUZZLE_LIMITS,
 			watch: DEFAULT_WATCH_LIMITS,
+			community: DEFAULT_COMMUNITY_LIMITS,
 			live: "",
 			defaults: DEFAULT_CHAAL_DEFAULTS,
 			maintenance: null,

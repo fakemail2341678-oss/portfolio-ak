@@ -1,4 +1,5 @@
 import { fn } from "storybook/test";
+import { DEFAULT_COMMUNITY_LIMITS } from "../../../../src/features/chaal/community/limits";
 import { DEFAULT_ENGINE_LIMITS } from "../../../../src/features/chaal/engine/limits";
 import { CHAAL_FEATURES, type ChaalFeature } from "../../../../src/features/chaal/features";
 import { DEFAULT_PLAY_LIMITS } from "../../../../src/features/chaal/play/controls";
@@ -18,6 +19,7 @@ export const getChaalStatus = fn(
 		play: DEFAULT_PLAY_LIMITS,
 		puzzles: DEFAULT_PUZZLE_LIMITS,
 		watch: DEFAULT_WATCH_LIMITS,
+		community: DEFAULT_COMMUNITY_LIMITS,
 		// No live base: stories never read Lichess's streams.
 		live: "",
 		defaults: DEFAULT_CHAAL_DEFAULTS,

@@ -1,4 +1,5 @@
 import "@tanstack/react-start/server-only";
+import { readCommunityLimits } from "@/features/chaal/community/limits";
 import { readEngineLimits } from "@/features/chaal/engine/limits";
 import { CHAAL_FEATURES, type ChaalFeature, featureOn } from "@/features/chaal/features";
 import { readPlayLimits } from "@/features/chaal/play/controls";
@@ -31,6 +32,7 @@ export function chaalStatus(chaal: ChaalPublic, session: Session | null): ChaalS
 		play: readPlayLimits(chaal.settings.play),
 		puzzles: readPuzzleLimits(chaal.settings.puzzles),
 		watch: readWatchLimits(chaal.settings.watch),
+		community: readCommunityLimits(chaal.settings.community),
 		live: chaal.lichess.config.apiBase.replace(/\/$/, ""),
 		defaults: readDefaults(settings.defaults),
 		maintenance: maintenance

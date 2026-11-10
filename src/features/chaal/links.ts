@@ -6,6 +6,11 @@ import type {
 	PlayersSearch,
 	PlaySearch,
 	PuzzlesSearch,
+	StudiesSearch,
+	StudyPageSearch,
+	TeamsSearch,
+	TournamentPageSearch,
+	TournamentsSearch,
 } from "./search";
 import type { TvChannel } from "./watch/limits";
 
@@ -48,6 +53,20 @@ export const chaalLinks = {
 	/** A broadcast (Task 82, noindex): a round's boards, or one board followed. */
 	broadcast: (id: string, search: BroadcastPageSearch = {}) =>
 		linkOptions({ to: "/app/chaal/broadcasts/$id", params: { id }, search }),
+	/** Lichess's arenas (Task 83): coming up, being played, finished. */
+	tournaments: (search: TournamentsSearch = {}) => linkOptions({ to: "/app/chaal/tournaments", search }),
+	/** An arena or, with `kind: "swiss"`, a Swiss tournament (Task 83, noindex). */
+	tournament: (id: string, search: TournamentPageSearch = {}) =>
+		linkOptions({ to: "/app/chaal/tournaments/$id", params: { id }, search }),
+	/** Teams (Task 83, noindex): popular ones, a search, the player's own. */
+	teams: (search: TeamsSearch = {}) => linkOptions({ to: "/app/chaal/teams", search }),
+	/** A team (Task 83, noindex). */
+	team: (id: string) => linkOptions({ to: "/app/chaal/teams/$id", params: { id } }),
+	/** Studies (Task 83, noindex): an account's, or the player's own. */
+	studies: (search: StudiesSearch = {}) => linkOptions({ to: "/app/chaal/studies", search }),
+	/** A study and the chapter shown (Task 83, noindex). */
+	study: (id: string, search: StudyPageSearch = {}) =>
+		linkOptions({ to: "/app/chaal/studies/$id", params: { id }, search }),
 	/**
 	 * A game on Lichess (noindex): the player's own while it's played (Task 77), anyone else's
 	 * followed live (Task 82), else its replay (Task 81).
@@ -72,6 +91,9 @@ export const CHAAL_PATHS = {
 	players: `${CHAAL_BASE}/players`,
 	watch: `${CHAAL_BASE}/watch`,
 	broadcasts: `${CHAAL_BASE}/broadcasts`,
+	tournaments: `${CHAAL_BASE}/tournaments`,
+	teams: `${CHAAL_BASE}/teams`,
+	studies: `${CHAAL_BASE}/studies`,
 	about: `${CHAAL_BASE}/about`,
 	settings: `${CHAAL_BASE}/settings`,
 } as const;
@@ -85,6 +107,7 @@ export const CHAAL_SITEMAP: ReadonlyArray<string> = [
 	CHAAL_PATHS.players,
 	CHAAL_PATHS.watch,
 	CHAAL_PATHS.broadcasts,
+	CHAAL_PATHS.tournaments,
 	CHAAL_PATHS.about,
 ];
 

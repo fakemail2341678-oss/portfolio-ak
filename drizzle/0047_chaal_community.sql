@@ -1,0 +1,1 @@
+ALTER TABLE "ch_settings" ADD COLUMN "community" jsonb DEFAULT '{"joinTournaments":true,"joinTeams":true,"saveToStudy":true,"studiesBy":"lichess"}'::jsonb NOT NULL;

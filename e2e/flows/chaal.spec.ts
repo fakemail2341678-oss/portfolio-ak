@@ -17,6 +17,9 @@
  * Task 82 (decision 0272): the TV live from the fake Lichess's feeds and a channel on the big
  * board, following a game being played to its end, the broadcasts' lists and a tournament, and
  * a round being played on its PGN stream.
+ * Task 83 (decision 0273): the arenas, an arena and a Swiss tournament, teams and studies as a
+ * visitor; joining an arena and pausing, joining and leaving a team, and saving the analysis
+ * board to a study while connected.
  */
 import type { Page } from "@playwright/test";
 import { E2E } from "../harness/config.ts";
@@ -1284,5 +1287,152 @@ test.describe("Chaal's watch (Task 82)", () => {
 		await harness("/e2e/lichess/round-push", "POST", { round: LIVE_ROUND, pgn: boardPgn("1. e4 e5 2. Nf3 Nc6") });
 		await expect(focused).toHaveAttribute("data-ply", "4");
 		await expect(focused.locator('[data-at="c6"][data-piece="bN"]')).toBeVisible();
+	});
+});
+
+// --- Community (Task 83) ----------------------------------------------------------------------
+
+/** The fake's arena being played (e2e/harness/lichess-community.ts) and a recorded finished one. */
+const ARENA_PLAYED = "e2eArena";
+const ARENA_FINISHED = "aEMoQUDF";
+const RECORDED_TEAM = "lichess-swiss";
+const RECORDED_STUDY = "Zwqt6BdF";
+const NEXT_MOVE = /^Next move$/;
+
+const community = async (account: string) =>
+	(await (await harness(`/e2e/lichess/community?account=${account}`, "GET")).json()) as {
+		arenas: Record<string, { withdraw: boolean; form: Record<string, string> }>;
+		teams: string[];
+		chapters: Array<{ id: string; name: string }>;
+	};
+
+test.describe("Chaal's community for a visitor (Task 83)", () => {
+	test.describe.configure({ mode: "serial" });
+
+	test("the arenas' lists open an arena: its podium, its standings a page at a time, and Connect to join one", async ({
+		page,
+	}) => {
+		await page.goto("/app/chaal/tournaments?view=finished");
+		await page.locator(`[data-testid=chaal-arena-row][data-tournament=${ARENA_FINISHED}] a`).click();
+		await page.waitForURL(new RegExp(`/app/chaal/tournaments/${ARENA_FINISHED}$`));
+		await expect(page.getByTestId("chaal-tournament-podium")).toBeVisible();
+		const first = page.getByTestId("chaal-standing").first();
+		await expect(first).toContainText("1");
+		await page.getByTestId("chaal-tournament-pages-next").click();
+		await page.waitForURL(/\?page=2$/);
+		await expect(page.getByTestId("chaal-standing").first().locator("td").first()).toHaveText("11");
+		// Finished: nothing to join.
+		await expect(page.getByTestId("chaal-tournament-join")).toHaveCount(0);
+
+		await page.goto(`/app/chaal/tournaments/${ARENA_PLAYED}`);
+		await expect(page.getByTestId("chaal-tournament-connect")).toBeVisible();
+	});
+
+	test("a team found by search; the recorded team's members and Swiss tournaments; a Swiss tournament's standings", async ({
+		page,
+	}) => {
+		await page.goto("/app/chaal/teams");
+		await page.getByTestId("chaal-teams-q").fill("nepal");
+		await page.getByTestId("chaal-teams-q").press("Enter");
+		await page.waitForURL(/\/app\/chaal\/teams\?q=nepal$/);
+		await expect(page.getByTestId("chaal-team-row").first()).toBeVisible();
+
+		await page.goto(`/app/chaal/teams/${RECORDED_TEAM}`);
+		await expect(page.getByTestId("chaal-team-members").locator("li")).toHaveCount(30);
+		await page.getByTestId("chaal-swiss-row").first().locator("a").click();
+		await page.waitForURL(/\/app\/chaal\/tournaments\/[A-Za-z0-9]{8}\?kind=swiss$/);
+		await expect(page.getByTestId("chaal-tournament-name")).toBeVisible();
+
+		await page.goto("/app/chaal/tournaments/DeKa4OGD?kind=swiss");
+		await expect(page.getByTestId("chaal-standing")).toHaveCount(20);
+	});
+
+	test("studies: Lichess's list opens a study; a chapter steps with the keys and Analyse takes its line", async ({
+		page,
+	}) => {
+		await page.goto("/app/chaal/studies");
+		await page.locator(`[data-testid=chaal-study-row][data-study=${RECORDED_STUDY}] a`).click();
+		await page.waitForURL(new RegExp(`/app/chaal/studies/${RECORDED_STUDY}$`));
+		await page.getByTestId("chaal-study-chapter").nth(1).click();
+		await page.waitForURL(/\?chapter=[A-Za-z0-9]{8}$/);
+		const analyse = page.getByTestId("chaal-study-analyse");
+		await expect(analyse).not.toHaveAttribute("href", /moves=/);
+		await page.getByTestId("chaal-study-viewer").getByRole("button", { name: NEXT_MOVE }).click();
+		await expect(analyse).toHaveAttribute("href", /moves=/);
+
+		// A study's address opens it too.
+		await page.goto("/app/chaal/studies");
+		await page.getByTestId("chaal-studies-open-input").fill(`https://lichess.org/study/${RECORDED_STUDY}`);
+		await page.getByTestId("chaal-studies-open-input").press("Enter");
+		await page.waitForURL(new RegExp(`/app/chaal/studies/${RECORDED_STUDY}$`));
+		await expect(page.getByTestId("chaal-study-viewer")).toBeVisible();
+	});
+});
+
+test.describe("Chaal's community connected to Lichess (Task 83)", () => {
+	// Not the review's viewer: Lichess allows one event stream per token (Task 77).
+	test.use(signedIn("member"));
+	test.describe.configure({ mode: "serial" });
+
+	test.beforeAll(async () => {
+		await harness("/e2e/lichess", "DELETE");
+		await harness("/e2e/chaal-connections", "DELETE");
+	});
+	test.afterAll(async () => {
+		await harness("/e2e/lichess", "DELETE");
+		await harness("/e2e/chaal-connections", "DELETE");
+	});
+
+	test("joins an arena being played with pair-me-ASAP, is in it, and pauses", async ({ page }) => {
+		await page.goto("/app/chaal/settings", { waitUntil: "networkidle" });
+		await page.getByTestId("chaal-settings-connect").click();
+		const opened = eventStreamOpened(page);
+		await page.getByRole("button", { name: "Approve" }).click();
+		await page.waitForURL(/\/app\/chaal\/settings\?lichess=connected$/);
+		await opened;
+
+		await page.goto(`/app/chaal/tournaments/${ARENA_PLAYED}`);
+		await page.getByTestId("chaal-tournament-asap").click();
+		await page.getByTestId("chaal-tournament-join").click();
+		await expect(page.getByTestId("chaal-tournament-joined")).toBeVisible();
+		await expect
+			.poll(async () => (await community("e2e_player")).arenas[ARENA_PLAYED]?.form)
+			.toEqual({ pairMeAsap: "true" });
+
+		await page.getByTestId("chaal-tournament-withdraw").click();
+		await expect(page.getByTestId("chaal-tournament-join")).toBeVisible();
+		await expect.poll(async () => (await community("e2e_player")).arenas[ARENA_PLAYED]?.withdraw).toBe(true);
+	});
+
+	test("joins an open team, finds it among My teams, and leaves it", async ({ page }) => {
+		await page.goto(`/app/chaal/teams/${RECORDED_TEAM}`);
+		await page.getByTestId("chaal-team-join").click();
+		await expect(page.getByTestId("chaal-team-joined")).toBeVisible();
+		await expect.poll(async () => (await community("e2e_player")).teams).toEqual([RECORDED_TEAM]);
+
+		await page.goto("/app/chaal/teams?view=mine");
+		await expect(page.locator(`[data-testid=chaal-team-row][data-team=${RECORDED_TEAM}]`)).toBeVisible();
+
+		await page.goto(`/app/chaal/teams/${RECORDED_TEAM}`);
+		await page.getByTestId("chaal-team-leave").click();
+		await expect(page.getByTestId("chaal-team-join")).toBeVisible();
+		await expect.poll(async () => (await community("e2e_player")).teams).toEqual([]);
+	});
+
+	test("saves the analysis board to a study, then opens the new chapter", async ({ page }) => {
+		// The event stream stays open (a connected player): the network never goes idle.
+		await page.goto("/app/chaal/analysis?moves=e2e4_e7e5_g1f3", { waitUntil: "load" });
+		await page.getByTestId("chaal-analysis-menu").click();
+		await page.getByTestId("chaal-save-study-open").click();
+		await page.getByTestId("chaal-save-study-name").fill("Open game");
+		await page.getByTestId("chaal-save-study-submit").click();
+		await expect
+			.poll(async () => (await community("e2e_player")).chapters.map((chapter) => chapter.name))
+			.toEqual(["Open game"]);
+
+		await page.goto("/app/chaal/studies?view=mine");
+		await page.getByTestId("chaal-study-row").first().locator("a").click();
+		await page.getByTestId("chaal-study-chapter").nth(1).click();
+		await expect(page.getByTestId("chaal-study-chapter-name")).toHaveText("Open game");
 	});
 });

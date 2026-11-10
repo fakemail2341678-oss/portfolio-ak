@@ -8,6 +8,7 @@ import * as connect from "@/server/chaal/connect/service";
 import { createVault, type Vault } from "@/server/chaal/connect/vault";
 import { type ChaalPublic, chaalUserOf } from "@/server/chaal/context";
 import { createChaalControls } from "@/server/chaal/controls";
+import * as events from "@/server/chaal/events/service";
 import { createChaalCache } from "@/server/chaal/lichess/cache";
 import { createLichess } from "@/server/chaal/lichess/client";
 import * as local from "@/server/chaal/local/service";
@@ -16,6 +17,8 @@ import * as players from "@/server/chaal/players/service";
 import * as preferences from "@/server/chaal/preferences";
 import * as puzzles from "@/server/chaal/puzzles/service";
 import { chaalStatus } from "@/server/chaal/status";
+import * as studies from "@/server/chaal/studies/service";
+import * as teams from "@/server/chaal/teams/service";
 import * as watch from "@/server/chaal/watch/service";
 import * as schema from "@/server/db/schema";
 import { createTestDb } from "../utils/test-db";
@@ -28,8 +31,10 @@ import { createTestDb } from "../utils/test-db";
  * guest, a member, a blocked user, a feature that's off, a missing scope, a revoked token,
  * another user's connection, another user's analysis (Task 75), another user's local
  * game (Task 76), online play's calls (Task 77), each with the caller's own token,
- * another user's puzzle attempts (Task 80), following players (Task 81), and watching (Task 82:
- * public, with no session or connection, and refused when the admin turns it off).
+ * another user's puzzle attempts (Task 80), following players (Task 81), watching (Task 82:
+ * public, with no session or connection, and refused when the admin turns it off), and the
+ * community (Task 83: tournaments, teams and studies; public reads, and the player's own
+ * acts with their token, each behind its switch and the admin's controls).
  */
 let env: Awaited<ReturnType<typeof createTestDb>>;
 let vault: Vault;
@@ -174,6 +179,70 @@ const WATCH_OPERATIONS: Record<
 	getChaalBroadcastTour: (chaal) => watch.broadcastTour(chaal, "abcdEFGH"),
 	getChaalBroadcastRound: (chaal) => watch.broadcastRound(chaal, "abcdEFGH"),
 	getChaalBroadcastGame: (chaal) => watch.broadcastGame(chaal, "abcdEFGH", "efghABCD"),
+};
+
+/** Every community function that reads for everyone (Task 83): public, no token without a session, behind its switch. */
+const COMMUNITY_PUBLIC: Record<
+	string,
+	{ feature: "tournaments" | "teams" | "studies"; call: (chaal: ChaalPublic) => Promise<unknown> }
+> = {
+	getChaalTournaments: { feature: "tournaments", call: (chaal) => events.tournaments(chaal) },
+	getChaalArena: { feature: "tournaments", call: (chaal) => events.arenaPage(chaal, null, "abcdEFGH", 1) },
+	getChaalSwiss: { feature: "tournaments", call: (chaal) => events.swissPage(chaal, null, "abcdEFGH") },
+	getChaalTeams: { feature: "teams", call: (chaal) => teams.popularTeams(chaal, 1) },
+	searchChaalTeams: { feature: "teams", call: (chaal) => teams.searchTeams(chaal, "nepal", 1) },
+	getChaalTeam: { feature: "teams", call: (chaal) => teams.teamPage(chaal, null, "some-team") },
+	getChaalStudiesBy: { feature: "studies", call: (chaal) => studies.studiesBy(chaal, "lichess") },
+	getChaalStudy: { feature: "studies", call: (chaal) => studies.study(chaal, null, "abcdEFGH") },
+	getChaalStudyChapter: {
+		feature: "studies",
+		call: (chaal) => studies.studyChapter(chaal, null, "abcdEFGH", "efghABCD"),
+	},
+};
+
+const COMMUNITY_SCOPES = {
+	tournaments: ["tournament:write"],
+	teams: ["team:read", "team:write"],
+	studies: ["study:read", "study:write"],
+} as const;
+
+/** Every community function that acts with the player's token (Task 83), with its feature and the admin's control. */
+const COMMUNITY_OPERATIONS: Record<
+	string,
+	{
+		feature: keyof typeof COMMUNITY_SCOPES;
+		control: "joinTournaments" | "joinTeams" | "saveToStudy" | null;
+		call: (userId: string) => Promise<unknown>;
+	}
+> = {
+	joinChaalTournament: {
+		feature: "tournaments",
+		control: "joinTournaments",
+		call: (userId) => events.join(deps(), userId, { kind: "arena", id: "abcdEFGH" }),
+	},
+	withdrawChaalTournament: {
+		feature: "tournaments",
+		control: "joinTournaments",
+		call: (userId) => events.withdraw(deps(), userId, "swiss", "abcdEFGH"),
+	},
+	getChaalMyTeams: { feature: "teams", control: null, call: (userId) => teams.myTeams(deps(), userId) },
+	joinChaalTeam: {
+		feature: "teams",
+		control: "joinTeams",
+		call: (userId) => teams.joinTeam(deps(), userId, { id: "some-team" }),
+	},
+	leaveChaalTeam: {
+		feature: "teams",
+		control: "joinTeams",
+		call: (userId) => teams.leaveTeam(deps(), userId, "some-team"),
+	},
+	getChaalMyStudies: { feature: "studies", control: null, call: (userId) => studies.myStudies(deps(), userId) },
+	saveChaalToStudy: {
+		feature: "studies",
+		control: "saveToStudy",
+		call: (userId) =>
+			studies.saveToStudy(deps(), userId, { study: "abcdEFGH", name: "Line", pgn: "1. e4 *", orientation: "white" }),
+	},
 };
 
 beforeAll(async () => {
@@ -357,6 +426,79 @@ describe("Chaal's access matrix", () => {
 		const off = { ...chaal, settings: await createChaalControls(env.db, () => 0).settings() };
 		await expect(operation(off)).rejects.toMatchObject({ code: "FORBIDDEN" });
 		expect(fetcher).not.toHaveBeenCalled();
+		fetcher.mockImplementation(async () => new Response(null, { status: 204 }));
+	});
+
+	it.each(
+		Object.keys(COMMUNITY_PUBLIC),
+	)("%s is public: no session or token, on the public lane; refused when its switch is off, before Lichess", async (name) => {
+		const operation = COMMUNITY_PUBLIC[name];
+		if (!operation) throw new Error(name);
+		const controls = createChaalControls(env.db, () => 0);
+		const chaal = {
+			lichess: deps().lichess,
+			cache: createChaalCache(),
+			controls,
+			settings: await controls.settings(),
+			appToken: null,
+			connectConfigured: true,
+			connectDeps: async () => deps(),
+		} satisfies ChaalPublic;
+		fetcher.mockImplementation(async () => Response.json({ error: "Not found" }, { status: 404 }));
+		await operation.call(chaal).catch(() => undefined);
+		const asked = fetcher.mock.calls.map(([, init]) => (init?.headers as Record<string, string>).authorization);
+		expect(asked.length).toBeGreaterThan(0);
+		expect(asked.every((token) => token === undefined)).toBe(true);
+		fetcher.mockClear();
+		await env.db.insert(schema.chSettings).values({ id: 1, features: { [operation.feature]: false } });
+		const off = { ...chaal, settings: await createChaalControls(env.db, () => 0).settings() };
+		await expect(operation.call(off)).rejects.toMatchObject({ code: "FORBIDDEN" });
+		expect(fetcher).not.toHaveBeenCalled();
+		fetcher.mockImplementation(async () => new Response(null, { status: 204 }));
+	});
+
+	it.each(
+		Object.keys(COMMUNITY_OPERATIONS),
+	)("%s needs a connection with its area's scopes: refused without one, without them, revoked, its switch off, or the admin's control off", async (name) => {
+		const operation = COMMUNITY_OPERATIONS[name];
+		if (!operation) throw new Error(name);
+		const scopes = [...COMMUNITY_SCOPES[operation.feature]];
+		await expect(operation.call("member")).rejects.toMatchObject({ reason: "lichess-reconnect" });
+		await connected("member", "member_lichess", PLAY);
+		await expect(operation.call("member")).rejects.toMatchObject({ reason: "lichess-reconnect" });
+		await env.db.update(schema.chConnection).set({ scopes, revokedAt: new Date(0) });
+		await expect(operation.call("member")).rejects.toMatchObject({ reason: "lichess-reconnect" });
+		await env.db.update(schema.chConnection).set({ revokedAt: null });
+		await env.db.insert(schema.chSettings).values({ id: 1, features: { [operation.feature]: false } });
+		await expect(operation.call("member")).rejects.toMatchObject({ code: "FORBIDDEN" });
+		if (operation.control) {
+			await env.db.update(schema.chSettings).set({
+				features: {},
+				community: {
+					joinTournaments: true,
+					joinTeams: true,
+					saveToStudy: true,
+					studiesBy: "lichess",
+					[operation.control]: false,
+				},
+			});
+			await expect(operation.call("member")).rejects.toMatchObject({ code: "FORBIDDEN" });
+		}
+		expect(fetcher).not.toHaveBeenCalled();
+	});
+
+	it.each(Object.keys(COMMUNITY_OPERATIONS))("%s acts with the caller's own token only", async (name) => {
+		const operation = COMMUNITY_OPERATIONS[name];
+		if (!operation) throw new Error(name);
+		const scopes = [...COMMUNITY_SCOPES[operation.feature]];
+		await connected("member", "member_lichess", scopes);
+		await connected("other", "other_lichess", scopes);
+		fetcher.mockImplementation(async () => Response.json({ error: "Not found" }, { status: 404 }));
+		await operation.call("other").catch(() => undefined);
+		const tokens = fetcher.mock.calls.map(
+			([, init]) => (init?.headers as Record<string, string> | undefined)?.authorization,
+		);
+		expect(tokens).toEqual(["Bearer lio_other_lichess"]);
 		fetcher.mockImplementation(async () => new Response(null, { status: 204 }));
 	});
 
