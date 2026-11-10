@@ -9,6 +9,7 @@
  *
  *   node scripts/check-bundle.ts            check and print the table
  *   node scripts/check-bundle.ts --report   print only, never fail
+ *   node scripts/check-bundle.ts --routes=chaal   also list every route whose id contains "chaal"
  *
  * Decision 0151. The numbers it prints are the ones recorded there.
  */
@@ -48,6 +49,8 @@ const FONT_EXEMPTIONS: ReadonlyMap<string, string> = new Map<string, string>([])
 const ROOT = resolve(import.meta.dirname, "..");
 const OUTPUT = join(ROOT, ".output");
 const reportOnly = process.argv.includes("--report");
+/** `--routes=<text>`: also list every route whose id contains it (Task 85: `--routes=chaal`). */
+const listed = process.argv.find((arg) => arg.startsWith("--routes="))?.slice("--routes=".length);
 
 type Manifest = { routes: Record<string, { preloads?: string[] }> };
 
@@ -139,6 +142,12 @@ const routes = Object.entries(manifest.routes)
 	.sort((a, b) => b.extra - a.extra);
 console.log("\nHeaviest routes (JS added on top of the root):");
 for (const { id, extra } of routes.slice(0, 8)) console.log(`  ${kb(extra).padStart(10)}  ${id}`);
+if (listed) {
+	console.log(`\nEvery route whose id contains "${listed}":`);
+	for (const { id, extra } of routes.filter((route) => route.id.includes(listed))) {
+		console.log(`  ${kb(extra).padStart(10)}  ${id}`);
+	}
+}
 for (const { id, extra } of routes) {
 	if (extra > ROUTE_BUDGET_KB) failures.push(`route ${id} adds ${kb(extra)}, over ${ROUTE_BUDGET_KB} kB`);
 }

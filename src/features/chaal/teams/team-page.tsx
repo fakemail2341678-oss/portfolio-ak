@@ -117,7 +117,7 @@ export function TeamView({ page }: { page: TeamPageData }) {
 function PersonLink({ person }: { person: TeamPerson }) {
 	return (
 		<Link {...chaalLinks.player(person.name)} className="min-w-0 truncate hover:underline">
-			{person.title ? <span className="me-1 font-semibold text-ch-mark">{person.title}</span> : null}
+			{person.title ? <span className="me-1 font-semibold">{person.title}</span> : null}
 			{person.name}
 		</Link>
 	);

@@ -322,9 +322,9 @@ function Streamed({ resetKey, fallback, children }: { resetKey: string; fallback
 function Ratings({ player, perf }: { player: ChaalPlayer; perf: PlayerPerf }) {
 	if (player.ratings.length === 0 && !player.puzzle) return <p className="text-ch-muted">{m.ch_player_no_ratings()}</p>;
 	return (
-		<ul className="grid grid-cols-2 gap-px bg-ch-hair sm:grid-cols-3" data-testid="chaal-player-ratings">
+		<ul className="grid grid-cols-2 gap-px sm:grid-cols-3" data-testid="chaal-player-ratings">
 			{player.ratings.map((rating) => (
-				<li key={rating.perf} className="bg-ch-ground">
+				<li key={rating.perf} className="bg-ch-ground ring-1 ring-ch-hair">
 					<Link
 						{...chaalLinks.player(player.username, { perf: rating.perf })}
 						replace
@@ -348,7 +348,7 @@ function Ratings({ player, perf }: { player: ChaalPlayer; perf: PlayerPerf }) {
 				</li>
 			))}
 			{player.puzzle ? (
-				<li className="flex flex-col gap-0.5 bg-ch-ground p-3">
+				<li className="flex flex-col gap-0.5 bg-ch-ground p-3 ring-1 ring-ch-hair">
 					<span className="text-ch-muted text-xs">{m.ch_puzzle_rating()}</span>
 					<span className="ch-display ch-figures text-ch-head">{player.puzzle.rating}</span>
 					<span className="text-ch-muted text-xs">

@@ -27,8 +27,9 @@ describe("i18n message usage", () => {
 		const { $schema: _schema, ...messages } = JSON.parse(
 			readFileSync(path.join(root, "messages", "en.json"), "utf8"),
 		) as Record<string, string>;
-		const code = sourceText();
-		const unused = Object.keys(messages).filter((key) => !new RegExp(`\\bm\\.${key}\\b`).test(code));
+		// One pass over the source (a regex per key over all of it took 15 s with Part 7's messages).
+		const used = new Set(Array.from(sourceText().matchAll(/\bm\.(\w+)/g), (match) => match[1]));
+		const unused = Object.keys(messages).filter((key) => !used.has(key));
 		expect(unused).toEqual([]);
 	});
 });

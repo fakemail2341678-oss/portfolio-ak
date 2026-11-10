@@ -21,11 +21,12 @@ import { Board } from "../board/board";
 import { Clock } from "../board/clock";
 import { GameControls, type Step, useBoardKeys } from "../board/game-controls";
 import { Material } from "../board/material";
+import { MoveInput } from "../board/move-input";
 import { MoveList } from "../board/move-list";
 import { PlayerStrip } from "../board/player-strip";
 import { ResultBanner } from "../board/result-banner";
 import { formatTimeControl } from "../chess/clock";
-import { type Color, opposite, START_FEN } from "../chess/rules";
+import { type Color, opposite, START_FEN, turnOf } from "../chess/rules";
 import { chaalLinks } from "../links";
 import type { ChaalGamePlayer } from "../live/events";
 import type { KeepOptions } from "../live/reader";
@@ -216,6 +217,17 @@ export function LiveGameBoard({
 								)}
 							</GameControls>
 						)}
+						{/* Typed moves for keyboards (PLAN 13.5), on this side's turn; a phone's board is its input. */}
+						{!zen && !over && game.color ? (
+							<div className="max-sm:hidden">
+								<MoveInput
+									fen={fenOf(game)}
+									onMove={view.move}
+									disabled={!following || turnOf(fenOf(game)) !== game.color}
+									notation={preferences.notation}
+								/>
+							</div>
+						) : null}
 						{!zen && canBerserk(game) && !view.berserked ? (
 							<Button
 								type="button"

@@ -279,6 +279,8 @@ Record every non-obvious choice here: **What**, **Why**, **Alternatives consider
 - [0272](#0272-chaals-watch-the-first-paint-from-our-server-whats-live-read-by-the-browser-from-lichess-one-pgn-stream-per-round): Chaal's watch: the first paint from our server, what's live read by the browser from Lichess, one PGN stream per round
 - [0273](#0273-chaals-community-public-reads-through-the-cache-the-players-own-place-read-with-their-token-joining-and-saving-behind-the-admins-controls): Chaal's community: public reads through the cache, the player's own place read with their token, joining and saving behind the admin's controls
 - [0274](#0274-chaals-admin-ii-the-overview-from-a-daily-rollup-curation-as-one-page-the-home-in-the-admins-order): Chaal's admin II: the overview from a daily rollup, curation as one page, the home in the admin's order
+- [0275](#0275-part-7-reviewed-typed-moves-on-every-board-and-what-the-template-matrix-found): Part 7 reviewed: typed moves on every board, and what the template matrix found
+- [0276](#0276-part-7-measured-task-85): Part 7 measured (Task 85)
 </details>
 
 ---
@@ -3850,3 +3852,66 @@ Measured on the owner's Windows machine (Node 24.11, 12 threads, 11.7 GB), 2026-
 - **A section's items in `ch_home_section`:** featured items have their own dates and order; the sections are only order and switches.
 
 **Not checked:** the `dataviz` validator was not run; the charts use the shared kit's Graphite palette (`--chart-1…5`), validated for Parda's overview (0242).
+
+## 0275: Part 7 reviewed: typed moves on every board, and what the template matrix found
+
+*Task 85.*
+
+- **The security review** covered `72fac89..HEAD` (Tasks 71–84), high-confidence exploitable findings only. An agent couldn't run it here (auto mode can't check an Agent call that a plugin's hook rewrites), so it was done in the main session with the same brief. **No findings.** Found sound:
+  - the OAuth routes: state and PKCE in a sealed HttpOnly cookie spent on the callback, the state bound to the session's user, `safeReturnPath` (no `//`, `\`, `://` or `..`);
+  - the stream routes: a session first, game ids by regex, the POSTed ones same-origin (`Sec-Fetch-Site`, else `Origin`) with a 2 KB body;
+  - the cron route's constant-time bearer check (404 without `CRON_SECRET`);
+  - every Lichess path built from input: ids, usernames, slugs and UCI checked by regex in `z.strictObject` inputs;
+  - links from Lichess data: someone else's web address passes only as http(s) (`webAddress`), everything else is built from a checked id; no `dangerouslySetInnerHTML` in Chaal (the announcement and featured titles render as text);
+  - owner scoping of analyses and local games (an upsert can't take over someone else's id);
+  - tokens: sealed in `ch_connection`, never selected for the admin's lists or sent to the browser.
+- **The accessibility pass** is kept as e2e flows ("Chaal by keyboard only"): a whole game to mate over the board, a puzzle, and an analysis with the engine, reaching every control with Tab and playing on the grid with the arrows and Enter.
+  - **It found typed moves only on the analysis board.** PLAN 13.5 asks for a move input beside the board; local games, a game on Lichess and the puzzle trainer had none. Each now has `MoveInput` under its controls, from `sm` up as on the analysis board (a phone's board is its input), enabled only when the side to move is the player's (a puzzle: while it waits for a move).
+  - **NVDA wasn't run:** a screen reader needs the owner at the machine. The board's spoken moves and its live region are as Task 74 left them (0261).
+- **The template matrix** (CI's template job by hand, in scratch clones of the working tree with CI's env: all layers, each `--keep-…`, and every layer kept) failed in five rows at first:
+  - **Stripping Chaal left `tests/server/chaal-curation.test.ts`** (Task 84's), failing the stripped project's typecheck. It's now in strip-demo's `chaal` list, and the guide's "Adding to Chaal" says a file outside Chaal's folders goes there.
+  - **`src/components/navigation/segment-nav.tsx`** (Task 79's, core) is used only by Parda and Chaal, so knip called it unused once both went. It's now in strip-demo's `SHARED` list for `parda` and `chaal`.
+- **Flaky checks fixed:**
+  - three community flows clicked before the page hydrated (the full run's one flaky test); with an event stream open, `networkidle` never comes, so they wait for the stream's request, which only the hydrated page makes;
+  - `message-usage.test.ts` built a regular expression per message and ran each over all the source: 15.6 s against a 15 s limit with Part 7's messages. It now collects `m.<key>` once (under a second);
+  - the "Arena being played" story asserted the connected player's join form with no session, so the connection was never asked for; it now has `sampleUser`.
+- **The finish review** (the `impeccable-finish-reviewer` agent, against the contract, the comps and 84 screenshots of the production build): "fix", eight items. It kept the plate exactly as it is (the hatching, the double frame, vermilion rings only, coordinates outside, Mukta's clocks, the ink-black dark theme with dimmed paper boards, the Watch grid of plates). The phone's game and analysis pages match the comps: board, clocks and step buttons without a scroll.
+  - **Fixed:**
+    - **Study comments showed raw `[%anno …]`:** `readComment` now drops any `[%…]` command it doesn't read (a test with `[%anno]` and `[%emt]`).
+    - **The home said play and puzzles were "on their way"** (since Task 73): a true intro in both languages, and the "come next" line is gone.
+    - **The tournament page's uppercase status above its name** (an eyebrow) is now the first item of the meta line; the streak's flame, a player's title (also on a team's page) and a failed condition's cross were vermilion, which is the annotator's alone: ink, and the danger colour for the cross.
+    - **Digits:** a tournament's stats were in Devanagari beside Latin standings. Chess figures (clocks, ratings, ranks, scores and the stats beside them) are Latin in both languages, as the notation is; counts in sentences stay `formatNumber`'s (the guide's pitfall).
+    - **Empty cells:** a phone's last row of the play hub's choices left a cell of the ink behind (it read as chosen in dark), and the player's ratings grid a hairline-grey one. The last choice spans its row's rest; the ratings draw their hairlines on the cells.
+    - **A player's game thumbnails** (72–80 px) crushed their coordinates: `coordinates={false}`.
+  - **Left for the owner** (redesigns, not wrap-up fixes):
+    - **The desktop game page:** the board (about 630 px) with the strips above and below is the phone's layout made larger; the comp puts the strips and clocks in the right column and the board at the viewport's height, with a dense three-column move list.
+    - **Labelled game actions** (Takeback, Offer draw, Resign) as in the comp, instead of icons beside the step buttons; on a phone they have to fit that row, so it goes with the layout above.
+    - **The home as the comp has it:** a grid of paces to play, the daily puzzle's plate and a TV row, in place of the hero and the five "Start here" cards (the contract says no cards; the design record lists them as a departure).
+    - **The play hub:** one tap to start with remembered choices, the options behind a disclosure (at 1280, Start is below the fold).
+    - **The puzzle page:** the comp's status line above the board (side to move, rating, theme), the annotated move strip and Hint / Solution / Next under it.
+    - **Smaller:** one outlined and one filled button style across Chaal (three are mixed), the phone puzzle's frame closer to the right edge than the left (the coordinates take the left), and the annotator's marks, which no default page shows.
+  - **The design record** is `docs/design/chaal.md` (the `impeccable-documenter` agent, from the shipped code), stripped with the layer. Its "Departures" list where the build differs from the contract (the home's cards among them).
+
+**Why:** PLAN Task 85.
+
+**Alternatives considered:** a test that every `tests/**/chaal-*` file is in strip-demo's list. The matrix catches it, and the list lives in the script, not in a module a test can import.
+
+## 0276: Part 7 measured (Task 85)
+
+Measured on the owner's Windows machine (Node 24.11, 12 threads, 11.7 GB), 2026-11-10, on the e2e harness's production build.
+
+- **Lighthouse 13.6, mobile, simulated throttling,** behind a local HTTP/2 proxy with brotli (as Vercel serves pages; 0245), three runs each:
+  - `/app/chaal`: 98, 99, 98; `/app/chaal/puzzles`: 99, 97, 97. **The plan's ≥ 95 is met.**
+  - Accessibility, best practices and SEO 100 on both; LCP and FCP 1.1 s, TBT 130–200 ms, CLS 0.
+- **Every page's JavaScript:** 294.6 kB gzip of the 295 kB budget (284.4 after Task 72). Not trimmed: Chaal's share of the entry is its route definitions and search contracts in the main chunk (0151), about 0.3 kB a route; nothing else of Chaal's loads on every page. Part 8's first routes will need room. Chaal's pages add on top (`node scripts/check-bundle.ts --routes=chaal`, new here):
+  - the analysis board 109.6 kB, a game 104.1, a local game 84.0, puzzles 80.6, play 77.8, a broadcast 75.2, a study 60.1, a TV channel 58.2, settings 48.4, a player 46.5, a tournament 41.7, a team 34.7, the home 28.5, the lists 10.6–29.0, about 4.8;
+  - the layout adds 73.1 kB;
+  - the admin's heaviest are curation (213.2 kB, the dnd-kit lists and the dialog) and settings (173.7).
+- **The engine** (Stockfish 19 lite, single-threaded, in its worker under the CSP; desktop Chrome): ready (`uci` to `readyok`, the .wasm from the local server) in 138 ms. To depth 12 / 16 / 18 from a fresh `ucinewgame` with 16 MB of hash:
+  - the starting position: 32 / 180 / 270 ms;
+  - a Queen's Gambit middlegame: 61 / 677 / 1,603 ms;
+  - a rook ending: 41 / 147 / 459 ms;
+  - 0.46–1.23 million nodes a second. A mid-range phone is still to measure (0263: CDP throttling doesn't slow workers).
+- **`pnpm test:e2e`,** the full suite: 3,443 passed and 1 flaky in 65.7 min (2 workers). The flaky one was Chaal's team flow (0275). After the fixes, Chaal's flows passed 63 of 63 (the keyboard flows included) and the review of its game, local and puzzle pages 108 of 108.
+- **The rest:** `pnpm test` 190 files and 2,210 tests, run with `--maxWorkers=4`: the default ran this machine out of memory twice with nothing else open. Storybook 140 files, 693 of 694: a core primitive's menu ("UI/Primitives", Overlays) wasn't visible yet under load and passes alone. After the finish review's fixes, Chaal's flows 63 of 63, the review of the changed pages 252 of 252 and Chaal's stories 142 of 142.
+- **Template matrix:** see 0275.

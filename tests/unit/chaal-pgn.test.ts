@@ -90,6 +90,11 @@ describe("reading PGN", () => {
 		expect(mainline(game.tree).map((node) => node.san)).toEqual(["e4", "e5", "Nf3", "Nc6", "Bc4", "Bc5", "O-O", "Nf6"]);
 	});
 
+	it("drops other programs' commands from a comment's text, such as a study's [%anno]", () => {
+		const game = read('1. e4 { [%anno "A", a] Best by test [%emt 0:00:03] } *');
+		expect(mainline(game.tree)[0]?.comments).toEqual(["Best by test"]);
+	});
+
 	it("takes the result from the tags when the movetext has none, and only the first game", () => {
 		const game = read(`[Result "0-1"]\n\n1. f3 e5 2. g4 Qh4#\n\n[Event "Second"]\n\n1. d4 *`);
 		expect(game.result).toBe("0-1");

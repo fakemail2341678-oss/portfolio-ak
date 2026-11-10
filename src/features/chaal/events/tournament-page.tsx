@@ -35,6 +35,10 @@ import type {
 
 const route = getRouteApi("/_chaal/app/chaal/tournaments/$id");
 
+/** A chess figure beside the standings (games, moves, a rating): Latin digits in both languages, as the notation and clocks are (Task 85). */
+const FIGURES = new Intl.NumberFormat("en");
+const figure = (value: number) => FIGURES.format(value);
+
 /**
  * /app/chaal/tournaments/$id (Task 83, decision 0273; noindex: people's names): an arena,
  * or with `?kind=swiss` a Swiss tournament. What it is and when, its conditions, joining
@@ -126,14 +130,14 @@ function TourHeading({
 }) {
 	return (
 		<header className="flex flex-col gap-2">
-			<p className="text-ch-muted text-xs uppercase tracking-wide" data-testid="chaal-tournament-status">
-				{STATUS_NAMES[status]()}
-			</p>
 			<h1 className="ch-display text-ch-title" data-testid="chaal-tournament-name">
 				{name}
 			</h1>
 			<p className="text-ch-muted">{kind}</p>
 			<p className="flex flex-wrap items-center gap-x-4 gap-y-1 text-ch-muted text-sm">
+				<span className="font-semibold text-ch-ink" data-testid="chaal-tournament-status">
+					{STATUS_NAMES[status]()}
+				</span>
 				<span>{when}</span>
 				<span>{m.ch_tournament_players({ count: formatNumber(players) })}</span>
 				{by ? <span>{m.ch_tournament_by({ name: by })}</span> : null}
@@ -160,7 +164,7 @@ function Conditions({ conditions }: { conditions: ReadonlyArray<TournamentCondit
 						{each.ok ? (
 							<CheckIcon aria-hidden className="mt-0.5 size-4 shrink-0" />
 						) : (
-							<XIcon aria-hidden className="mt-0.5 size-4 shrink-0 text-ch-mark" />
+							<XIcon aria-hidden className="mt-0.5 size-4 shrink-0 text-ch-danger" />
 						)}
 						<span>
 							{each.condition}
@@ -398,7 +402,7 @@ function Podium({ players }: { players: ReadonlyArray<ArenaPodium> }) {
 function PlayerName({ name, title }: { name: string; title: string | null }) {
 	return (
 		<Link {...chaalLinks.player(name)} className="hover:underline">
-			{title ? <span className="me-1 font-semibold text-ch-mark">{title}</span> : null}
+			{title ? <span className="me-1 font-semibold">{title}</span> : null}
 			{name}
 		</Link>
 	);
@@ -462,9 +466,7 @@ function StandingRow({ player }: { player: ArenaStanding }) {
 				{player.sheet.slice(-16)}
 			</td>
 			<td className="ch-figures py-1.5 text-end font-semibold">
-				{player.fire ? (
-					<FlameIcon aria-label={m.ch_tournament_fire()} className="me-1 inline size-3.5 text-ch-mark" />
-				) : null}
+				{player.fire ? <FlameIcon aria-label={m.ch_tournament_fire()} className="me-1 inline size-3.5" /> : null}
 				{player.score}
 			</td>
 		</tr>
@@ -491,7 +493,7 @@ function Stats({ stats }: { stats: TournamentStats }) {
 					.map(([label, value]) => (
 						<div key={label} className="contents">
 							<dt className="text-ch-muted">{label}</dt>
-							<dd className="ch-figures text-end">{formatNumber(value)}</dd>
+							<dd className="ch-figures text-end">{figure(value)}</dd>
 						</div>
 					))}
 			</dl>

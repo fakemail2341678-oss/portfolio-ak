@@ -336,6 +336,10 @@ const SPECS: Record<Layer, LayerSpec> = {
 			"tests/unit/chaal-community.test.ts",
 			"tests/server/chaal-community.test.ts",
 			"e2e/harness/lichess-community.ts",
+			// Admin II: the overview and curation (Task 84, decision 0274).
+			"tests/server/chaal-curation.test.ts",
+			// The design record (Task 85).
+			"docs/design/chaal.md",
 		],
 		packageScripts: ["lichess:record", "chaal:sounds", "engine:copy"],
 		crons: ["/api/cron/chaal"],
@@ -353,6 +357,8 @@ const SHARED: ReadonlyArray<{ paths: string[]; layers: Layer[] }> = [
 	{ paths: ["src/components/data-display/rail.tsx"], layers: ["parda"] },
 	// The server's LRU cache (decision 0255) is core; Parda's TMDB answers and Chaal's Lichess answers use it.
 	{ paths: ["src/server/cache/lru.ts", "tests/unit/lru-cache.test.ts"], layers: ["parda", "chaal"] },
+	// The segmented nav (Task 79) is core; only Parda's and Chaal's pages use it so far (Task 85's matrix).
+	{ paths: ["src/components/navigation/segment-nav.tsx"], layers: ["parda", "chaal"] },
 ];
 
 /** Written when the portfolio goes: the home page becomes a neutral landing page. */

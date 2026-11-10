@@ -40,7 +40,7 @@ export function GameRow({ game, perspective }: { game: ChaalGameSummary; perspec
 				className="grid grid-cols-[4.5rem_minmax(0,1fr)_auto] items-center gap-x-3 gap-y-0.5 py-2.5 hover:bg-ch-plate sm:grid-cols-[5rem_minmax(0,1fr)_auto]"
 			>
 				{game.lastFen ? (
-					<MiniBoard fen={game.lastFen} orientation={orientation} className="row-span-3 w-full" />
+					<MiniBoard fen={game.lastFen} orientation={orientation} coordinates={false} className="row-span-3 w-full" />
 				) : (
 					<span className="row-span-3" />
 				)}

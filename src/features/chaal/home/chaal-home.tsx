@@ -144,7 +144,6 @@ export function ChaalHome() {
 								<Link {...chaalLinks.settings("board")}>{m.ch_home_set_up_board()}</Link>
 							</Button>
 						)}
-						<p className="text-ch-muted text-sm">{m.ch_home_soon()}</p>
 					</div>
 				</div>
 				<figure className="flex w-full max-w-[30rem] flex-col gap-3 justify-self-center md:justify-self-end">

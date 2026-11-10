@@ -22,6 +22,7 @@ import { Board } from "../board/board";
 import { Clock } from "../board/clock";
 import { GameControls, type Step, useBoardKeys } from "../board/game-controls";
 import { Material } from "../board/material";
+import { MoveInput } from "../board/move-input";
 import { MoveList } from "../board/move-list";
 import { PlayerStrip } from "../board/player-strip";
 import { ResultBanner } from "../board/result-banner";
@@ -255,6 +256,17 @@ export function LocalGameBoard({
 										<GameActions view={view} onResign={() => void resign()} onAgree={() => void agree()} />
 									)}
 								</GameControls>
+								{/* Typed moves for keyboards (PLAN 13.5); a phone's board is its input. */}
+								{over ? null : (
+									<div className="max-sm:hidden">
+										<MoveInput
+											fen={fen}
+											onMove={view.move}
+											disabled={!live || view.movable === null}
+											notation={notation}
+										/>
+									</div>
+								)}
 								<MoveList
 									tree={tree}
 									current={String(shownPly)}

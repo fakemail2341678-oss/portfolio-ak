@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { formatNumber } from "@/lib/i18n/intl";
 import { m } from "@/paraglide/messages";
 import { Board } from "../board/board";
+import { MoveInput } from "../board/move-input";
 import type { Shape } from "../board/shapes";
 import { sideName } from "../chess/speech";
 import { chaalLinks } from "../links";
@@ -234,6 +235,12 @@ export function PuzzleSolver({
 							</>
 						)}
 					</div>
+					{/* Typed moves for keyboards (PLAN 13.5); a phone's board is its input. */}
+					{done ? null : (
+						<div className="max-sm:hidden">
+							<MoveInput fen={trainer.fen} onMove={move} disabled={!playing} notation={preferences.notation} />
+						</div>
+					)}
 					{done ? null : <p className="text-ch-muted text-xs">{m.ch_puzzle_help_note()}</p>}
 					{done ? (
 						<>

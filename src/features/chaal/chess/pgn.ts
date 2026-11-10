@@ -80,7 +80,11 @@ function readComment(raw: string): Comment {
 		out.eval = evaluation[1] ? { mate: Math.trunc(value) } : { cp: Math.round(value * 100) };
 		text = text.replace(EVAL, "");
 	}
-	out.text = text.replace(/\s+/g, " ").trim();
+	// Any other command (`[%anno …]`, `[%emt …]`, `[%timestamp …]`) is for programs, not readers (Task 85).
+	out.text = text
+		.replace(/\[%\w+[^\]]*\]/g, "")
+		.replace(/\s+/g, " ")
+		.trim();
 	return out;
 }
 

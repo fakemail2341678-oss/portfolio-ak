@@ -3,6 +3,7 @@ import type { ReactNode } from "react";
 import { expect, mocked, userEvent, waitFor } from "storybook/test";
 import { getChaalArena } from "@/functions/chaal/tournaments";
 import { withChaal } from "../../../../.storybook/mocks/chaal";
+import { sampleUser } from "../../../../.storybook/mocks/data";
 import { chapters, studyPgn } from "../../../../.storybook/mocks/functions/chaal/studies";
 import { teamPage } from "../../../../.storybook/mocks/functions/chaal/teams";
 import { arenaFinished, arenaPlayed, tournaments } from "../../../../.storybook/mocks/functions/chaal/tournaments";
@@ -48,6 +49,8 @@ export const Arenas: Story = {
 };
 
 export const ArenaBeingPlayed: Story = {
+	// Signed in, so the stories' connection is asked for (without a session it never is).
+	parameters: { app: { session: sampleUser } },
 	beforeEach: () => {
 		mocked(getChaalArena).mockResolvedValue(arenaPlayed);
 	},
@@ -63,8 +66,9 @@ export const ArenaBeingPlayed: Story = {
 			),
 		);
 		await expect(canvasElement.querySelector("[data-testid=chaal-tournament-top-game]")).not.toBeNull();
-		// Connected (the stories' player): joining, with "pair me ASAP" while it's played.
-		await expect(canvasElement.querySelector("[data-testid=chaal-tournament-join-form]")).not.toBeNull();
+		// Connected (the stories' player): joining, with "pair me ASAP" while it's played. The form
+		// waits for the connection's and the status's queries, which can settle after the standings.
+		await waitFor(() => expect(canvasElement.querySelector("[data-testid=chaal-tournament-join-form]")).not.toBeNull());
 		await expect(canvasElement.querySelector("[data-testid=chaal-tournament-asap]")).not.toBeNull();
 	},
 };

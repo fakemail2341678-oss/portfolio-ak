@@ -2830,7 +2830,7 @@ The reviews with their fixes, the design record, the measurements and the templa
 
 ---
 
-## 13. Part 7: Chaal, a chess app on Lichess (Tasks 71–85, under way)
+## 13. Part 7: Chaal, a chess app on Lichess (Tasks 71–85, done)
 
 Part 7 adds **Chaal** (चाल, "a move"), a chess product built on the Lichess API. It has its own URL, shell and brand, and is a layer the way Taskline and Parda are (0208).
 - **Data and online play:** Lichess (`lichess.org`, the opening explorer, the tablebase).
@@ -2884,7 +2884,7 @@ As 12.1, with these differences:
 | 82 | Watch: TV, live games, broadcasts | high | Done (decision 0272) |
 | 83 | Community: tournaments, teams, studies | high | Done (decision 0273) |
 | 84 | Admin II: overview and curation | high | Done (decision 0274) |
-| 85 | Wrap-up: full e2e, accessibility pass, template matrix, finish review | medium | Planned |
+| 85 | Wrap-up: full e2e, accessibility pass, template matrix, finish review | medium | Done (decisions 0275, 0276) |
 
 - **Order is fixed.** The feature switches exist from Task 71, and the admin gets their UI in Task 79, right after online play.
 - **Nav links arrive with their routes,** never before.
@@ -3645,21 +3645,33 @@ As 12.1, with these differences:
 
 **Left for the owner:** run `pnpm db:migrate` on Neon (`0048_chaal_curation`). Until the first daily run after that, the overview's past days are empty; that run fills in the last 90 days from the activity.
 
-### Task 85: Wrap-up (planned)
+### Task 85: Wrap-up (done)
 
-- **Full e2e:** `pnpm test:e2e`.
-- **Accessibility:** a full game, a puzzle and an analysis by keyboard only and with NVDA.
-- **Measurements:**
-  - Lighthouse (mobile ≥ 95 on home and puzzles);
-  - the bundle per page;
-  - the engine's numbers.
-- **Template matrix:** `--keep-chaal` alone and with the other layers.
-- **Docs:** `docs/guides/chaal.md` complete, with its glossary; CLAUDE.md (guide table, "Where things are", layout, commands, pitfalls).
-- **Review:**
-  - the `impeccable-finish-reviewer` agent against the contract, then fixes;
-  - `impeccable-documenter` (`docs/design/chaal.md`);
-  - `/security-review`, with fixes;
-  - the measurements as a decision.
+The reviews with their fixes, the design record, the measurements and the template matrix (decisions 0275, 0276).
+
+- **Security review** over `72fac89..HEAD` (Tasks 71–84) with the `/security-review` brief, in the main session: an Agent call couldn't be approved in auto mode while a plugin's hook rewrote it. No findings; what was found sound is in 0275.
+- **Accessibility:** "Chaal by keyboard only" e2e flows: a whole game to mate over the board, a puzzle, and an analysis with the engine, every control reached with Tab. They found typed moves only on the analysis board, so a local game, a game on Lichess and the puzzle trainer gained `MoveInput` (from `sm` up, enabled on the player's turn). NVDA is left for the owner.
+- **Finish review** (`impeccable-finish-reviewer`, 84 screenshots against the contract and the comps): "fix". The plate was kept as it is.
+  - **Fixed:** raw `[%anno …]` in study comments; the home's stale "on their way" copy; the tournament page's eyebrow; vermilion used beyond annotation; Devanagari stats beside Latin standings (chess figures are Latin, 0275); empty cells in the play hub's choices and a player's ratings; coordinates crushed on game thumbnails.
+  - **Left for the owner:** the desktop game page (board at full height, strips and clocks in the right column, a dense move list) with labelled actions; the home, the play hub and the puzzle page as the comps draw them; one button style.
+- **Design record:** `docs/design/chaal.md` (`impeccable-documenter`), stripped with the layer.
+- **Numbers (0276):**
+  - **Lighthouse mobile** (HTTP/2 + brotli proxy): home 98–99, puzzles 97–99, accessibility 100, CLS 0. **≥ 95 met.**
+  - **JavaScript:** every page 294.6 of 295 kB, not trimmed (Chaal's share is its route definitions); `check-bundle.ts --routes=chaal` lists each page (analysis 109.6 kB, a game 104.1, a local game 84.0, puzzles 80.6; the layout 73.1).
+  - **The engine:** ready in 138 ms; depth 18 in 0.27–1.6 s on a desktop.
+  - **Tests:** `pnpm test:e2e` 3,443 passed and 1 flaky (fixed), 65.7 min; after every fix, Chaal's flows 63/63 and the review of the changed pages 252/252. `pnpm test` 190 files, 2,210 tests (4 workers). Storybook 693 of 694 (a core primitive's menu under load; passes alone), then Chaal's stories 142/142 after the last fixes.
+- **Template matrix:** all layers, each `--keep-…`, and every layer kept, in scratch clones of the working tree with CI's env. Stripping Chaal left Task 84's `tests/server/chaal-curation.test.ts`, and `segment-nav.tsx` was unused without Parda and Chaal; both are in `strip-demo.ts` now, then every row passed.
+- **Flakes fixed:** three community flows clicked before hydration (they wait for the event stream now); `message-usage.test.ts` took 15.6 s (one pass now, under a second); the arena story had no session.
+- **Deviations:**
+  - `/security-review` ran in the main session (above).
+  - `pnpm test` runs with `--maxWorkers=4` on this machine: the default ran it out of memory, twice, with nothing else open.
+  - The entry wasn't trimmed: 0.4 kB is left for Part 8's first routes, which will need the budget raised or the route definitions split.
+  - No migration.
+- **For the owner:**
+  - Decide on the redesigns the finish review left (0275).
+  - Check the board's spoken moves with NVDA, and the engine on a mid-range phone.
+  - Run `pnpm db:migrate` on Neon (Task 84's `0048_chaal_curation` and any before it: `pnpm diagnose`).
+  - Push, or run the template job, before Part 8.
 
 **Out of scope for Part 7:**
 - variants (Chess960, Crazyhouse…);

@@ -1397,7 +1397,9 @@ test.describe("Chaal's community connected to Lichess (Task 83)", () => {
 		await page.waitForURL(/\/app\/chaal\/settings\?lichess=connected$/);
 		await opened;
 
+		const streamOpen = eventStreamOpened(page);
 		await page.goto(`/app/chaal/tournaments/${ARENA_PLAYED}`);
+		await streamOpen;
 		await page.getByTestId("chaal-tournament-asap").click();
 		await page.getByTestId("chaal-tournament-join").click();
 		await expect(page.getByTestId("chaal-tournament-joined")).toBeVisible();
@@ -1411,7 +1413,9 @@ test.describe("Chaal's community connected to Lichess (Task 83)", () => {
 	});
 
 	test("joins an open team, finds it among My teams, and leaves it", async ({ page }) => {
+		const streamOpen = eventStreamOpened(page);
 		await page.goto(`/app/chaal/teams/${RECORDED_TEAM}`);
+		await streamOpen;
 		await page.getByTestId("chaal-team-join").click();
 		await expect(page.getByTestId("chaal-team-joined")).toBeVisible();
 		await expect.poll(async () => (await community("e2e_player")).teams).toEqual([RECORDED_TEAM]);
@@ -1419,7 +1423,9 @@ test.describe("Chaal's community connected to Lichess (Task 83)", () => {
 		await page.goto("/app/chaal/teams?view=mine");
 		await expect(page.locator(`[data-testid=chaal-team-row][data-team=${RECORDED_TEAM}]`)).toBeVisible();
 
+		const streamAgain = eventStreamOpened(page);
 		await page.goto(`/app/chaal/teams/${RECORDED_TEAM}`);
+		await streamAgain;
 		await page.getByTestId("chaal-team-leave").click();
 		await expect(page.getByTestId("chaal-team-join")).toBeVisible();
 		await expect.poll(async () => (await community("e2e_player")).teams).toEqual([]);
@@ -1506,5 +1512,103 @@ test.describe("Chaal's curation (Task 84)", () => {
 		await expect(page.getByTestId("chaal-home-announcement")).toContainText("Club night moves to Friday.");
 		await expect(page.getByTestId("chaal-entry-play")).toHaveCount(0);
 		await reviewPage(page, "/app/chaal");
+	});
+});
+
+/**
+ * Task 85's accessibility pass, kept as a flow: a whole game, a puzzle and an analysis with
+ * the keyboard alone. Each control is reached with Tab (never clicked or focused directly);
+ * moves are played on the board's grid with the arrows and Enter, or typed after `/`.
+ */
+test.describe("Chaal by keyboard only (Task 85)", () => {
+	test.describe.configure({ mode: "serial" });
+
+	test.beforeEach(async ({ harness }) => {
+		await harness.resetRateLimits();
+	});
+
+	/** Presses Tab until `target` has focus: proof it can be reached without a mouse. */
+	const tabTo = async (page: Page, target: ReturnType<Page["locator"]>, limit = 80) => {
+		for (let presses = 0; presses < limit; presses += 1) {
+			if (await target.evaluate((element) => element === document.activeElement)) return;
+			await page.keyboard.press("Tab");
+		}
+		throw new Error(`not reached with ${limit} presses of Tab`);
+	};
+
+	/** Moves the grid's cursor to a square with the arrows, then presses Enter there. */
+	const cursorTo = async (page: Page, grid: ReturnType<Page["locator"]>, square: string) => {
+		const white = (await grid.locator("[data-square]").first().getAttribute("data-square")) === "a8";
+		const at = ((await grid.getAttribute("aria-activedescendant")) ?? "").slice(-2);
+		const files = (square.charCodeAt(0) - at.charCodeAt(0)) * (white ? 1 : -1);
+		const ranks = (Number(square[1]) - Number(at[1])) * (white ? 1 : -1);
+		for (let step = 0; step < Math.abs(files); step += 1)
+			await page.keyboard.press(files > 0 ? "ArrowRight" : "ArrowLeft");
+		for (let step = 0; step < Math.abs(ranks); step += 1)
+			await page.keyboard.press(ranks > 0 ? "ArrowUp" : "ArrowDown");
+		await expect(grid).toHaveAttribute("aria-activedescendant", new RegExp(`${square}$`));
+		await page.keyboard.press("Enter");
+	};
+
+	/** A move on the focused grid: Enter on the piece, then Enter on its square. */
+	const gridMove = async (page: Page, grid: ReturnType<Page["locator"]>, uci: string) => {
+		await cursorTo(page, grid, uci.slice(0, 2));
+		await cursorTo(page, grid, uci.slice(2, 4));
+	};
+
+	test("over the board, a whole game to mate: the grid for White, typed moves for Black", async ({ page }) => {
+		await page.goto("/app/chaal/play", { waitUntil: "networkidle" });
+		await tabTo(page, page.getByTestId("chaal-play-board-start"));
+		await page.keyboard.press("Enter");
+		await expect(page).toHaveURL(/\/app\/chaal\/local\//);
+		const grid = page.getByTestId("chaal-local-board").getByRole("grid");
+		const moves = page.getByTestId("chaal-moves").filter({ visible: true }).locator("[data-node]");
+		const typed = async (san: string) => {
+			await page.keyboard.press("/");
+			await page.keyboard.type(san);
+			await page.keyboard.press("Enter");
+		};
+		await tabTo(page, grid);
+		await gridMove(page, grid, "f2f3");
+		await expect(moves).toHaveCount(1);
+		await typed("e5");
+		await expect(moves).toHaveCount(2);
+		await tabTo(page, grid);
+		await gridMove(page, grid, "g2g4");
+		await expect(moves).toHaveCount(3);
+		await typed("Qh4");
+		await expect(page.getByTestId("chaal-result")).toContainText("Black wins");
+	});
+
+	test("a puzzle solved on the grid", async ({ page }) => {
+		await page.goto("/app/chaal/puzzles", { waitUntil: "networkidle" });
+		const board = page.getByTestId("chaal-puzzle-board");
+		const { puzzle } = await fakePuzzle((await board.getAttribute("data-puzzle")) ?? "");
+		const grid = board.getByRole("grid");
+		await tabTo(page, grid);
+		for (let index = 0; index < puzzle.solution.length; index += 2) {
+			await expect(board).toHaveAttribute("data-phase", "play");
+			await gridMove(page, grid, puzzle.solution[index] ?? "");
+		}
+		await expect(page.getByTestId("chaal-puzzle-status")).toHaveAttribute("data-won", "true");
+	});
+
+	test("an analysis: moves on the grid and typed, a step back with the arrows, and the engine switched on", async ({
+		page,
+	}) => {
+		await page.goto("/app/chaal/analysis", { waitUntil: "networkidle" });
+		const grid = page.getByTestId("chaal-analysis-board").getByRole("grid");
+		await tabTo(page, grid);
+		await gridMove(page, grid, "e2e4");
+		await page.keyboard.press("/");
+		await page.keyboard.type("c5");
+		await page.keyboard.press("Enter");
+		await expect(page).toHaveURL(/\?moves=e2e4_c7c5$/);
+		await tabTo(page, page.getByRole("button", { name: "Previous move" }));
+		await page.keyboard.press("Enter");
+		await expect(page).toHaveURL(/moves=e2e4_c7c5&ply=1$/);
+		await tabTo(page, page.getByTestId("chaal-engine-switch"));
+		await page.keyboard.press("Space");
+		await expect(page.getByTestId("chaal-engine-lines").locator("li").first()).toBeVisible({ timeout: 30_000 });
 	});
 });
