@@ -64,12 +64,18 @@ const MAX_BATCHES = 25;
 
 /**
  * The daily cleanup (GET /api/cron/guests): deletes guests created more than seven days
- * ago. Their rows go with them (every app table's `owner_id` cascades); their uploads
+ * ago. Their rows go with them (every app table's `owner_id` cascades; an owner whose rows
+ * can't, removes them in its `forget`); their uploads
  * are marked removed in the same transaction and then deleted from Cloudinary through
  * the attachments service (the anonymous plugin's own delete would skip that). An
  * upload Cloudinary didn't delete stays queued for the attachments cleanup.
  */
-export async function deleteExpiredGuests(db: Db, store: ImageStore | null, now = new Date()) {
+export async function deleteExpiredGuests(
+	db: Db,
+	store: ImageStore | null,
+	now = new Date(),
+	owners: ReadonlyArray<GuestData> = GUEST_DATA,
+) {
 	const cutoff = new Date(now.getTime() - GUEST_LIFETIME_MS);
 	let guests = 0;
 	let attachments = 0;
@@ -89,6 +95,8 @@ export async function deleteExpiredGuests(db: Db, store: ImageStore | null, now 
 				.set({ deletedAt: now })
 				.where(and(inArray(attachment.ownerId, ids), isNull(attachment.deletedAt)))
 				.returning();
+			// Rows no foreign key removes with the guest (an owner's `forget`), then the guests.
+			for (const owner of owners) await owner.forget?.(tx, ids);
 			await tx.delete(user).where(inArray(user.id, ids));
 			return { count: ids.length, uploads };
 		});

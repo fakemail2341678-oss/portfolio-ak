@@ -52,6 +52,13 @@ export const PERMISSION_CATALOG = {
 	 */
 	chaal: ["read", "configure", "moderate", "curate"],
 	// chaal:end
+	// kharcha:start
+	/**
+	 * Kharcha (/app/kharcha, decision 0277): read sees /admin/kharcha's counts, never anyone's
+	 * expenses; configure the limits, the currencies offered and the defaults.
+	 */
+	kharcha: ["read", "configure"],
+	// kharcha:end
 	// @new-feature:permissions
 } as const;
 

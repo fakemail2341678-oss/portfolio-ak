@@ -33,8 +33,25 @@ export const NE_WEEKDAYS_SHORT = ["आइत", "सोम", "मङ्गल", "
 /** Sunday first, matching Date#getDay(). */
 export const NE_WEEKDAYS = ["आइतबार", "सोमबार", "मङ्गलबार", "बुधबार", "बिहिबार", "शुक्रबार", "शनिबार"] as const;
 
-/** CLDR `ne` currency symbols. Currencies not listed keep their ISO code. */
-export const NE_CURRENCY_SYMBOLS: Readonly<Record<string, string>> = { NPR: "नेरू", USD: "US$", INR: "₹" };
+/**
+ * CLDR `ne` currency symbols, for the currencies in ./currency.ts (tests/unit/currency.test.ts
+ * checks each against Node's full ICU). Currencies not listed keep their ISO code.
+ */
+export const NE_CURRENCY_SYMBOLS: Readonly<Record<string, string>> = {
+	NPR: "नेरू",
+	USD: "US$",
+	INR: "₹",
+	EUR: "€",
+	GBP: "£",
+	AUD: "A$",
+	CAD: "CA$",
+	JPY: "JP¥",
+	CNY: "CN¥",
+	KRW: "₩",
+	THB: "฿",
+	HKD: "HK$",
+	NZD: "NZ$",
+};
 
 export type NeRelativeUnit = "year" | "quarter" | "month" | "week" | "day" | "hour" | "minute" | "second";
 

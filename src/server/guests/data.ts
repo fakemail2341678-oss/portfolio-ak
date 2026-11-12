@@ -3,6 +3,7 @@ import type { Locale } from "@/paraglide/runtime";
 import { APP_SERVERS } from "@/server/apps/registry"; // @apps
 import { CHAAL_GUEST_DATA } from "@/server/chaal/guest-data"; // @chaal
 import type { Tx } from "@/server/db/types";
+import { KHARCHA_GUEST_DATA } from "@/server/kharcha/guest-data"; // @kharcha
 import { PARDA_GUEST_DATA } from "@/server/parda/guest-data"; // @parda
 import { TASKLINE_GUEST_DATA } from "@/server/taskline/sandbox"; // @taskline
 
@@ -23,6 +24,12 @@ export type GuestData = {
 	seedGuestData: (tx: Tx, userId: string, locale: Locale) => Promise<void>;
 	/** Moves every row of `fromUserId` (a guest) to `toUserId` (an account). */
 	claim: (tx: Tx, fromUserId: string, toUserId: string) => Promise<void>;
+	/**
+	 * Removes the rows of expired guests that don't go with the user by a foreign key
+	 * (rows other people's rows may point at), just before the guests are deleted. An owner
+	 * whose rows all cascade from `owner_id` has none.
+	 */
+	forget?: (tx: Tx, userIds: ReadonlyArray<string>) => Promise<void>;
 };
 
 export const GUEST_DATA: ReadonlyArray<GuestData> = [
@@ -30,6 +37,7 @@ export const GUEST_DATA: ReadonlyArray<GuestData> = [
 	TASKLINE_GUEST_DATA, // @taskline
 	PARDA_GUEST_DATA, // @parda
 	CHAAL_GUEST_DATA, // @chaal
+	KHARCHA_GUEST_DATA, // @kharcha
 ];
 
 /**

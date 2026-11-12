@@ -18,6 +18,7 @@
 pnpm db:seed-admin | db:seed-demo   # seed-demo: roles, users with them, 30 Test CRUD items (0117)
 pnpm db:seed-portfolio   # the portfolio's demo content, only when there is no profile yet (0176) <!-- @portfolio -->
 pnpm db:seed-taskline --password "…"   # Taskline's demo team: 5 accounts, 3 projects, 60 tasks (dev:local seeds it fresh) <!-- @taskline -->
+pnpm db:seed-kharcha --password "…"    # Kharcha's three demo accounts sharing a group (dev:local seeds them fresh) <!-- @kharcha -->
 ```
 
 ## Scheduled jobs

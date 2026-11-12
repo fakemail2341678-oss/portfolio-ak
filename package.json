@@ -30,6 +30,7 @@
 		"db:seed-demo": "node scripts/seed-demo.ts",
 		"db:seed-portfolio": "node scripts/seed-portfolio.ts",
 		"db:seed-taskline": "node scripts/seed-taskline.ts",
+		"db:seed-kharcha": "node scripts/seed-kharcha.ts",
 		"tmdb:record": "node scripts/record-tmdb-fixtures.ts",
 		"parda:probe": "node scripts/probe-sources.ts",
 		"lichess:record": "node scripts/record-lichess-fixtures.ts",

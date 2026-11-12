@@ -29,6 +29,7 @@ import { sendEmail } from "../email/send";
 import type { SecurityNoticeKind } from "../email/templates/emails";
 import { serverEnv } from "../env";
 import { linkGuest, startGuest } from "../guests/auth-hooks";
+import { forgetUser as forgetKharchaUser } from "../kharcha/forget"; // @kharcha
 import { errorFields, log } from "../log";
 import { acceptOnSignIn } from "../taskline/admin/invitations"; // @taskline
 import { CLIENT_IP_HEADER } from "./client-ip";
@@ -197,6 +198,10 @@ export const auth = betterAuth({
 				if (!check.ok) {
 					throw new APIError("BAD_REQUEST", { code: check.reason, message: "The last active admin can't be deleted" });
 				}
+				// kharcha:start
+				// What is theirs alone in Kharcha goes; what they share stays, without the account (0277).
+				await forgetKharchaUser(db, user.id);
+				// kharcha:end
 				log("info", "account deletion", { userId: user.id, queuedAttachments: check.queuedAttachments });
 			},
 			afterDelete: async (user, request) => {

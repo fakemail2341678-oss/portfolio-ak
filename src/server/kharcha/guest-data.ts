@@ -1,0 +1,439 @@
+import "@tanstack/react-start/server-only";
+import { eq } from "drizzle-orm";
+import { expenseDebts, paymentDebt } from "@/features/kharcha/money/ledger";
+import { computeShares, itemizedExtras, type Paid, type Split } from "@/features/kharcha/money/split";
+import { type ExpenseKind, GROUP_KIND_ICON } from "@/features/kharcha/types";
+import { addDays, todayInZone } from "@/lib/i18n/date-only";
+import { APP_TIME_ZONE } from "@/lib/i18n/intl";
+import { m } from "@/paraglide/messages";
+import type { Locale } from "@/paraglide/runtime";
+import {
+	khActivity,
+	khExpense,
+	khExpensePayer,
+	khExpenseShare,
+	khFriend,
+	khGroup,
+	khGroupMember,
+	khLedger,
+	khPayment,
+	khPerson,
+	khProfile,
+} from "@/server/db/schema";
+import type { Tx } from "@/server/db/types";
+import type { GuestData } from "@/server/guests/data";
+import { pairOf } from "./activity";
+import { forgetUsers } from "./forget";
+import { colorFor, ensurePerson, mergePerson, personOfUser } from "./people";
+import { bumpRevs } from "./rev";
+
+/**
+ * Kharcha's guests (docs/guides/kharcha.md "Guests", decisions 0186 and 0277). A guest who
+ * starts in Kharcha gets sample data in their language: three months of personal spending,
+ * three placeholder friends (contacts with a name only), two groups with shared expenses
+ * and one payment. Their Kharcha is a closed world: names only, no addresses, no invites.
+ * Signing up or in merges the guest's person into the account's (`mergePerson`), so
+ * nothing they made is lost; an expired guest's rows are removed before the guest is.
+ */
+
+type T = { locale: Locale };
+type Who = "me" | "asha" | "bikash" | "sita";
+type Sample = {
+	group?: "trip" | "flat";
+	kind?: ExpenseKind;
+	title: (t: T) => string;
+	merchant?: (t: T) => string;
+	/** Minor units of NPR (paisa). */
+	amount: number;
+	daysAgo: number;
+	paidBy: Who;
+	split: (id: Record<Who, string>, t: T) => Split;
+};
+
+const mine: Sample["split"] = (id) => ({ method: "full", person: id.me });
+
+/** One month of the guest's own spending, `month` months back. */
+const personalMonth = (month: number): Sample[] => {
+	const back = month * 30;
+	const own = (title: Sample["title"], amount: number, daysAgo: number, merchant?: Sample["merchant"]): Sample => ({
+		title,
+		amount,
+		daysAgo: back + daysAgo,
+		paidBy: "me",
+		split: mine,
+		...(merchant ? { merchant } : {}),
+	});
+	return [
+		own(
+			(t) => m.kharcha_seed_groceries({}, t),
+			245_000 + month * 13_000,
+			2,
+			(t) => m.kharcha_seed_merchant_mart({}, t),
+		),
+		own(
+			(t) => m.kharcha_seed_groceries({}, t),
+			182_050,
+			16,
+			(t) => m.kharcha_seed_merchant_mart({}, t),
+		),
+		own(
+			(t) => m.kharcha_seed_lunch({}, t),
+			38_000,
+			1,
+			(t) => m.kharcha_seed_merchant_momo({}, t),
+		),
+		own(
+			(t) => m.kharcha_seed_lunch({}, t),
+			42_000,
+			9,
+			(t) => m.kharcha_seed_merchant_momo({}, t),
+		),
+		own((t) => m.kharcha_seed_lunch({}, t), 35_000, 20),
+		own((t) => m.kharcha_seed_bus({}, t), 6_000, 3),
+		own((t) => m.kharcha_seed_bus({}, t), 4_500, 12),
+		own((t) => m.kharcha_seed_tea({}, t), 12_000, 5),
+		own((t) => m.kharcha_seed_tea({}, t), 9_500, 18),
+		own(
+			(t) => m.kharcha_seed_mobile({}, t),
+			50_000,
+			7,
+			() => "Ncell",
+		),
+		own(
+			(t) => m.kharcha_seed_movie({}, t),
+			70_000,
+			14,
+			() => "QFX Cinemas",
+		),
+		...(month === 1
+			? [
+					{
+						...own(
+							(t) => m.kharcha_seed_refund({}, t),
+							150_000,
+							10,
+							(t) => m.kharcha_seed_merchant_shoes({}, t),
+						),
+						kind: "refund" as const,
+					},
+				]
+			: [own((t) => m.kharcha_seed_pharmacy({}, t), 64_000, 22)]),
+	];
+};
+
+/** The dinner's bill: two lines, with Nepal's usual service charge and VAT on top. */
+const DINNER_FOOD = 240_000;
+const DINNER_DRINKS = 90_000;
+const DINNER_EXTRAS = itemizedExtras(DINNER_FOOD + DINNER_DRINKS);
+
+const SHARED: Sample[] = [
+	{
+		title: (t) => m.kharcha_seed_coffee({}, t),
+		amount: 56_000,
+		daysAgo: 3,
+		paidBy: "me",
+		split: (id) => ({ method: "equal", people: [id.me, id.asha] }),
+	},
+	{
+		group: "trip",
+		title: (t) => m.kharcha_seed_trip_bus({}, t),
+		amount: 360_000,
+		daysAgo: 40,
+		paidBy: "me",
+		split: (id) => ({ method: "equal", people: [id.me, id.asha, id.bikash] }),
+	},
+	{
+		group: "trip",
+		title: (t) => m.kharcha_seed_trip_hotel({}, t),
+		amount: 900_000,
+		daysAgo: 39,
+		paidBy: "asha",
+		split: (id) => ({ method: "equal", people: [id.me, id.asha, id.bikash] }),
+	},
+	{
+		group: "trip",
+		title: (t) => m.kharcha_seed_trip_dinner({}, t),
+		amount: DINNER_FOOD + DINNER_DRINKS + DINNER_EXTRAS.service + DINNER_EXTRAS.tax,
+		daysAgo: 39,
+		paidBy: "bikash",
+		split: (id, t) => ({
+			method: "itemized",
+			lines: [
+				{ label: m.kharcha_seed_line_food({}, t), amount: DINNER_FOOD, people: [id.me, id.asha, id.bikash] },
+				{ label: m.kharcha_seed_line_drinks({}, t), amount: DINNER_DRINKS, people: [id.asha, id.bikash] },
+			],
+			...DINNER_EXTRAS,
+		}),
+	},
+	{
+		group: "trip",
+		title: (t) => m.kharcha_seed_trip_boat({}, t),
+		amount: 150_000,
+		daysAgo: 38,
+		paidBy: "me",
+		split: (id) => ({
+			method: "shares",
+			parts: [
+				{ person: id.me, weight: 1 },
+				{ person: id.asha, weight: 1 },
+				{ person: id.bikash, weight: 2 },
+			],
+		}),
+	},
+	...[0, 1, 2].flatMap((month): Sample[] => [
+		{
+			group: "flat",
+			title: (t) => m.kharcha_seed_flat_rent({}, t),
+			amount: 2_400_000,
+			daysAgo: month * 30 + 6,
+			paidBy: "me",
+			split: (id) => ({ method: "equal", people: [id.me, id.sita] }),
+		},
+		{
+			group: "flat",
+			title: (t) => m.kharcha_seed_flat_internet({}, t),
+			merchant: () => "WorldLink",
+			amount: 135_600,
+			daysAgo: month * 30 + 8,
+			paidBy: "sita",
+			split: (id) => ({ method: "equal", people: [id.me, id.sita] }),
+		},
+	]),
+	...[0, 1].map(
+		(month): Sample => ({
+			group: "flat",
+			title: (t) => m.kharcha_seed_flat_electricity({}, t),
+			merchant: () => "NEA",
+			amount: 218_000,
+			daysAgo: month * 30 + 11,
+			paidBy: "sita",
+			split: (id) => ({
+				method: "percent",
+				parts: [
+					{ person: id.me, bp: 6_000 },
+					{ person: id.sita, bp: 4_000 },
+				],
+			}),
+		}),
+	),
+];
+
+/** Bikash paid part of what he owed for the trip. */
+const TRIP_PAYMENT = { amount: 100_000, daysAgo: 36 };
+
+const CURRENCY = "NPR";
+
+/**
+ * The sample data, written with a handful of bulk inserts: the shares and the debts come
+ * from the money core in memory, exactly as a service would write them one by one
+ * (tests/server/kharcha-seed.test.ts checks the ledger against it). Skipped when the person
+ * already has friends: it never lands on top of someone's own data.
+ */
+export async function seedSample(tx: Tx, userId: string, locale: Locale): Promise<void> {
+	const me = await ensurePerson(tx, userId);
+	const [friend] = await tx
+		.select({ id: khFriend.friendId })
+		.from(khFriend)
+		.where(eq(khFriend.ownerId, me.id))
+		.limit(1);
+	if (friend) return;
+	const t: T = { locale };
+	const today = todayInZone(APP_TIME_ZONE);
+	const id: Record<Who, string> = {
+		me: me.id,
+		asha: crypto.randomUUID(),
+		bikash: crypto.randomUUID(),
+		sita: crypto.randomUUID(),
+	};
+	const friends = [
+		{ id: id.asha, name: m.kharcha_seed_friend_asha({}, t) },
+		{ id: id.bikash, name: m.kharcha_seed_friend_bikash({}, t) },
+		{ id: id.sita, name: m.kharcha_seed_friend_sita({}, t) },
+	];
+	await tx.insert(khPerson).values(
+		friends.map((person) => ({
+			id: person.id,
+			displayName: person.name,
+			color: colorFor(person.name),
+			createdBy: me.id,
+		})),
+	);
+	await tx.insert(khFriend).values(
+		friends.flatMap((person) => [
+			{ ownerId: me.id, friendId: person.id },
+			{ ownerId: person.id, friendId: me.id },
+		]),
+	);
+
+	const groups = {
+		trip: { id: crypto.randomUUID(), members: [id.asha, id.bikash] },
+		flat: { id: crypto.randomUUID(), members: [id.sita] },
+	};
+	await tx.insert(khGroup).values([
+		{
+			id: groups.trip.id,
+			name: m.kharcha_seed_group_trip({}, t),
+			kind: "trip",
+			color: "teal",
+			icon: GROUP_KIND_ICON.trip,
+			currency: CURRENCY,
+			startOn: addDays(today, -40),
+			endOn: addDays(today, -37),
+			createdBy: me.id,
+		},
+		{
+			id: groups.flat.id,
+			name: m.kharcha_seed_group_flat({}, t),
+			kind: "home",
+			color: "amber",
+			icon: GROUP_KIND_ICON.home,
+			currency: CURRENCY,
+			createdBy: me.id,
+		},
+	]);
+	await tx
+		.insert(khGroupMember)
+		.values(
+			Object.values(groups).flatMap((group) => [
+				{ groupId: group.id, personId: me.id, role: "owner" as const },
+				...group.members.map((personId) => ({ groupId: group.id, personId, role: "member" as const })),
+			]),
+		);
+
+	const expenses = [...[0, 1, 2].flatMap(personalMonth), ...SHARED].map((sample) => {
+		const split = sample.split(id, t);
+		const shares = computeShares(sample.amount, split);
+		if (!shares.ok) throw new Error(`Kharcha sample: ${shares.problem.code}`);
+		const payers: Paid[] = [{ person: id[sample.paidBy], amount: sample.amount }];
+		const kind = sample.kind ?? "expense";
+		const expenseId = crypto.randomUUID();
+		const groupId = sample.group ? groups[sample.group].id : null;
+		return {
+			row: {
+				id: expenseId,
+				groupId,
+				createdBy: me.id,
+				kind,
+				title: sample.title(t),
+				merchant: sample.merchant?.(t) ?? "",
+				amountMinor: sample.amount,
+				currency: CURRENCY,
+				spentOn: addDays(today, -sample.daysAgo),
+				split,
+			},
+			payers,
+			shares: shares.shares,
+			debts: expenseDebts(kind, payers, shares.shares),
+			pair: groupId
+				? null
+				: pairOf([...payers.map((payer) => payer.person), ...shares.shares.map((share) => share.person)]),
+		};
+	});
+	await tx.insert(khExpense).values(expenses.map((expense) => expense.row));
+	await tx.insert(khExpensePayer).values(
+		expenses.flatMap((expense) =>
+			expense.payers.map((payer, position) => ({
+				expenseId: expense.row.id,
+				personId: payer.person,
+				amountMinor: payer.amount,
+				position,
+			})),
+		),
+	);
+	await tx.insert(khExpenseShare).values(
+		expenses.flatMap((expense) =>
+			expense.shares.map((share, position) => ({
+				expenseId: expense.row.id,
+				personId: share.person,
+				owedMinor: share.owed,
+				position,
+			})),
+		),
+	);
+
+	const [payment] = await tx
+		.insert(khPayment)
+		.values({
+			groupId: groups.trip.id,
+			fromPerson: id.bikash,
+			toPerson: id.me,
+			amountMinor: TRIP_PAYMENT.amount,
+			currency: CURRENCY,
+			method: m.kharcha_seed_method_wallet({}, t),
+			paidOn: addDays(today, -TRIP_PAYMENT.daysAgo),
+			createdBy: me.id,
+		})
+		.returning({ id: khPayment.id });
+	if (!payment) throw new Error("kh_payment: nothing inserted");
+	const settled = paymentDebt(id.bikash, id.me, TRIP_PAYMENT.amount);
+
+	await tx.insert(khLedger).values([
+		...expenses.flatMap((expense) =>
+			expense.debts.map((debt) => ({
+				expenseId: expense.row.id,
+				groupId: expense.row.groupId,
+				debtorId: debt.debtor,
+				creditorId: debt.creditor,
+				amountMinor: debt.amount,
+				currency: CURRENCY,
+			})),
+		),
+		{
+			paymentId: payment.id,
+			groupId: groups.trip.id,
+			debtorId: settled.debtor,
+			creditorId: settled.creditor,
+			amountMinor: settled.amount,
+			currency: CURRENCY,
+		},
+	]);
+	await tx.insert(khActivity).values([
+		...Object.values(groups).map((group) => ({ groupId: group.id, actorId: me.id, kind: "group.created" as const })),
+		...expenses.map((expense) => ({
+			groupId: expense.row.groupId,
+			personLo: expense.pair?.[0] ?? null,
+			personHi: expense.pair?.[1] ?? null,
+			expenseId: expense.row.id,
+			actorId: me.id,
+			kind: "expense.created" as const,
+			data: { title: expense.row.title },
+		})),
+		{ groupId: groups.trip.id, paymentId: payment.id, actorId: me.id, kind: "payment.created" as const },
+	]);
+	await bumpRevs(tx, [me.id]);
+}
+
+/**
+ * The guest's person becomes the account's: every expense, group, friend and balance
+ * moves with `mergePerson`. The account's own preferences win; a guest who went through
+ * onboarding hands theirs to an account that hasn't.
+ */
+async function claim(tx: Tx, fromUserId: string, toUserId: string): Promise<void> {
+	const guest = await personOfUser(tx, fromUserId);
+	if (!guest) return;
+	const account = await ensurePerson(tx, toUserId);
+	const [from] = await tx.select().from(khProfile).where(eq(khProfile.userId, fromUserId));
+	const [to] = await tx.select().from(khProfile).where(eq(khProfile.userId, toUserId));
+	if (from?.onboardedAt && to && !to.onboardedAt) {
+		await tx
+			.update(khProfile)
+			.set({
+				homeCurrency: from.homeCurrency,
+				timeZone: from.timeZone,
+				defaultSplit: from.defaultSplit,
+				payNote: from.payNote,
+				onboardedAt: from.onboardedAt,
+			})
+			.where(eq(khProfile.userId, toUserId));
+	}
+	await tx.delete(khProfile).where(eq(khProfile.userId, fromUserId));
+	await mergePerson(tx, guest.id, account.id);
+}
+
+export const KHARCHA_GUEST_DATA: GuestData = {
+	slug: "kharcha",
+	section: "kharcha",
+	seedGuestData: seedSample,
+	claim,
+	forget: forgetUsers,
+};

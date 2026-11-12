@@ -32,7 +32,9 @@ import { gzipSync } from "node:zlib";
 // the room is for Tasks 74–84's routes, and Task 85 measures and trims.
 // Task 80 (0270): 295. Tasks 74–79 used that room (289.9 kB); the puzzles' two routes took it to
 // 290.5 kB after sharing Chaal's page heads; the rest is for Tasks 81–84, and Task 85 trims.
-const ENTRY_BUDGET_KB = 295;
+// Part 8 Task 86 (0279): 300. Part 7 left 294.6 kB and Kharcha's catalogue entries 295.0; the room
+// is for Kharcha's routes (about 16 at 0.3 kB, less Expenses' 3, Task 95), and Task 97 trims.
+const ENTRY_BUDGET_KB = 300;
 const ROUTE_BUDGET_KB = 300;
 const FONT_BUDGET_KB = 150;
 /** Code that must never be preloaded by every page, found by a string it always contains: its pages load it. */
@@ -62,11 +64,21 @@ const loadManifest = async (): Promise<Manifest> => {
 	return module.tsrStartManifest();
 };
 
+/**
+ * The release snippet Sentry's build plugin puts at the top of every chunk when the build has
+ * SENTRY_AUTH_TOKEN, SENTRY_ORG and SENTRY_PROJECT (a local `.env` may): about 0.2 kB gzip a
+ * chunk, 15 kB over the entry's 70. It is left out, so a build measures the same with or
+ * without them (decision 0279).
+ */
+const SENTRY_SNIPPET = /^\(function\(\)\{try\{var e=typeof window[\s\S]*?_sentryDebugIds[\s\S]*?\}catch\{\}\}\)\(\);/;
+
 const gzipCache = new Map<string, number>();
 const gzipKb = (asset: string): number => {
 	const cached = gzipCache.get(asset);
 	if (cached !== undefined) return cached;
-	const size = gzipSync(readFileSync(join(OUTPUT, "public", asset))).length / 1024;
+	const content = readFileSync(join(OUTPUT, "public", asset));
+	const code = asset.endsWith(".js") ? Buffer.from(content.toString("utf8").replace(SENTRY_SNIPPET, "")) : content;
+	const size = gzipSync(code).length / 1024;
 	gzipCache.set(asset, size);
 	return size;
 };

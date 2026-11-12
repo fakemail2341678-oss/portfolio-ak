@@ -3686,7 +3686,7 @@ The reviews with their fixes, the design record, the measurements and the templa
 
 ---
 
-## 14. Part 8: Kharcha, a personal expense tracker and bill splitter (Tasks 86–97, planned)
+## 14. Part 8: Kharcha, a personal expense tracker and bill splitter (Tasks 86–97, in progress)
 
 Part 8 grows the Expenses showcase app into **Kharcha** (खर्च, "spending"), a personal expense tracker and bill splitter with its own URL, shell and brand. It is built as a layer the way Taskline is (0208).
 - **Track:** your own spending, with receipts, categories, tags, payment methods, budgets, recurring expenses, search and insights.
@@ -3738,7 +3738,7 @@ As 12.1, with these differences:
 
 | Task | Name | Effort | Status |
 | --- | --- | --- | --- |
-| 86 | Foundation: the `kharcha` layer, people, the money core (splits, ledger, balances), access, activity, guests | xhigh | Planned |
+| 86 | Foundation: the `kharcha` layer, people, the money core (splits, ledger, balances), access, activity, guests | xhigh | Done |
 | 87 | Design direction: UX notes, comps (the owner picks), tokens, brand, the kit | high | Planned |
 | 88 | Shell, brand, landing, auth pages, Home, onboarding, the create menu | high | Planned |
 | 89 | Expenses and receipts: add and edit, the expense panel, categories, tags, methods, rules, a first Spend list | xhigh | Planned |
@@ -4114,40 +4114,24 @@ Checked 2026-11-03, after Task 53; check again.
 - **Bundle:** no page grows the entry beyond the budget. Charts, the receipt viewer and the split editor are lazy. Measure after each task.
 - **Docs:** `docs/guides/kharcha.md`, decisions, CLAUDE.md.
 
-### Task 86: Foundation (planned)
+### Task 86: Foundation (done)
 
-Kharcha's data, money core, access and server, tested on PGlite, with no UI. Expenses is untouched.
+Kharcha's data, money core, access and server, tested on PGlite, with no UI; Expenses untouched. Decisions 0277 (the layer, people, access, guests), 0278 (money and the ledger), 0279 (the bundle budget); the guide is `docs/guides/kharcha.md`.
 
-- **Layer:** `kharcha` in `LAYERS`, `SPECS.kharcha`, markers, the CI strip matrix.
-- **Core:** `src/lib/i18n/currency.ts` with `money()`; `formatMonthShort` and `formatDayMonth` out of the apps markers.
-- **Tables:** `kh_settings`, `kh_person`, `kh_profile`, `kh_friend`, `kh_group`, `kh_group_member`, `kh_expense`, `kh_expense_payer`, `kh_expense_share`, `kh_payment`, `kh_ledger`, `kh_activity`, and their migration.
-- **Money core:** split methods, rounding, the ledger, balances and simplify, pure and isomorphic.
-  - Unit tests per method.
-  - Property tests over random expenses:
-    - shares and payers add up;
-    - nets sum to zero;
-    - the same input gives the same output.
-- **Server:**
-  - `ensurePerson`, `mergePerson`, `access.ts`, `writeLedger`, `activity.ts`, `rev.ts`, quotas;
-  - services for expenses, payments, groups, members and friends;
-  - the middleware `requireKharchaUser` → `withKharchaServices`, and the function files the services need (listed in the guard test, with temporary knip entries until their pages exist).
-- **Permissions:** `kharcha:*` in the catalog, with labels and audit actions.
-- **Guests:** `KHARCHA_GUEST_DATA` in `GUEST_DATA`, scoped if `guest_scope` exists.
-  - The seed: the guest's person; three months of personal spending; placeholder friends (Asha, Bikash, Sita); the groups "Pokhara trip" and "Flat 3B" with shared expenses and one payment; in the guest's language.
-  - The claim goes through `mergePerson`.
-- **Dev data:** `pnpm db:seed-kharcha --password "…"`: three demo accounts who share a group and a few expenses (`dev:local` seeds it fresh). The e2e harness uses it.
-- **Bundle:** measure the headroom; the decision on the route budget, if one is needed.
-- **Tests (PGlite):**
-  - the services;
-  - the ledger's invariants after each kind of change: create; change the amount, payers or shares; delete; restore; pay;
-  - the first access matrix;
-  - `mergePerson`, reference by reference;
-  - the seed and the claim;
-  - quotas.
-- **Decisions:**
-  - Kharcha as a layer;
-  - people as the identity;
-  - the ledger and per-currency money.
+- **Layer:** `kharcha` in `LAYERS`, `SPECS.kharcha` (its paths, `db:seed-kharcha`, the temporary knip entry `src/functions/kharcha/*.ts`), `--keep-kharcha` in CI's matrix; `src/server/db/quota.ts` is shared with `apps` and `taskline`.
+- **Core:** `src/lib/i18n/currency.ts` (`CURRENCIES`: 25 codes, `minorDigits` from Intl, `toMinor`, `toMajor`, `formatMoney`, `money(code)`), `NE_CURRENCY_SYMBOLS` for every offered currency CLDR `ne` has a symbol for (checked against Node's ICU). `formatMonthShort` and `formatDayMonth` were already outside the apps markers.
+- **Tables** (migration `0049_kharcha_foundation`): the twelve planned, with two changes from 14.5: `kh_expense_share` keeps everyone a split names, even at zero, and `kh_activity` has `subject_id` (who it was done to) so merging people is an indexed update.
+- **Money core** (`src/features/kharcha/money/`): seven split methods with largest-remainder rounding through BigInt, the itemized presets (10% service, then 13% VAT), each expense's and payment's debts, balances, simplify, and the split's problem in words.
+- **Server** (`src/server/kharcha/`): `people.ts` (`ensurePerson`, which hands a verified account the person waiting under its address; `mergePerson`), `access.ts` (the resolvers and refusals with reasons), `ledger.ts` (`writeLedger` and the balance sums), `activity.ts`, `rev.ts`, `rules.ts`, `settings.ts` (quotas under `lockQuota`, smaller for guests; offered currencies), `forget.ts` (an account or an expired guest going: what was theirs alone goes, what they shared stays without the account), and services for the caller, expenses, payments, groups and members, and friends. Five functions files (25 functions) behind `requireKharchaUser` → `withKharchaServices`, with Storybook mocks and sample data.
+- **Core changes outside the layer:** `GuestData.forget` (an owner whose rows don't cascade from the user), called by `deleteExpiredGuests`; `forgetUser` in Better Auth's `beforeDelete` (in markers); `kharcha:read` and `kharcha:configure`, their labels, and `kharcha.settings.update` with its target for Task 96.
+- **Guests:** `KHARCHA_GUEST_DATA`, scoped to `kharcha` (0236): 49 expenses (three months of spending with a refund, a coffee with Asha, the trip's four with an itemized dinner and a split by shares, the flat's rent, internet and electricity by percent), one payment, in the guest's language, written in bulk from the money core; the claim is `mergePerson`.
+- **Dev data:** `pnpm db:seed-kharcha` (`scripts/lib/kharcha-seed.ts`): asha@, bikash@ and sita@kharcha.example.com share "Pokhara trip". The e2e harness's `prepareDatabase` seeds it, so a fresh `dev:local` database has it too.
+- **Bundle:** the entry is 295.0 kB (294.6 after Part 7); the budget rises to 300 kB for Kharcha's routes (0279), and `check-bundle.ts` no longer counts Sentry's per-chunk release snippet, which a `.env` with `SENTRY_*` adds (309.9 kB for the same build).
+- **Tests:** 71 new: `tests/unit/kharcha-money.test.ts` (21: each method, rounding, debts, balances, simplify, properties over 2,000 random expenses and 200 random ledgers), `tests/unit/currency.test.ts` (6), `tests/server/kharcha.test.ts` (12: the services, `expectLedgerConsistent` after every kind of change, versions, the trash, quotas, currencies), `kharcha-access.test.ts` (25 operations × 7 callers), `kharcha-people.test.ts` (3: `ensurePerson`, `mergePerson` checked against every foreign key to `kh_person` from the catalogue, an account going), `kharcha-seed.test.ts` (4: the guest's sample, the claim, expiry, the demo accounts); the guard test's `KHARCHA_FUNCTIONS`.
+- **Gates:** typecheck, check, knip, `pnpm test` (196 files, 2,287 tests, `--maxWorkers=4`), build and the bundle check, `build-storybook`, `i18n:check` green. e2e: the harness (now seeding Kharcha's demo accounts) with the guest and health flows, 4 of 4; the task has no pages. `test:storybook` was stopped by Claude Code's low-memory reaper (run in the background); no story or story-imported code changed.
+- **For the owner:**
+  - run `pnpm db:migrate` on Neon (`0049_kharcha_foundation`);
+  - rerun `pnpm test:storybook --maxWorkers=4` if you want that gate confirmed before Task 87.
 
 ### Task 87: Design direction (planned)
 

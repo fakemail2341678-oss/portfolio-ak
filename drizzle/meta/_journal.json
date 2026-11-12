@@ -344,6 +344,13 @@
 			"when": 1794290827229,
 			"tag": "0048_chaal_curation",
 			"breakpoints": true
+		},
+		{
+			"idx": 49,
+			"version": "7",
+			"when": 1794457643154,
+			"tag": "0049_kharcha_foundation",
+			"breakpoints": true
 		}
 	]
 }

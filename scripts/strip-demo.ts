@@ -1,5 +1,5 @@
 /**
- * pnpm strip-demo [--keep-portfolio] [--keep-apps] [--keep-taskline] [--keep-parda] [--keep-chaal] [--no-build]
+ * pnpm strip-demo [--keep-portfolio] [--keep-apps] [--keep-taskline] [--keep-parda] [--keep-chaal] [--keep-kharcha] [--no-build]
  *
  * Turns the template into a clean starting point (docs/guides/new-project.md) by
  * removing layers, each whole: its files, its marked code in shared files, its
@@ -14,6 +14,7 @@
  * - `taskline`: Taskline, the project management app at /app/taskline (Part 5, from Task 46).
  * - `parda`: Parda, the movie and series product at /app/parda (Part 6, from Task 59).
  * - `chaal`: Chaal, the chess app on Lichess at /app/chaal (Part 7, from Task 71).
+ * - `kharcha`: Kharcha, the expense tracker and bill splitter at /app/kharcha (Part 8, from Task 86).
  *
  * Markers: scripts/lib/strip-markers.ts. Paths per layer are data below, so a
  * task that adds to a layer appends to its lists. Then it removes dependencies
@@ -346,11 +347,39 @@ const SPECS: Record<Layer, LayerSpec> = {
 		knipEntries: [],
 		schema: [],
 	},
+	kharcha: {
+		// Kharcha (Part 8, decisions 0277 and 0278). Its schema is a folder, removed with `paths`.
+		sentinel: "src/server/kharcha",
+		paths: [
+			"src/features/kharcha",
+			"src/server/kharcha",
+			"src/functions/kharcha",
+			"src/middleware/kharcha.ts",
+			"src/server/db/schema/kharcha",
+			".storybook/mocks/functions/kharcha",
+			".storybook/mocks/kharcha.ts",
+			"scripts/seed-kharcha.ts",
+			"scripts/lib/kharcha-seed.ts",
+			"tests/unit/kharcha-money.test.ts",
+			"tests/server/kharcha.test.ts",
+			"tests/server/kharcha-helpers.ts",
+			"tests/server/kharcha-access.test.ts",
+			"tests/server/kharcha-people.test.ts",
+			"tests/server/kharcha-seed.test.ts",
+			"docs/guides/kharcha.md",
+		],
+		packageScripts: ["db:seed-kharcha"],
+		crons: [],
+		// Its functions have no pages until Task 88; the entry goes when they do.
+		knipEntries: ["src/functions/kharcha/*.ts"],
+		schema: [],
+	},
 };
 
 /** Files more than one layer uses: removed only when every one of those layers goes. */
 const SHARED: ReadonlyArray<{ paths: string[]; layers: Layer[] }> = [
-	{ paths: ["src/components/forms/csv-source.tsx", "src/server/db/quota.ts"], layers: ["apps", "taskline"] },
+	{ paths: ["src/components/forms/csv-source.tsx"], layers: ["apps", "taskline"] },
+	{ paths: ["src/server/db/quota.ts"], layers: ["apps", "taskline", "kharcha"] },
 	{ paths: [".impeccable/config.json"], layers: ["portfolio", "parda"] },
 	{ paths: ["src/components/data-display/scroll-region.tsx"], layers: ["taskline", "parda", "chaal"] },
 	// The horizontal rail (Task 61) is core, but only Parda uses it so far.

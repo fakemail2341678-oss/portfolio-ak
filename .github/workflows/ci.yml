@@ -120,7 +120,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        keep: ["", "--keep-apps", "--keep-portfolio", "--keep-taskline", "--keep-parda", "--keep-chaal"]
+        keep: ["", "--keep-apps", "--keep-portfolio", "--keep-taskline", "--keep-parda", "--keep-chaal", "--keep-kharcha"]
     steps:
       - uses: actions/checkout@v5
       - uses: pnpm/action-setup@v4

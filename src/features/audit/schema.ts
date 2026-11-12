@@ -126,6 +126,7 @@ export const AUDIT_ACTIONS = [
 	"chaal.home.update",
 	"chaal.announcement",
 	// chaal:end
+	"kharcha.settings.update", // @kharcha
 	// @new-feature:audit-actions
 ] as const;
 export type AuditAction = (typeof AUDIT_ACTIONS)[number];
@@ -173,6 +174,7 @@ export const AUDIT_TARGETS = [
 	"chaal-featured",
 	"chaal-home",
 	// chaal:end
+	"kharcha-settings", // @kharcha
 	// @new-feature:audit-targets
 ] as const;
 export type AuditTarget = (typeof AUDIT_TARGETS)[number];

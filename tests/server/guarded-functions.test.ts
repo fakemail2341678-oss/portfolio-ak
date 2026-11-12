@@ -594,6 +594,43 @@ const CHAAL_FUNCTIONS: Record<string, ReadonlyArray<string>> = {
 };
 // chaal:end
 
+// kharcha:start
+/**
+ * Kharcha's app files (docs/guides/kharcha.md, decision 0277): every function runs
+ * `requireKharchaUser` then `withKharchaServices` first (guests have sample data), and its
+ * service resolves the expense, payment, group or friend before anything else (the access
+ * matrix: tests/server/kharcha-access.test.ts).
+ */
+const KHARCHA_FUNCTIONS: Record<string, ReadonlyArray<string>> = {
+	"kharcha/me.ts": ["getKharchaMe", "getKharchaRev", "getKharchaBalances"],
+	"kharcha/expenses.ts": [
+		"getKharchaExpense",
+		"createKharchaExpense",
+		"updateKharchaExpense",
+		"deleteKharchaExpense",
+		"restoreKharchaExpense",
+	],
+	"kharcha/payments.ts": [
+		"getKharchaPayment",
+		"createKharchaPayment",
+		"updateKharchaPayment",
+		"deleteKharchaPayment",
+		"restoreKharchaPayment",
+	],
+	"kharcha/groups.ts": [
+		"listKharchaGroups",
+		"getKharchaGroup",
+		"createKharchaGroup",
+		"updateKharchaGroup",
+		"archiveKharchaGroup",
+		"addKharchaGroupMember",
+		"removeKharchaGroupMember",
+		"leaveKharchaGroup",
+	],
+	"kharcha/friends.ts": ["listKharchaFriends", "getKharchaFriend", "addKharchaFriend", "updateKharchaFriend"],
+};
+// kharcha:end
+
 /**
  * Files whose functions deliberately don't require a permission, with why, and
  * the functions they hold (adding one to these files also needs a look here).
@@ -715,6 +752,7 @@ describe("guarded server functions", () => {
 			...Object.keys(PARDA_FUNCTIONS), // @parda
 			...Object.keys(CHAAL_PUBLIC_FUNCTIONS), // @chaal
 			...Object.keys(CHAAL_FUNCTIONS), // @chaal
+			...Object.keys(KHARCHA_FUNCTIONS), // @kharcha
 		];
 		expect(files.filter((file) => !declared.includes(file))).toEqual([]);
 		expect(declared.filter((file) => !files.includes(file))).toEqual([]);
@@ -819,6 +857,20 @@ describe("guarded server functions", () => {
 		});
 	}
 	// chaal:end
+
+	// kharcha:start
+	for (const [file, expected] of Object.entries(KHARCHA_FUNCTIONS)) {
+		it(`every function in ${file} runs requireKharchaUser and withKharchaServices first`, () => {
+			const functions = serverFunctions(file);
+			expect(functions.map((fn) => fn.name)).toEqual(expected);
+			for (const { definition } of functions) {
+				expect(definition).toMatch(
+					/= createServerFn\(\{ method: "(GET|POST)" \}\)\s*\.middleware\(\[requireKharchaUser, withKharchaServices\]\)/,
+				);
+			}
+		});
+	}
+	// kharcha:end
 
 	for (const [file, { functions }] of Object.entries(UNGUARDED_FILES)) {
 		it(`${file} holds only its declared functions`, () => {

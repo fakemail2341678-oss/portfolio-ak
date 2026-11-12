@@ -281,6 +281,9 @@ Record every non-obvious choice here: **What**, **Why**, **Alternatives consider
 - [0274](#0274-chaals-admin-ii-the-overview-from-a-daily-rollup-curation-as-one-page-the-home-in-the-admins-order): Chaal's admin II: the overview from a daily rollup, curation as one page, the home in the admin's order
 - [0275](#0275-part-7-reviewed-typed-moves-on-every-board-and-what-the-template-matrix-found): Part 7 reviewed: typed moves on every board, and what the template matrix found
 - [0276](#0276-part-7-measured-task-85): Part 7 measured (Task 85)
+- [0277](#0277-kharcha-is-a-layer-of-its-own-and-people-not-users-are-who-money-is-owed-to): Kharcha is a layer of its own, and people, not users, are who money is owed to
+- [0278](#0278-kharchas-money-integer-minor-units-per-currency-exact-splits-and-a-ledger-every-balance-sums): Kharcha's money: integer minor units per currency, exact splits, and a ledger every balance sums
+- [0279](#0279-the-entry-budget-rises-to-300-kb-for-kharchas-routes-and-sentrys-release-snippet-isnt-counted): The entry budget rises to 300 kB for Kharcha's routes, and Sentry's release snippet isn't counted
 </details>
 
 ---
@@ -3915,3 +3918,47 @@ Measured on the owner's Windows machine (Node 24.11, 12 threads, 11.7 GB), 2026-
 - **`pnpm test:e2e`,** the full suite: 3,443 passed and 1 flaky in 65.7 min (2 workers). The flaky one was Chaal's team flow (0275). After the fixes, Chaal's flows passed 63 of 63 (the keyboard flows included) and the review of its game, local and puzzle pages 108 of 108.
 - **The rest:** `pnpm test` 190 files and 2,210 tests, run with `--maxWorkers=4`: the default ran this machine out of memory twice with nothing else open. Storybook 140 files, 693 of 694: a core primitive's menu ("UI/Primitives", Overlays) wasn't visible yet under load and passes alone. After the finish review's fixes, Chaal's flows 63 of 63, the review of the changed pages 252 of 252 and Chaal's stories 142 of 142.
 - **Template matrix:** see 0275.
+
+## 0277: Kharcha is a layer of its own, and people, not users, are who money is owed to
+
+**What** (Part 8, Task 86): Kharcha, the expense tracker and bill splitter, is a removable layer `kharcha` at `/app/kharcha` (tables `kh_*`, `src/{features,server,functions}/kharcha`, `src/middleware/kharcha.ts`, `--keep-kharcha`), built like Taskline (0208) and importing nothing from the other layers. Its identity is `kh_person`: a user (`user_id`, unique, set null when the account goes) or a contact somebody added (a name, perhaps an address). Expenses, shares, payments, members, friends and history all point at people.
+- **One person per address** (`email` unique, lowercase): two users who add the same friend share them, and the friend's verified account takes that person over on first use (`ensurePerson`). A contact with a name only is private to its creator. An unverified account or a guest never claims an address.
+- **`mergePerson(tx, from, to)`** turns two people into one in one transaction: payers and shares add up where both were on an expense (its split then becomes the exact shares it gave), a debt or a payment between the two is gone, memberships keep the owner's role and the earlier joining, and the person who stays keeps their own nicknames, account and address. It serves the guest claim now, and adding an address to a contact and joining in Task 90. Its test checks every column that points at `kh_person`, read from the database's catalogue, so a new table can't be forgotten.
+- **Access** (`src/server/kharcha/access.ts`): resolvers run first in every service. Not theirs to see: NOT_FOUND. Theirs to see but not change: FORBIDDEN with a reason. A personal or shared expense is everything to the people on it; a group's expenses and payments are everything to its current members (removing and archiving are the owner's); a former member reads what was there when they left (`left_at` and `created_at` both from the database's clock) and changes nothing. Admins see counts only (0186): `kharcha:read` opens no one's data.
+- **Leaving needs a zero balance,** and so does removing. A change to an old expense or payment that would leave a former member owing or owed is refused (add them back first).
+- **Guests** started in Kharcha get sample data scoped to it (`guest_scope`, 0236): three months of spending, three placeholder friends, two groups, one payment, in their language. Their Kharcha is a closed world: names only, no invites. The claim is `mergePerson`. Because people can be on other people's expenses, nothing cascades from the user: an expired guest's rows go through `GuestData.forget` (new, optional) before the guest is deleted, and an account's go through `forgetUser` in Better Auth's `beforeDelete`. What was theirs alone goes; what they shared stays under their name without the account, so the others' balances don't move.
+
+**Why:** a balance with a friend has to exist before the friend has an account, and must not change when one side's account goes. Users as the identity would need a placeholder user per contact, or two kinds of foreign key everywhere. Taskline's members (0203) solved the same problem inside a workspace; people solve it across the whole app.
+
+**Alternatives considered:**
+- **Users as the identity, with "pending" users for contacts:** Better Auth would own rows that can't sign in, and every count of users would need a filter.
+- **A person per (creator, contact):** two friends adding the same address would see different balances with them, and the friend joining would have to merge many people at once.
+- **Deleting shared expenses with the account:** the others' balances would change under them. Keeping the person without the account keeps the history true.
+- **Cascading Kharcha's rows from `user_id`:** would delete the person other people's expenses point at.
+
+## 0278: Kharcha's money: integer minor units per currency, exact splits, and a ledger every balance sums
+
+**What** (Task 86): the money core in `src/features/kharcha/money/` is pure, isomorphic and imports nothing at run time (the seed script loads it with Node as it is).
+- **Amounts** are integer minor units of their own currency. `minorDigits` reads a currency's digits from Intl (JPY 0, NPR 2, KWD 3), in the new core module `src/lib/i18n/currency.ts` (`CURRENCIES`, `toMinor`, `toMajor`, `formatMoney`, and `money(code)`, a Zod helper that refuses more decimals than the currency has). `NE_CURRENCY_SYMBOLS` covers every offered currency CLDR `ne` has a symbol for, checked against Node's full ICU.
+- **Splits** (`split.ts`): equal, exact, percent (basis points), shares (weights), adjustment, itemized (lines shared equally by who had them, the service charge and VAT spread in proportion; presets 10% and 13% on top), full. Every method gives shares that add up to the amount: the floor of each part, then the units left to the largest remainders, ties to whoever was entered first. Products go through BigInt, so 99,999,999,999 paisa × 9,999 is exact. Everyone a split names keeps a share, even of zero, so an expense's people are its payers and its shares.
+- **The ledger** (`kh_ledger`, written only by `writeLedger`): an expense's debts come from each person's net (paid minus owed), debtors matched to creditors in entry order (exact in integers; with one payer simply "each owes the payer"). A refund runs the other way. A payment from X to Y writes "Y owes X". Rows are rewritten on every edit, go to the trash with their source and come back with it. Balances are sums per pair, per group and overall, per currency; nothing is converted. A payment in another currency notes what changed hands and the rate as typed (`numeric`, text in TypeScript), and settles the debt in the debt's own currency.
+- **Simplify** suggests, per currency, the largest debtor paying the largest creditor until everyone is settled: at most n − 1 payments. Records never change.
+- **Tests:** unit tests per method, and property tests over 2,000 random expenses (a seeded generator, no new dependency): shares and payers add up, debts equal each person's net, the same input gives the same output, the nets of any mix of expenses and payments sum to zero, and simplify's payments settle them. `expectLedgerConsistent` (tests/server/kharcha-helpers.ts) checks the stored ledger against the money core after every kind of change the services make.
+
+**Why:** shared money has to add up to the paisa for everyone who looks at it, on any screen, after any order of edits. Integers and one deterministic rounding make every client and the server agree; a ledger of debts makes a balance a sum, so no page recomputes splits.
+
+**Alternatives considered:**
+- **Balances as stored running totals:** fast to read, but every edit, delete and restore would have to adjust them exactly, and a bug would stay forever. The ledger is rewritten from its source, so a fix heals it.
+- **Decimals (`numeric`) for amounts:** exact too, but JSON and JavaScript turn them into floats or strings at every boundary.
+- **Converting to a home currency:** needs a rate feed (out of scope, PLAN 14.2) and makes a balance change when nobody did anything.
+- **fast-check for the property tests:** a dependency for one file; a 15-line seeded generator replays a failure just as well.
+
+## 0279: The entry budget rises to 300 kB for Kharcha's routes, and Sentry's release snippet isn't counted
+
+**What** (Task 86): `ENTRY_BUDGET_KB` goes from 295 to 300 kB. Part 7 left the entry at 294.6 kB (0276); Kharcha's permissions, audit labels and the wider `NE_CURRENCY_SYMBOLS` took it to 295.0. `scripts/check-bundle.ts` also leaves out the release snippet Sentry's build plugin puts at the top of every chunk: a local `.env` with `SENTRY_AUTH_TOKEN`, `SENTRY_ORG` and `SENTRY_PROJECT` turns the plugin on, and the same build then read 309.9 kB (about 0.2 kB gzip on each of the entry's 70 chunks).
+
+**Why:** PLAN 14.4 counts about 16 route files for Kharcha (about 0.3 kB each in every page, 0151), less Expenses' 3 in Task 95: about 4 kB. Raising the budget mid-part and trimming at the wrap-up (Task 97) is how Parts 6 and 7 did it (0235, 0240, 0260, 0270). The snippet isn't the app's code and only some builds have it; the budget measures the app.
+
+**Alternatives considered:**
+- **Splitting route definitions out of the entry now:** the lasting fix, but it touches every layer's routes; it belongs to a wrap-up's trim, not to a task with no pages.
+- **Building without the Sentry variables for the check:** works, but anyone with such a `.env` would see a false failure first.

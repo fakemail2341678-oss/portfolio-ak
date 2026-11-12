@@ -10,6 +10,7 @@ import { drizzle } from "drizzle-orm/node-postgres";
 import { migrate } from "drizzle-orm/node-postgres/migrator";
 import pg from "pg";
 import { type DemoQuery, seedDemo } from "../../scripts/lib/demo-data.ts";
+import { seedKharcha } from "../../scripts/lib/kharcha-seed.ts"; // @kharcha
 import { seedPortfolio } from "../../scripts/lib/portfolio-seed.ts"; // @portfolio
 import { seedTaskline } from "../../scripts/lib/taskline-seed.ts"; // @taskline
 import { E2E } from "./config.ts";
@@ -51,6 +52,8 @@ export async function prepareDatabase(
 	await seedDemo(query, { passwordHash });
 	// Taskline's demo team (asha@… and the rest, with the same password; the admin joins it too).
 	await seedTaskline(query, { passwordHash }); // @taskline
+	// Kharcha's demo accounts (asha@kharcha… and two more, with the same password), who share a group.
+	await seedKharcha(query, { passwordHash }); // @kharcha
 	await query("commit");
 	return { query, close: () => client.end() };
 }

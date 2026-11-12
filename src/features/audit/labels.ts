@@ -119,6 +119,7 @@ export const AUDIT_ACTION_LABELS: Record<AuditAction, () => string> = {
 	"chaal.home.update": m.audit_action_chaal_home_update,
 	"chaal.announcement": m.audit_action_chaal_announcement,
 	// chaal:end
+	"kharcha.settings.update": m.audit_action_kharcha_settings_update, // @kharcha
 	// @new-feature:audit-action-labels
 };
 
@@ -165,6 +166,7 @@ export const AUDIT_TARGET_LABELS: Record<AuditTarget, () => string> = {
 	"chaal-featured": m.audit_target_chaal_featured,
 	"chaal-home": m.audit_target_chaal_home,
 	// chaal:end
+	"kharcha-settings": m.audit_target_kharcha_settings, // @kharcha
 	// @new-feature:audit-target-labels
 };
 

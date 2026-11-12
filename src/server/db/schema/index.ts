@@ -12,6 +12,7 @@
  * - taskline/*.ts: Taskline, the project management app at /app/taskline (the `taskline` layer).
  * - parda/*.ts: Parda, the streaming product at /app/parda (the `parda` layer).
  * - chaal/*.ts: Chaal, the chess app on Lichess at /app/chaal (the `chaal` layer).
+ * - kharcha/*.ts: Kharcha, the expense tracker and bill splitter at /app/kharcha (the `kharcha` layer).
  * - columns.ts: column helpers (localized text), no tables.
  *
  * `pnpm new:feature` adds its table's file above the marker line.
@@ -34,6 +35,13 @@ export * from "./chaal/local-game"; // @chaal
 export * from "./chaal/preference"; // @chaal
 export * from "./chaal/puzzle-attempt"; // @chaal
 export * from "./chaal/settings"; // @chaal
+export * from "./kharcha/activity"; // @kharcha
+export * from "./kharcha/expense"; // @kharcha
+export * from "./kharcha/group"; // @kharcha
+export * from "./kharcha/ledger"; // @kharcha
+export * from "./kharcha/payment"; // @kharcha
+export * from "./kharcha/person"; // @kharcha
+export * from "./kharcha/settings"; // @kharcha
 export * from "./parda/alerts"; // @parda
 export * from "./parda/catalog"; // @parda
 export * from "./parda/curation"; // @parda
