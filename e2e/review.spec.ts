@@ -47,6 +47,11 @@ async function resolvePath(page: ReviewedPage, harness: Harness) {
 		return page.route.replace("$id", await harness.portfolioId("post", "server-render-everything"));
 	}
 	// portfolio:end
+	// kharcha:start
+	if (page.params.from === "kharcha-expense-id") {
+		return page.route.replace("$expenseId", await harness.kharchaExpenseId(E2E.users.kharcha.email));
+	}
+	// kharcha:end
 	// taskline:start
 	if (page.params.from === "taskline-project-id") {
 		return page.route.replace("$id", await harness.tasklineProjectId("WEB"));

@@ -1,12 +1,15 @@
 import { formOptions } from "@tanstack/react-form";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useRef } from "react";
 import { toast } from "sonner";
 import { z } from "zod";
 import { FormDialog } from "@/components/dialogs/form-dialog";
 import { formValidators, handleSaveError, useAppForm } from "@/components/forms";
+import type { ImageAsset } from "@/features/attachments/schema";
 import { CURRENCIES, currencyLabel } from "@/lib/i18n/currency";
 import { email, required } from "@/lib/validation";
 import { m } from "@/paraglide/messages";
+import { ReceiptsField } from "../expenses/receipts-field";
 import { kharchaMutations } from "../queries";
 import { NAME_MAX } from "../schema";
 import { GROUP_KINDS, type GroupKind, type KharchaMe } from "../types";
@@ -32,15 +35,70 @@ export default function CreateDialog({
 	userId,
 	onClose,
 }: {
-	action: CreateAction;
+	action: Exclude<CreateAction, "expense">;
 	me: KharchaMe;
 	userId: string;
 	onClose: () => void;
 }) {
+	if (action === "receipt") return <AddReceiptDialog me={me} userId={userId} onClose={onClose} />;
 	return action === "friend" ? (
 		<AddFriendDialog me={me} userId={userId} onClose={onClose} />
 	) : (
 		<NewGroupDialog me={me} userId={userId} onClose={onClose} />
+	);
+}
+
+/**
+ * "Add a receipt" (Task 89): upload now, add the details later. The receipts wait as a
+ * draft, listed on Home, until an expense is made from them.
+ */
+function AddReceiptDialog({ me, userId, onClose }: { me: KharchaMe; userId: string; onClose: () => void }) {
+	const queryClient = useQueryClient();
+	const save = useMutation(kharchaMutations.createDraft(queryClient, userId));
+	const form = useAppForm({
+		...formOptions({ defaultValues: { receipts: [] as ImageAsset[] } }),
+		onSubmit: async ({ value, formApi }) => {
+			if (busy.current) {
+				toast.error(m.kharcha_receipts_wait());
+				return;
+			}
+			if (value.receipts.length === 0) {
+				toast.error(m.kharcha_receipt_draft_empty());
+				return;
+			}
+			try {
+				await save.mutateAsync(value.receipts.map((receipt) => receipt.id));
+				toast.success(m.kharcha_receipt_draft_saved());
+				onClose();
+			} catch (error) {
+				handleSaveError(formApi, error);
+			}
+		},
+	});
+	const busy = useRef(false);
+	return (
+		<form.AppForm>
+			<FormDialog
+				title={m.kharcha_create_receipt()}
+				description={m.kharcha_receipt_draft_description()}
+				submitLabel={m.kharcha_receipt_draft_submit()}
+				onClose={onClose}
+				data-testid="kharcha-receipt-dialog"
+			>
+				<form.AppField name="receipts">
+					{(field) => (
+						<ReceiptsField
+							value={field.state.value}
+							onChange={(next) => field.handleChange(next)}
+							onBusyChange={(value) => {
+								busy.current = value;
+							}}
+							max={me.receiptsMax}
+						/>
+					)}
+				</form.AppField>
+			</FormDialog>
+		</form.AppForm>
 	);
 }
 

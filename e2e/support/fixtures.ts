@@ -173,6 +173,16 @@ export class Harness {
 
 	// parda:end
 
+	// kharcha:start
+	/** The Kharcha demo account's newest expense of its own, for its page's review. */
+	async kharchaExpenseId(email: string): Promise<string> {
+		const response = await fetch(`${E2E.harnessURL}/e2e/kharcha-expense?email=${encodeURIComponent(email)}`);
+		const row = (await response.json()) as { id?: string };
+		if (!row.id) throw new Error(`no Kharcha expense for ${email}`);
+		return row.id;
+	}
+	// kharcha:end
+
 	// taskline:start
 	/** A team project's id, by key (the old Kanban board URLs redirect by id, decision 0210). */
 	async tasklineProjectId(key: string): Promise<string> {

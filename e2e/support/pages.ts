@@ -34,7 +34,8 @@ export type ReviewedPage = {
 		| { from: "parda"; page: PardaFixturePage } // @parda
 		| { from: "parda-source-id" } // @parda
 		| { from: "parda-party" } // @parda
-		| { from: "parda-curated"; id: "slug" | "billboard" | "collection" }; // @parda
+		| { from: "parda-curated"; id: "slug" | "billboard" | "collection" } // @parda
+		| { from: "kharcha-expense-id" }; // @kharcha
 	/** The concrete path, when it isn't `route` (the not-found page, a fixed `$param`). */
 	path?: string;
 	/** The expected HTTP status when it isn't 200. */
@@ -525,6 +526,13 @@ export const REVIEWED_PAGES: ReadonlyArray<ReviewedPage> = [
 	{ route: "/app/kharcha/home", as: "kharcha" },
 	{ route: "/app/kharcha/home", as: "member", label: "first visit" },
 	{ route: "/app/kharcha/account", as: "kharcha" },
+	// Task 89: Spend, an expense's page, and the four Settings tabs.
+	{ route: "/app/kharcha/spend", as: "kharcha" },
+	{ route: "/app/kharcha/e/$expenseId", as: "kharcha", params: { from: "kharcha-expense-id" } },
+	{ route: "/app/kharcha/settings/$tab", as: "kharcha", path: "/app/kharcha/settings/categories", label: "categories" },
+	{ route: "/app/kharcha/settings/$tab", as: "kharcha", path: "/app/kharcha/settings/tags", label: "tags" },
+	{ route: "/app/kharcha/settings/$tab", as: "kharcha", path: "/app/kharcha/settings/methods", label: "methods" },
+	{ route: "/app/kharcha/settings/$tab", as: "kharcha", path: "/app/kharcha/settings/rules", label: "rules" },
 	// kharcha:end
 	// @new-feature:reviewed-pages
 	// Errors

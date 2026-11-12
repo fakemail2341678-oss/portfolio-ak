@@ -1,15 +1,22 @@
 import { useQuery } from "@tanstack/react-query";
 import { createContext, useContext, useState } from "react";
 import { sessionQueryOptions } from "@/features/auth/queries";
+import type { ExpenseView, ReceiptDraftView } from "../types";
 
-/** What the + menu can start (PLAN 14.5 "UX"): each task adds its own (Add expense in 89, Settle up in 91). */
-export const CREATE_ACTIONS = ["friend", "group"] as const;
+/** What the + menu can start (PLAN 14.5 "UX"): each task adds its own (Settle up in 91). */
+export const CREATE_ACTIONS = ["expense", "receipt", "friend", "group"] as const;
 export type CreateAction = (typeof CREATE_ACTIONS)[number];
+
+/** What the expense dialog opens with: an expense to edit, a receipt draft to fill in, files dropped on the page. */
+export type ExpenseStart = { expense?: ExpenseView; draft?: ReceiptDraftView; files?: ReadonlyArray<File> };
 
 export type KharchaActions = {
 	openPalette: () => void;
 	openShortcuts: () => void;
 	create: (action: CreateAction) => void;
+	/** The expense dialog: a new expense (from a draft or dropped files), or one to edit. */
+	addExpense: (start?: ExpenseStart) => void;
+	editExpense: (expense: ExpenseView) => void;
 };
 
 const noop = () => undefined;
@@ -19,6 +26,8 @@ export const KharchaActionsContext = createContext<KharchaActions>({
 	openPalette: noop,
 	openShortcuts: noop,
 	create: noop,
+	addExpense: noop,
+	editExpense: noop,
 });
 
 export const useKharchaActions = () => useContext(KharchaActionsContext);

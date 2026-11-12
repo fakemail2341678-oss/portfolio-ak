@@ -25,7 +25,8 @@ export const requireKharchaUser = createMiddleware({ type: "function" })
 	});
 
 /**
- * Kharcha's services: `context.db` and `context.user` (from `requireKharchaUser`):
+ * Kharcha's services: `context.db`, `context.user` (from `requireKharchaUser`) and
+ * `context.imageStore` (Cloudinary, for receipts; null when it isn't configured):
  *
  *   createServerFn({ method: "POST" })
  *     .middleware([requireKharchaUser, withKharchaServices])
@@ -35,6 +36,9 @@ export const requireKharchaUser = createMiddleware({ type: "function" })
 export const withKharchaServices = createMiddleware({ type: "function" })
 	.middleware([requireKharchaUser])
 	.server(async ({ next, context }) => {
-		const { db } = await import("@/server/db/client");
-		return next({ context: { db, user: context.kharchaUser } });
+		const [{ db }, { imageStore }] = await Promise.all([
+			import("@/server/db/client"),
+			import("@/server/attachments/store"),
+		]);
+		return next({ context: { db, imageStore, user: context.kharchaUser } });
 	});

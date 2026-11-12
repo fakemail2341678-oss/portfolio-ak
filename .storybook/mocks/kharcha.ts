@@ -1,13 +1,19 @@
+import type { ImageAsset } from "../../src/features/attachments/schema";
 import type {
+	ExpenseDetail,
 	ExpenseView,
 	FriendView,
 	GroupSummary,
 	GroupView,
 	KharchaBalances,
 	KharchaHome,
+	KharchaLists,
 	KharchaMe,
 	KharchaPerson,
+	MerchantSuggestion,
 	PaymentView,
+	ReceiptDraftView,
+	SpendPage,
 } from "../../src/features/kharcha/types";
 import type { Session } from "../../src/lib/session";
 
@@ -44,6 +50,7 @@ export const sampleKharchaMe: KharchaMe = {
 	},
 	today: "2026-11-12",
 	currencies: ["NPR", "INR", "USD"],
+	receiptsMax: 10,
 	rev: 1,
 	isGuest: false,
 };
@@ -144,6 +151,233 @@ export const sampleKharchaExpense: ExpenseView = {
 	createdAt: "2026-10-04T08:00:00.000Z",
 	updatedAt: "2026-10-04T08:00:00.000Z",
 	can,
+	mine: { categoryId: "c-travel", tagIds: ["t-pokhara"], methodId: null, duplicateOk: false },
+	category: { id: "c-travel", name: "Travel", icon: "plane", color: "teal" },
+	tags: [{ id: "t-pokhara", name: "pokhara" }],
+	method: null,
+	receipts: [],
+	fixes: [],
+	duplicates: [],
+};
+
+/** A receipt as the server describes one: an SVG stands in for Cloudinary's image (stories never call it). */
+const receiptImage = (id: string, format = "jpg"): ImageAsset => {
+	const svg = `data:image/svg+xml,${encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 3 4"><rect width="3" height="4" fill="#efe6d2"/><path d="M.5 1h2M.5 1.6h1.6M.5 2.2h2" stroke="#8a7a5c" stroke-width=".12"/></svg>')}`;
+	const image = { src: svg, srcSet: "" };
+	return {
+		id,
+		format,
+		width: 600,
+		height: 800,
+		alt: { en: "", ne: "" },
+		full: image,
+		cover: image,
+		thumb: svg,
+		og: svg,
+		url: svg,
+	};
+};
+
+/** A personal expense with a receipt: the panel's and the page's story. */
+export const sampleKharchaDetail: ExpenseDetail = {
+	...sampleKharchaExpense,
+	id: "e-groceries",
+	groupId: null,
+	title: "Weekly groceries",
+	merchant: "Bhatbhateni",
+	notes: "Rice, lentils, vegetables",
+	amountMinor: 248_050,
+	spentOn: "2026-11-10",
+	split: { method: "full", person: me.id },
+	payers: [{ personId: me.id, amountMinor: 248_050 }],
+	shares: [{ personId: me.id, owedMinor: 248_050 }],
+	people: [me],
+	createdBy: me.id,
+	myShareMinor: 248_050,
+	myPaidMinor: 248_050,
+	version: 2,
+	mine: { categoryId: "c-groceries", tagIds: ["t-home"], methodId: "m-esewa", duplicateOk: false },
+	category: { id: "c-groceries", name: "Groceries", icon: "shopping-basket", color: "green" },
+	tags: [{ id: "t-home", name: "home" }],
+	method: { id: "m-esewa", name: "eSewa" },
+	receipts: [receiptImage("r-1")],
+	fixes: ["duplicate"],
+	duplicates: [{ id: "e-groceries-2", title: "Bhatbhateni Store", spentOn: "2026-11-10" }],
+	activity: [
+		{
+			id: "x-1",
+			kind: "expense.created",
+			at: "2026-11-10T11:20:00.000Z",
+			actor: me,
+			data: { title: "Weekly groceries" },
+		},
+		{
+			id: "x-2",
+			kind: "expense.updated",
+			at: "2026-11-11T09:05:00.000Z",
+			actor: me,
+			data: { field: "amountMinor", from: 238_050, to: 248_050 },
+		},
+		{
+			id: "x-3",
+			kind: "expense.updated",
+			at: "2026-11-11T09:05:00.000Z",
+			actor: me,
+			data: { field: "category", from: null, to: "Groceries" },
+		},
+	],
+};
+
+export const sampleKharchaLists: KharchaLists = {
+	categories: [
+		{
+			id: "c-food",
+			key: "food",
+			name: "Food and drink",
+			icon: "utensils",
+			color: "orange",
+			position: 0,
+			archived: false,
+			used: 12,
+		},
+		{
+			id: "c-groceries",
+			key: "groceries",
+			name: "Groceries",
+			icon: "shopping-basket",
+			color: "green",
+			position: 1,
+			archived: false,
+			used: 9,
+		},
+		{
+			id: "c-transport",
+			key: "transport",
+			name: "Transport",
+			icon: "bus",
+			color: "blue",
+			position: 2,
+			archived: false,
+			used: 7,
+		},
+		{ id: "c-rent", key: "rent", name: "Rent", icon: "house", color: "indigo", position: 3, archived: false, used: 3 },
+		{
+			id: "c-travel",
+			key: "travel",
+			name: "Travel",
+			icon: "plane",
+			color: "teal",
+			position: 4,
+			archived: false,
+			used: 4,
+		},
+		{ id: "c-pets", key: null, name: "Pets", icon: "heart-pulse", color: "pink", position: 5, archived: true, used: 1 },
+	],
+	tags: [
+		{ id: "t-home", name: "home", used: 6 },
+		{ id: "t-pokhara", name: "pokhara", used: 4 },
+		{ id: "t-work", name: "work", used: 0 },
+	],
+	methods: [
+		{ id: "m-cash", name: "Cash", position: 0, archived: false, used: 14 },
+		{ id: "m-card", name: "Card", position: 1, archived: false, used: 3 },
+		{ id: "m-esewa", name: "eSewa", position: 2, archived: false, used: 8 },
+		{ id: "m-khalti", name: "Khalti", position: 3, archived: false, used: 0 },
+	],
+	rules: [
+		{
+			id: "r-bhat",
+			match: "contains",
+			pattern: "Bhatbhateni",
+			categoryId: "c-groceries",
+			tagIds: ["t-home"],
+			methodId: "m-esewa",
+			position: 0,
+		},
+		{
+			id: "r-pathao",
+			match: "equals",
+			pattern: "Pathao",
+			categoryId: "c-transport",
+			tagIds: [],
+			methodId: null,
+			position: 1,
+		},
+	],
+};
+
+export const sampleKharchaMerchants: MerchantSuggestion[] = [
+	{ merchant: "Bhatbhateni", categoryId: "c-groceries", uses: 9 },
+	{ merchant: "Pathao", categoryId: "c-transport", uses: 7 },
+	{ merchant: "Himalayan Java", categoryId: "c-food", uses: 5 },
+];
+
+const spendRow = (
+	id: string,
+	title: string,
+	amountMinor: number,
+	spentOn: string,
+	category: ExpenseView["category"],
+	extra: Partial<SpendPage["items"][number]> = {},
+): SpendPage["items"][number] => ({
+	id,
+	groupId: null,
+	kind: "expense",
+	title,
+	merchant: title,
+	amountMinor,
+	currency: "NPR",
+	spentOn,
+	payers: [{ personId: me.id, amountMinor }],
+	people: [me],
+	myShareMinor: amountMinor,
+	myPaidMinor: amountMinor,
+	category,
+	fixes: category ? [] : ["uncategorized"],
+	receipts: 0,
+	...extra,
+});
+
+export const sampleKharchaSpend: SpendPage = {
+	items: [
+		spendRow("e-groceries", "Weekly groceries", 248_050, "2026-11-10", sampleKharchaDetail.category, {
+			receipts: 1,
+			fixes: ["duplicate"],
+		}),
+		spendRow("e-groceries-2", "Bhatbhateni Store", 248_050, "2026-11-10", null, {
+			fixes: ["uncategorized", "duplicate"],
+		}),
+		spendRow("e-ride", "Pathao", 18_500, "2026-11-09", {
+			id: "c-transport",
+			name: "Transport",
+			icon: "bus",
+			color: "blue",
+		}),
+		spendRow("e-coffee", "Himalayan Java", 42_000, "2026-11-08", {
+			id: "c-food",
+			name: "Food and drink",
+			icon: "utensils",
+			color: "orange",
+		}),
+		spendRow(
+			"e-refund",
+			"Daraz return",
+			120_000,
+			"2026-11-05",
+			{ id: "c-shopping", name: "Shopping", icon: "shopping-bag", color: "pink" },
+			{ kind: "refund" },
+		),
+	],
+	total: 5,
+	page: 1,
+	pageCount: 1,
+	totals: [{ currency: "NPR", amountMinor: 437_100 }],
+};
+
+export const sampleKharchaDraft: ReceiptDraftView = {
+	id: "d-1",
+	createdAt: "2026-11-12T06:30:00.000Z",
+	receipts: [receiptImage("r-draft")],
 };
 
 export const sampleKharchaPayment: PaymentView = {

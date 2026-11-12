@@ -1,4 +1,5 @@
 import { linkOptions } from "@tanstack/react-router";
+import type { SettingsTab } from "./search";
 
 /**
  * Every link into Kharcha (PLAN 14.2, "Name"): pages link through these, so renaming the
@@ -10,6 +11,10 @@ export const kharchaLinks = {
 	signUp: (redirect?: string) => linkOptions({ to: "/app/kharcha/sign-up", search: { redirect } }),
 	home: () => linkOptions({ to: "/app/kharcha/home" }),
 	account: () => linkOptions({ to: "/app/kharcha/account" }),
+	spend: () => linkOptions({ to: "/app/kharcha/spend" }),
+	/** The expense page; over Spend it opens as a panel (a masked route, `spendExpense`). */
+	expense: (expenseId: string) => linkOptions({ to: "/app/kharcha/e/$expenseId", params: { expenseId } }),
+	settings: (tab: SettingsTab) => linkOptions({ to: "/app/kharcha/settings/$tab", params: { tab } }),
 };
 
 /** De-localized paths for redirects and `?redirect=` targets. */

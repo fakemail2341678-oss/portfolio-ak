@@ -3,10 +3,14 @@ import * as expenses from "@/server/kharcha/expenses/service";
 import * as friends from "@/server/kharcha/friends/service";
 import * as groups from "@/server/kharcha/groups/service";
 import * as home from "@/server/kharcha/home/service";
+import * as lists from "@/server/kharcha/lists/service";
 import * as me from "@/server/kharcha/me/service";
 import * as payments from "@/server/kharcha/payments/service";
+import * as receipts from "@/server/kharcha/receipts/service";
+import * as spend from "@/server/kharcha/spend/service";
+import { createFakeCloudinary } from "../utils/fake-cloudinary";
 import { createTestDb } from "../utils/test-db";
-import { caller, code, insertUsers } from "./kharcha-helpers";
+import { caller, code, insertUsers, uploadReceipt } from "./kharcha-helpers";
 
 /**
  * Kharcha's access matrix (decision 0277, the table in docs/guides/kharcha.md "Access"):
@@ -31,10 +35,12 @@ beforeAll(async () => {
 	);
 }, 60_000);
 
+const cloudinary = createFakeCloudinary();
 const as = (id: Caller) =>
 	caller(env.db, id === "admin" ? "staff" : id, {
 		guest: id === "guest",
 		permissions: id === "admin" ? ["kharcha:read", "kharcha:configure"] : [],
+		imageStore: cloudinary.store,
 	});
 const today = "2026-11-12";
 
@@ -48,6 +54,14 @@ type World = {
 	oldExpense: string;
 	newExpense: string;
 	groupPayment: string;
+	/** The owner's own lists (Task 89), an upload of theirs no expense took, and a receipt draft. */
+	category: string;
+	categories: string[];
+	tag: string;
+	method: string;
+	rule: string;
+	upload: string;
+	draft: string;
 };
 let world: World;
 
@@ -134,8 +148,31 @@ async function setUp(): Promise<World> {
 			paidOn: today,
 		})
 	).id;
+	const owned = await lists.getLists(as("owner"));
+	const category = owned.categories[0]?.id ?? "";
+	const method = owned.methods[0]?.id ?? "";
+	const tag = (await lists.createTag(as("owner"), "Owned")).tags[0]?.id ?? "";
+	const rule =
+		(
+			await lists.createRule(as("owner"), {
+				match: "contains",
+				pattern: "Mart",
+				categoryId: category,
+				tagIds: [],
+				methodId: null,
+			})
+		).rules[0]?.id ?? "";
+	const upload = await uploadReceipt(as("owner"), cloudinary);
+	const draft = (await receipts.createDraft(as("owner"), [await uploadReceipt(as("owner"), cloudinary)])).id;
 	return {
 		people: { owner, friend, member, former, spare },
+		category,
+		categories: owned.categories.map((each) => each.id),
+		tag,
+		method,
+		rule,
+		upload,
+		draft,
 		personal,
 		shared,
 		trashed,
@@ -152,6 +189,8 @@ type Operation = { name: string; run: (w: World, by: Caller) => Promise<unknown>
 
 /** Everyone not named gets NOT_FOUND. */
 const only = (expected: Expected): Expected => expected;
+/** Every caller: an operation on their own lists, which everyone has. */
+const everyone = (result = "ok"): Expected => Object.fromEntries(CALLERS.map((by) => [by, result]));
 
 const editFields = (w: World, id: string, people: string[]) => ({
 	expenseId: id,
@@ -312,6 +351,124 @@ const OPERATIONS: Operation[] = [
 		name: "leaveGroup (owing or owed)",
 		run: (w, by) => groups.leaveGroup(as(by), w.group),
 		expect: only({ owner: "FORBIDDEN", member: "FORBIDDEN", former: "FORBIDDEN" }),
+	},
+	// Task 89: the caller's own lists, receipts, Spend and the helpers.
+	{ name: "getLists", run: (_w, by) => lists.getLists(as(by)), expect: everyone() },
+	{ name: "getMerchants", run: (_w, by) => lists.getMerchants(as(by)), expect: everyone() },
+	{
+		name: "listSpend",
+		run: (_w, by) => spend.listSpend(as(by), { q: "", category: [], sort: "-date", page: 1, pageSize: 25 }),
+		expect: everyone(),
+	},
+	{
+		name: "createCategory",
+		run: (_w, by) => lists.createCategory(as(by), { name: "Pets", icon: "gift", color: "pink" }),
+		expect: everyone(),
+	},
+	{
+		name: "updateCategory: the owner's",
+		run: (w, by) =>
+			lists.updateCategory(as(by), { id: w.category, name: "Renamed", icon: "gift", color: "pink", archived: true }),
+		expect: only({ owner: "ok" }),
+	},
+	{
+		name: "deleteCategory: the owner's",
+		run: (w, by) => lists.deleteCategory(as(by), w.category),
+		expect: only({ owner: "ok" }),
+	},
+	{
+		name: "reorderCategories: the owner's",
+		run: (w, by) => lists.reorderCategories(as(by), [...w.categories].reverse()),
+		expect: { ...everyone("CONFLICT"), owner: "ok" },
+	},
+	{ name: "createTag", run: (_w, by) => lists.createTag(as(by), "New"), expect: everyone() },
+	{
+		name: "updateTag: the owner's",
+		run: (w, by) => lists.updateTag(as(by), { id: w.tag, name: "Renamed" }),
+		expect: only({ owner: "ok" }),
+	},
+	{ name: "deleteTag: the owner's", run: (w, by) => lists.deleteTag(as(by), w.tag), expect: only({ owner: "ok" }) },
+	{ name: "createMethod", run: (_w, by) => lists.createMethod(as(by), "Fonepay"), expect: everyone() },
+	{
+		name: "updateMethod: the owner's",
+		run: (w, by) => lists.updateMethod(as(by), { id: w.method, name: "Notes", archived: false }),
+		expect: only({ owner: "ok" }),
+	},
+	{
+		name: "deleteMethod: the owner's",
+		run: (w, by) => lists.deleteMethod(as(by), w.method),
+		expect: only({ owner: "ok" }),
+	},
+	{
+		name: "createRule: with the owner's category",
+		run: (w, by) =>
+			lists.createRule(as(by), {
+				match: "equals",
+				pattern: "Cafe",
+				categoryId: w.category,
+				tagIds: [],
+				methodId: null,
+			}),
+		expect: only({ owner: "ok" }),
+	},
+	{
+		name: "updateRule: the owner's",
+		run: (w, by) =>
+			lists.updateRule(as(by), {
+				id: w.rule,
+				match: "equals",
+				pattern: "Mart",
+				categoryId: null,
+				tagIds: [],
+				methodId: w.method,
+			}),
+		expect: only({ owner: "ok" }),
+	},
+	{ name: "deleteRule: the owner's", run: (w, by) => lists.deleteRule(as(by), w.rule), expect: only({ owner: "ok" }) },
+	{
+		name: "createExpense: with the owner's category",
+		run: (w, by) => expenses.createExpense(as(by), expense({ categoryId: w.category })),
+		expect: only({ owner: "ok" }),
+	},
+	{
+		name: "updateExpense: shared, with the owner's tag",
+		run: (w, by) =>
+			expenses.updateExpense(as(by), {
+				...editFields(w, w.shared, [w.people.owner, w.people.friend]),
+				tagIds: [w.tag],
+			}),
+		// The friend may edit the expense, but the tag is not theirs to use.
+		expect: only({ owner: "ok" }),
+	},
+	{
+		name: "createExpense: with the owner's receipt",
+		run: (w, by) => expenses.createExpense(as(by), expense({ receiptIds: [w.upload] })),
+		expect: { ...everyone("BAD_REQUEST"), owner: "ok" },
+	},
+	{
+		name: "createExpense: from the owner's draft",
+		run: (w, by) => expenses.createExpense(as(by), expense({ draftId: w.draft })),
+		expect: only({ owner: "ok" }),
+	},
+	{
+		name: "createDraft: with the owner's upload",
+		run: (w, by) => receipts.createDraft(as(by), [w.upload]),
+		expect: { ...everyone("BAD_REQUEST"), owner: "ok" },
+	},
+	{
+		name: "deleteDraft: the owner's",
+		run: (w, by) => receipts.deleteDraft(as(by), w.draft),
+		expect: only({ owner: "ok" }),
+	},
+	{
+		name: "setNotDuplicate: shared",
+		run: (w, by) => expenses.setNotDuplicate(as(by), w.shared, true),
+		expect: only({ owner: "ok", friend: "ok" }),
+	},
+	{
+		name: "setNotDuplicate: in the group, before the former member left",
+		run: (w, by) => expenses.setNotDuplicate(as(by), w.oldExpense, true),
+		expect: only({ owner: "ok", member: "ok", former: "ok" }),
 	},
 	{
 		name: "getFriend",

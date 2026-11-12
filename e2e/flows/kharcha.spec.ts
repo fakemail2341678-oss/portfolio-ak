@@ -51,6 +51,58 @@ test.describe("Kharcha", () => {
 		await expect(page.getByTestId("kharcha-home-recent")).toContainText("You added Pemba as a friend");
 	});
 
+	test("a guest adds an expense with a receipt, finds it on Spend and opens it (Task 89)", async ({
+		page,
+		harness,
+	}) => {
+		await harness.resetRateLimits();
+		await open(page, "/app/kharcha");
+		await page.getByTestId("kharcha-try").click();
+		await expect(page).toHaveURL(/\/app\/kharcha\/home$/);
+		await page.getByTestId("kharcha-onboarding").getByRole("button", { name: "Skip" }).click();
+
+		// The + menu's Add expense: the sample's merchant rule fills the category from the merchant.
+		await page.getByTestId("kharcha-new").click();
+		await page.getByTestId("kharcha-create-expense").click();
+		const dialog = page.getByTestId("kharcha-expense-dialog");
+		await dialog.getByRole("textbox", { name: "Amount" }).fill("१,२५०.५०");
+		await dialog.getByRole("combobox", { name: "Merchant" }).fill("Bhatbhateni Supermarket");
+		await expect(dialog.getByRole("combobox", { name: "Category" })).toHaveText("Groceries");
+		await dialog.getByRole("textbox", { name: "Title" }).fill("Rice and lentils");
+		await dialog.getByTestId("kharcha-receipt-input").setInputFiles({
+			name: "receipt.png",
+			mimeType: "image/png",
+			buffer: Buffer.from(
+				"iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==",
+				"base64",
+			),
+		});
+		await expect(dialog.getByRole("button", { name: "Open receipt 1" })).toBeVisible();
+		await dialog.getByRole("button", { name: "Add expense" }).click();
+		await expect(dialog).toBeHidden();
+
+		// Spend: this month, newest first, with its receipt; the row opens the panel over the list.
+		await page.getByTestId("kharcha-rail").getByRole("link", { name: "Spend" }).click();
+		await expect(page).toHaveURL(/\/app\/kharcha\/spend$/);
+		const row = page.getByTestId("kharcha-spend-row").first();
+		await expect(row).toContainText("Rice and lentils");
+		await expect(row).toContainText("1,250.50");
+		await row.getByRole("link", { name: "Rice and lentils" }).click();
+		const panel = page.getByTestId("kharcha-expense-sheet");
+		await expect(panel).toBeVisible();
+		// The address bar shows the expense's own page (a masked route).
+		await expect(page).toHaveURL(/\/app\/kharcha\/e\/[0-9a-f-]{36}$/);
+		await expect(panel).toContainText("Groceries");
+		await expect(panel).toContainText("You added it");
+		await panel.getByRole("button", { name: "Open receipt 1" }).click();
+		await expect(page.getByTestId("kharcha-receipt-viewer")).toBeVisible();
+		await page.keyboard.press("Escape");
+
+		// A reload gives the page itself.
+		await page.reload({ waitUntil: "networkidle" });
+		await expect(page.getByTestId("kharcha-expense-page")).toContainText("Rice and lentils");
+	});
+
 	test("a demo account signs in on Kharcha's page, uses the palette and signs out", async ({
 		page,
 		harness,

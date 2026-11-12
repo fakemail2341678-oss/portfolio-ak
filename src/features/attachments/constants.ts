@@ -51,6 +51,13 @@ export const UPLOAD_RULES = {
 		mimeTypes: [...IMAGE_MIME_TYPES, "application/pdf"],
 	},
 	// taskline:end
+	// kharcha:start
+	/** Kharcha's receipts (Task 89): images and PDFs, on an expense or a receipt draft; any Kharcha user, guests included. */
+	kharcha: {
+		formats: [...IMAGE_FORMATS, "pdf"],
+		mimeTypes: [...IMAGE_MIME_TYPES, "application/pdf"],
+	},
+	// kharcha:end
 } as const satisfies Record<string, UploadRule>;
 export type UploadScope = keyof typeof UPLOAD_RULES;
 export const UPLOAD_SCOPES = Object.keys(UPLOAD_RULES) as [UploadScope, ...UploadScope[]];

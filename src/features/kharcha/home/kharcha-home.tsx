@@ -18,6 +18,7 @@ import { CreateMenu } from "../shell/create-menu";
 import type { Amount, KharchaHome as Home } from "../types";
 import { OnboardingCard } from "./onboarding";
 import { recentSentence } from "./recent-line";
+import { TodoList } from "./todos";
 
 /**
  * Home (PLAN 14.5 "UX"): a to-do list first (each later task adds its kinds), then what the
@@ -75,7 +76,11 @@ export function KharchaHome() {
 				</Sheet>
 				<Sheet className="self-start lg:col-start-1 lg:row-span-2 lg:row-start-1" testId="kharcha-home-todo">
 					<SheetHead title={m.kharcha_home_todo()} count={home.todos.length} />
-					<KharchaEmpty kind="todo" className="border-0 py-10" />
+					{home.todos.length === 0 ? (
+						<KharchaEmpty kind="todo" className="border-0 py-10" />
+					) : (
+						<TodoList todos={home.todos} />
+					)}
 				</Sheet>
 				<Sheet className="self-start lg:col-start-2" testId="kharcha-home-recent">
 					<SheetHead title={m.kharcha_home_recent()} />

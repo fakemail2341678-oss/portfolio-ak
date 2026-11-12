@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { Link, useLocation } from "@tanstack/react-router";
-import { LanguagesIcon, LayoutDashboardIcon, LogOutIcon, UserIcon, UserPlusIcon } from "lucide-react";
+import { LanguagesIcon, LayoutDashboardIcon, LogOutIcon, SettingsIcon, UserIcon, UserPlusIcon } from "lucide-react";
 import { isTheme, THEME_ICONS, THEME_LABELS } from "@/components/layout/theme";
 import {
 	DropdownMenu,
@@ -27,7 +27,7 @@ import type { KharchaPerson } from "../types";
 
 /**
  * The caller's menu (PLAN 14.5 "UX"): their account (a guest is offered sign-up, which keeps
- * their sample data), the other language, the theme, the admin area when they may enter it,
+ * their sample data), their settings (Task 89: categories, tags, methods, rules), the other language, the theme, the admin area when they may enter it,
  * and sign out, back to Kharcha's landing. The trigger is their plate: at the rail's foot on
  * a laptop, in the red top bar on a phone.
  */
@@ -79,6 +79,12 @@ export function KharchaUserMenu({ person, place }: { person: KharchaPerson | und
 							</Link>
 						</DropdownMenuItem>
 					)}
+					<DropdownMenuItem asChild>
+						<Link {...kharchaLinks.settings("categories")} data-testid="nav-settings">
+							<SettingsIcon aria-hidden />
+							{m.kharcha_nav_settings()}
+						</Link>
+					</DropdownMenuItem>
 					{/* A full load: the server renders the other language (like the language switcher). */}
 					<DropdownMenuItem asChild>
 						<a href={localizeHref(location.href, { locale: other })} hrefLang={other}>

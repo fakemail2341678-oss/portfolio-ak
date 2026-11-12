@@ -1,4 +1,4 @@
-import { type LucideIcon, UserPlusIcon, UsersIcon } from "lucide-react";
+import { type LucideIcon, ReceiptTextIcon, ScanLineIcon, UserPlusIcon, UsersIcon } from "lucide-react";
 import type { ReactNode } from "react";
 import {
 	DropdownMenu,
@@ -12,13 +12,15 @@ import { CREATE_ACTIONS, type CreateAction, useKharchaActions } from "./actions"
 
 /** Each action's icon and words: the + menu and the palette list them in this order. */
 export const CREATE_ITEMS: Record<CreateAction, { icon: LucideIcon; label: () => string }> = {
+	expense: { icon: ReceiptTextIcon, label: () => m.kharcha_create_expense() },
+	receipt: { icon: ScanLineIcon, label: () => m.kharcha_create_receipt() },
 	friend: { icon: UserPlusIcon, label: () => m.kharcha_create_friend() },
 	group: { icon: UsersIcon, label: () => m.kharcha_create_group() },
 };
 
 /**
  * The + menu (PLAN 14.5 "UX"): what can be started from anywhere, with what exists so far.
- * Add expense arrives in Task 89, Split a bill and Settle up with theirs. `children` is the
+ * Split a bill and Settle up arrive with theirs (Tasks 90 and 91). `children` is the
  * trigger: Home's button on a laptop, the floating + on a phone.
  */
 export function CreateMenu({

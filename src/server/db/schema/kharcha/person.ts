@@ -82,6 +82,8 @@ export const khProfile = pgTable(
 		/** Set by the admin: this person can't send invites or reminders (Task 96). */
 		invitesBlockedAt: timestamp({ withTimezone: true }),
 		rev: integer().notNull().default(0),
+		/** When their own lists (categories, payment methods) were made from the defaults (Task 89): once. */
+		listsAt: timestamp({ withTimezone: true }),
 		createdAt: timestamp({ withTimezone: true }).defaultNow().notNull(),
 		updatedAt: timestamp({ withTimezone: true })
 			.defaultNow()

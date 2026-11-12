@@ -14,6 +14,7 @@ import { spawn, spawnSync } from "node:child_process";
 import { rmSync } from "node:fs";
 import { createServer } from "node:net";
 import { PGlite } from "@electric-sql/pglite";
+import { FAKE_CLOUDINARY } from "./cloudinary.ts";
 import { E2E } from "./config.ts";
 import { prepareDatabase } from "./database.ts";
 import { serveHarness } from "./inbox.ts";
@@ -126,6 +127,12 @@ const app = spawn(process.execPath, [".output/server/index.mjs"], {
 		EMAIL_FROM: `${E2E.appTitle} <e2e@example.com>`,
 		// No calls to Have I Been Pwned from the suite (tests/server/auth-hardening.test.ts covers it).
 		AUTH_BREACHED_PASSWORD_CHECK: "false",
+		// Uploads go to the harness's stand-in for Cloudinary (Task 89: a receipt in the browser).
+		CLOUDINARY_CLOUD_NAME: FAKE_CLOUDINARY.cloudName,
+		CLOUDINARY_API_KEY: FAKE_CLOUDINARY.apiKey,
+		CLOUDINARY_API_SECRET: FAKE_CLOUDINARY.apiSecret,
+		CLOUDINARY_API_BASE: `${E2E.harnessURL}/cloudinary`,
+		CLOUDINARY_DELIVERY_BASE: `${E2E.harnessURL}/cloudinary-img`,
 		// parda:start
 		// The suite never calls TMDB: the harness serves recorded responses and placeholder images.
 		TMDB_READ_TOKEN: "e2e-token-not-for-production",

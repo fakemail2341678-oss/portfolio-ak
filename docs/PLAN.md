@@ -3741,7 +3741,7 @@ As 12.1, with these differences:
 | 86 | Foundation: the `kharcha` layer, people, the money core (splits, ledger, balances), access, activity, guests | xhigh | Done |
 | 87 | Design direction: UX notes, comps (the owner picks), tokens, brand, the kit | high | Done |
 | 88 | Shell, brand, landing, auth pages, Home, onboarding, the create menu | high | Done |
-| 89 | Expenses and receipts: add and edit, the expense panel, categories, tags, methods, rules, a first Spend list | xhigh | Planned |
+| 89 | Expenses and receipts: add and edit, the expense panel, categories, tags, methods, rules, a first Spend list | xhigh | Done |
 | 90 | Friends, groups and splitting: people, invites and joining, groups, the split editor, threads, freshness | xhigh | Planned |
 | 91 | Balances and settling up: balances everywhere, settle up, simplify, remind | high | Planned |
 | 92 | Conversations, notifications and email: comments, mentions, reactions, unread, digests, the daily job | high | Planned |
@@ -4184,33 +4184,30 @@ Kharcha's data, money core, access and server, tested on PGlite, with no UI; Exp
 
 **For the owner:** run `pnpm db:migrate` on Neon (`0050_kharcha_onboarding`).
 
-### Task 89: Expenses and receipts (planned)
+### Task 89: Expenses and receipts (done)
 
-- **Tables:** `kh_category`, `kh_tag`, `kh_share_tag`, `kh_method`, `kh_receipt_draft`, `kh_merchant_rule`. Each person's categories are seeded from the `kh_settings` defaults on first use.
-- **Add and edit an expense** (a dialog on desktop, full screen on phones), personal only in this task; splitting arrives in 90. Its fields:
-  - amount and currency (Devanagari input), and the date;
-  - the merchant, completed from your history;
-  - title, category, tags, payment method, notes;
-  - receipts;
-  - expense or refund.
-- **The expense page `/e/$expenseId`,** also a masked panel:
-  - details and receipts;
-  - activity (each edit, from → to);
-  - Fix badges;
-  - delete to the trash, and restore.
-- **Receipts:**
-  - Kharcha's `UploadTransport` and an upload scope (`kharcha`: images and PDF, 10 MB), several per expense;
-  - the receipt viewer, camera capture, drop anywhere;
-  - receipt drafts: upload now, add the details later; listed on Home.
-- **Helpers without AI:**
-  - merchant rules (Settings → Rules);
-  - the last category used for a merchant;
-  - possible duplicates: same amount and currency, within a day, a similar merchant; dismissible.
-- **Settings tabs:**
-  - categories: the built-ins and your own, colours, icons, order, archive. Deleting one moves its expenses to uncategorized;
-  - tags; payment methods; rules.
-- **A first `/spend`:** this month by default, newest first, on the URL list contract. Task 93 adds the language and the views.
-- **Tests, stories, review pages;** e2e: a guest adds an expense with a receipt.
+**Done** (decision 0283; the guide's "Lists" and "Expenses, receipts and Spend").
+
+**What changed:**
+- **Tables** (migration `0051_kharcha_expenses`): `kh_category`, `kh_tag`, `kh_method`, `kh_merchant_rule`, `kh_receipt_draft`, `kh_share_tag`; `kh_expense_share.category_id` and `duplicate_ok`, `kh_expense_payer.method_id`, `kh_profile.lists_at`. `kh_settings.categories` holds the default categories (`DEFAULT_CATEGORIES`, en and ne); `DEFAULT_METHODS` are Cash, Card, eSewa, Khalti. New quotas: categories, tags, methods, rules, receipts per expense, drafts (smaller for guests).
+- **Server:** `lists/` (made once per person in the visit's language, CRUD and order for each list, merchants from history, `mergeLists` for `mergePerson`), `receipts/` (the `kharcha` upload scope through Kharcha's own functions, drafts, `linkReceipts`, `takeDraft`), `spend/` (`listSpend`, `spendRows`); the expenses service takes the caller's category, tags, method, receipts and a draft, applies the merchant rule or the last category when they're left out, keeps each person's part through a change of split, flags possible duplicates, and returns the expense with its receipts, fixes and history. Home's to-dos: receipt drafts and possible duplicates. `forgetUsers` removes a leaving account's lists, drafts and the receipts of what it deletes. Two functions files (`lists.ts`: 16, `receipts.ts`: 6) and three more expense functions.
+- **Pages:** `/spend` (this month by default, newest first, search, category, order, pages; the panel over it is `?expense=`, masked as `/e/$expenseId`), `/e/$expenseId`, `/settings/$tab` (categories, tags, methods, rules). Spend joins the rail and tabs; Settings is in the user menu and the palette.
+- **The expense dialog** (lazy; the + menu, `N`, Edit, a draft, files dropped anywhere): full screen on a phone; merchant completion; the rule or last category fills what wasn't chosen; tags typed (new ones made); receipts with progress, camera capture on phones. **The receipt viewer** (lazy): zoom, turn, pages; a PDF opens in a new tab. **Add a receipt** keeps uploads as a draft listed on Home.
+- **Guests:** their lists, a merchant rule and categorized sample spending (one tea left uncategorized); the claim merges lists.
+- **Core:** `TextField` takes `list` (a datalist); `ExpenseCard` takes a `link` title and an `aside`; the e2e harness serves a stand-in for Cloudinary (`e2e/harness/cloudinary.ts`) and the server under test uses it.
+- **Tests:** `tests/server/kharcha-spending.test.ts` (9), 26 new rows in the access matrix (51 operations), the merge test reaching every new foreign key and merging lists, the guard test's two new files; "Kharcha/Expenses" stories (7); e2e: a guest adds an expense with a receipt, finds it on Spend and opens its panel and page; seven new reviewed pages (Spend, an expense, four Settings tabs); 195 `kharcha_*` messages in both languages.
+- **Bundle:** the entry is 297.9 kB of 300 (296.8 before: three route files).
+
+**Deviations:**
+- Built-in categories are stored with the name of the first visit's language, not looked up by key at render time (0283).
+- Private-field history (category, tags, method) is kept only on an expense that is the caller's alone.
+- The receipt's fix badge marks a draft on Home; an expense's badges are "uncategorized" and "duplicate".
+- Spend and Settings render through `SpendView` and `SettingsView` (props), so stories can show them without the route tree.
+- The design pass was the e2e review (axe, overflow, CLS at 3 widths × 2 languages × 2 themes) and four Playwright screenshots (Spend and the panel at 1280, the dialog in Nepali dark at 390, Settings at 768), not a full impeccable critique.
+
+**Gates:** typecheck, check, knip, `i18n:check`, build and the bundle check, `build-storybook` (Kharcha's stories) green. Tests on what changed: the Kharcha server and unit files, the guard, route-SEO, strip-marker, attachments, i18n and form-field tests (12 + 4 files, 253 tests); the Kharcha stories in both Storybook projects (18 each); e2e for Kharcha (the review and flows: 146 passed, then the flows again after a fix: 3 of 3).
+
+**For the owner:** run `pnpm db:migrate` on Neon (`0051_kharcha_expenses`).
 
 ### Task 90: Friends, groups and splitting (planned)
 

@@ -66,6 +66,7 @@ The portfolio's images and PDFs live in a library at `/admin/media` (0177): the 
 - **Server:** `tests/utils/fake-cloudinary.ts` runs the real client over a fake `fetch` that behaves like Cloudinary's API: signed destroy, Admin API with Basic auth, and `put()` standing in for the browser's upload. See `tests/server/attachments.test.ts` (flow, rules, cleanup, the documented signature examples) and `test-crud-*.test.ts`.
 - **Editor:** `tests/components/attachments/image-gallery-field.test.tsx` stubs `XMLHttpRequest`: upload with progress, cancel, discard, concurrent uploads, permissions.
 - **Stories:** `features/attachments/components/attachments.stories.tsx`.
+- **e2e:** the harness serves a stand-in for Cloudinary (`e2e/harness/cloudinary.ts`: the signed direct upload with CORS, the Admin API read, destroy, placeholder delivery); the server under test's `CLOUDINARY_API_BASE` and `CLOUDINARY_DELIVERY_BASE` point at it, so a flow uploads from the browser (Kharcha's receipt, decision 0283).
 
 ## Live example
 

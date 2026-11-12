@@ -11,19 +11,23 @@ import { Money } from "./money";
 
 const nameOf = (people: ReadonlyArray<KharchaPerson>, id: string) => people.find((person) => person.id === id);
 
+/** A link that opens the card's subject, its hit area stretched over the whole card (Spend's rows). */
+export type CardLink = (props: { className: string; children: ReactNode }) => ReactNode;
+
+const STRETCHED =
+	"text-start after:absolute after:inset-0 after:rounded-md focus-visible:outline-none focus-visible:after:ring-2 focus-visible:after:ring-ring";
+
 /**
- * The title of a card: a button when the card opens something (the expense panel), with
- * its hit area stretched over the whole card, so the card is one keyboard stop.
+ * The title of a card: a button when the card opens something (the expense panel), or a
+ * link (`link`: a page, masked as a panel), with its hit area stretched over the whole
+ * card, so the card is one keyboard stop.
  */
-function CardTitle({ children, onOpen }: { children: ReactNode; onOpen?: () => void }) {
+function CardTitle({ children, onOpen, link }: { children: ReactNode; onOpen?: () => void; link?: CardLink }) {
 	const text = <span className="font-semibold">{children}</span>;
+	if (link) return link({ className: STRETCHED, children: text });
 	if (!onOpen) return text;
 	return (
-		<button
-			type="button"
-			onClick={onOpen}
-			className="text-start after:absolute after:inset-0 after:rounded-md focus-visible:outline-none focus-visible:after:ring-2 focus-visible:after:ring-ring"
-		>
+		<button type="button" onClick={onOpen} className={STRETCHED}>
 			{text}
 		</button>
 	);
@@ -73,6 +77,8 @@ export function ExpenseCard({
 	categoryColor,
 	fixes = [],
 	onOpen,
+	link,
+	aside,
 	className,
 }: {
 	expense: CardExpense;
@@ -81,6 +87,10 @@ export function ExpenseCard({
 	fixes?: ReadonlyArray<FixKind>;
 	/** Opens the expense (its panel on a laptop, its page on a phone). */
 	onOpen?: () => void;
+	/** Or a link to it: works without JavaScript. */
+	link?: CardLink;
+	/** In place of what it means for the caller (Spend shows their share instead). */
+	aside?: ReactNode;
 	className?: string;
 }) {
 	const effect = expenseEffect(expense);
@@ -89,7 +99,9 @@ export function ExpenseCard({
 			<CategoryIcon icon={category} {...(categoryColor ? { color: categoryColor } : {})} />
 			<div className="min-w-0">
 				<p className="flex flex-wrap items-center gap-x-2 gap-y-1">
-					<CardTitle {...(onOpen ? { onOpen } : {})}>{expense.title}</CardTitle>
+					<CardTitle {...(onOpen ? { onOpen } : {})} {...(link ? { link } : {})}>
+						{expense.title}
+					</CardTitle>
 					{expense.kind === "refund" ? (
 						<span className="rounded-sm border border-kh-hair px-1.5 text-[0.75rem] text-kh-muted">
 							{m.kharcha_kit_refund()}
@@ -101,21 +113,26 @@ export function ExpenseCard({
 				</p>
 				<p className="truncate text-caption text-kh-muted">{paidLine(expense)}</p>
 			</div>
-			<p className="flex max-w-[11rem] flex-col items-end text-balance text-end sm:max-w-none" data-tone={effect.tone}>
-				{effect.amount > 0 ? (
-					<Money amountMinor={effect.amount} currency={expense.currency} tone={effect.tone} />
-				) : null}
-				<span
-					className={cn(
-						"font-medium text-[0.75rem]",
-						effect.tone === "owed" && "text-kh-owed",
-						effect.tone === "owe" && "text-kh-owe",
-						effect.tone === "muted" && "text-kh-muted",
-					)}
+			{aside ?? (
+				<p
+					className="flex max-w-[11rem] flex-col items-end text-balance text-end sm:max-w-none"
+					data-tone={effect.tone}
 				>
-					{effect.words}
-				</span>
-			</p>
+					{effect.amount > 0 ? (
+						<Money amountMinor={effect.amount} currency={expense.currency} tone={effect.tone} />
+					) : null}
+					<span
+						className={cn(
+							"font-medium text-[0.75rem]",
+							effect.tone === "owed" && "text-kh-owed",
+							effect.tone === "owe" && "text-kh-owe",
+							effect.tone === "muted" && "text-kh-muted",
+						)}
+					>
+						{effect.words}
+					</span>
+				</p>
+			)}
 		</article>
 	);
 }

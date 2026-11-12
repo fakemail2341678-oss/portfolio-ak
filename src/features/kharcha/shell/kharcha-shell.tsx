@@ -1,6 +1,15 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Link, type LinkOptions, useLocation } from "@tanstack/react-router";
-import { HouseIcon, type LucideIcon, PlusIcon, SearchIcon, UserIcon, UserPlusIcon } from "lucide-react";
+import {
+	FileUpIcon,
+	HouseIcon,
+	type LucideIcon,
+	PlusIcon,
+	SearchIcon,
+	UserIcon,
+	UserPlusIcon,
+	WalletIcon,
+} from "lucide-react";
 import { lazy, type ReactNode, Suspense, useEffect, useRef, useState } from "react";
 import { ConfirmProvider } from "@/components/dialogs/confirm";
 import { NavigationProgress } from "@/components/layout/navigation-progress";
@@ -14,19 +23,31 @@ import { KHARCHA_NAME } from "../brand";
 import { KharchaMark, KharchaWordmark } from "../kit/wordmark";
 import { kharchaLinks } from "../links";
 import { kharchaMeQueryOptions, kharchaRevQueryOptions, refreshKharcha } from "../queries";
-import { type CreateAction, InKharchaShell, KharchaActionsContext, useKharchaUserId } from "./actions";
+import {
+	type CreateAction,
+	type ExpenseStart,
+	InKharchaShell,
+	type KharchaActions,
+	KharchaActionsContext,
+	useKharchaUserId,
+} from "./actions";
 import { CreateMenu } from "./create-menu";
 import { KharchaPalette } from "./kharcha-palette";
 import { KharchaUserMenu } from "./kharcha-user-menu";
 import { KharchaShortcutsDialog } from "./shortcuts-dialog";
 
 const CreateDialog = lazy(() => import("./create-dialogs"));
+const ExpenseDialog = lazy(() => import("../expenses/expense-dialog"));
+
+/** The shell's open dialog: one of the + menu's, or the expense dialog with what it starts from. */
+type ShellDialog = { action: Exclude<CreateAction, "expense"> } | ({ action: "expense" } & ExpenseStart);
 
 type NavItem = { key: string; label: () => string; icon: LucideIcon; link: () => LinkOptions };
 
-/** The rail's and the tabs' pages (PLAN 14.5 "UX"): each arrives with its route (Spend in 89, People in 90, Insights in 94). */
+/** The rail's and the tabs' pages (PLAN 14.5 "UX"): each arrives with its route (People in 90, Insights in 94). */
 const NAV: ReadonlyArray<NavItem> = [
 	{ key: "home", label: () => m.kharcha_nav_home(), icon: HouseIcon, link: () => kharchaLinks.home() },
+	{ key: "spend", label: () => m.kharcha_nav_spend(), icon: WalletIcon, link: () => kharchaLinks.spend() },
 ];
 
 /**
@@ -42,17 +63,21 @@ export function KharchaShell({ children }: { children: ReactNode }) {
 	const { data: me } = useQuery({ ...kharchaMeQueryOptions(userId), enabled: Boolean(session) });
 	const [paletteOpen, setPaletteOpen] = useState(false);
 	const [shortcutsOpen, setShortcutsOpen] = useState(false);
-	const [creating, setCreating] = useState<CreateAction | null>(null);
+	const [dialog, setDialog] = useState<ShellDialog | null>(null);
 	useFreshness(session ? userId : "");
+	const actions: KharchaActions = {
+		openPalette: () => setPaletteOpen(true),
+		openShortcuts: () => setShortcutsOpen(true),
+		create: (action) => setDialog({ action }),
+		addExpense: (start = {}) => setDialog({ action: "expense", ...start }),
+		editExpense: (expense) => setDialog({ action: "expense", expense }),
+	};
 	useHotkeys({
 		"mod+k": () => setPaletteOpen((open) => !open),
 		"shift+?": () => setShortcutsOpen(true),
+		n: () => actions.addExpense(),
 	});
-	const actions = {
-		openPalette: () => setPaletteOpen(true),
-		openShortcuts: () => setShortcutsOpen(true),
-		create: setCreating,
-	};
+	const dragging = useDropReceipts((files) => actions.addExpense({ files }), Boolean(me) && dialog === null);
 	const guest = session?.isAnonymous === true;
 	return (
 		<KharchaActionsContext value={actions}>
@@ -83,17 +108,91 @@ export function KharchaShell({ children }: { children: ReactNode }) {
 					open={paletteOpen}
 					onOpenChange={setPaletteOpen}
 					onOpenShortcuts={actions.openShortcuts}
-					onCreate={setCreating}
+					onCreate={actions.create}
 				/>
 				<KharchaShortcutsDialog open={shortcutsOpen} onOpenChange={setShortcutsOpen} />
-				{creating && me ? (
+				{dialog && me ? (
 					<Suspense fallback={null}>
-						<CreateDialog action={creating} me={me} userId={userId} onClose={() => setCreating(null)} />
+						{dialog.action === "expense" ? (
+							<ExpenseDialog
+								me={me}
+								userId={userId}
+								onClose={() => setDialog(null)}
+								{...(dialog.expense ? { expense: dialog.expense } : {})}
+								{...(dialog.draft ? { draft: dialog.draft } : {})}
+								{...(dialog.files ? { files: dialog.files } : {})}
+							/>
+						) : (
+							<CreateDialog action={dialog.action} me={me} userId={userId} onClose={() => setDialog(null)} />
+						)}
 					</Suspense>
+				) : null}
+				{dragging ? (
+					<div
+						className="pointer-events-none fixed inset-3 z-50 grid place-items-center rounded-xl border-2 border-kh-act border-dashed bg-kh-page/90"
+						aria-hidden
+						data-testid="kharcha-drop"
+					>
+						<p className="flex items-center gap-2 font-semibold text-kh-mark">
+							<FileUpIcon className="size-5" />
+							{m.kharcha_drop_receipt()}
+						</p>
+					</div>
 				) : null}
 			</ConfirmProvider>
 		</KharchaActionsContext>
 	);
+}
+
+/** Whether a drag holds files (not text or a link dragged within the page). */
+const hasFiles = (event: DragEvent) => Array.from(event.dataTransfer?.types ?? []).includes("Files");
+
+/**
+ * Drop a receipt anywhere (PLAN 14.5 "Receipts"): files dragged over any page show where to
+ * drop them, and dropping starts an expense with them. Off while a dialog is open (its own
+ * fields take files) or before the caller is known.
+ */
+function useDropReceipts(onFiles: (files: File[]) => void, enabled: boolean): boolean {
+	const [dragging, setDragging] = useState(false);
+	const latest = useRef(onFiles);
+	latest.current = onFiles;
+	useEffect(() => {
+		if (!enabled) return;
+		let depth = 0;
+		const enter = (event: DragEvent) => {
+			if (!hasFiles(event)) return;
+			depth++;
+			setDragging(true);
+		};
+		const leave = (event: DragEvent) => {
+			if (!hasFiles(event)) return;
+			depth = Math.max(0, depth - 1);
+			if (depth === 0) setDragging(false);
+		};
+		const over = (event: DragEvent) => {
+			if (hasFiles(event)) event.preventDefault();
+		};
+		const drop = (event: DragEvent) => {
+			if (!hasFiles(event)) return;
+			event.preventDefault();
+			depth = 0;
+			setDragging(false);
+			const files = Array.from(event.dataTransfer?.files ?? []);
+			if (files.length > 0) latest.current(files);
+		};
+		window.addEventListener("dragenter", enter);
+		window.addEventListener("dragleave", leave);
+		window.addEventListener("dragover", over);
+		window.addEventListener("drop", drop);
+		return () => {
+			window.removeEventListener("dragenter", enter);
+			window.removeEventListener("dragleave", leave);
+			window.removeEventListener("dragover", over);
+			window.removeEventListener("drop", drop);
+			setDragging(false);
+		};
+	}, [enabled]);
+	return dragging;
 }
 
 /**

@@ -2,17 +2,35 @@ import { eq } from "drizzle-orm";
 import { expect } from "vitest";
 import { expenseDebts, paymentDebt } from "@/features/kharcha/money/ledger";
 import { isAppError } from "@/lib/errors";
+import type { ImageStore } from "@/server/attachments/cloudinary";
 import * as schema from "@/server/db/schema";
 import type { Db } from "@/server/db/types";
 import type { KharchaServices } from "@/server/kharcha/access";
+import * as receipts from "@/server/kharcha/receipts/service";
 
 /** Shared by Kharcha's server tests (docs/guides/kharcha.md "Testing"). */
 
-/** A caller of Kharcha's services. */
-export const caller = (db: Db, id: string, { guest = false, permissions = [] as string[] } = {}): KharchaServices => ({
+/** A caller of Kharcha's services; receipts need an `imageStore` (tests/utils/fake-cloudinary.ts). */
+export const caller = (
+	db: Db,
+	id: string,
+	{ guest = false, permissions = [] as string[], imageStore = null as ImageStore | null } = {},
+): KharchaServices => ({
 	db,
 	user: { id, isGuest: guest, permissions },
+	imageStore,
 });
+
+/** A receipt the caller uploaded (signed, put on the fake Cloudinary, confirmed): its attachment id. */
+export async function uploadReceipt(
+	services: KharchaServices,
+	fake: { put: (publicId: string, asset?: { format?: string }) => void },
+	format = "jpg",
+): Promise<string> {
+	const ticket = await receipts.signReceiptUpload(services);
+	fake.put(ticket.publicId, { format });
+	return (await receipts.confirmReceiptUpload(services, ticket.publicId)).id;
+}
 
 /** Accounts with verified addresses (`<id>@example.com`), and guests. */
 export const insertUsers = (db: Db, ids: ReadonlyArray<string>, guests: ReadonlyArray<string> = []) =>

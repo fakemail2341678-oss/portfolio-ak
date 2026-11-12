@@ -1,6 +1,15 @@
 import { useQuery } from "@tanstack/react-query";
 import { useNavigate, useRouterState } from "@tanstack/react-router";
-import { HouseIcon, KeyboardIcon, LanguagesIcon, LogOutIcon, UserIcon, UserPlusIcon } from "lucide-react";
+import {
+	HouseIcon,
+	KeyboardIcon,
+	LanguagesIcon,
+	LogOutIcon,
+	SettingsIcon,
+	UserIcon,
+	UserPlusIcon,
+	WalletIcon,
+} from "lucide-react";
 import { THEME_ICONS, THEME_LABELS } from "@/components/layout/theme";
 import {
 	CommandDialog,
@@ -90,6 +99,22 @@ export function KharchaPalette({
 					>
 						<HouseIcon aria-hidden />
 						<span>{m.kharcha_nav_home()}</span>
+					</CommandItem>
+					<CommandItem
+						value="go spend"
+						keywords={[m.kharcha_nav_spend()]}
+						onSelect={() => go(() => navigate(kharchaLinks.spend()))}
+					>
+						<WalletIcon aria-hidden />
+						<span>{m.kharcha_nav_spend()}</span>
+					</CommandItem>
+					<CommandItem
+						value="go settings"
+						keywords={[m.kharcha_nav_settings()]}
+						onSelect={() => go(() => navigate(kharchaLinks.settings("categories")))}
+					>
+						<SettingsIcon aria-hidden />
+						<span>{m.kharcha_nav_settings()}</span>
 					</CommandItem>
 					{guest ? (
 						<CommandItem

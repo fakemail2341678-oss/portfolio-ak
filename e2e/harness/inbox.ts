@@ -9,6 +9,7 @@
 import { randomUUID } from "node:crypto";
 import { createServer, type IncomingMessage, type ServerResponse } from "node:http";
 import type { DemoQuery } from "../../scripts/lib/demo-data.ts";
+import { serveCloudinary } from "./cloudinary.ts";
 import { E2E } from "./config.ts"; // @parda
 import { serveLichess } from "./lichess.ts"; // @chaal
 import { servePartyRelay } from "./parda-relay.ts"; // @parda
@@ -269,6 +270,7 @@ export async function serveHarness(port: number, query: DemoQuery) {
 			const url = new URL(request.url ?? "/", "http://harness");
 			const route = `${request.method} ${url.pathname}`;
 
+			if (await serveCloudinary(url, request, response)) return;
 			if (serveTmdb(url, response)) return; // @parda
 			if (await serveLichess(url, request, response)) return; // @chaal
 			if (route === "POST /emails") {
@@ -314,6 +316,18 @@ export async function serveHarness(port: number, query: DemoQuery) {
 				return send(response, rows[0] ? 200 : 404, rows[0] ?? { error: "not found" });
 			}
 			// portfolio:end
+			// kharcha:start
+			if (route === "GET /e2e/kharcha-expense") {
+				// The Kharcha demo account's newest expense of its own (scripts/lib/kharcha-seed.ts), for its page's review.
+				const { rows } = await query(
+					`select e."id" from "kh_expense" e join "kh_person" p on p."id" = e."created_by"
+					 join "user" u on u."id" = p."user_id" where u."email" = $1 and e."group_id" is null
+					 order by e."spent_on" desc, e."created_at" desc limit 1`,
+					[url.searchParams.get("email")],
+				);
+				return send(response, rows[0] ? 200 : 404, rows[0] ?? { error: "not found" });
+			}
+			// kharcha:end
 			// taskline:start
 			if (route === "GET /e2e/taskline-project") {
 				// A team project's id (the old Kanban URLs redirect by id, decision 0210).

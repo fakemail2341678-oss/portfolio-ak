@@ -1,7 +1,7 @@
 import "@tanstack/react-start/server-only";
 import { and, desc, eq, gte, isNull, lte, or, type SQL, sql } from "drizzle-orm";
-import type { Amount, HomeActivity, KharchaHome } from "@/features/kharcha/types";
-import { addMonths, monthDays, todayInZone } from "@/lib/i18n/date-only";
+import type { Amount, DuplicateRef, HomeActivity, HomeTodo, KharchaHome } from "@/features/kharcha/types";
+import { addDays, addMonths, type IsoDate, monthDays, todayInZone } from "@/lib/i18n/date-only";
 import { notFound } from "@/server/db/crud";
 import {
 	khActivity,
@@ -12,19 +12,75 @@ import {
 	khPayment,
 	khProfile,
 } from "@/server/db/schema";
-import { type KharchaServices, resolveMe } from "../access";
+import { type KharchaServices, type Me, resolveMe } from "../access";
+import { duplicatesOf } from "../expenses/repository";
 import { byCurrency, pairBalances } from "../ledger";
 import { loadPeople } from "../people";
+import { draftsOf } from "../receipts/service";
+import { spendRows } from "../spend/service";
 
 /** How many lines Home's "Recent" shows. */
 export const RECENT_LIMIT = 8;
 
+/** How many possible duplicates Home lists at most, and how far back it looks for them. */
+export const DUPLICATES_LIMIT = 5;
+const DUPLICATE_DAYS = 60;
+
+/**
+ * Home's to-dos (Task 89): receipts waiting for their details, newest first, then possible
+ * duplicates among the caller's last two months (one line per pair: the later one).
+ */
+async function todosOf(services: KharchaServices, me: Me, today: IsoDate): Promise<HomeTodo[]> {
+	const { db, imageStore } = services;
+	const drafts = await draftsOf(db, imageStore, me);
+	const recent = await db
+		.select({ id: khExpense.id })
+		.from(khExpenseShare)
+		.innerJoin(khExpense, eq(khExpense.id, khExpenseShare.expenseId))
+		.where(
+			and(
+				eq(khExpenseShare.personId, me.personId),
+				eq(khExpenseShare.duplicateOk, false),
+				isNull(khExpense.deletedAt),
+				gte(khExpense.spentOn, addDays(today, -DUPLICATE_DAYS)),
+			),
+		)
+		.orderBy(desc(khExpense.spentOn), desc(khExpense.createdAt))
+		.limit(500);
+	const found = await duplicatesOf(
+		db,
+		me.personId,
+		recent.map((row) => row.id),
+	);
+	const seen = new Set<string>();
+	const pairs: Array<{ id: string; of: DuplicateRef }> = [];
+	for (const { id } of recent) {
+		const [of] = found.get(id) ?? [];
+		if (!of || seen.has(id) || pairs.length >= DUPLICATES_LIMIT) continue;
+		seen.add(id).add(of.id);
+		pairs.push({ id, of });
+	}
+	const rows = await spendRows(
+		db,
+		me,
+		pairs.map((pair) => pair.id),
+	);
+	return [
+		...drafts.map((draft): HomeTodo => ({ kind: "receipt", draft })),
+		...pairs.flatMap((pair): HomeTodo[] => {
+			const expense = rows.find((row) => row.id === pair.id);
+			return expense ? [{ kind: "duplicate", expense, of: pair.of }] : [];
+		}),
+	];
+}
+
 /**
  * Home (docs/guides/kharcha.md "Home"): the caller's to-dos, totals, this month against
  * last and recent activity, in one read. To-dos arrive with their routes (PLAN 14.3):
- * none in Task 88.
+ * receipts and possible duplicates in Task 89.
  */
-export async function getHome({ db, user }: KharchaServices): Promise<KharchaHome> {
+export async function getHome(services: KharchaServices): Promise<KharchaHome> {
+	const { db, user } = services;
 	const me = await resolveMe(db, user);
 	const [profile] = await db.select().from(khProfile).where(eq(khProfile.userId, user.id));
 	if (!profile) throw notFound("Profile");
@@ -42,11 +98,12 @@ export async function getHome({ db, user }: KharchaServices): Promise<KharchaHom
 	const amounts = (side: Map<string, number>): Amount[] =>
 		[...side].map(([currency, amountMinor]) => ({ currency, amountMinor })).sort(byCurrency);
 
-	const current = todayInZone(profile.timeZone).slice(0, 7);
+	const today = todayInZone(profile.timeZone);
+	const current = today.slice(0, 7);
 	const previous = addMonths(current, -1);
 
 	return {
-		todos: [],
+		todos: await todosOf(services, me, today),
 		balances: { owed: amounts(owed), owe: amounts(owe) },
 		openWith: open.size,
 		month: { current, previous, spent: await monthSpending(db, me.personId, current, previous) },

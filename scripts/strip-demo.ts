@@ -366,6 +366,7 @@ const SPECS: Record<Layer, LayerSpec> = {
 			"tests/server/kharcha-access.test.ts",
 			"tests/server/kharcha-people.test.ts",
 			"tests/server/kharcha-seed.test.ts",
+			"tests/server/kharcha-spending.test.ts",
 			"docs/guides/kharcha.md",
 			// The "Bahi Khata" design system, its direction contract and record (Task 87, decision 0281).
 			"src/styles/kharcha.css",
@@ -397,8 +398,8 @@ const SHARED: ReadonlyArray<{ paths: string[]; layers: Layer[] }> = [
 	{ paths: ["src/components/data-display/rail.tsx"], layers: ["parda"] },
 	// The server's LRU cache (decision 0255) is core; Parda's TMDB answers and Chaal's Lichess answers use it.
 	{ paths: ["src/server/cache/lru.ts", "tests/unit/lru-cache.test.ts"], layers: ["parda", "chaal"] },
-	// The segmented nav (Task 79) is core; only Parda's and Chaal's pages use it so far (Task 85's matrix).
-	{ paths: ["src/components/navigation/segment-nav.tsx"], layers: ["parda", "chaal"] },
+	// The segmented nav (Task 79) is core; only Parda's, Chaal's and Kharcha's pages use it so far (Task 85's matrix).
+	{ paths: ["src/components/navigation/segment-nav.tsx"], layers: ["parda", "chaal", "kharcha"] },
 ];
 
 /** Written when the portfolio goes: the home page becomes a neutral landing page. */

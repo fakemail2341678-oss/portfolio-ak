@@ -1,16 +1,23 @@
 import "@tanstack/react-start/server-only";
 import { and, eq, inArray, isNull, notInArray } from "drizzle-orm";
+import { removeForEntities } from "@/server/attachments/repository";
 import {
+	khCategory,
 	khExpense,
 	khExpensePayer,
 	khExpenseShare,
 	khFriend,
 	khGroup,
 	khGroupMember,
+	khMerchantRule,
+	khMethod,
 	khPayment,
 	khPerson,
+	khReceiptDraft,
+	khTag,
 } from "@/server/db/schema";
 import type { Db, Tx } from "@/server/db/types";
+import { DRAFT_RECEIPTS, EXPENSE_RECEIPTS } from "./receipts/service";
 
 /**
  * What happens to a user's Kharcha when the user goes (docs/guides/kharcha.md "When an
@@ -54,6 +61,12 @@ export async function forgetUsers(tx: Tx, userIds: ReadonlyArray<string>): Promi
 				.from(khGroupMember)
 				.where(and(inArray(khGroupMember.groupId, ids), notInArray(khGroupMember.personId, own))),
 		async (ids) => {
+			const inGroups = await tx.select({ id: khExpense.id }).from(khExpense).where(inArray(khExpense.groupId, ids));
+			await removeForEntities(
+				tx,
+				EXPENSE_RECEIPTS,
+				inGroups.map((row) => row.id),
+			);
 			await tx.delete(khGroup).where(inArray(khGroup.id, ids));
 		},
 	);
@@ -82,6 +95,7 @@ export async function forgetUsers(tx: Tx, userIds: ReadonlyArray<string>): Promi
 				.where(and(inArray(khExpenseShare.expenseId, ids), notInArray(khExpenseShare.personId, own)))),
 		],
 		async (ids) => {
+			await removeForEntities(tx, EXPENSE_RECEIPTS, ids);
 			await tx.delete(khExpense).where(inArray(khExpense.id, ids));
 		},
 	);
@@ -93,6 +107,21 @@ export async function forgetUsers(tx: Tx, userIds: ReadonlyArray<string>): Promi
 
 	// Their own friend lists; the lists of whoever stays keep them.
 	await tx.delete(khFriend).where(inArray(khFriend.ownerId, people));
+
+	// Their own categories, tags, methods, rules and receipt drafts (Task 89): what stays
+	// shared loses them (the foreign keys set its category and method null, its tags go).
+	const drafts = await tx
+		.select({ id: khReceiptDraft.id })
+		.from(khReceiptDraft)
+		.where(inArray(khReceiptDraft.ownerId, people));
+	await removeForEntities(
+		tx,
+		DRAFT_RECEIPTS,
+		drafts.map((row) => row.id),
+	);
+	for (const table of [khReceiptDraft, khMerchantRule, khTag, khMethod, khCategory]) {
+		await tx.delete(table).where(inArray(table.ownerId, people));
+	}
 
 	// The people nothing points at any more.
 	const kept = await referenced(tx, own);

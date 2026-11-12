@@ -1,9 +1,12 @@
 import { createServerFn } from "@tanstack/react-start";
-import { createExpenseInput, expenseIdInput, updateExpenseInput } from "@/features/kharcha/schema";
-import type { ExpenseView } from "@/features/kharcha/types";
+import { createExpenseInput, expenseIdInput, markDuplicateInput, updateExpenseInput } from "@/features/kharcha/schema";
+import { spendListInput } from "@/features/kharcha/search";
+import type { ExpenseDetail, ExpenseView, MerchantSuggestion, SpendPage } from "@/features/kharcha/types";
 import { zodInput } from "@/functions/_lib/validator";
 import { requireKharchaUser, withKharchaServices } from "@/middleware/kharcha";
 import * as expenses from "@/server/kharcha/expenses/service";
+import { getMerchants } from "@/server/kharcha/lists/service";
+import { listSpend } from "@/server/kharcha/spend/service";
 
 /**
  * Kharcha's expenses (docs/guides/kharcha.md): anyone signed in, guests included
@@ -14,7 +17,7 @@ import * as expenses from "@/server/kharcha/expenses/service";
 export const getKharchaExpense = createServerFn({ method: "GET" })
 	.middleware([requireKharchaUser, withKharchaServices])
 	.validator(zodInput(expenseIdInput))
-	.handler(({ data, context }): Promise<ExpenseView> => expenses.getExpense(context, data.expenseId));
+	.handler(({ data, context }): Promise<ExpenseDetail> => expenses.getExpense(context, data.expenseId));
 
 export const createKharchaExpense = createServerFn({ method: "POST" })
 	.middleware([requireKharchaUser, withKharchaServices])
@@ -36,3 +39,20 @@ export const restoreKharchaExpense = createServerFn({ method: "POST" })
 	.middleware([requireKharchaUser, withKharchaServices])
 	.validator(zodInput(expenseIdInput))
 	.handler(({ data, context }): Promise<ExpenseView> => expenses.restoreExpense(context, data.expenseId));
+
+/** "Not a duplicate" (`ok`), or "it may be one" again: the caller's own flag. */
+export const markKharchaDuplicate = createServerFn({ method: "POST" })
+	.middleware([requireKharchaUser, withKharchaServices])
+	.validator(zodInput(markDuplicateInput))
+	.handler(({ data, context }): Promise<ExpenseView> => expenses.setNotDuplicate(context, data.expenseId, data.ok));
+
+/** A page of Spend (Task 89): the caller's expenses, this month by default, newest first. */
+export const listKharchaSpend = createServerFn({ method: "GET" })
+	.middleware([requireKharchaUser, withKharchaServices])
+	.validator(zodInput(spendListInput))
+	.handler(({ data, context }): Promise<SpendPage> => listSpend(context, data));
+
+/** The merchants of the caller's history, for the expense dialog's completion. */
+export const getKharchaMerchants = createServerFn({ method: "GET" })
+	.middleware([requireKharchaUser, withKharchaServices])
+	.handler(({ context }): Promise<MerchantSuggestion[]> => getMerchants(context));

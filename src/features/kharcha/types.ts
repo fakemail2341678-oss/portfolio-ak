@@ -1,3 +1,4 @@
+import type { ImageAsset } from "@/features/attachments/schema";
 import type { IsoDate, IsoMonth } from "@/lib/i18n/date-only";
 import type { Transfer } from "./money/simplify";
 import type { Split, SplitMethod } from "./money/split";
@@ -63,6 +64,10 @@ export const CATEGORY_ICONS = [
 ] as const;
 export type CategoryIconName = (typeof CATEGORY_ICONS)[number];
 
+/** How a merchant rule matches an expense's merchant, in any case (Settings → Rules, Task 89). */
+export const RULE_MATCHES = ["contains", "equals"] as const;
+export type RuleMatch = (typeof RULE_MATCHES)[number];
+
 /** What an expense still needs from its owner (PLAN 14.5, "Fix badges"). */
 export const FIX_KINDS = ["uncategorized", "duplicate", "receipt"] as const;
 export type FixKind = (typeof FIX_KINDS)[number];
@@ -117,6 +122,8 @@ export type KharchaMe = {
 	today: IsoDate;
 	/** The currencies the admin offers. */
 	currencies: string[];
+	/** How many receipts one expense may have (a guest's limit is smaller). */
+	receiptsMax: number;
 	/** Bumped by every change that touches the caller: open pages poll it and refetch (PLAN 14.5 "Freshness"). */
 	rev: number;
 	isGuest: boolean;
@@ -144,13 +151,20 @@ export type HomeActivity = {
 };
 
 /**
- * Home (PLAN 14.5 "UX"): the caller's to-dos (each later task adds its kinds: receipts,
- * debts to settle, budgets, recurring, duplicates), their totals, this month's spending
- * against last month's (their share, per currency), and recent activity.
+ * One of Home's to-dos (PLAN 14.5 "UX"): a receipt that needs its details, or a possible
+ * duplicate to look at. Later tasks add debts to settle, budgets and recurring expenses.
+ */
+export type HomeTodo =
+	| { kind: "receipt"; draft: ReceiptDraftView }
+	| { kind: "duplicate"; expense: SpendRow; of: { id: string; title: string; spentOn: IsoDate } };
+
+/**
+ * Home (PLAN 14.5 "UX"): the caller's to-dos (each later task adds its kinds: debts to
+ * settle, budgets, recurring), their totals, this month's spending against last month's
+ * (their share, per currency), and recent activity.
  */
 export type KharchaHome = {
-	/** None yet: each kind arrives with its route and data (PLAN 14.3). */
-	todos: never[];
+	todos: HomeTodo[];
 	balances: KharchaBalances;
 	/** How many friends and groups the open balances are spread over. */
 	openWith: number;
@@ -164,6 +178,20 @@ export type KharchaHome = {
 };
 
 export type ExpenseCan = { edit: boolean; delete: boolean; restore: boolean };
+
+/** A category as an expense shows it: the caller's own. */
+export type CategoryChip = { id: string; name: string; icon: CategoryIconName; color: KharchaColor };
+
+/** The caller's own part of an expense: their category and tags, how they paid, a dismissed duplicate. */
+export type ExpenseMine = {
+	categoryId: string | null;
+	tagIds: string[];
+	methodId: string | null;
+	duplicateOk: boolean;
+};
+
+/** An expense it may duplicate: the same amount and currency, within a day, a similar merchant. */
+export type DuplicateRef = { id: string; title: string; spentOn: IsoDate };
 
 export type ExpenseView = {
 	id: string;
@@ -190,7 +218,80 @@ export type ExpenseView = {
 	createdAt: string;
 	updatedAt: string;
 	can: ExpenseCan;
+	/** The caller's own part (Task 89), and those lists' names as they show on it. */
+	mine: ExpenseMine;
+	category: CategoryChip | null;
+	tags: Array<{ id: string; name: string }>;
+	method: { id: string; name: string } | null;
+	/** Its receipts: images and PDFs, in order. */
+	receipts: ImageAsset[];
+	fixes: FixKind[];
+	/** Expenses it may duplicate (none once the caller said it isn't one). */
+	duplicates: DuplicateRef[];
 };
+
+/** One line of an expense's history: who did what, an edit as "field: from → to". */
+export type ExpenseActivityLine = {
+	id: string;
+	kind: ActivityKind;
+	at: string;
+	actor: KharchaPerson | null;
+	data: ActivityData;
+};
+
+/** The expense page and panel: the expense and its history. */
+export type ExpenseDetail = ExpenseView & { activity: ExpenseActivityLine[] };
+
+/** A row of Spend (Task 89): an expense the caller is on, with their share and their own category. */
+export type SpendRow = Pick<
+	ExpenseView,
+	| "id"
+	| "groupId"
+	| "kind"
+	| "title"
+	| "merchant"
+	| "amountMinor"
+	| "currency"
+	| "spentOn"
+	| "payers"
+	| "people"
+	| "myShareMinor"
+	| "myPaidMinor"
+	| "category"
+	| "fixes"
+> & { receipts: number };
+
+/** A page of Spend, and what the caller spent across every page of it, per currency (their share; refunds against it). */
+export type SpendPage = { items: SpendRow[]; total: number; page: number; pageCount: number; totals: Amount[] };
+
+/** A receipt uploaded before its details (Home's to-do). */
+export type ReceiptDraftView = { id: string; createdAt: string; receipts: ImageAsset[] };
+
+export type CategoryView = CategoryChip & {
+	/** The built-in it started as; null for one of the caller's own. */
+	key: string | null;
+	position: number;
+	archived: boolean;
+	/** How many of the caller's shares carry it. */
+	used: number;
+};
+export type TagView = { id: string; name: string; used: number };
+export type MethodView = { id: string; name: string; position: number; archived: boolean; used: number };
+export type RuleView = {
+	id: string;
+	match: RuleMatch;
+	pattern: string;
+	categoryId: string | null;
+	tagIds: string[];
+	methodId: string | null;
+	position: number;
+};
+
+/** The caller's own lists (Settings, and the expense dialog's pickers). */
+export type KharchaLists = { categories: CategoryView[]; tags: TagView[]; methods: MethodView[]; rules: RuleView[] };
+
+/** A merchant from the caller's history, newest first, with the category they last gave it. */
+export type MerchantSuggestion = { merchant: string; categoryId: string | null; uses: number };
 
 export type PaymentView = {
 	id: string;

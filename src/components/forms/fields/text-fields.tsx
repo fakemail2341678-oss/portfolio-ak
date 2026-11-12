@@ -12,7 +12,8 @@ import { type FieldBaseProps, FieldShell } from "../field-shell";
 
 type InputProps = Pick<
 	ComponentProps<"input">,
-	"placeholder" | "autoComplete" | "inputMode" | "maxLength" | "autoFocus" | "readOnly" | "disabled"
+	// `list`: a <datalist>'s id, for suggestions the browser completes from (Kharcha's merchants).
+	"placeholder" | "autoComplete" | "inputMode" | "maxLength" | "autoFocus" | "readOnly" | "disabled" | "list"
 >;
 
 export type TextFieldProps = FieldBaseProps & InputProps & { type?: "text" | "email" | "url" | "search" | "tel" };

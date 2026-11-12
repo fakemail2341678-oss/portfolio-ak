@@ -11,7 +11,7 @@ import { byCurrency, pairBalances } from "../ledger";
 import { personDto } from "../people";
 import { bumpRevs, revOf } from "../rev";
 import { assertCurrencyOffered } from "../rules";
-import { getSettings } from "../settings";
+import { getSettings, quotasFor } from "../settings";
 
 /** The caller's own reads (docs/guides/kharcha.md "The caller"): who they are in Kharcha, their `rev` and their totals. */
 
@@ -19,6 +19,7 @@ export async function getMe({ db, user }: KharchaServices): Promise<KharchaMe> {
 	const me = await resolveMe(db, user);
 	const [profile] = await db.select().from(khProfile).where(eq(khProfile.userId, user.id));
 	if (!profile) throw notFound("Profile");
+	const settings = await getSettings(db);
 	return {
 		person: personDto(me.person, me.personId),
 		profile: {
@@ -30,7 +31,8 @@ export async function getMe({ db, user }: KharchaServices): Promise<KharchaMe> {
 			start: profile.start,
 		},
 		today: todayInZone(profile.timeZone),
-		currencies: offeredCurrencies(await getSettings(db)),
+		currencies: offeredCurrencies(settings),
+		receiptsMax: quotasFor(settings, user).receipts,
 		rev: profile.rev,
 		isGuest: user.isGuest,
 	};

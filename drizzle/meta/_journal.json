@@ -358,6 +358,13 @@
 			"when": 1794486528080,
 			"tag": "0050_kharcha_onboarding",
 			"breakpoints": true
+		},
+		{
+			"idx": 51,
+			"version": "7",
+			"when": 1794495581312,
+			"tag": "0051_kharcha_expenses",
+			"breakpoints": true
 		}
 	]
 }

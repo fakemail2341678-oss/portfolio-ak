@@ -287,6 +287,7 @@ Record every non-obvious choice here: **What**, **Why**, **Alternatives consider
 - [0280](#0280-local-gates-narrow-to-what-changed-an-incremental-typecheck-stories_only-and-no-docgen): Local gates narrow to what changed: an incremental typecheck, `STORIES_ONLY`, and no docgen
 - [0281](#0281-kharchas-look-is-bahi-khata-a-red-cloth-bound-ledger-on-graphites-tokens): Kharcha's look is "Bahi Khata": a red cloth-bound ledger, on Graphite's tokens
 - [0282](#0282-kharchas-section-shell-and-home-a-red-rail-an-onboarding-card-and-home-from-what-exists): Kharcha's section, shell and Home: a red rail, an onboarding card, and Home from what exists
+- [0283](#0283-kharchas-expenses-and-receipts-private-lists-on-each-share-helpers-without-ai-receipts-as-attachments): Kharcha's expenses and receipts: private lists on each share, helpers without AI, receipts as attachments
 </details>
 
 ---
@@ -4024,3 +4025,26 @@ Measured on the owner's Windows machine (Node 24.11, 12 threads, 11.7 GB), 2026-
 **Alternatives considered:**
 - **Rendering the icon's ख as SVG text:** the favicon would draw it in whatever font the browser has.
 - **Polling `rev` with websockets or SSE:** 0209 rules them out; one indexed read every 15 s per open page is cheap.
+
+## 0283: Kharcha's expenses and receipts: private lists on each share, helpers without AI, receipts as attachments
+
+**What:** Task 89 makes Kharcha a working personal tracker.
+- **Private lists** (`kh_category`, `kh_tag`, `kh_method`, `kh_merchant_rule`, `src/server/kharcha/lists`): each person's own. A share carries its person's category (`kh_expense_share.category_id`), a payer their method (`kh_expense_payer.method_id`), and `kh_share_tag` a person's tags on their share. Rewriting an expense's payers and shares keeps each person's own part (`replaceParts`), and drops the tags of anyone no longer on it.
+- **The built-ins** come from `kh_settings.categories` (defaults in `DEFAULT_CATEGORIES`, en and ne names) and `DEFAULT_METHODS`, made once per person (`kh_profile.lists_at`, claimed in one UPDATE) in the language of that first visit, as the guest's sample is. A renamed built-in keeps its `key`, which Task 90 uses to give a participant's share their own category of the same key.
+- **Helpers without AI:** a new expense whose category, tags or method weren't sent takes the first matching merchant rule (`contains` or `equals`, compared by `merchantKey`: lower case, letters and digits), else the category the caller last gave that merchant. The dialog does the same as the merchant is typed, until the caller picks one; the server applies it too, so any caller (an import, Task 93) gets it.
+- **Possible duplicates:** another of the caller's expenses, outside the trash, of the same kind, amount and currency, within a day, with a similar merchant (`similarMerchant`: equal, or one inside the other from three characters; the title stands in for a missing merchant). The candidates come from SQL, the similarity from the shared function. "Not a duplicate" is the caller's own flag on their share (`duplicate_ok`), and either side of a pair settles it.
+- **Receipts** are core attachments (`entity_type` `kh_expense` or `kh_receipt_draft`), uploaded through Kharcha's own functions (the `kharcha` scope: images and PDFs, 10 MB, 60 an hour), since its guests hold no `attachments:upload` (as 0190). A draft (`kh_receipt_draft`) holds uploads until an expense is made from it: its files move to the expense in that transaction and the draft goes. Receipts per expense and drafts per person are quotas (smaller for guests).
+- **History of private fields** (category, tags, method) is written only on an expense that is the caller's alone, as names: on a shared expense everyone on it reads its history, and the lists are private.
+- **Spend** (`/spend`) is the expenses the caller has a share of, this month in their time zone by default, newest first (the one added last first within a day), on the URL list contract (`spendSearch`, defaults stripped from links); its rows show the caller's share, a refund as money back, and the total per currency over every page. A row's title is a link masked as `/e/$expenseId` (`?expense=` opens the panel), so a reload, a new tab or no JavaScript give the page.
+- **e2e uploads** go to a stand-in for Cloudinary in the harness (`e2e/harness/cloudinary.ts`): the browser's signed direct upload (with CORS), the Admin API's read, destroy, and delivery URLs answered with a placeholder.
+
+**Why:**
+- A category is a personal word ("Food" for one, "Eating out" for another); keeping it on the share lets two people file one bill their own ways without either seeing the other's lists.
+- Seeding in the visitor's language with a stored name (not a key looked up at render time) makes a built-in an ordinary row: renamed, archived or deleted like the caller's own, and unique by name in any case.
+- Merchant rules and the last category are predictable and explainable; the owner ruled out AI (PLAN 14.2).
+- Real uploads in e2e test the browser's half of the flow (the signed form, CORS, progress, confirm), which the server tests' fake `fetch` can't.
+
+**Alternatives considered:**
+- **Built-ins named by key at render time:** a language switch would rename them, but every list, picker, rule and uniqueness check would need two kinds of name.
+- **Categories on the expense:** one person's choice would show to everyone on a shared expense.
+- **Uploads disabled in e2e** and a receipt draft written by the harness: the browser's upload would go untested.

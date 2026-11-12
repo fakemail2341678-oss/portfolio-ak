@@ -16,6 +16,7 @@ import {
 } from "@/server/db/schema";
 import type { Db, Tx } from "@/server/db/types";
 import { writeLedger } from "./ledger";
+import { mergeLists } from "./lists/repository";
 import { bumpRevs } from "./rev";
 
 /**
@@ -188,8 +189,10 @@ export async function mergePerson(tx: Tx, fromId: string, toId: string): Promise
 	const resplit = new Set(sharedIds.filter((expenseId) => ofFrom.shares.has(expenseId) && ofTo.shares.has(expenseId)));
 
 	// Payers and shares: add up where both have a row, then move the rest.
+	// Where both had one, the one who stays keeps their own method and category (Task 89), else takes the other's.
 	await tx.execute(sql`
-		update kh_expense_payer t set amount_minor = t.amount_minor + f.amount_minor
+		update kh_expense_payer t set amount_minor = t.amount_minor + f.amount_minor,
+			method_id = coalesce(t.method_id, f.method_id)
 		from kh_expense_payer f
 		where f.expense_id = t.expense_id and f.person_id = ${fromId} and t.person_id = ${toId}
 	`);
@@ -199,7 +202,8 @@ export async function mergePerson(tx: Tx, fromId: string, toId: string): Promise
 	`);
 	await tx.update(khExpensePayer).set({ personId: toId }).where(eq(khExpensePayer.personId, fromId));
 	await tx.execute(sql`
-		update kh_expense_share t set owed_minor = t.owed_minor + f.owed_minor
+		update kh_expense_share t set owed_minor = t.owed_minor + f.owed_minor,
+			category_id = coalesce(t.category_id, f.category_id), duplicate_ok = t.duplicate_ok or f.duplicate_ok
 		from kh_expense_share f
 		where f.expense_id = t.expense_id and f.person_id = ${fromId} and t.person_id = ${toId}
 	`);
@@ -213,6 +217,13 @@ export async function mergePerson(tx: Tx, fromId: string, toId: string): Promise
 		where id in (select expense_id from kh_expense_share where person_id = ${fromId})
 	`);
 	await tx.update(khExpenseShare).set({ personId: toId }).where(eq(khExpenseShare.personId, fromId));
+	// A share's tags: both people's, on the one share.
+	await tx.execute(sql`
+		insert into kh_share_tag (expense_id, person_id, tag_id)
+		select expense_id, ${toId}, tag_id from kh_share_tag where person_id = ${fromId}
+		on conflict do nothing
+	`);
+	await tx.execute(sql`delete from kh_share_tag where person_id = ${fromId}`);
 
 	// The ledger: a debt between the two is no debt; the rest changes hands.
 	await tx.execute(sql`
@@ -292,6 +303,9 @@ export async function mergePerson(tx: Tx, fromId: string, toId: string): Promise
 			person_hi = greatest(case when person_lo = ${fromId} then person_hi else person_lo end, ${toId}::uuid)
 		where person_lo = ${fromId} or person_hi = ${fromId}
 	`);
+
+	// Their own lists (Task 89): the same category, tag or method becomes one; the rest moves.
+	await mergeLists(tx, fromId, toId);
 
 	// Contacts the one who goes had added.
 	await tx

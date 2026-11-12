@@ -3,6 +3,7 @@ import { and, eq } from "drizzle-orm";
 import { type ExpenseCan, type GroupCan, TRASH_DAYS } from "@/features/kharcha/types";
 import { ruleError } from "@/lib/errors";
 import { m } from "@/paraglide/messages";
+import type { ImageStore } from "@/server/attachments/cloudinary";
 import { notFound } from "@/server/db/crud";
 import {
 	type KhExpenseRow,
@@ -40,8 +41,11 @@ import { ensurePerson } from "./people";
 /** The caller, as `requireKharchaUser` puts them in the context. */
 export type KharchaUser = { id: string; isGuest: boolean; permissions: ReadonlyArray<string> };
 
-/** What a Kharcha service works with. Tests pass their own. */
-export type KharchaServices = { db: Db; user: KharchaUser };
+/**
+ * What a Kharcha service works with. Tests pass their own. `imageStore` is Cloudinary's
+ * (receipts, Task 89): null when uploads aren't configured.
+ */
+export type KharchaServices = { db: Db; user: KharchaUser; imageStore?: ImageStore | null };
 
 /** The caller as a person: who they are in every expense, group and balance. */
 export type Me = KharchaUser & { personId: string; person: KhPersonRow };

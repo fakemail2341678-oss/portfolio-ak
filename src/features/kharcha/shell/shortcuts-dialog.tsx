@@ -19,6 +19,7 @@ export function KharchaShortcutsDialog({
 	const rows = [
 		{ keys: [palette], label: m.kharcha_shortcut_palette() },
 		{ keys: ["?"], label: m.kharcha_shortcut_help() },
+		{ keys: ["N"], label: m.kharcha_shortcut_new_expense() },
 		{ keys: ["↑", "↓", "↵"], label: m.kharcha_shortcut_pick() },
 		{ keys: ["Esc"], label: m.kharcha_shortcut_close() },
 	];

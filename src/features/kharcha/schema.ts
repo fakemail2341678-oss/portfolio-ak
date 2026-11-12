@@ -2,7 +2,15 @@ import { z } from "zod";
 import { CURRENCIES } from "@/lib/i18n/currency";
 import { email, isoDate, optionalText, required } from "@/lib/validation";
 import { FULL_BP, MAX_AMOUNT_MINOR, MAX_WEIGHT, SPLIT_METHODS } from "./money/split";
-import { EXPENSE_KINDS, GROUP_ICONS, GROUP_KINDS, KHARCHA_COLORS, KHARCHA_STARTS } from "./types";
+import {
+	CATEGORY_ICONS,
+	EXPENSE_KINDS,
+	GROUP_ICONS,
+	GROUP_KINDS,
+	KHARCHA_COLORS,
+	KHARCHA_STARTS,
+	RULE_MATCHES,
+} from "./types";
 
 /**
  * Kharcha's inputs, checked on the server (and by the forms from Task 88). Amounts are
@@ -22,6 +30,12 @@ export const PAYMENT_NOTE_MAX = 500;
 export const PARTICIPANTS_MAX = 50;
 export const LINES_MAX = 100;
 export const LINE_LABEL_MAX = 80;
+export const CATEGORY_NAME_MAX = 40;
+export const TAG_NAME_MAX = 30;
+/** Tags on one person's part of an expense, and on one rule. */
+export const TAGS_MAX = 10;
+/** Receipts on one expense (the admin's quota may be lower: `receipts`). */
+export const RECEIPTS_MAX = 10;
 
 const id = z.uuid();
 const minor = z.number().int().min(1).max(MAX_AMOUNT_MINOR);
@@ -72,15 +86,29 @@ const expenseFields = {
 	payers: payers.optional(),
 	/** How it is split; left out, it is the caller's alone. */
 	split: split.optional(),
+	/**
+	 * The caller's own category, tags and method (Task 89). Left out on a new expense, the
+	 * merchant's rule or the category they last gave the merchant; null: none.
+	 */
+	categoryId: id.nullable().optional(),
+	tagIds: z.array(id).max(TAGS_MAX).optional(),
+	methodId: id.nullable().optional(),
+	/** Its receipts, in order: the caller's uploads, or files it has. */
+	receiptIds: z.array(id).max(RECEIPTS_MAX).optional(),
 };
 
 export const expenseIdInput = z.strictObject({ expenseId: id });
+
+/** "Not a duplicate" (`ok`), or "it may be one" again: the caller's own flag on their share. */
+export const markDuplicateInput = z.strictObject({ expenseId: id, ok: z.boolean() });
 
 /** A new expense. `groupId` puts it in a group; without one it is personal or shared with friends. */
 export const createExpenseInput = z.strictObject({
 	id: id.optional(),
 	groupId: id.nullable().default(null),
 	...expenseFields,
+	/** A receipt draft this expense is made from: it takes the draft's files, and the draft goes. */
+	draftId: id.optional(),
 });
 
 /** The expense form's save: every field, with the `version` it was loaded at (a stale one is refused). */
@@ -176,6 +204,50 @@ export const updateFriendInput = z.strictObject({
 	nickname: optionalText({ max: NAME_MAX }).optional(),
 	hidden: z.boolean().optional(),
 });
+
+// Lists (Task 89): the caller's own categories, tags, payment methods and merchant rules.
+
+export const listIdInput = z.strictObject({ id });
+
+const categoryFields = {
+	name: required({ max: CATEGORY_NAME_MAX }),
+	icon: z.enum(CATEGORY_ICONS),
+	color: z.enum(KHARCHA_COLORS),
+};
+export const createCategoryInput = z.strictObject({ id: id.optional(), ...categoryFields });
+export const updateCategoryInput = z.strictObject({ id, ...categoryFields, archived: z.boolean() });
+
+/** A list's new order: every id of it, first to last. */
+export const reorderInput = z.strictObject({ ids: z.array(id).min(1).max(200) });
+
+export const tagInput = z.strictObject({ name: required({ max: TAG_NAME_MAX }) });
+export const updateTagInput = z.strictObject({ id, name: required({ max: TAG_NAME_MAX }) });
+
+export const createMethodInput = z.strictObject({ name: required({ max: METHOD_MAX }) });
+export const updateMethodInput = z.strictObject({ id, name: required({ max: METHOD_MAX }), archived: z.boolean() });
+
+const ruleFields = {
+	match: z.enum(RULE_MATCHES),
+	pattern: required({ max: MERCHANT_MAX }),
+	categoryId: id.nullable(),
+	tagIds: z.array(id).max(TAGS_MAX),
+	methodId: id.nullable(),
+};
+export const createRuleInput = z.strictObject(ruleFields);
+export const updateRuleInput = z.strictObject({ id, ...ruleFields });
+
+// Receipts (Task 89).
+
+export const receiptUploadInput = z.strictObject({ publicId: z.string().min(1).max(300) });
+export const receiptIdInput = z.strictObject({ id });
+/** A receipt to fill in later: the caller's uploads. */
+export const createDraftInput = z.strictObject({ receiptIds: z.array(id).min(1).max(RECEIPTS_MAX) });
+
+export type CreateCategoryInput = z.infer<typeof createCategoryInput>;
+export type UpdateCategoryInput = z.infer<typeof updateCategoryInput>;
+export type UpdateMethodInput = z.infer<typeof updateMethodInput>;
+export type CreateRuleInput = z.infer<typeof createRuleInput>;
+export type UpdateRuleInput = z.infer<typeof updateRuleInput>;
 
 export type CreateExpenseInput = z.infer<typeof createExpenseInput>;
 export type UpdateExpenseInput = z.infer<typeof updateExpenseInput>;

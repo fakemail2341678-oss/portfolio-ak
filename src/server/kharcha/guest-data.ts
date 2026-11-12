@@ -9,6 +9,7 @@ import { m } from "@/paraglide/messages";
 import type { Locale } from "@/paraglide/runtime";
 import {
 	khActivity,
+	khCategory,
 	khExpense,
 	khExpensePayer,
 	khExpenseShare,
@@ -16,6 +17,7 @@ import {
 	khGroup,
 	khGroupMember,
 	khLedger,
+	khMerchantRule,
 	khPayment,
 	khPerson,
 	khProfile,
@@ -24,8 +26,10 @@ import type { Tx } from "@/server/db/types";
 import type { GuestData } from "@/server/guests/data";
 import { pairOf } from "./activity";
 import { forgetUsers } from "./forget";
+import { seedLists } from "./lists/repository";
 import { colorFor, ensurePerson, mergePerson, personOfUser } from "./people";
 import { bumpRevs } from "./rev";
+import { getSettings } from "./settings";
 
 /**
  * Kharcha's guests (docs/guides/kharcha.md "Guests", decisions 0186 and 0277). A guest who
@@ -43,6 +47,8 @@ type Sample = {
 	kind?: ExpenseKind;
 	title: (t: T) => string;
 	merchant?: (t: T) => string;
+	/** The built-in category the guest gave it (`DEFAULT_CATEGORIES`' key); none leaves a fix badge to try. */
+	category?: string;
 	/** Minor units of NPR (paisa). */
 	amount: number;
 	daysAgo: number;
@@ -55,51 +61,64 @@ const mine: Sample["split"] = (id) => ({ method: "full", person: id.me });
 /** One month of the guest's own spending, `month` months back. */
 const personalMonth = (month: number): Sample[] => {
 	const back = month * 30;
-	const own = (title: Sample["title"], amount: number, daysAgo: number, merchant?: Sample["merchant"]): Sample => ({
+	const own = (
+		category: string | null,
+		title: Sample["title"],
+		amount: number,
+		daysAgo: number,
+		merchant?: Sample["merchant"],
+	): Sample => ({
 		title,
 		amount,
 		daysAgo: back + daysAgo,
 		paidBy: "me",
 		split: mine,
 		...(merchant ? { merchant } : {}),
+		...(category ? { category } : {}),
 	});
 	return [
 		own(
+			"groceries",
 			(t) => m.kharcha_seed_groceries({}, t),
 			245_000 + month * 13_000,
 			2,
 			(t) => m.kharcha_seed_merchant_mart({}, t),
 		),
 		own(
+			"groceries",
 			(t) => m.kharcha_seed_groceries({}, t),
 			182_050,
 			16,
 			(t) => m.kharcha_seed_merchant_mart({}, t),
 		),
 		own(
+			"food",
 			(t) => m.kharcha_seed_lunch({}, t),
 			38_000,
 			1,
 			(t) => m.kharcha_seed_merchant_momo({}, t),
 		),
 		own(
+			"food",
 			(t) => m.kharcha_seed_lunch({}, t),
 			42_000,
 			9,
 			(t) => m.kharcha_seed_merchant_momo({}, t),
 		),
-		own((t) => m.kharcha_seed_lunch({}, t), 35_000, 20),
-		own((t) => m.kharcha_seed_bus({}, t), 6_000, 3),
-		own((t) => m.kharcha_seed_bus({}, t), 4_500, 12),
-		own((t) => m.kharcha_seed_tea({}, t), 12_000, 5),
-		own((t) => m.kharcha_seed_tea({}, t), 9_500, 18),
+		own("food", (t) => m.kharcha_seed_lunch({}, t), 35_000, 20),
+		own("transport", (t) => m.kharcha_seed_bus({}, t), 6_000, 3),
+		own("transport", (t) => m.kharcha_seed_bus({}, t), 4_500, 12),
+		own("food", (t) => m.kharcha_seed_tea({}, t), 12_000, 5),
+		own(month === 0 ? null : "food", (t) => m.kharcha_seed_tea({}, t), 9_500, 18),
 		own(
+			"phone",
 			(t) => m.kharcha_seed_mobile({}, t),
 			50_000,
 			7,
 			() => "Ncell",
 		),
 		own(
+			"fun",
 			(t) => m.kharcha_seed_movie({}, t),
 			70_000,
 			14,
@@ -109,6 +128,7 @@ const personalMonth = (month: number): Sample[] => {
 			? [
 					{
 						...own(
+							"shopping",
 							(t) => m.kharcha_seed_refund({}, t),
 							150_000,
 							10,
@@ -117,7 +137,7 @@ const personalMonth = (month: number): Sample[] => {
 						kind: "refund" as const,
 					},
 				]
-			: [own((t) => m.kharcha_seed_pharmacy({}, t), 64_000, 22)]),
+			: [own("health", (t) => m.kharcha_seed_pharmacy({}, t), 64_000, 22)]),
 	];
 };
 
@@ -129,6 +149,7 @@ const DINNER_EXTRAS = itemizedExtras(DINNER_FOOD + DINNER_DRINKS);
 const SHARED: Sample[] = [
 	{
 		title: (t) => m.kharcha_seed_coffee({}, t),
+		category: "food",
 		amount: 56_000,
 		daysAgo: 3,
 		paidBy: "me",
@@ -137,6 +158,7 @@ const SHARED: Sample[] = [
 	{
 		group: "trip",
 		title: (t) => m.kharcha_seed_trip_bus({}, t),
+		category: "travel",
 		amount: 360_000,
 		daysAgo: 40,
 		paidBy: "me",
@@ -145,6 +167,7 @@ const SHARED: Sample[] = [
 	{
 		group: "trip",
 		title: (t) => m.kharcha_seed_trip_hotel({}, t),
+		category: "travel",
 		amount: 900_000,
 		daysAgo: 39,
 		paidBy: "asha",
@@ -153,6 +176,7 @@ const SHARED: Sample[] = [
 	{
 		group: "trip",
 		title: (t) => m.kharcha_seed_trip_dinner({}, t),
+		category: "food",
 		amount: DINNER_FOOD + DINNER_DRINKS + DINNER_EXTRAS.service + DINNER_EXTRAS.tax,
 		daysAgo: 39,
 		paidBy: "bikash",
@@ -168,6 +192,7 @@ const SHARED: Sample[] = [
 	{
 		group: "trip",
 		title: (t) => m.kharcha_seed_trip_boat({}, t),
+		category: "travel",
 		amount: 150_000,
 		daysAgo: 38,
 		paidBy: "me",
@@ -184,6 +209,7 @@ const SHARED: Sample[] = [
 		{
 			group: "flat",
 			title: (t) => m.kharcha_seed_flat_rent({}, t),
+			category: "rent",
 			amount: 2_400_000,
 			daysAgo: month * 30 + 6,
 			paidBy: "me",
@@ -192,6 +218,7 @@ const SHARED: Sample[] = [
 		{
 			group: "flat",
 			title: (t) => m.kharcha_seed_flat_internet({}, t),
+			category: "phone",
 			merchant: () => "WorldLink",
 			amount: 135_600,
 			daysAgo: month * 30 + 8,
@@ -203,6 +230,7 @@ const SHARED: Sample[] = [
 		(month): Sample => ({
 			group: "flat",
 			title: (t) => m.kharcha_seed_flat_electricity({}, t),
+			category: "utilities",
 			merchant: () => "NEA",
 			amount: 218_000,
 			daysAgo: month * 30 + 11,
@@ -300,6 +328,21 @@ export async function seedSample(tx: Tx, userId: string, locale: Locale): Promis
 			]),
 		);
 
+	// Their own lists, made now in their language (as a first visit would), and a merchant rule to try.
+	await seedLists(tx, me.id, await getSettings(tx), locale);
+	await tx.update(khProfile).set({ listsAt: new Date() }).where(eq(khProfile.userId, userId));
+	const categories = new Map(
+		(
+			await tx.select({ id: khCategory.id, key: khCategory.key }).from(khCategory).where(eq(khCategory.ownerId, me.id))
+		).flatMap((row) => (row.key ? [[row.key, row.id] as const] : [])),
+	);
+	await tx.insert(khMerchantRule).values({
+		ownerId: me.id,
+		match: "contains",
+		pattern: m.kharcha_seed_merchant_mart({}, t),
+		categoryId: categories.get("groceries") ?? null,
+	});
+
 	const expenses = [...[0, 1, 2].flatMap(personalMonth), ...SHARED].map((sample) => {
 		const split = sample.split(id, t);
 		const shares = computeShares(sample.amount, split);
@@ -323,6 +366,7 @@ export async function seedSample(tx: Tx, userId: string, locale: Locale): Promis
 			},
 			payers,
 			shares: shares.shares,
+			category: sample.category ? (categories.get(sample.category) ?? null) : null,
 			debts: expenseDebts(kind, payers, shares.shares),
 			pair: groupId
 				? null
@@ -347,6 +391,7 @@ export async function seedSample(tx: Tx, userId: string, locale: Locale): Promis
 				personId: share.person,
 				owedMinor: share.owed,
 				position,
+				categoryId: share.person === me.id ? expense.category : null,
 			})),
 		),
 	);

@@ -5,6 +5,7 @@ import * as expenses from "@/server/kharcha/expenses/service";
 import { forgetUser } from "@/server/kharcha/forget";
 import * as friends from "@/server/kharcha/friends/service";
 import * as groups from "@/server/kharcha/groups/service";
+import * as lists from "@/server/kharcha/lists/service";
 import * as me from "@/server/kharcha/me/service";
 import * as payments from "@/server/kharcha/payments/service";
 import { befriend, ensurePerson, mergePerson } from "@/server/kharcha/people";
@@ -163,6 +164,31 @@ describe("mergePerson", () => {
 			note: "",
 			paidOn: today,
 		});
+		// Their own lists (Task 89): categories and methods from the defaults, a tag, a rule,
+		// a receipt draft, and an expense that carries them.
+		const mayaLists = await lists.getLists(as("maya"));
+		const guestLists = await lists.getLists(as("guest"));
+		const food = guestLists.categories.find((category) => category.key === "food");
+		const cash = guestLists.methods[0];
+		const tag = (await lists.createTag(as("guest"), "Trip")).tags[0];
+		await lists.createTag(as("maya"), "trip");
+		if (!food || !cash || !tag) throw new Error("the guest's lists are missing");
+		await lists.createCategory(as("guest"), { name: "Momos", icon: "utensils", color: "orange" });
+		await lists.createRule(as("guest"), {
+			match: "contains",
+			pattern: "Momo",
+			categoryId: food.id,
+			tagIds: [tag.id],
+			methodId: cash.id,
+		});
+		await env.db.insert(schema.khReceiptDraft).values({ ownerId: guest });
+		const tagged = await expenses.createExpense(as("guest"), {
+			...base,
+			groupId: null,
+			amountMinor: 1_000,
+			merchant: "Momo house",
+		});
+		expect(tagged.mine).toMatchObject({ categoryId: food.id, tagIds: [tag.id], methodId: cash.id });
 		await expectLedgerConsistent(env.db);
 
 		const before = await referencesTo(guest);
@@ -184,6 +210,20 @@ describe("mergePerson", () => {
 		expect(merged.payers).toEqual([{ personId: maya, amountMinor: 30_000 }]);
 		expect(merged.shares).toEqual([{ personId: maya, owedMinor: 30_000 }]);
 		expect(merged.split).toEqual({ method: "exact", parts: [{ person: maya, amount: 30_000 }] });
+		// One list: the same built-in and the same names are one; the guest's own category moved.
+		const after = await lists.getLists(as("maya"));
+		const mayaFood = mayaLists.categories.find((category) => category.key === "food");
+		expect(after.categories.filter((category) => category.key === "food").map((category) => category.id)).toEqual([
+			mayaFood?.id,
+		]);
+		expect(after.categories.at(-1)?.name).toBe("Momos");
+		expect(after.tags.map((each) => each.name)).toEqual(["trip"]);
+		expect(after.methods).toHaveLength(mayaLists.methods.length);
+		expect(after.rules).toHaveLength(1);
+		const moved = await expenses.getExpense(as("maya"), tagged.id);
+		expect(moved.category?.id).toBe(mayaFood?.id);
+		expect(moved.tags.map((each) => each.name)).toEqual(["trip"]);
+		expect(moved.method?.name).toBe("Cash");
 		// The payment between them is gone; the rest is Maya's now.
 		const mine = await env.db.select().from(schema.khPayment).where(eq(schema.khPayment.createdBy, maya));
 		expect(mine.map((payment) => payment.amountMinor).sort()).toEqual([500, 500]);
