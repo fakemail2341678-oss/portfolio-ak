@@ -3,7 +3,7 @@
 Record every non-obvious choice here: **What**, **Why**, **Alternatives considered**. Newest entries at the bottom.
 
 <details>
-<summary>Index (240 entries)</summary>
+<summary>Index (241 entries)</summary>
 
 - [0001](#0001-project-has-its-own-git-repository): Project has its own git repository
 - [0002](#0002-default-deployment-target-is-vercel-assumption): Default deployment target is Vercel (assumption)
@@ -286,6 +286,7 @@ Record every non-obvious choice here: **What**, **Why**, **Alternatives consider
 - [0279](#0279-the-entry-budget-rises-to-300-kb-for-kharchas-routes-and-sentrys-release-snippet-isnt-counted): The entry budget rises to 300 kB for Kharcha's routes, and Sentry's release snippet isn't counted
 - [0280](#0280-local-gates-narrow-to-what-changed-an-incremental-typecheck-stories_only-and-no-docgen): Local gates narrow to what changed: an incremental typecheck, `STORIES_ONLY`, and no docgen
 - [0281](#0281-kharchas-look-is-bahi-khata-a-red-cloth-bound-ledger-on-graphites-tokens): Kharcha's look is "Bahi Khata": a red cloth-bound ledger, on Graphite's tokens
+- [0282](#0282-kharchas-section-shell-and-home-a-red-rail-an-onboarding-card-and-home-from-what-exists): Kharcha's section, shell and Home: a red rail, an onboarding card, and Home from what exists
 </details>
 
 ---
@@ -4000,3 +4001,26 @@ Measured on the owner's Windows machine (Node 24.11, 12 threads, 11.7 GB), 2026-
 - **The seamed console (a challenger):** clear, but Kharcha would look like the admin area, with nothing Nepali in it.
 - **The category standard** (white cards, round avatars, a green Settle up): the owner didn't take it.
 - **Studying New Expensify's help pages for the UX notes:** the owner said to design our own with Expensify only as a reference, so the notes in the contract list what 14.5 takes and what we never take.
+
+## 0282: Kharcha's section, shell and Home: a red rail, an onboarding card, and Home from what exists
+
+**What:** Task 88 gives Kharcha its pages.
+- **The section:** `/_kharcha` (pathless) puts `data-section="kharcha"` on `<html>` from `KHARCHA_BRAND` (bookcloth red as the browser's colour), preloads `kharchaFontPreloads`, and is noindex except the landing (`seo()`, `SoftwareApplication`, `KHARCHA_SITEMAP`). Its manifest is a Nitro route (`/app/kharcha/manifest.webmanifest`, one per locale); its icons (`public/kharcha/`) are ख from Laila 700 on the cloth with the thread under it: the glyph's outline was read from the font file into `icon.svg` as a path (no font at run time), and the PNGs rendered from it with Playwright.
+- **The shell** (`src/features/kharcha/shell`): on a laptop a 64px red rail (the mark, Home, Search, the caller's plate at the foot); on a phone a red top bar, bottom tabs and a floating +. Around the page: the guest banner, `ConfirmProvider`, the palette (⌘K), the shortcuts (`?`) and the + menu's dialogs. The rail and tabs list only pages that exist (Home now), per 14.3.
+- **Freshness:** the shell polls `getKharchaRev` every 15 s while visible and on focus; when it moves, every query under `kharchaKeys.user` refetches.
+- **Home:** to-dos (none yet: each kind arrives with its route), what the caller is owed and owes per currency (sums over people, ruled twice), this month's spending against last (the caller's share, refunds against it, per currency), and the last eight lines of activity they may see (`getKharchaHome`, `src/server/kharcha/home/service.ts`).
+- **Onboarding:** a card at the top of Home until done: what they came for (`kh_profile.start`: `track` or `split`, migration `0050_kharcha_onboarding`), the home currency (one the admin offers) and the time zone (the device's suggested). Skip saves what is set, so it never returns either way (`completeKharchaOnboarding`).
+- **The + menu** holds what exists: Add a friend and New group (Task 86's functions), each a small dialog. Add expense joins it in 89.
+- **Core:** `currencyLabel(code)` ("NPR · Nepalese Rupee", Intl's names) in `src/lib/i18n/currency.ts`.
+
+**Why:**
+- **`start` is a column of its own:** the plan's `focus` is focus mode (only unread and unsettled threads, Task 92); overloading it would lose one or the other.
+- **Onboarding is a card, not a dialog:** a modal opened on load takes the first tab stop from the skip link (the browser review fails it) and hides a usable page; a card renders on the server, so there is no shift, and the device's zone replaces the profile's after hydration while the field is untouched.
+- **Recent is the caller's visible activity, folded:** an edit writes one row per field in one transaction (0278), so rows with the same kind, subject, actor and instant are one line. Visibility follows the access table: the caller's groups (a former member's up to leaving), the threads of two people they are in, and what they did alone.
+- **The shell never swaps frames while signing out:** sign-out clears the session before leaving the page; a layout that fell back to the public frame remounted Home, whose queries then ran without a session, and the 401 sent the browser to `/login` (`sessionExpiryMiddleware`). `useKharchaUserId` also keeps the last id for the same moment.
+- **Friend and group from the + menu now:** the functions exist and their results show in Recent; a + menu with nothing in it would be worse. Task 90 adds invites, members and the pages they open.
+- **The gallery card shows the icon file:** Kharcha's tokens are scoped to its own pages, so the kit's `KharchaMark` would be uncoloured on `/apps`.
+
+**Alternatives considered:**
+- **Rendering the icon's ख as SVG text:** the favicon would draw it in whatever font the browser has.
+- **Polling `rev` with websockets or SSE:** 0209 rules them out; one indexed read every 15 s per open page is cheap.

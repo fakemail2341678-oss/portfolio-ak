@@ -30,6 +30,8 @@ export const E2E = {
 		editor: { email: "editor@example.com", name: "Demo Editor" },
 		viewer: { email: "viewer@example.com", name: "Demo Viewer" },
 		member: { email: "member@example.com", name: "Demo Member" },
+		/** The Kharcha demo account (scripts/lib/kharcha-seed.ts): onboarded, in a group with two friends. */
+		kharcha: { email: "asha@kharcha.example.com", name: "Asha Gurung" }, // @kharcha
 	},
 } as const;
 

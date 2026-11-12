@@ -14,6 +14,7 @@ import { Route as AppsRouteImport } from './routes/_apps'
 import { Route as AuthRouteImport } from './routes/_auth'
 import { Route as AuthedRouteImport } from './routes/_authed'
 import { Route as ChaalRouteRouteImport } from './routes/_chaal/route'
+import { Route as KharchaRouteRouteImport } from './routes/_kharcha/route'
 import { Route as PardaRouteRouteImport } from './routes/_parda/route'
 import { Route as PublicRouteImport } from './routes/_public'
 import { Route as SiteRouteImport } from './routes/_site'
@@ -147,6 +148,10 @@ import { Route as ChaalAppChaalPlayRouteImport } from './routes/_chaal/app/chaal
 import { Route as ChaalAppChaalSettingsRouteImport } from './routes/_chaal/app/chaal/settings'
 import { Route as ChaalAppChaalSignInRouteImport } from './routes/_chaal/app/chaal/sign-in'
 import { Route as ChaalAppChaalSignUpRouteImport } from './routes/_chaal/app/chaal/sign-up'
+import { Route as KharchaAppKharchaIndexRouteImport } from './routes/_kharcha/app/kharcha/index'
+import { Route as KharchaAppKharchaShellRouteRouteImport } from './routes/_kharcha/app/kharcha/_shell/route'
+import { Route as KharchaAppKharchaSignInRouteImport } from './routes/_kharcha/app/kharcha/sign-in'
+import { Route as KharchaAppKharchaSignUpRouteImport } from './routes/_kharcha/app/kharcha/sign-up'
 import { Route as PardaAppPardaIndexRouteImport } from './routes/_parda/app/parda/index'
 import { Route as PardaAppPardaSplatRouteImport } from './routes/_parda/app/parda/$'
 import { Route as PardaAppPardaHubRouteImport } from './routes/_parda/app/parda/$hub'
@@ -209,6 +214,8 @@ import { Route as ChaalAppChaalTournamentsIndexRouteImport } from './routes/_cha
 import { Route as ChaalAppChaalTournamentsIdRouteImport } from './routes/_chaal/app/chaal/tournaments/$id'
 import { Route as ChaalAppChaalWatchIndexRouteImport } from './routes/_chaal/app/chaal/watch/index'
 import { Route as ChaalAppChaalWatchChannelRouteImport } from './routes/_chaal/app/chaal/watch/$channel'
+import { Route as KharchaAppKharchaShellAccountRouteImport } from './routes/_kharcha/app/kharcha/_shell/account'
+import { Route as KharchaAppKharchaShellHomeRouteImport } from './routes/_kharcha/app/kharcha/_shell/home'
 import { Route as PardaAppPardaCSlugRouteImport } from './routes/_parda/app/parda/c/$slug'
 import { Route as PardaAppPardaCollectionIdRouteImport } from './routes/_parda/app/parda/collection/$id'
 import { Route as PardaAppPardaLibraryTabRouteImport } from './routes/_parda/app/parda/library/$tab'
@@ -270,6 +277,10 @@ const AuthedRoute = AuthedRouteImport.update({
 } as any)
 const ChaalRouteRoute = ChaalRouteRouteImport.update({
   id: '/_chaal',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const KharchaRouteRoute = KharchaRouteRouteImport.update({
+  id: '/_kharcha',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PardaRouteRoute = PardaRouteRouteImport.update({
@@ -962,6 +973,27 @@ const ChaalAppChaalSignUpRoute = ChaalAppChaalSignUpRouteImport.update({
   path: '/app/chaal/sign-up',
   getParentRoute: () => ChaalRouteRoute,
 } as any)
+const KharchaAppKharchaIndexRoute = KharchaAppKharchaIndexRouteImport.update({
+  id: '/app/kharcha/',
+  path: '/app/kharcha/',
+  getParentRoute: () => KharchaRouteRoute,
+} as any)
+const KharchaAppKharchaShellRouteRoute =
+  KharchaAppKharchaShellRouteRouteImport.update({
+    id: '/app/kharcha/_shell',
+    path: '/app/kharcha',
+    getParentRoute: () => KharchaRouteRoute,
+  } as any)
+const KharchaAppKharchaSignInRoute = KharchaAppKharchaSignInRouteImport.update({
+  id: '/app/kharcha/sign-in',
+  path: '/app/kharcha/sign-in',
+  getParentRoute: () => KharchaRouteRoute,
+} as any)
+const KharchaAppKharchaSignUpRoute = KharchaAppKharchaSignUpRouteImport.update({
+  id: '/app/kharcha/sign-up',
+  path: '/app/kharcha/sign-up',
+  getParentRoute: () => KharchaRouteRoute,
+} as any)
 const PardaAppPardaIndexRoute = PardaAppPardaIndexRouteImport.update({
   id: '/app/parda/',
   path: '/app/parda/',
@@ -1311,6 +1343,18 @@ const ChaalAppChaalWatchChannelRoute =
     path: '/app/chaal/watch/$channel',
     getParentRoute: () => ChaalRouteRoute,
   } as any)
+const KharchaAppKharchaShellAccountRoute =
+  KharchaAppKharchaShellAccountRouteImport.update({
+    id: '/account',
+    path: '/account',
+    getParentRoute: () => KharchaAppKharchaShellRouteRoute,
+  } as any)
+const KharchaAppKharchaShellHomeRoute =
+  KharchaAppKharchaShellHomeRouteImport.update({
+    id: '/home',
+    path: '/home',
+    getParentRoute: () => KharchaAppKharchaShellRouteRoute,
+  } as any)
 const PardaAppPardaCSlugRoute = PardaAppPardaCSlugRouteImport.update({
   id: '/app/parda/c/$slug',
   path: '/app/parda/c/$slug',
@@ -1637,6 +1681,7 @@ export interface FileRoutesByFullPath {
   '/admin/portfolio/projects': typeof AdminAdminPortfolioProjectsRouteRouteWithChildren
   '/admin/taskline/projects': typeof AdminAdminTasklineProjectsRouteRouteWithChildren
   '/admin/taskline/timesheets': typeof AdminAdminTasklineTimesheetsRouteRouteWithChildren
+  '/app/kharcha': typeof KharchaAppKharchaShellRouteRouteWithChildren
   '/app/taskline': typeof TasklineAppTasklineShellRouteRouteWithChildren
   '/admin/chaal/connections': typeof AdminAdminChaalConnectionsRoute
   '/admin/chaal/curation': typeof AdminAdminChaalCurationRoute
@@ -1678,6 +1723,8 @@ export interface FileRoutesByFullPath {
   '/app/chaal/settings': typeof ChaalAppChaalSettingsRoute
   '/app/chaal/sign-in': typeof ChaalAppChaalSignInRoute
   '/app/chaal/sign-up': typeof ChaalAppChaalSignUpRoute
+  '/app/kharcha/sign-in': typeof KharchaAppKharchaSignInRoute
+  '/app/kharcha/sign-up': typeof KharchaAppKharchaSignUpRoute
   '/app/parda/$': typeof PardaAppPardaSplatRoute
   '/app/parda/$hub': typeof PardaAppPardaHubRoute
   '/app/parda/about': typeof PardaAppPardaAboutRoute
@@ -1706,6 +1753,7 @@ export interface FileRoutesByFullPath {
   '/apps/links/': typeof AppsAppsLinksIndexRoute
   '/apps/notes/': typeof AppsAppsNotesIndexRoute
   '/app/chaal/': typeof ChaalAppChaalIndexRoute
+  '/app/kharcha/': typeof KharchaAppKharchaIndexRoute
   '/app/parda/': typeof PardaAppPardaIndexRoute
   '/app/taskline/': typeof TasklineAppTasklineIndexRoute
   '/apps/kanban/': typeof TasklineAppsKanbanIndexRoute
@@ -1736,6 +1784,8 @@ export interface FileRoutesByFullPath {
   '/app/chaal/teams/$id': typeof ChaalAppChaalTeamsIdRoute
   '/app/chaal/tournaments/$id': typeof ChaalAppChaalTournamentsIdRoute
   '/app/chaal/watch/$channel': typeof ChaalAppChaalWatchChannelRoute
+  '/app/kharcha/account': typeof KharchaAppKharchaShellAccountRoute
+  '/app/kharcha/home': typeof KharchaAppKharchaShellHomeRoute
   '/app/parda/c/$slug': typeof PardaAppPardaCSlugRoute
   '/app/parda/collection/$id': typeof PardaAppPardaCollectionIdRoute
   '/app/parda/library/$tab': typeof PardaAppPardaLibraryTabRoute
@@ -1852,6 +1902,7 @@ export interface FileRoutesByTo {
   '/work': typeof SiteWorkIndexRoute
   '/dev/examples': typeof DevExamplesIndexRoute
   '/dev/test-crud': typeof DevTestCrudIndexRoute
+  '/app/kharcha': typeof KharchaAppKharchaIndexRoute
   '/app/taskline': typeof TasklineAppTasklineIndexRoute
   '/admin/chaal/connections': typeof AdminAdminChaalConnectionsRoute
   '/admin/chaal/curation': typeof AdminAdminChaalCurationRoute
@@ -1893,6 +1944,8 @@ export interface FileRoutesByTo {
   '/app/chaal/settings': typeof ChaalAppChaalSettingsRoute
   '/app/chaal/sign-in': typeof ChaalAppChaalSignInRoute
   '/app/chaal/sign-up': typeof ChaalAppChaalSignUpRoute
+  '/app/kharcha/sign-in': typeof KharchaAppKharchaSignInRoute
+  '/app/kharcha/sign-up': typeof KharchaAppKharchaSignUpRoute
   '/app/parda/$': typeof PardaAppPardaSplatRoute
   '/app/parda/$hub': typeof PardaAppPardaHubRoute
   '/app/parda/about': typeof PardaAppPardaAboutRoute
@@ -1948,6 +2001,8 @@ export interface FileRoutesByTo {
   '/app/chaal/teams/$id': typeof ChaalAppChaalTeamsIdRoute
   '/app/chaal/tournaments/$id': typeof ChaalAppChaalTournamentsIdRoute
   '/app/chaal/watch/$channel': typeof ChaalAppChaalWatchChannelRoute
+  '/app/kharcha/account': typeof KharchaAppKharchaShellAccountRoute
+  '/app/kharcha/home': typeof KharchaAppKharchaShellHomeRoute
   '/app/parda/c/$slug': typeof PardaAppPardaCSlugRoute
   '/app/parda/collection/$id': typeof PardaAppPardaCollectionIdRoute
   '/app/parda/library/$tab': typeof PardaAppPardaLibraryTabRoute
@@ -2008,6 +2063,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/_chaal': typeof ChaalRouteRouteWithChildren
+  '/_kharcha': typeof KharchaRouteRouteWithChildren
   '/_parda': typeof PardaRouteRouteWithChildren
   '/_taskline': typeof TasklineRouteRouteWithChildren
   '/dev': typeof DevRouteRouteWithChildren
@@ -2092,6 +2148,7 @@ export interface FileRoutesById {
   '/_admin/admin/portfolio/projects': typeof AdminAdminPortfolioProjectsRouteRouteWithChildren
   '/_admin/admin/taskline/projects': typeof AdminAdminTasklineProjectsRouteRouteWithChildren
   '/_admin/admin/taskline/timesheets': typeof AdminAdminTasklineTimesheetsRouteRouteWithChildren
+  '/_kharcha/app/kharcha/_shell': typeof KharchaAppKharchaShellRouteRouteWithChildren
   '/_taskline/app/taskline/_shell': typeof TasklineAppTasklineShellRouteRouteWithChildren
   '/_admin/admin/chaal/connections': typeof AdminAdminChaalConnectionsRoute
   '/_admin/admin/chaal/curation': typeof AdminAdminChaalCurationRoute
@@ -2133,6 +2190,8 @@ export interface FileRoutesById {
   '/_chaal/app/chaal/settings': typeof ChaalAppChaalSettingsRoute
   '/_chaal/app/chaal/sign-in': typeof ChaalAppChaalSignInRoute
   '/_chaal/app/chaal/sign-up': typeof ChaalAppChaalSignUpRoute
+  '/_kharcha/app/kharcha/sign-in': typeof KharchaAppKharchaSignInRoute
+  '/_kharcha/app/kharcha/sign-up': typeof KharchaAppKharchaSignUpRoute
   '/_parda/app/parda/$': typeof PardaAppPardaSplatRoute
   '/_parda/app/parda/$hub': typeof PardaAppPardaHubRoute
   '/_parda/app/parda/about': typeof PardaAppPardaAboutRoute
@@ -2161,6 +2220,7 @@ export interface FileRoutesById {
   '/_apps/apps/links/': typeof AppsAppsLinksIndexRoute
   '/_apps/apps/notes/': typeof AppsAppsNotesIndexRoute
   '/_chaal/app/chaal/': typeof ChaalAppChaalIndexRoute
+  '/_kharcha/app/kharcha/': typeof KharchaAppKharchaIndexRoute
   '/_parda/app/parda/': typeof PardaAppPardaIndexRoute
   '/_taskline/app/taskline/': typeof TasklineAppTasklineIndexRoute
   '/_taskline/apps/kanban/': typeof TasklineAppsKanbanIndexRoute
@@ -2191,6 +2251,8 @@ export interface FileRoutesById {
   '/_chaal/app/chaal/teams/$id': typeof ChaalAppChaalTeamsIdRoute
   '/_chaal/app/chaal/tournaments/$id': typeof ChaalAppChaalTournamentsIdRoute
   '/_chaal/app/chaal/watch/$channel': typeof ChaalAppChaalWatchChannelRoute
+  '/_kharcha/app/kharcha/_shell/account': typeof KharchaAppKharchaShellAccountRoute
+  '/_kharcha/app/kharcha/_shell/home': typeof KharchaAppKharchaShellHomeRoute
   '/_parda/app/parda/c/$slug': typeof PardaAppPardaCSlugRoute
   '/_parda/app/parda/collection/$id': typeof PardaAppPardaCollectionIdRoute
   '/_parda/app/parda/library/$tab': typeof PardaAppPardaLibraryTabRoute
@@ -2329,6 +2391,7 @@ export interface FileRouteTypes {
     | '/admin/portfolio/projects'
     | '/admin/taskline/projects'
     | '/admin/taskline/timesheets'
+    | '/app/kharcha'
     | '/app/taskline'
     | '/admin/chaal/connections'
     | '/admin/chaal/curation'
@@ -2370,6 +2433,8 @@ export interface FileRouteTypes {
     | '/app/chaal/settings'
     | '/app/chaal/sign-in'
     | '/app/chaal/sign-up'
+    | '/app/kharcha/sign-in'
+    | '/app/kharcha/sign-up'
     | '/app/parda/$'
     | '/app/parda/$hub'
     | '/app/parda/about'
@@ -2398,6 +2463,7 @@ export interface FileRouteTypes {
     | '/apps/links/'
     | '/apps/notes/'
     | '/app/chaal/'
+    | '/app/kharcha/'
     | '/app/parda/'
     | '/app/taskline/'
     | '/apps/kanban/'
@@ -2428,6 +2494,8 @@ export interface FileRouteTypes {
     | '/app/chaal/teams/$id'
     | '/app/chaal/tournaments/$id'
     | '/app/chaal/watch/$channel'
+    | '/app/kharcha/account'
+    | '/app/kharcha/home'
     | '/app/parda/c/$slug'
     | '/app/parda/collection/$id'
     | '/app/parda/library/$tab'
@@ -2544,6 +2612,7 @@ export interface FileRouteTypes {
     | '/work'
     | '/dev/examples'
     | '/dev/test-crud'
+    | '/app/kharcha'
     | '/app/taskline'
     | '/admin/chaal/connections'
     | '/admin/chaal/curation'
@@ -2585,6 +2654,8 @@ export interface FileRouteTypes {
     | '/app/chaal/settings'
     | '/app/chaal/sign-in'
     | '/app/chaal/sign-up'
+    | '/app/kharcha/sign-in'
+    | '/app/kharcha/sign-up'
     | '/app/parda/$'
     | '/app/parda/$hub'
     | '/app/parda/about'
@@ -2640,6 +2711,8 @@ export interface FileRouteTypes {
     | '/app/chaal/teams/$id'
     | '/app/chaal/tournaments/$id'
     | '/app/chaal/watch/$channel'
+    | '/app/kharcha/account'
+    | '/app/kharcha/home'
     | '/app/parda/c/$slug'
     | '/app/parda/collection/$id'
     | '/app/parda/library/$tab'
@@ -2699,6 +2772,7 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/_chaal'
+    | '/_kharcha'
     | '/_parda'
     | '/_taskline'
     | '/dev'
@@ -2783,6 +2857,7 @@ export interface FileRouteTypes {
     | '/_admin/admin/portfolio/projects'
     | '/_admin/admin/taskline/projects'
     | '/_admin/admin/taskline/timesheets'
+    | '/_kharcha/app/kharcha/_shell'
     | '/_taskline/app/taskline/_shell'
     | '/_admin/admin/chaal/connections'
     | '/_admin/admin/chaal/curation'
@@ -2824,6 +2899,8 @@ export interface FileRouteTypes {
     | '/_chaal/app/chaal/settings'
     | '/_chaal/app/chaal/sign-in'
     | '/_chaal/app/chaal/sign-up'
+    | '/_kharcha/app/kharcha/sign-in'
+    | '/_kharcha/app/kharcha/sign-up'
     | '/_parda/app/parda/$'
     | '/_parda/app/parda/$hub'
     | '/_parda/app/parda/about'
@@ -2852,6 +2929,7 @@ export interface FileRouteTypes {
     | '/_apps/apps/links/'
     | '/_apps/apps/notes/'
     | '/_chaal/app/chaal/'
+    | '/_kharcha/app/kharcha/'
     | '/_parda/app/parda/'
     | '/_taskline/app/taskline/'
     | '/_taskline/apps/kanban/'
@@ -2882,6 +2960,8 @@ export interface FileRouteTypes {
     | '/_chaal/app/chaal/teams/$id'
     | '/_chaal/app/chaal/tournaments/$id'
     | '/_chaal/app/chaal/watch/$channel'
+    | '/_kharcha/app/kharcha/_shell/account'
+    | '/_kharcha/app/kharcha/_shell/home'
     | '/_parda/app/parda/c/$slug'
     | '/_parda/app/parda/collection/$id'
     | '/_parda/app/parda/library/$tab'
@@ -2944,6 +3024,7 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   ChaalRouteRoute: typeof ChaalRouteRouteWithChildren
+  KharchaRouteRoute: typeof KharchaRouteRouteWithChildren
   PardaRouteRoute: typeof PardaRouteRouteWithChildren
   TasklineRouteRoute: typeof TasklineRouteRouteWithChildren
   DevRouteRoute: typeof DevRouteRouteWithChildren
@@ -2998,6 +3079,13 @@ declare module '@tanstack/react-router' {
       path: ''
       fullPath: '/'
       preLoaderRoute: typeof ChaalRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_kharcha': {
+      id: '/_kharcha'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof KharchaRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_parda': {
@@ -3931,6 +4019,34 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ChaalAppChaalSignUpRouteImport
       parentRoute: typeof ChaalRouteRoute
     }
+    '/_kharcha/app/kharcha/': {
+      id: '/_kharcha/app/kharcha/'
+      path: '/app/kharcha'
+      fullPath: '/app/kharcha/'
+      preLoaderRoute: typeof KharchaAppKharchaIndexRouteImport
+      parentRoute: typeof KharchaRouteRoute
+    }
+    '/_kharcha/app/kharcha/_shell': {
+      id: '/_kharcha/app/kharcha/_shell'
+      path: '/app/kharcha'
+      fullPath: '/app/kharcha'
+      preLoaderRoute: typeof KharchaAppKharchaShellRouteRouteImport
+      parentRoute: typeof KharchaRouteRoute
+    }
+    '/_kharcha/app/kharcha/sign-in': {
+      id: '/_kharcha/app/kharcha/sign-in'
+      path: '/app/kharcha/sign-in'
+      fullPath: '/app/kharcha/sign-in'
+      preLoaderRoute: typeof KharchaAppKharchaSignInRouteImport
+      parentRoute: typeof KharchaRouteRoute
+    }
+    '/_kharcha/app/kharcha/sign-up': {
+      id: '/_kharcha/app/kharcha/sign-up'
+      path: '/app/kharcha/sign-up'
+      fullPath: '/app/kharcha/sign-up'
+      preLoaderRoute: typeof KharchaAppKharchaSignUpRouteImport
+      parentRoute: typeof KharchaRouteRoute
+    }
     '/_parda/app/parda/': {
       id: '/_parda/app/parda/'
       path: '/app/parda'
@@ -4365,6 +4481,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ChaalAppChaalWatchChannelRouteImport
       parentRoute: typeof ChaalRouteRoute
     }
+    '/_kharcha/app/kharcha/_shell/account': {
+      id: '/_kharcha/app/kharcha/_shell/account'
+      path: '/account'
+      fullPath: '/app/kharcha/account'
+      preLoaderRoute: typeof KharchaAppKharchaShellAccountRouteImport
+      parentRoute: typeof KharchaAppKharchaShellRouteRoute
+    }
+    '/_kharcha/app/kharcha/_shell/home': {
+      id: '/_kharcha/app/kharcha/_shell/home'
+      path: '/home'
+      fullPath: '/app/kharcha/home'
+      preLoaderRoute: typeof KharchaAppKharchaShellHomeRouteImport
+      parentRoute: typeof KharchaAppKharchaShellRouteRoute
+    }
     '/_parda/app/parda/c/$slug': {
       id: '/_parda/app/parda/c/$slug'
       path: '/app/parda/c/$slug'
@@ -4718,6 +4848,41 @@ const ChaalRouteRouteChildren: ChaalRouteRouteChildren = {
 
 const ChaalRouteRouteWithChildren = ChaalRouteRoute._addFileChildren(
   ChaalRouteRouteChildren,
+)
+
+interface KharchaAppKharchaShellRouteRouteChildren {
+  KharchaAppKharchaShellAccountRoute: typeof KharchaAppKharchaShellAccountRoute
+  KharchaAppKharchaShellHomeRoute: typeof KharchaAppKharchaShellHomeRoute
+}
+
+const KharchaAppKharchaShellRouteRouteChildren: KharchaAppKharchaShellRouteRouteChildren =
+  {
+    KharchaAppKharchaShellAccountRoute: KharchaAppKharchaShellAccountRoute,
+    KharchaAppKharchaShellHomeRoute: KharchaAppKharchaShellHomeRoute,
+  }
+
+const KharchaAppKharchaShellRouteRouteWithChildren =
+  KharchaAppKharchaShellRouteRoute._addFileChildren(
+    KharchaAppKharchaShellRouteRouteChildren,
+  )
+
+interface KharchaRouteRouteChildren {
+  KharchaAppKharchaShellRouteRoute: typeof KharchaAppKharchaShellRouteRouteWithChildren
+  KharchaAppKharchaSignInRoute: typeof KharchaAppKharchaSignInRoute
+  KharchaAppKharchaSignUpRoute: typeof KharchaAppKharchaSignUpRoute
+  KharchaAppKharchaIndexRoute: typeof KharchaAppKharchaIndexRoute
+}
+
+const KharchaRouteRouteChildren: KharchaRouteRouteChildren = {
+  KharchaAppKharchaShellRouteRoute:
+    KharchaAppKharchaShellRouteRouteWithChildren,
+  KharchaAppKharchaSignInRoute: KharchaAppKharchaSignInRoute,
+  KharchaAppKharchaSignUpRoute: KharchaAppKharchaSignUpRoute,
+  KharchaAppKharchaIndexRoute: KharchaAppKharchaIndexRoute,
+}
+
+const KharchaRouteRouteWithChildren = KharchaRouteRoute._addFileChildren(
+  KharchaRouteRouteChildren,
 )
 
 interface PardaRouteRouteChildren {
@@ -5508,6 +5673,7 @@ const SiteRouteWithChildren = SiteRoute._addFileChildren(SiteRouteChildren)
 
 const rootRouteChildren: RootRouteChildren = {
   ChaalRouteRoute: ChaalRouteRouteWithChildren,
+  KharchaRouteRoute: KharchaRouteRouteWithChildren,
   PardaRouteRoute: PardaRouteRouteWithChildren,
   TasklineRouteRoute: TasklineRouteRouteWithChildren,
   DevRouteRoute: DevRouteRouteWithChildren,

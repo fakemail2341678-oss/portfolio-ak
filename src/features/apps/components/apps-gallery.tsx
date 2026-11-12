@@ -1,6 +1,8 @@
 import { Link } from "@tanstack/react-router";
 import { ArrowRightIcon } from "lucide-react";
 import { Page, PageHeader } from "@/components/page/page";
+import { KHARCHA_NAME } from "@/features/kharcha/brand"; // @kharcha
+import { kharchaLinks } from "@/features/kharcha/links"; // @kharcha
 import { TASKLINE_NAME } from "@/features/taskline/brand"; // @taskline
 import { tasklineLinks } from "@/features/taskline/links"; // @taskline
 import { TasklineMark } from "@/features/taskline/shell/taskline-mark"; // @taskline
@@ -37,6 +39,29 @@ export function AppsGallery() {
 				</span>
 			</Link>
 			{/* taskline:end */}
+			{/* kharcha:start */}
+			{/* Kharcha is a product of its own (decision 0277), featured like Taskline. Its look is scoped to its
+			    own pages, so the card shows its icon file rather than the kit's mark. */}
+			<Link
+				{...kharchaLinks.landing()}
+				className="group flex flex-col gap-4 rounded-xl border bg-surface-1 p-6 outline-none transition-colors hover:bg-surface-2 focus-visible:ring-[3px] focus-visible:ring-ring/50 sm:flex-row sm:items-center"
+				data-testid="kharcha-card"
+			>
+				<img src="/kharcha/icon.svg" alt="" width={48} height={48} className="size-12 rounded-md" />
+				<span className="flex min-w-0 flex-1 flex-col gap-1">
+					<span className="font-medium text-caption text-primary">{m.kharcha_gallery_label()}</span>
+					<span className="font-semibold text-heading">{KHARCHA_NAME}</span>
+					<span className="max-w-2xl text-muted-foreground text-sm">{m.kharcha_gallery_body()}</span>
+				</span>
+				<span className="inline-flex items-center gap-1 font-medium text-sm">
+					{m.kharcha_gallery_open()}
+					<ArrowRightIcon
+						className="size-4 transition-transform group-hover:translate-x-0.5 rtl:rotate-180"
+						aria-hidden
+					/>
+				</span>
+			</Link>
+			{/* kharcha:end */}
 			<ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
 				{APPS.map((app) => (
 					<li key={app.slug}>

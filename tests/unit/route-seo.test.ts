@@ -212,6 +212,7 @@ const INDEXABLE: ReadonlyArray<{
 		siteName: "Chaal",
 	},
 	// chaal:end
+	{ to: "/app/kharcha", label: "kharcha", context: {}, path: "/app/kharcha", siteName: "Kharcha" }, // @kharcha
 	// @strip-demo:indexable (the neutral landing page goes here when the portfolio is stripped)
 	// @new-feature:indexable
 ];

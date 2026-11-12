@@ -516,6 +516,16 @@ export const REVIEWED_PAGES: ReadonlyArray<ReviewedPage> = [
 	{ route: "/app/chaal/sign-up" },
 	{ route: "/app/chaal/$", path: "/app/chaal/no/such/page", status: 404, label: "unknown page" },
 	// chaal:end
+	// kharcha:start
+	// Kharcha (decisions 0277 and 0282): the landing and its sign-in pages for visitors; Home as a demo account (onboarded,
+	// with a shared group) and as an account new to Kharcha, whose first visit opens onboarding; the account page.
+	{ route: "/app/kharcha" },
+	{ route: "/app/kharcha/sign-in" },
+	{ route: "/app/kharcha/sign-up" },
+	{ route: "/app/kharcha/home", as: "kharcha" },
+	{ route: "/app/kharcha/home", as: "member", label: "first visit" },
+	{ route: "/app/kharcha/account", as: "kharcha" },
+	// kharcha:end
 	// @new-feature:reviewed-pages
 	// Errors
 	{ route: "(not found)", path: "/no-such-page", status: 404 },

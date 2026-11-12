@@ -1,5 +1,6 @@
 import "@tanstack/react-start/server-only";
-import { eq } from "drizzle-orm";
+import { eq, sql } from "drizzle-orm";
+import type { OnboardingInput } from "@/features/kharcha/schema";
 import { offeredCurrencies } from "@/features/kharcha/settings";
 import type { Amount, KharchaBalances, KharchaMe } from "@/features/kharcha/types";
 import { todayInZone } from "@/lib/i18n/date-only";
@@ -8,7 +9,8 @@ import { khProfile } from "@/server/db/schema";
 import { type KharchaServices, resolveMe } from "../access";
 import { byCurrency, pairBalances } from "../ledger";
 import { personDto } from "../people";
-import { revOf } from "../rev";
+import { bumpRevs, revOf } from "../rev";
+import { assertCurrencyOffered } from "../rules";
 import { getSettings } from "../settings";
 
 /** The caller's own reads (docs/guides/kharcha.md "The caller"): who they are in Kharcha, their `rev` and their totals. */
@@ -25,6 +27,7 @@ export async function getMe({ db, user }: KharchaServices): Promise<KharchaMe> {
 			defaultSplit: profile.defaultSplit,
 			payNote: profile.payNote,
 			onboarded: profile.onboardedAt !== null,
+			start: profile.start,
 		},
 		today: todayInZone(profile.timeZone),
 		currencies: offeredCurrencies(await getSettings(db)),
@@ -52,4 +55,26 @@ export async function getBalances({ db, user }: KharchaServices): Promise<Kharch
 	const amounts = (side: Map<string, number>): Amount[] =>
 		[...side].map(([currency, amountMinor]) => ({ currency, amountMinor })).sort(byCurrency);
 	return { owed: amounts(owed), owe: amounts(owe) };
+}
+
+/**
+ * Onboarding (Task 88): the home currency (one the admin offers), the time zone and what
+ * they came for. Skipping sends what is set already; either way it is done, and the
+ * dialog never comes back. Their own open pages refetch (`rev`).
+ */
+export async function completeOnboarding({ db, user }: KharchaServices, input: OnboardingInput): Promise<void> {
+	const me = await resolveMe(db, user);
+	assertCurrencyOffered(await getSettings(db), input.homeCurrency);
+	await db.transaction(async (tx) => {
+		await tx
+			.update(khProfile)
+			.set({
+				homeCurrency: input.homeCurrency,
+				timeZone: input.timeZone,
+				start: input.start,
+				onboardedAt: sql`coalesce(${khProfile.onboardedAt}, now())`,
+			})
+			.where(eq(khProfile.userId, user.id));
+		await bumpRevs(tx, [me.personId]);
+	});
 }

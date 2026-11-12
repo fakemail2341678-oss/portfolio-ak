@@ -85,3 +85,13 @@ export const money = (code: string, { min = 0, max }: { min?: number; max?: numb
 			allowed === 0 ? m.validation_money_whole() : m.validation_money_decimals({ digits: formatNumber(allowed) }),
 	});
 };
+
+/** A currency for a picker: "NPR · Nepalese Rupee" / "NPR · नेपाली रूपैयाँ", the code alone where Intl has no name. */
+export const currencyLabel = (code: string, locale: Locale = getLocale()): string => {
+	try {
+		const name = new Intl.DisplayNames([locale], { type: "currency" }).of(code);
+		return name && name !== code ? `${code} · ${name}` : code;
+	} catch {
+		return code;
+	}
+};

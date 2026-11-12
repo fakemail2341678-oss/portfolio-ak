@@ -1,6 +1,9 @@
 import { createServerFn } from "@tanstack/react-start";
-import type { KharchaBalances, KharchaMe } from "@/features/kharcha/types";
+import { onboardingInput } from "@/features/kharcha/schema";
+import type { KharchaBalances, KharchaHome, KharchaMe } from "@/features/kharcha/types";
+import { zodInput } from "@/functions/_lib/validator";
 import { requireKharchaUser, withKharchaServices } from "@/middleware/kharcha";
+import * as home from "@/server/kharcha/home/service";
 import * as me from "@/server/kharcha/me/service";
 
 /**
@@ -20,3 +23,13 @@ export const getKharchaRev = createServerFn({ method: "GET" })
 export const getKharchaBalances = createServerFn({ method: "GET" })
 	.middleware([requireKharchaUser, withKharchaServices])
 	.handler(({ context }): Promise<KharchaBalances> => me.getBalances(context));
+
+/** Home: to-dos, totals, this month against last, recent activity. */
+export const getKharchaHome = createServerFn({ method: "GET" })
+	.middleware([requireKharchaUser, withKharchaServices])
+	.handler(({ context }): Promise<KharchaHome> => home.getHome(context));
+
+export const completeKharchaOnboarding = createServerFn({ method: "POST" })
+	.middleware([requireKharchaUser, withKharchaServices])
+	.validator(zodInput(onboardingInput))
+	.handler(({ data, context }): Promise<void> => me.completeOnboarding(context, data));

@@ -2,6 +2,7 @@ import { beforeAll, beforeEach, describe, expect, it } from "vitest";
 import * as expenses from "@/server/kharcha/expenses/service";
 import * as friends from "@/server/kharcha/friends/service";
 import * as groups from "@/server/kharcha/groups/service";
+import * as home from "@/server/kharcha/home/service";
 import * as me from "@/server/kharcha/me/service";
 import * as payments from "@/server/kharcha/payments/service";
 import { createTestDb } from "../utils/test-db";
@@ -348,5 +349,42 @@ describe("Kharcha's access matrix", () => {
 		expect(await groups.listGroups(as("admin"))).toEqual([]);
 		expect(await friends.listFriends(as("guest"))).toEqual([]);
 		expect(await me.getBalances(as("stranger"))).toEqual({ owed: [], owe: [] });
+	});
+
+	it("shows Home only what the caller may see (Task 88)", async () => {
+		const stranger = await home.getHome(as("stranger"));
+		expect(stranger.recent).toEqual([]);
+		expect(stranger.balances).toEqual({ owed: [], owe: [] });
+		expect((await home.getHome(as("admin"))).recent).toEqual([]);
+
+		// The friend: the two people's thread (the shared expense, the payment), never the group's.
+		const friend = await home.getHome(as("friend"));
+		expect(friend.recent.length).toBeGreaterThan(0);
+		expect(friend.recent.every((line) => line.group === null)).toBe(true);
+		expect(friend.recent.some((line) => line.kind === "payment.created")).toBe(true);
+
+		// The former member: the group up to leaving; nothing the member did after.
+		const former = await home.getHome(as("former"));
+		expect(former.recent.some((line) => line.kind === "member.left" && line.subject?.isMe)).toBe(true);
+		expect(former.recent.some((line) => line.actor?.id === world.people.member)).toBe(false);
+
+		// The member sees what they did in the group, the payment in words.
+		const member = await home.getHome(as("member"));
+		const paid = member.recent.find((line) => line.kind === "payment.created");
+		expect(paid?.payment?.from?.isMe).toBe(true);
+		expect(paid?.payment?.amount).toEqual({ currency: "NPR", amountMinor: 1_000 });
+	});
+
+	it("keeps onboarding the caller's own (Task 88)", async () => {
+		await me.completeOnboarding(as("guest"), { homeCurrency: "USD", timeZone: "Asia/Kolkata", start: "split" });
+		const after = await me.getMe(as("guest"));
+		expect(after.profile).toMatchObject({
+			homeCurrency: "USD",
+			timeZone: "Asia/Kolkata",
+			start: "split",
+			onboarded: true,
+		});
+		expect(after.rev).toBeGreaterThan(0);
+		expect((await me.getMe(as("stranger"))).profile.onboarded).toBe(false);
 	});
 });

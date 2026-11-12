@@ -602,7 +602,13 @@ const CHAAL_FUNCTIONS: Record<string, ReadonlyArray<string>> = {
  * matrix: tests/server/kharcha-access.test.ts).
  */
 const KHARCHA_FUNCTIONS: Record<string, ReadonlyArray<string>> = {
-	"kharcha/me.ts": ["getKharchaMe", "getKharchaRev", "getKharchaBalances"],
+	"kharcha/me.ts": [
+		"getKharchaMe",
+		"getKharchaRev",
+		"getKharchaBalances",
+		"getKharchaHome",
+		"completeKharchaOnboarding",
+	],
 	"kharcha/expenses.ts": [
 		"getKharchaExpense",
 		"createKharchaExpense",

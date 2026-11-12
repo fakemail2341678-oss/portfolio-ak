@@ -156,6 +156,10 @@ export default defineConfig(async ({ command, mode }) => {
 					"/app/chaal/manifest.webmanifest": { handler: "./src/server/routes/chaal-manifest.ts", method: "GET" },
 					"/ne/app/chaal/manifest.webmanifest": { handler: "./src/server/routes/chaal-manifest.ts", method: "GET" },
 					// chaal:end
+					// kharcha:start
+					"/app/kharcha/manifest.webmanifest": { handler: "./src/server/routes/kharcha-manifest.ts", method: "GET" },
+					"/ne/app/kharcha/manifest.webmanifest": { handler: "./src/server/routes/kharcha-manifest.ts", method: "GET" },
+					// kharcha:end
 				},
 				// Security headers on every response (pages, assets, API). The CSP is per
 				// request (nonce) and is added by src/middleware/security-headers.ts.

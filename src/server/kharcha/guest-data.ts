@@ -422,6 +422,7 @@ async function claim(tx: Tx, fromUserId: string, toUserId: string): Promise<void
 				timeZone: from.timeZone,
 				defaultSplit: from.defaultSplit,
 				payNote: from.payNote,
+				start: from.start,
 				onboardedAt: from.onboardedAt,
 			})
 			.where(eq(khProfile.userId, toUserId));

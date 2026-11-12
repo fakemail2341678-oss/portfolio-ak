@@ -18,7 +18,7 @@ export const parseGuestScope = (value: string | null | undefined) =>
 
 /**
  * Sets the scope for the guest about to start (a minute is plenty for one sign-in).
- * Only Parda calls it today; a project without that layer keeps it as core (0244).
+ * Parda and Kharcha call it; a project without those layers keeps it as core (0244).
  *
  * @public
  */

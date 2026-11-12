@@ -1,0 +1,1 @@
+ALTER TABLE "kh_profile" ADD COLUMN "start" text DEFAULT 'track' NOT NULL;

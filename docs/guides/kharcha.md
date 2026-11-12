@@ -2,7 +2,7 @@
 
 Kharcha (खर्च, "spending") is the personal expense tracker and bill splitter at `/app/kharcha` (Part 8 of [PLAN.md](../PLAN.md), section 14): your own spending, and bills split with friends and groups, with balances per currency and settling up recorded. Visitors try it as guests with sample data.
 
-**Status:** Task 86 (the foundation) is done: the tables, the money core, people, access, the services and their functions, the guests' sample data and the demo accounts. Task 87 (the design direction) is done: the look, "Bahi Khata", its tokens and the kit, still with no pages. Tasks 88–97 add the pages and the rest (PLAN 14.3). Decisions 0277 (the layer, people, access, guests), 0278 (money and the ledger), 0279 (the bundle budget) and 0281 (the look).
+**Status:** Task 86 (the foundation) is done: the tables, the money core, people, access, the services and their functions, the guests' sample data and the demo accounts. Task 87 (the design direction) is done: the look, "Bahi Khata", its tokens and the kit. Task 88 is done: the section, the landing and sign-in pages, the signed-in shell, Home and onboarding. Tasks 89–97 add the rest (PLAN 14.3). Decisions 0277 (the layer, people, access, guests), 0278 (money and the ledger), 0279 (the bundle budget), 0281 (the look) and 0282 (the section, shell and Home).
 
 ## Where things are
 
@@ -20,7 +20,11 @@ Kharcha is its own strip-demo layer, `kharcha` (`pnpm strip-demo --keep-kharcha`
 | History and freshness | `src/server/kharcha/activity.ts` (`recordActivity`, `fieldChanges`, `pairOf`), `rev.ts` (`bumpRevs`, `revOf`, `saveVersioned`) |
 | Rules and limits | `src/server/kharcha/rules.ts` (offered currencies, who a change touches, former members), `settings.ts` (`getSettings`, `quotasFor`, `assertQuota`) |
 | Services | `src/server/kharcha/{me,expenses,payments,groups,friends}/service.ts` (and `expenses/repository.ts`) |
-| Functions | `src/functions/kharcha/{me,expenses,payments,groups,friends}.ts`, each `requireKharchaUser` → `withKharchaServices`; listed in `knip.json`'s entries until their pages exist (Task 88) |
+| Functions | `src/functions/kharcha/{me,expenses,payments,groups,friends}.ts`, each `requireKharchaUser` → `withKharchaServices`; listed in `knip.json`'s entries until every one has a caller (Tasks 89–91) |
+| Section and pages | `src/routes/_kharcha/route.tsx` (the brand, fonts, noindex, its 404), `src/routes/_kharcha/app/kharcha/{index,sign-in,sign-up}.tsx`, then `_shell/{route,home,account}.tsx`; `src/features/kharcha/{brand,links,queries}.ts` |
+| Shell | `src/features/kharcha/shell/`: `section.tsx` (the layouts and 404s), `public-frame.tsx` (the landing's and the auth pages' frames), `kharcha-shell.tsx` (rail, phone bar, tabs, +, guest banner, freshness), `kharcha-palette.tsx`, `shortcuts-dialog.tsx`, `kharcha-user-menu.tsx`, `create-menu.tsx` and `create-dialogs.tsx` (the + menu), `actions.tsx` (`useKharchaActions`, `useKharchaUserId`), `kharcha-art.tsx` |
+| Home and the landing | `src/features/kharcha/home/` (`kharcha-home.tsx`, `onboarding.tsx`, `recent-line.tsx`), `src/server/kharcha/home/service.ts` (`getHome`); `src/features/kharcha/landing/`, `src/features/kharcha/auth/` |
+| Manifest and icons | `src/server/kharcha/manifest.ts`, `src/server/routes/kharcha-manifest.ts` (in `vite.config.ts`), `public/kharcha/` |
 | Middleware | `src/middleware/kharcha.ts` |
 | Guests and accounts going | `src/server/kharcha/guest-data.ts` (`KHARCHA_GUEST_DATA`: the sample, the claim, `forget`), `forget.ts` (`forgetUsers`, `forgetUser`) |
 | Demo accounts | `scripts/lib/kharcha-seed.ts`, `pnpm db:seed-kharcha` |
@@ -82,10 +86,25 @@ Everything points at `kh_person`, never at a user: a payer, a share, a payment's
 
 - **Every write is one transaction:** resolve access, make the change, `writeLedger`, `recordActivity`, `bumpRevs` for everyone the change touches (the people on it and the group's members). Notifications (Task 92) will be produced in the same transaction and delivered after it.
 - **Forms save with `version`** (`saveVersioned`): a save from an older version is a stale CONFLICT. Deleting and restoring are guarded by the row's own state, so two people deleting at once leave one line of history.
-- **Freshness:** `kh_profile.rev` goes up for everyone a change touches; open pages will poll `getKharchaRev` (Task 88). No websockets (0209).
+- **Freshness:** `kh_profile.rev` goes up for everyone a change touches; the shell polls `getKharchaRev` every 15 s while the page is visible and on focus, and a moved `rev` refetches every query under `kharchaKeys.user(userId)`. A page's queries go under that key. No websockets (0209).
 - **History** (`kh_activity`): a group's thread (`group_id`), the thread of two people (`person_lo` < `person_hi`), or only its expense or payment. An edit writes one row per changed field (`{ field, from, to }`; who paid and the split as a whole). Who it was done to is `subject_id`, never a key in `data`, so merging people is an indexed update.
 - **Quotas** (`assertQuota`, under `lockQuota`): expenses, payments, groups, members per group and friends per person, from `kh_settings` (defaults in `settings.ts`), smaller for guests. The admin changes them in Task 96.
 - **Currencies:** a new expense, payment or group must be in a currency the admin offers (`kh_settings`; empty means all of `CURRENCIES`); what exists keeps its own.
+
+## The section and the shell (0282)
+
+- **The section:** `/_kharcha` is pathless: `staticData: { brand: KHARCHA_BRAND }` puts `data-section="kharcha"` on `<html>`, which scopes `kharcha.css`; the browser's colour is the bookcloth. Its head adds `kharchaFontPreloads(locale)` and noindex; only the landing overrides it with `seo({ siteName: KHARCHA_NAME })` and is in `KHARCHA_SITEMAP` and the route-SEO test's `INDEXABLE`. Private pages use `kharchaHead(title)`.
+- **Links** go through `kharchaLinks` (`links.ts`), redirects through `KHARCHA_PATHS`.
+- **Frames:** the landing and a visitor's 404 use `KharchaPublicFrame` (a red header); sign-in and sign-up `KharchaAuthFrame` (a page of the book beside the form, `KharchaArt`); everything under `_shell` is in `KharchaShell`. `_shell` sends visitors to Kharcha's sign-in and lets guests in; `/account` sends a guest to sign-up.
+- **The shell:** on a laptop the rail (`md` and up: the mark, the pages, Search, the caller's plate with the user menu); on a phone the red top bar, bottom tabs and the floating +. `NAV` in `kharcha-shell.tsx` lists the pages: a page joins it with its route (Spend in 89, People in 90, Insights in 94). The user menu holds the account (sign-up for a guest), the other language, the theme, Admin when allowed and sign out.
+- **Actions:** `useKharchaActions()` opens the palette, the shortcuts or one of the + menu's dialogs from any page. A new action goes in `CREATE_ACTIONS` (`actions.tsx`), `CREATE_ITEMS` (`create-menu.tsx`, which the palette lists too) and `create-dialogs.tsx`. A shortcut goes in `useHotkeys` and the shortcuts dialog's rows.
+- **Icons:** `public/kharcha/icon.svg` holds ख from Laila 700 as a path (read from the font file), on the cloth with the thread under it; the PNGs (32, 180, 192, 512, maskable 512) were rendered from it with Playwright. The `/apps` gallery's card shows the SVG, since the kit's colours exist only inside the section.
+
+## Home and onboarding (0282)
+
+- **Home** (`getKharchaHome`): to-dos first (none yet; each task adds its kinds to `KharchaHome.todos` with its route), then the balances (owed and owe per currency, sums over people, how many people they are open with) and this month against last (the caller's share, refunds against it, per currency), whichever the caller came for first, then Recent: the last eight lines of activity they may see, an edit's rows folded into one line (`recentSentence` words each kind).
+- **Onboarding** is a card at the top of Home while `profile.onboarded` is false: `start` (`track` or `split`), the home currency and the time zone (the device's, once the page runs in the browser). Skip saves what is set; either way it's done. A guest's choices go to the account on claiming.
+- **The + menu** (the New button on Home, the floating + on a phone) holds Add a friend and New group; Add expense joins it in 89.
 
 ## Guests and the demo accounts
 
@@ -98,7 +117,9 @@ Everything points at `kh_person`, never at a user: a payer, a share, a payment's
 
 - `tests/unit/kharcha-money.test.ts`: each split method, rounding, debts, balances, simplify, and properties over random expenses (a seeded generator: a failure prints its run and input).
 - `tests/server/kharcha.test.ts`: the services, with `expectLedgerConsistent(db)` after each kind of change: every expense's payers and shares add up, every source's ledger rows are exactly the money core's debts (none in the trash), and the nets of every currency, overall and per group, sum to zero.
-- `tests/server/kharcha-access.test.ts`: the matrix. `kharcha-people.test.ts`: `ensurePerson`, `mergePerson` reference by reference, an account going. `kharcha-seed.test.ts`: the guest's sample, the claim, expiry, the demo accounts.
+- `tests/server/kharcha-access.test.ts`: the matrix, and what Home shows each caller. `kharcha-people.test.ts`: `ensurePerson`, `mergePerson` reference by reference, an account going. `kharcha-seed.test.ts`: the guest's sample, the claim, expiry, the demo accounts.
+- `e2e/flows/kharcha.spec.ts`: a guest tries it from the landing, is onboarded once and adds a friend; a demo account signs in on Kharcha's page, opens the palette, meets a 404 in the shell and signs out to the landing. The review covers the landing, sign-in, sign-up, Home (the demo account, and an account's first visit) and the account page; the e2e user `kharcha` is asha@kharcha.example.com.
+- The "Kharcha/Shell" stories: Home in the shell on a laptop, the + menu, a guest's first visit, a phone.
 
 ## Pitfalls already solved
 
@@ -108,4 +129,7 @@ Everything points at `kh_person`, never at a user: a payer, a share, a payment's
 - **Sentry's release snippet** (a build with `SENTRY_*` in `.env`) isn't counted by `check-bundle.ts` (0279).
 - **The margin rule is drawn above the lines** (`before:z-10` on `LedgerPage`): each `LedgerLine` is positioned and painted on the page colour, so a rule beneath them disappears.
 - **A fix badge truncates** inside its column: a nowrap badge wider than a phone's middle column spilled under the amount beside it.
+- **The shell never swaps frames while signing out** (0282): sign-out clears the session before the page is left; a layout that fell back to the public frame remounted Home, its queries ran with no session, and the 401 sent the browser to `/login`. Pages read the caller's id through `useKharchaUserId()`.
+- **A modal on load fails the browser review:** the first tab stop must be the skip link, so onboarding is a card, not a dialog.
+- **Links on the red header** take the cloth's colours (`text-kh-cloth-muted`, the current one `text-kh-on-cloth`): the shared language switcher's own greys fail contrast there.
 - **`.storybook/mocks/kharcha.ts` is the sample data;** the section decorator is `kharcha-section.tsx`, since `kharcha.tsx` would resolve to the same import.

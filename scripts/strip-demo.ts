@@ -373,10 +373,15 @@ const SPECS: Record<Layer, LayerSpec> = {
 			".storybook/mocks/kharcha-section.tsx",
 			"tests/unit/kharcha-tokens.test.ts",
 			"docs/design/kharcha.md",
+			// The section, its shell, Home and its manifest (Task 88, decision 0282).
+			"src/routes/_kharcha",
+			"src/server/routes/kharcha-manifest.ts",
+			"public/kharcha",
+			"e2e/flows/kharcha.spec.ts",
 		],
 		packageScripts: ["db:seed-kharcha"],
 		crons: [],
-		// Its functions have no pages until Task 88; the entry goes when they do.
+		// Its functions arrive before their pages (Tasks 89 to 91 call the rest); the entry goes when every one has a caller.
 		knipEntries: ["src/functions/kharcha/*.ts"],
 		schema: [],
 	},

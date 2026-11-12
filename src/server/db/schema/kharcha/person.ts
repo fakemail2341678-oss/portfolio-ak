@@ -14,7 +14,7 @@ import {
 	uuid,
 } from "drizzle-orm/pg-core";
 import type { SplitMethod } from "@/features/kharcha/money/split";
-import type { KharchaColor } from "@/features/kharcha/types";
+import type { KharchaColor, KharchaStart } from "@/features/kharcha/types";
 import { user } from "../auth";
 
 /**
@@ -75,6 +75,8 @@ export const khProfile = pgTable(
 		/** Focus mode: only unread and unsettled conversations (Task 92). */
 		focus: boolean().notNull().default(false),
 		onboardedAt: timestamp({ withTimezone: true }),
+		/** What they said they came for at onboarding (Task 88): Home shows that first. */
+		start: text().$type<KharchaStart>().notNull().default("track"),
 		/** How friends can pay them, in their own words. */
 		payNote: text().notNull().default(""),
 		/** Set by the admin: this person can't send invites or reminders (Task 96). */

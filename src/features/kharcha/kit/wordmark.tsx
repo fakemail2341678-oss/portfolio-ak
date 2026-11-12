@@ -9,7 +9,16 @@ const DEVANAGARI = "खर्च";
  * The wordmark: "Kharcha" in Laila with "खर्च" beside it, the locale's script first. On the
  * cloth it is light; on a page, ink. One accessible name in the locale's script.
  */
-export function KharchaWordmark({ className, onCloth = false }: { className?: string; onCloth?: boolean }) {
+export function KharchaWordmark({
+	className,
+	onCloth = false,
+	compact = false,
+}: {
+	className?: string;
+	onCloth?: boolean;
+	/** Only the script of the locale below `sm`, where a header is short of room. */
+	compact?: boolean;
+}) {
 	const nepali = getLocale() === "ne";
 	const [first, second] = nepali ? [DEVANAGARI, LATIN] : [LATIN, DEVANAGARI];
 	return (
@@ -23,7 +32,10 @@ export function KharchaWordmark({ className, onCloth = false }: { className?: st
 			aria-label={nepali ? DEVANAGARI : LATIN}
 		>
 			<span className="text-[1.25em] leading-none">{first}</span>
-			<span className="text-[0.875em] leading-none opacity-80" lang={nepali ? "en" : "ne"}>
+			<span
+				className={cn("text-[0.875em] leading-none opacity-80", compact && "max-sm:hidden")}
+				lang={nepali ? "en" : "ne"}
+			>
 				{second}
 			</span>
 		</span>

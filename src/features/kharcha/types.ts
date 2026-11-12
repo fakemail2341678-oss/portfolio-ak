@@ -1,4 +1,4 @@
-import type { IsoDate } from "@/lib/i18n/date-only";
+import type { IsoDate, IsoMonth } from "@/lib/i18n/date-only";
 import type { Transfer } from "./money/simplify";
 import type { Split, SplitMethod } from "./money/split";
 
@@ -77,6 +77,10 @@ export type ExpenseKind = (typeof EXPENSE_KINDS)[number];
 /** How long a deleted expense or payment can be restored; the daily job purges it after (Task 92). */
 export const TRASH_DAYS = 30;
 
+/** What someone came for, asked at onboarding (Task 88): their own spending, or splitting with people. Home shows it first. */
+export const KHARCHA_STARTS = ["track", "split"] as const;
+export type KharchaStart = (typeof KHARCHA_STARTS)[number];
+
 /** A group's own settings (`kh_group.settings`): only what was changed is stored. */
 export type GroupSettings = { defaultSplit?: SplitMethod; simplify?: boolean };
 
@@ -103,6 +107,7 @@ export type KharchaProfile = {
 	/** How friends can pay the caller, in their own words ("eSewa 98…"). */
 	payNote: string;
 	onboarded: boolean;
+	start: KharchaStart;
 };
 
 /** The caller in Kharcha: their person, their preferences, today in their time zone and the limits that apply. */
@@ -119,6 +124,44 @@ export type KharchaMe = {
 
 /** What the caller owes and is owed in all, per currency. */
 export type KharchaBalances = { owed: Amount[]; owe: Amount[] };
+
+/**
+ * One line of Home's "Recent": an activity row the caller may see, in words. `actor` and
+ * `subject` are people as the caller names them (null once gone, or Kharcha itself);
+ * `title` is what it was about (an expense's title, a group's name).
+ */
+export type HomeActivity = {
+	id: string;
+	kind: ActivityKind;
+	at: string;
+	actor: KharchaPerson | null;
+	subject: KharchaPerson | null;
+	title: string;
+	/** The group it happened in, by name. */
+	group: string | null;
+	/** A payment: who paid whom, and how much. */
+	payment: { from: KharchaPerson | null; to: KharchaPerson | null; amount: Amount } | null;
+};
+
+/**
+ * Home (PLAN 14.5 "UX"): the caller's to-dos (each later task adds its kinds: receipts,
+ * debts to settle, budgets, recurring, duplicates), their totals, this month's spending
+ * against last month's (their share, per currency), and recent activity.
+ */
+export type KharchaHome = {
+	/** None yet: each kind arrives with its route and data (PLAN 14.3). */
+	todos: never[];
+	balances: KharchaBalances;
+	/** How many friends and groups the open balances are spread over. */
+	openWith: number;
+	/** "YYYY-MM" in the caller's time zone, and what they spent in it and the month before (their share). */
+	month: {
+		current: IsoMonth;
+		previous: IsoMonth;
+		spent: Array<{ currency: string; current: number; previous: number }>;
+	};
+	recent: HomeActivity[];
+};
 
 export type ExpenseCan = { edit: boolean; delete: boolean; restore: boolean };
 

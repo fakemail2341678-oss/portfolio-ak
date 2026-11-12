@@ -3740,7 +3740,7 @@ As 12.1, with these differences:
 | --- | --- | --- | --- |
 | 86 | Foundation: the `kharcha` layer, people, the money core (splits, ledger, balances), access, activity, guests | xhigh | Done |
 | 87 | Design direction: UX notes, comps (the owner picks), tokens, brand, the kit | high | Done |
-| 88 | Shell, brand, landing, auth pages, Home, onboarding, the create menu | high | Planned |
+| 88 | Shell, brand, landing, auth pages, Home, onboarding, the create menu | high | Done |
 | 89 | Expenses and receipts: add and edit, the expense panel, categories, tags, methods, rules, a first Spend list | xhigh | Planned |
 | 90 | Friends, groups and splitting: people, invites and joining, groups, the split editor, threads, freshness | xhigh | Planned |
 | 91 | Balances and settling up: balances everywhere, settle up, simplify, remind | high | Planned |
@@ -4158,26 +4158,31 @@ Kharcha's data, money core, access and server, tested on PGlite, with no UI; Exp
 
 **Left for the owner:** nothing.
 
-### Task 88: Shell, brand and Home (planned)
+### Task 88: Shell, brand and Home (done)
 
-- **The section:** the `_kharcha` route, brand, `links.ts`, the title suffix `· Kharcha`, the manifest and icons (`public/kharcha/`), its own 404 and error pages.
-- **Public pages:**
-  - the landing (`seo()`, JSON-LD, sitemap);
-  - `/sign-in` and `/sign-up` in a Kharcha auth frame;
-  - `/account` (the shared account sections).
-- **The signed-in shell** (14.5, "UX"):
-  - the nav rail and list pane on desktop; bottom tabs and the floating **+** on phones;
-  - the guest banner and `ConfirmProvider`;
-  - the palette and the shortcuts dialog;
-  - the user menu: language, theme, Admin when allowed, sign out.
-- **Freshness:** `getMyRev` polling.
-- **Home:** the to-do list, the totals and recent activity, from what exists so far. Later tasks add their own to-dos.
-- **Onboarding** on the first visit, skippable:
-  - home currency and time zone;
-  - "track my spending" or "split with people", which sets what Home shows first.
-- **The + menu,** with what exists. Add expense arrives in 89.
-- **The `/apps` gallery:** a featured Kharcha card, inside markers.
-- **Tests, stories, review pages.**
+**Done** (decision 0282; the guide's "The section and the shell" and "Home and onboarding").
+
+**What changed:**
+- **The section:** `src/routes/_kharcha/route.tsx` (pathless: `KHARCHA_BRAND` on `<html>`, `kharchaFontPreloads`, noindex, its 404), `brand.ts`, `links.ts` (`kharchaLinks`, `KHARCHA_PATHS`, `KHARCHA_SITEMAP`), the title suffix `· Kharcha`, the manifest (`src/server/kharcha/manifest.ts`, a Nitro route per locale in `vite.config.ts`), the icons in `public/kharcha/` (ख from Laila 700 as an SVG path on the cloth with the thread, PNGs rendered with Playwright).
+- **Public pages:** the landing (`seo()`, `SoftwareApplication`, the sitemap; "Try it" starts a guest scoped to `kharcha`), sign-in and sign-up in a Kharcha auth frame, `/account` in the shell (a guest goes to sign-up).
+- **The shell:** the red rail on a laptop (the mark, Home, Search, the caller's plate and menu), the red top bar, bottom tabs and the floating + on a phone; the guest banner, `ConfirmProvider`, the palette (⌘K) and the shortcuts dialog (`?`); the user menu (account or sign-up, language, theme, Admin when allowed, sign out). Only Home is in the nav: pages join with their routes.
+- **Freshness:** the shell polls `getKharchaRev` every 15 s while visible and on focus; a moved `rev` refetches `kharchaKeys.user`.
+- **Home** (`getKharchaHome`): to-dos (none yet), owed and owe per currency, this month against last (the caller's share), recent activity the caller may see, edits folded to one line.
+- **Onboarding:** a card at the top of Home, not a dialog (a modal on load takes the first tab stop from the skip link): `kh_profile.start` (`track`/`split`, migration `0050_kharcha_onboarding`), the home currency, the time zone (the device's suggested). Skip saves what is set.
+- **The + menu:** Add a friend and New group (Task 86's functions) as small dialogs; Add expense arrives in 89.
+- **`/apps`:** a featured Kharcha card, in `kharcha` markers (it shows the icon file: the kit's colours exist only in the section).
+- **Core:** `currencyLabel(code)` in `src/lib/i18n/currency.ts`; `setGuestScope` now also used by Kharcha.
+- **Tests:** two Home and onboarding cases in `kharcha-access.test.ts` (what each caller's Home shows; onboarding is the caller's own); the guard test's `kharcha/me.ts` row (`getKharchaHome`, `completeKharchaOnboarding`); the route-SEO `INDEXABLE` entry; the "Kharcha/Shell" stories (4); `e2e/flows/kharcha.spec.ts` (2 flows); six reviewed pages in `e2e/support/pages.ts` and the e2e user `kharcha` (asha@kharcha.example.com); 115 `kharcha_*` messages in both languages.
+- **Bundle:** the entry is 296.8 kB of 300 (295.0 before: six route files).
+
+**Deviations:**
+- `getMyRev` is Task 86's `getKharchaRev`.
+- Onboarding's choice is a new column `start`: the planned `focus` is focus mode (Task 92).
+- The + menu holds Add a friend and New group, since their functions exist; their pages and invites stay in Task 90.
+
+**Gates:** typecheck, check, knip, `i18n:check`, build and the bundle check green. Tests on what changed: the unit, server and i18n files touched (198 + 11 tests), the Kharcha and apps stories in both Storybook projects (29 each), and e2e for Kharcha (the flows and the review of its six pages × 12, with `/apps`: 98 passed).
+
+**For the owner:** run `pnpm db:migrate` on Neon (`0050_kharcha_onboarding`).
 
 ### Task 89: Expenses and receipts (planned)
 

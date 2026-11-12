@@ -2,7 +2,7 @@ import { z } from "zod";
 import { CURRENCIES } from "@/lib/i18n/currency";
 import { email, isoDate, optionalText, required } from "@/lib/validation";
 import { FULL_BP, MAX_AMOUNT_MINOR, MAX_WEIGHT, SPLIT_METHODS } from "./money/split";
-import { EXPENSE_KINDS, GROUP_ICONS, GROUP_KINDS, KHARCHA_COLORS } from "./types";
+import { EXPENSE_KINDS, GROUP_ICONS, GROUP_KINDS, KHARCHA_COLORS, KHARCHA_STARTS } from "./types";
 
 /**
  * Kharcha's inputs, checked on the server (and by the forms from Task 88). Amounts are
@@ -185,3 +185,29 @@ export type CreateGroupInput = z.infer<typeof createGroupInput>;
 export type UpdateGroupInput = z.infer<typeof updateGroupInput>;
 export type AddFriendInput = z.infer<typeof addFriendInput>;
 export type UpdateFriendInput = z.infer<typeof updateFriendInput>;
+
+/** An IANA time zone this runtime knows ("Asia/Kathmandu"): `Intl` throws on any other. */
+export const timeZone = z
+	.string()
+	.min(1)
+	.max(64)
+	.refine((value) => {
+		try {
+			new Intl.DateTimeFormat("en", { timeZone: value });
+			return true;
+		} catch {
+			return false;
+		}
+	});
+
+/**
+ * Onboarding (Task 88): home currency, time zone and what they came for. Skipping sends
+ * what is already set, so the dialog never comes back either way.
+ */
+export const onboardingInput = z.strictObject({
+	homeCurrency: currency,
+	timeZone,
+	start: z.enum(KHARCHA_STARTS),
+});
+
+export type OnboardingInput = z.infer<typeof onboardingInput>;
