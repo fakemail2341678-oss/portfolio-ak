@@ -1,0 +1,295 @@
+/*
+ * "Bahi Khata": the design system of Kharcha at /app/kharcha (docs/guides/kharcha.md, "The look";
+ * decision 0281; the direction contract in .impeccable/surfaces/kharcha.md; the record in
+ * docs/design/kharcha.md).
+ *
+ * Every friend and every group is a page in the red cloth-bound shop ledger: red bookcloth
+ * owns the nav and the one primary action, edged with a line of yellow binding thread; pages
+ * are ruled in faint blue with dates left of a red margin rule; a total is ruled twice under
+ * it, and settling strikes a line through in red ink. Owed is a ledger green and owe a burnt
+ * ochre: brand red never means debt, and money never rides on colour alone (words and an
+ * arrow too). A problem (a fix badge, a split that doesn't add up) is hatched.
+ *
+ * Everything is scoped to html[data-section="kharcha"], which the root sets from the
+ * section's brand (src/lib/section-brand.ts, Task 88), so the admin's Graphite and the
+ * other layers are untouched. The rules also redefine Graphite's tokens, so the shared kit
+ * (buttons, menus, dialogs, which portal to <body>) takes this look.
+ *
+ * tests/unit/kharcha-tokens.test.ts checks every text pair at 4.5:1 in both themes, and the
+ * people's colours under white initials. Change a value, run that test.
+ */
+
+/*
+ * Laila 700 (Indian Type Foundry, OFL) sets display type in both scripts: titles, the
+ * wordmark and hero amounts. One weight, a static cut per script (Latin 18.9 kB, Latin
+ * extended 3.8 kB, Devanagari 92.5 kB). Declared here rather than through Fontsource's
+ * stylesheet, to set the vertical metrics to the glyphs' real reach, measured in Chrome:
+ * Latin 1.01 / 0.27 em with its accents, Devanagari 1.08 / 0.44 em with its vowel signs.
+ */
+@font-face {
+	font-family: "Kharcha Display";
+	font-style: normal;
+	font-display: swap;
+	font-weight: 700;
+	src: url("../../node_modules/@fontsource/laila/files/laila-latin-700-normal.woff2") format("woff2");
+	unicode-range:
+		U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+	ascent-override: 102%;
+	descent-override: 28%;
+	line-gap-override: 0%;
+}
+
+@font-face {
+	font-family: "Kharcha Display";
+	font-style: normal;
+	font-display: swap;
+	font-weight: 700;
+	src: url("../../node_modules/@fontsource/laila/files/laila-latin-ext-700-normal.woff2") format("woff2");
+	unicode-range:
+		U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+	ascent-override: 102%;
+	descent-override: 28%;
+	line-gap-override: 0%;
+}
+
+@font-face {
+	font-family: "Kharcha Display";
+	font-style: normal;
+	font-display: swap;
+	font-weight: 700;
+	src: url("../../node_modules/@fontsource/laila/files/laila-devanagari-700-normal.woff2") format("woff2");
+	unicode-range:
+		U+0900-097F, U+1CD0-1CF9, U+200C-200D, U+20A8, U+20B9, U+20F0, U+25CC, U+A830-A839, U+A8E0-A8FF, U+11B00-11B09;
+	ascent-override: 110%;
+	descent-override: 45%;
+	line-gap-override: 0%;
+}
+
+/*
+ * Metric-matched fallbacks, measured in Chrome (decisions 0110 and 0184): size-adjust is
+ * Laila 700's advance width over the fallback's for a long sample; the ascent and descent
+ * are our overrides divided by it.
+ */
+@font-face {
+	font-family: "Kharcha Fallback";
+	src: local("Georgia Bold"), local("Georgia-Bold"), local("DejaVu Serif Bold");
+	font-weight: 700;
+	size-adjust: 95.98%;
+	ascent-override: 106.27%;
+	descent-override: 29.17%;
+	line-gap-override: 0%;
+}
+
+@font-face {
+	font-family: "Kharcha Devanagari Fallback";
+	src:
+		local("Nirmala UI Bold"), local("NirmalaUI-Bold"), local("Kohinoor Devanagari Bold"),
+		local("Devanagari Sangam MN Bold");
+	font-weight: 700;
+	unicode-range: U+0900-097F, U+1CD0-1CF9, U+200C-200D, U+20A8, U+20B9, U+25CC, U+A830-A839, U+A8E0-A8FF;
+	size-adjust: 95.18%;
+	ascent-override: 115.57%;
+	descent-override: 47.28%;
+	line-gap-override: 0%;
+}
+
+html[data-section="kharcha"] {
+	/* The sheet behind the pages, a page, its ink, and its hairlines. */
+	--kh-ground: oklch(0.9732 0.0041 271.4);
+	--kh-page: oklch(1 0 0);
+	--kh-ink: oklch(0.2491 0.03 267.4);
+	--kh-muted: oklch(0.5045 0.0298 261.1);
+	--kh-hair: oklch(0.9365 0.0087 264.5);
+	/* The ruling of a page, and its margin rule. */
+	--kh-rule: oklch(0.9197 0.0197 260.2);
+	--kh-margin: oklch(0.5946 0.1786 27.2);
+	/* Red bookcloth (the rail, the top bar on phones) and the yellow binding thread that edges it. */
+	--kh-cloth: oklch(0.4562 0.1635 28.2);
+	--kh-cloth-deep: oklch(0.4038 0.1457 28.5);
+	--kh-on-cloth: oklch(1 0 0);
+	--kh-cloth-muted: oklch(0.9011 0.0368 30.4);
+	--kh-thread: oklch(0.7851 0.1405 85);
+	/* The one primary action, and its text. */
+	--kh-act: oklch(0.4562 0.1635 28.2);
+	--kh-on-act: oklch(1 0 0);
+	/* Red ink as text: a selected line's date, an unread mark. */
+	--kh-mark: oklch(0.4562 0.1635 28.2);
+	/* Money's direction: owed to you, and you owe. Never brand red. */
+	--kh-owed: oklch(0.4823 0.1126 153.7);
+	--kh-owed-bg: oklch(0.958 0.0182 155.8);
+	--kh-owe: oklch(0.5076 0.1354 47.1);
+	--kh-owe-bg: oklch(0.9619 0.0223 67.6);
+	/* A selected line of a page. */
+	--kh-sel: oklch(0.961 0.0133 28.9);
+
+	/*
+	 * People's and groups' colours (KHARCHA_COLORS), the same in both themes: plates
+	 * carry white initials, so each reaches 4.5:1 under white.
+	 */
+	--kh-c-gray: oklch(0.5045 0.0298 261.1);
+	--kh-c-red: oklch(0.5003 0.1821 29.5);
+	--kh-c-orange: oklch(0.5234 0.1639 38.4);
+	--kh-c-amber: oklch(0.5227 0.1128 61.8);
+	--kh-c-green: oklch(0.4823 0.1126 153.7);
+	--kh-c-teal: oklch(0.5009 0.0861 186.4);
+	--kh-c-blue: oklch(0.5136 0.124 252.1);
+	--kh-c-indigo: oklch(0.4714 0.1734 281);
+	--kh-c-violet: oklch(0.4874 0.1567 310.4);
+	--kh-c-pink: oklch(0.5084 0.1866 354.9);
+
+	/* A page's line height; the ruling and the margin follow it. */
+	--kh-line: 3rem;
+	--kh-ease: cubic-bezier(0.2, 0, 0, 1);
+	--kh-duration: 160ms;
+
+	/* Graphite's tokens, so the shared kit follows. */
+	--background: var(--kh-ground);
+	--surface-1: var(--kh-page);
+	--surface-2: var(--kh-ground);
+	--foreground: var(--kh-ink);
+	--card: var(--kh-page);
+	--card-foreground: var(--kh-ink);
+	--popover: var(--kh-page);
+	--popover-foreground: var(--kh-ink);
+	--secondary: var(--kh-ground);
+	--secondary-foreground: var(--kh-ink);
+	--muted: var(--kh-ground);
+	--muted-foreground: var(--kh-muted);
+	--accent: var(--kh-hair);
+	--accent-foreground: var(--kh-ink);
+	--border: var(--kh-hair);
+	--input: oklch(0.2491 0.03 267.4 / 18%);
+	--primary: var(--kh-act);
+	--primary-foreground: var(--kh-on-act);
+	--accent-subtle: var(--kh-sel);
+	--ring: var(--kh-act);
+	--destructive: var(--kh-cloth);
+
+	accent-color: var(--kh-act);
+	scrollbar-color: var(--kh-muted) var(--kh-ground);
+}
+
+/* A ledger's small corners, whatever radius the visitor picked for the admin area. */
+html[data-section="kharcha"]:root {
+	--radius: 0.375rem;
+}
+
+html[data-section="kharcha"].dark {
+	--kh-ground: oklch(0.1783 0.0128 270.6);
+	--kh-page: oklch(0.2096 0.0166 268.9);
+	--kh-ink: oklch(0.9342 0.0084 271.3);
+	--kh-muted: oklch(0.7138 0.0268 263.3);
+	--kh-hair: oklch(0.2849 0.0215 265.8);
+	--kh-rule: oklch(0.2846 0.0277 264);
+	--kh-margin: oklch(0.5846 0.1479 26.6);
+	--kh-cloth: oklch(0.3813 0.1325 28.3);
+	--kh-cloth-deep: oklch(0.3182 0.1091 28.2);
+	--kh-on-cloth: oklch(0.9473 0.0204 32.5);
+	--kh-cloth-muted: oklch(0.8247 0.0544 28.3);
+	--kh-thread: oklch(0.7123 0.1312 83.7);
+	--kh-act: oklch(0.5274 0.1817 28.7);
+	--kh-on-act: oklch(1 0 0);
+	--kh-mark: oklch(0.7268 0.1385 27.4);
+	--kh-owed: oklch(0.7699 0.1374 156.2);
+	--kh-owed-bg: oklch(0.2577 0.0373 159.5);
+	--kh-owe: oklch(0.7785 0.1259 60.8);
+	--kh-owe-bg: oklch(0.2569 0.0312 63.6);
+	--kh-sel: oklch(0.2312 0.0167 358.7);
+
+	--input: oklch(0.9342 0.0084 271.3 / 22%);
+	/* Repeated: `.dark[data-accent]` outranks the rule above. */
+	--primary: var(--kh-act);
+	--primary-foreground: var(--kh-on-act);
+	--accent-subtle: var(--kh-sel);
+	--ring: var(--kh-act);
+	--destructive: var(--kh-act);
+}
+
+html[data-section="kharcha"] ::selection {
+	background: var(--kh-thread);
+	color: oklch(0.2491 0.03 267.4);
+}
+
+@theme inline {
+	--color-kh-ground: var(--kh-ground);
+	--color-kh-page: var(--kh-page);
+	--color-kh-ink: var(--kh-ink);
+	--color-kh-muted: var(--kh-muted);
+	--color-kh-hair: var(--kh-hair);
+	--color-kh-rule: var(--kh-rule);
+	--color-kh-margin: var(--kh-margin);
+	--color-kh-cloth: var(--kh-cloth);
+	--color-kh-cloth-deep: var(--kh-cloth-deep);
+	--color-kh-on-cloth: var(--kh-on-cloth);
+	--color-kh-cloth-muted: var(--kh-cloth-muted);
+	--color-kh-thread: var(--kh-thread);
+	--color-kh-act: var(--kh-act);
+	--color-kh-on-act: var(--kh-on-act);
+	--color-kh-mark: var(--kh-mark);
+	--color-kh-owed: var(--kh-owed);
+	--color-kh-owed-bg: var(--kh-owed-bg);
+	--color-kh-owe: var(--kh-owe);
+	--color-kh-owe-bg: var(--kh-owe-bg);
+	--color-kh-sel: var(--kh-sel);
+	--font-kh-display: "Kharcha Display", "Kharcha Fallback", "Kharcha Devanagari Fallback", Georgia, "Nirmala UI", serif;
+	/* Display sizes: a page's title (24 to 28px), a hero amount (36 to 44), a section head. */
+	--text-kh-title: clamp(1.5rem, 1.38rem + 0.5vw, 1.75rem);
+	--text-kh-hero: clamp(2.25rem, 1.95rem + 1.25vw, 2.75rem);
+	--text-kh-head: 1.125rem;
+}
+
+/* Display type: Laila 700. Nepali opens the leading for its vowel signs. */
+@utility kh-display {
+	font-family: var(--font-kh-display);
+	font-weight: 700;
+	line-height: 1.15;
+	&:lang(ne) {
+		line-height: 1.35;
+	}
+}
+
+/* Money and dates in columns: tabular, so figures line up and never shift. */
+@utility kh-figures {
+	font-variant-numeric: tabular-nums;
+}
+
+/* A page of the book: faint ruling every line, under whatever the page holds. */
+@utility kh-ruled {
+	background-image: repeating-linear-gradient(
+		to bottom,
+		transparent 0 calc(var(--kh-line) - 1px),
+		var(--kh-rule) calc(var(--kh-line) - 1px) var(--kh-line)
+	);
+}
+
+/* The red margin rule, on the edge of the dates' column. */
+@utility kh-margin {
+	border-inline-end: 1.5px solid var(--kh-margin);
+}
+
+/* A total, ruled twice under it. */
+@utility kh-double {
+	border-bottom: 3px double currentColor;
+	padding-bottom: 1px;
+}
+
+/* Settled: struck through in red ink, still readable. */
+@utility kh-struck {
+	text-decoration-line: line-through;
+	text-decoration-color: var(--kh-margin);
+	text-decoration-thickness: 1.5px;
+}
+
+/* A problem, hatched in the owe colour so it never rides on colour alone. */
+@utility kh-hatch {
+	background-image: repeating-linear-gradient(135deg, var(--kh-owe-bg) 0 4px, transparent 4px 8px);
+}
+
+/* The motion rule: transform, opacity and colour only, one ease, nothing under reduced motion. */
+@media (prefers-reduced-motion: no-preference) {
+	html[data-section="kharcha"] .kh-ease {
+		transition-property: transform, opacity, background-color, color, text-decoration-color;
+		transition-duration: var(--kh-duration);
+		transition-timing-function: var(--kh-ease);
+	}
+}

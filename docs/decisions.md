@@ -285,6 +285,7 @@ Record every non-obvious choice here: **What**, **Why**, **Alternatives consider
 - [0278](#0278-kharchas-money-integer-minor-units-per-currency-exact-splits-and-a-ledger-every-balance-sums): Kharcha's money: integer minor units per currency, exact splits, and a ledger every balance sums
 - [0279](#0279-the-entry-budget-rises-to-300-kb-for-kharchas-routes-and-sentrys-release-snippet-isnt-counted): The entry budget rises to 300 kB for Kharcha's routes, and Sentry's release snippet isn't counted
 - [0280](#0280-local-gates-narrow-to-what-changed-an-incremental-typecheck-stories_only-and-no-docgen): Local gates narrow to what changed: an incremental typecheck, `STORIES_ONLY`, and no docgen
+- [0281](#0281-kharchas-look-is-bahi-khata-a-red-cloth-bound-ledger-on-graphites-tokens): Kharcha's look is "Bahi Khata": a red cloth-bound ledger, on Graphite's tokens
 </details>
 
 ---
@@ -3978,3 +3979,24 @@ Measured on the owner's Windows machine (Node 24.11, 12 threads, 11.7 GB), 2026-
 - **Babel's include and exclude from `vite.config.ts` (0155) in Storybook's config too:** tried first; Babel ran 3.8 s, not the cost.
 - **A wrapper script taking paths as arguments:** an env var needs no new file and works for `build-storybook` and `vitest` alike.
 - **Narrowing knip, the build, `i18n:check` or the bundle check:** each reads the whole project or the whole build by nature.
+
+## 0281: Kharcha's look is "Bahi Khata": a red cloth-bound ledger, on Graphite's tokens
+
+**What:** Kharcha's design system (Task 87), picked by the owner on 2026-11-12 from impeccable's direction round, then approved as comps of Home, a thread with the expense panel open and the split editor, at 390 and 1280, light and dark.
+- **The world:** every friend and every group is a page in the bahi khata, the red cloth-bound ledger every Nepali shop keeps. Red bookcloth holds the rail, the phone's top bar and the one primary action, edged with a line of yellow binding thread; pages are ruled, dated left of a red margin rule; a total is ruled twice; a payment's amount is struck through in red ink.
+- **Colour jobs:** owed is a ledger green and owe a burnt ochre, so the brand's red never means debt. Money always carries its direction in words and an arrow beside the colour, and a problem is hatched.
+- **Where it lives:** `src/styles/kharcha.css`, scoped to `html[data-section="kharcha"]`, redefining Graphite's tokens (as Parda's and Chaal's looks do) so shadcn components follow; `--radius` is 0.375rem whatever the visitor picked. Laila 700 sets display type in both scripts, with metric overrides and fallbacks measured in Chrome.
+- **The kit** (`src/features/kharcha/kit`): `Money`, `BalancePill`, `PersonAvatar`, `CategoryIcon`, `FixBadge`, `ExpenseCard`, `PaymentCard`, `LedgerPage`/`LedgerLine`/`SystemLine`, `KharchaEmpty`, `KharchaWordmark`/`KharchaMark`. `CATEGORY_ICONS` and `FIX_KINDS` join `types.ts`, and `KHARCHA_COLORS` get their values (`--kh-c-<name>`, white initials at 4.5:1).
+- **Tests:** `tests/unit/kharcha-tokens.test.ts` (27 text pairs at 4.5:1 in both themes, marks at 3:1, people's colours, red never for money, the motion rule, the preloads); the "Kharcha/Kit" stories in en/light and ne/dark with axe.
+
+**Why:**
+- **The world:** the dice assigned the tea shop's udharo slate; the owner chose the pick, the bahi khata, over it and over a dark "seamed console" challenger. It's the money object every Nepali already reads, and its parts do product jobs: the margin holds dates, the double rule marks a total, the strike marks a payment.
+- **Red never for debt:** a red primary button beside red debts would make "Settle up" read as an error. Green and ochre also differ in lightness, for colour-blind readers, and the words carry the meaning anyway.
+- **No new accent preset** (the plan offered one): Graphite's `ACCENTS` are the admin's choice; a section look that outranks them, as Chaal's does, keeps Kharcha the same for everyone and keeps the presets untouched.
+- **Laila:** a Devanagari-first face from a Nepal-and-India foundry with a Latin companion, the ledger's lettered serif feel without a costume, at 18.9 kB Latin and 92.5 kB Devanagari.
+
+**Alternatives considered:**
+- **The udharo slate (the roll):** a chalk-dark world, strong in dark and weak in light; chalk risks a handwriting costume.
+- **The seamed console (a challenger):** clear, but Kharcha would look like the admin area, with nothing Nepali in it.
+- **The category standard** (white cards, round avatars, a green Settle up): the owner didn't take it.
+- **Studying New Expensify's help pages for the UX notes:** the owner said to design our own with Expensify only as a reference, so the notes in the contract list what 14.5 takes and what we never take.

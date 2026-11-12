@@ -55,6 +55,7 @@
 		"@fontsource-variable/jetbrains-mono": "^5.3.0",
 		"@fontsource-variable/noto-sans-devanagari": "^5.3.0",
 		"@fontsource/anek-devanagari": "5.3.0",
+		"@fontsource/laila": "5.3.0",
 		"@fontsource/mukta": "^5.3.0",
 		"@sentry/tanstackstart-react": "11.4.0",
 		"@t3-oss/env-core": "^0.13.11",

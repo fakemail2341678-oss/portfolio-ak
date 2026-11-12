@@ -367,6 +367,12 @@ const SPECS: Record<Layer, LayerSpec> = {
 			"tests/server/kharcha-people.test.ts",
 			"tests/server/kharcha-seed.test.ts",
 			"docs/guides/kharcha.md",
+			// The "Bahi Khata" design system, its direction contract and record (Task 87, decision 0281).
+			"src/styles/kharcha.css",
+			".impeccable/surfaces/kharcha.md",
+			".storybook/mocks/kharcha-section.tsx",
+			"tests/unit/kharcha-tokens.test.ts",
+			"docs/design/kharcha.md",
 		],
 		packageScripts: ["db:seed-kharcha"],
 		crons: [],

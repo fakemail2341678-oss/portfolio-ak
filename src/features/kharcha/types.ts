@@ -40,6 +40,33 @@ export const GROUP_KIND_ICON: Readonly<Record<GroupKind, GroupIcon>> = {
 	other: "users",
 };
 
+/** A category's icon, stored by name (`kh_category.icon`, Task 89); the kit draws each (`CategoryIcon`). */
+export const CATEGORY_ICONS = [
+	"utensils",
+	"coffee",
+	"shopping-basket",
+	"shopping-bag",
+	"bus",
+	"car",
+	"fuel",
+	"plane",
+	"house",
+	"zap",
+	"wifi",
+	"smartphone",
+	"film",
+	"heart-pulse",
+	"shirt",
+	"gift",
+	"graduation-cap",
+	"receipt",
+] as const;
+export type CategoryIconName = (typeof CATEGORY_ICONS)[number];
+
+/** What an expense still needs from its owner (PLAN 14.5, "Fix badges"). */
+export const FIX_KINDS = ["uncategorized", "duplicate", "receipt"] as const;
+export type FixKind = (typeof FIX_KINDS)[number];
+
 export const GROUP_ROLES = ["owner", "member"] as const;
 export type GroupRole = (typeof GROUP_ROLES)[number];
 

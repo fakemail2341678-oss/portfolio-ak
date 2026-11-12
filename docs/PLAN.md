@@ -3739,7 +3739,7 @@ As 12.1, with these differences:
 | Task | Name | Effort | Status |
 | --- | --- | --- | --- |
 | 86 | Foundation: the `kharcha` layer, people, the money core (splits, ledger, balances), access, activity, guests | xhigh | Done |
-| 87 | Design direction: UX notes, comps (the owner picks), tokens, brand, the kit | high | Planned |
+| 87 | Design direction: UX notes, comps (the owner picks), tokens, brand, the kit | high | Done |
 | 88 | Shell, brand, landing, auth pages, Home, onboarding, the create menu | high | Planned |
 | 89 | Expenses and receipts: add and edit, the expense panel, categories, tags, methods, rules, a first Spend list | xhigh | Planned |
 | 90 | Friends, groups and splitting: people, invites and joining, groups, the split editor, threads, freshness | xhigh | Planned |
@@ -4133,24 +4133,30 @@ Kharcha's data, money core, access and server, tested on PGlite, with no UI; Exp
   - run `pnpm db:migrate` on Neon (`0049_kharcha_foundation`);
   - rerun `pnpm test:storybook --maxWorkers=4` if you want that gate confirmed before Task 87.
 
-### Task 87: Design direction (planned)
+### Task 87: Design direction (done)
 
-- **UX notes:** study New Expensify's flows from its public help pages (and screenshots of the app, if the owner shares some). Write into the direction contract what we take (14.5, "UX") and what we never take.
-- **Comps:** three, made with `impeccable` (shape), each showing:
-  - Home;
-  - a group thread with the expense panel open;
-  - the split editor.
+**Done** (decision 0281; the guide's "The look"; the contract is [.impeccable/surfaces/kharcha.md](../.impeccable/surfaces/kharcha.md), the record [docs/design/kharcha.md](design/kharcha.md)).
 
-  Each at 390 and 1280, dark and light. **The owner picks one.**
-- **Records:**
-  - `.impeccable/surfaces/kharcha.md`, the direction contract;
-  - `docs/design/kharcha.md`;
-  - the portfolio's `.impeccable` paths narrowed in strip-demo, if Part 6 hasn't already done it.
-- **Tokens on Graphite:**
-  - the accent, as a new preset if none fits (`ACCENTS`, `app.css`, `design-tokens.test.ts`);
-  - the owed and owe colours, contrast-tested in both themes;
-  - the wordmark, in Latin and Devanagari, and the icons.
-- **The kit in Storybook:** `Money`, `PersonAvatar` (initials, colours), `ExpenseCard`, `PaymentCard`, `BalancePill`, `CategoryIcon`, `FixBadge`, and the empty states. Stories in en/ne × light/dark, so a11y runs on them.
+**What changed:**
+- **Direction:** impeccable's round (code-led, Operate) put one screen, the Pokhara trip's thread with the expense panel open, in three worlds: the udharo slate (the roll), the bahi khata (the pick) and a seamed console (a challenger), with five declined challengers and the category standard. **The owner picked Bahi Khata:** every friend and group is a page in the red cloth-bound shop ledger. The owner then approved comps of Home, the thread with the panel, and the split editor at 390 and 1280, light and dark (`.impeccable/mocks/kharcha/board.html`, gitignored).
+- **UX notes** in the contract: what we take from New Expensify (14.5's patterns) and what we never take.
+- **`src/styles/kharcha.css`:** both themes under `html[data-section="kharcha"]`, redefining Graphite's tokens so the shared kit follows; `--radius` 0.375rem; the `kh-*` colours, `--kh-c-<name>` for `KHARCHA_COLORS`, and the utilities `kh-display`, `kh-figures`, `kh-ruled`, `kh-margin`, `kh-double`, `kh-struck`, `kh-hatch`, `kh-ease`. Imported by `app.css` between `kharcha:start`/`end`.
+- **Type:** Laila 700 (`@fontsource/laila`) as "Kharcha Display", with metric overrides and fallbacks measured in Chrome; `kharchaFontPreloads` (two files per locale) for Task 88's head.
+- **The kit** (`src/features/kharcha/kit`): `Money`, `BalancePill`, `PersonAvatar` (`personInitials` by grapheme), `CategoryIcon` (`CATEGORY_ICONS`), `FixBadge` (`FIX_KINDS`), `ExpenseCard`, `PaymentCard`, `LedgerPage`/`LedgerLine`/`SystemLine`, `KharchaEmpty`, `KharchaWordmark` and `KharchaMark`; 30 `kharcha_kit_*`/`kharcha_empty_*` messages in both languages. The "Kharcha/Kit" stories (7) use `withKharcha` (`.storybook/mocks/kharcha-section.tsx`).
+- **Tests:** `tests/unit/kharcha-tokens.test.ts` (6): 27 text pairs at 4.5:1 in both themes, the thread and the margin at 3:1, white initials on every person's colour, red never for money, the motion rule, the preloads.
+- **strip-demo:** the new files are in `SPECS.kharcha`. The portfolio's `.impeccable` paths were already narrowed in Part 6.
+
+**Deviations (0281):**
+- **No study of New Expensify's help pages:** the owner said to design our own, Expensify only as a reference.
+- **Three directions on one screen, then full comps of the chosen one,** as in Parts 6 and 7, not three full sets.
+- **No new accent preset:** the section's tokens outrank the visitor's accent, as Chaal's do.
+- **Built with impeccable alone;** `ui-ux-pro-max` wasn't needed for a kit this size.
+- **The icon files** (favicon, manifest) are drawn from `KharchaMark` with the section in Task 88. Owe is a burnt ochre, not a red, so the brand's red never means debt.
+- **The finish review** runs at the Part's wrap-up (Task 97), as in Parts 6 and 7.
+
+**Numbers:** entry 295.0 of 300 kB, unchanged: the look adds CSS and fonts, and the kit is in no page yet. Laila: Latin 18.9 kB, Latin extended 3.8 kB, Devanagari 92.5 kB. Run, per the changed-files rule: `kharcha-tokens`, `strip-markers`, `message-usage`, `kharcha-money`, `currency` and `design-tokens` (40 tests); the Kharcha stories in en/light and ne/dark (14 of 14, axe included); `typecheck`, `check`, `knip`, `i18n:check`, `build` and the bundle check, the full `build-storybook`. No page changed, so no e2e run.
+
+**Left for the owner:** nothing.
 
 ### Task 88: Shell, brand and Home (planned)
 

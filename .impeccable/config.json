@@ -81,6 +81,30 @@
 				"files": ["src/features/chaal/board/player-strip.tsx"],
 				"createdAt": "2026-11-08T04:09:20.871Z",
 				"reason": "Approved comp: .impeccable/mocks/chaal/frames/game-1280-light.png (owner approved the comps 2026-11-08, decision 0258) marks the side to move with a heavy ink bar; ink, not a colour accent"
+			},
+			{
+				"rule": "design-system-font",
+				"value": "laila",
+				"createdAt": "2026-11-12T10:42:32.717Z",
+				"reason": "Claude: Kharcha's display face, from the Bahi Khata direction the owner picked 2026-11-12 (Task 87); DESIGN.md covers the portfolio only"
+			},
+			{
+				"rule": "design-system-font",
+				"value": "kharcha display",
+				"createdAt": "2026-11-12T11:21:32.210Z",
+				"reason": "Claude: Kharcha's display face (Laila) and its metric-matched fallbacks, from the Bahi Khata direction the owner picked 2026-11-12 (decision 0281); DESIGN.md covers the portfolio only"
+			},
+			{
+				"rule": "design-system-font",
+				"value": "kharcha fallback",
+				"createdAt": "2026-11-12T11:21:32.436Z",
+				"reason": "Claude: Kharcha's display face (Laila) and its metric-matched fallbacks, from the Bahi Khata direction the owner picked 2026-11-12 (decision 0281); DESIGN.md covers the portfolio only"
+			},
+			{
+				"rule": "design-system-font",
+				"value": "kharcha devanagari fallback",
+				"createdAt": "2026-11-12T11:21:32.636Z",
+				"reason": "Claude: Kharcha's display face (Laila) and its metric-matched fallbacks, from the Bahi Khata direction the owner picked 2026-11-12 (decision 0281); DESIGN.md covers the portfolio only"
 			}
 		]
 	}

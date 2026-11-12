@@ -2,7 +2,7 @@
 
 Kharcha (खर्च, "spending") is the personal expense tracker and bill splitter at `/app/kharcha` (Part 8 of [PLAN.md](../PLAN.md), section 14): your own spending, and bills split with friends and groups, with balances per currency and settling up recorded. Visitors try it as guests with sample data.
 
-**Status:** Task 86 (the foundation) is done: the tables, the money core, people, access, the services and their functions, the guests' sample data and the demo accounts, with no pages yet. Tasks 87–97 add the design, the pages and the rest (PLAN 14.3). Decisions 0277 (the layer, people, access, guests), 0278 (money and the ledger) and 0279 (the bundle budget).
+**Status:** Task 86 (the foundation) is done: the tables, the money core, people, access, the services and their functions, the guests' sample data and the demo accounts. Task 87 (the design direction) is done: the look, "Bahi Khata", its tokens and the kit, still with no pages. Tasks 88–97 add the pages and the rest (PLAN 14.3). Decisions 0277 (the layer, people, access, guests), 0278 (money and the ledger), 0279 (the bundle budget) and 0281 (the look).
 
 ## Where things are
 
@@ -24,8 +24,9 @@ Kharcha is its own strip-demo layer, `kharcha` (`pnpm strip-demo --keep-kharcha`
 | Middleware | `src/middleware/kharcha.ts` |
 | Guests and accounts going | `src/server/kharcha/guest-data.ts` (`KHARCHA_GUEST_DATA`: the sample, the claim, `forget`), `forget.ts` (`forgetUsers`, `forgetUser`) |
 | Demo accounts | `scripts/lib/kharcha-seed.ts`, `pnpm db:seed-kharcha` |
-| Storybook | `.storybook/mocks/kharcha.ts` (sample data), `.storybook/mocks/functions/kharcha/*` (one per functions file) |
-| Tests | `tests/unit/kharcha-money.test.ts`, `tests/unit/currency.test.ts`, `tests/server/kharcha{,-access,-people,-seed}.test.ts`, `tests/server/kharcha-helpers.ts` (`expectLedgerConsistent`) |
+| The look | `src/styles/kharcha.css` (tokens and `kh-*` utilities, imported by `app.css` between `kharcha:start`/`end`), `src/features/kharcha/kit/` (the kit), `src/features/kharcha/lib/fonts.ts` (`kharchaFontPreloads`); the contract `.impeccable/surfaces/kharcha.md`, the record `docs/design/kharcha.md` |
+| Storybook | `.storybook/mocks/kharcha.ts` (sample data), `.storybook/mocks/functions/kharcha/*` (one per functions file), `.storybook/mocks/kharcha-section.tsx` (`withKharcha`: the section on `<html>`) |
+| Tests | `tests/unit/kharcha-money.test.ts`, `tests/unit/kharcha-tokens.test.ts`, `tests/unit/currency.test.ts`, `tests/server/kharcha{,-access,-people,-seed}.test.ts`, `tests/server/kharcha-helpers.ts` (`expectLedgerConsistent`) |
 
 Shared files mark Kharcha's code with `kharcha:start`/`kharcha:end` or a trailing `// @kharcha`: the schema index, the permission catalog and its labels, the audit actions and targets, `GUEST_DATA`, the account deletion hook (`src/server/auth/auth.ts`), the guard test and the e2e harness's seed.
 
@@ -65,6 +66,18 @@ Everything points at `kh_person`, never at a user: a payer, a share, a payment's
 - **Admins:** `kharcha:read` and `kharcha:configure` open `/admin/kharcha` (Task 96), counts only, never anyone's data (0186).
 - **The matrix** is `tests/server/kharcha-access.test.ts`: every operation, as the owner, a friend, a member, a former member, a stranger, a guest and an admin. A new service function adds its operation there.
 
+## The look (0281)
+
+"Bahi Khata": every friend and group is a page in a red cloth-bound shop ledger. The record, with every token, is [docs/design/kharcha.md](../design/kharcha.md); the direction contract is `.impeccable/surfaces/kharcha.md`.
+
+- **Scope:** everything is under `html[data-section="kharcha"]` (and `.dark`), set by the root from the brand once the section exists (Task 88). `kharcha.css` redefines Graphite's tokens, so shadcn components take the look; Tailwind names its own `bg-kh-page`, `text-kh-owed`, `font-kh-display`.
+- **Colour jobs:** red bookcloth for the rail, the phone's top bar and the one primary action (`--kh-act`); the thread (yellow) edges the cloth; owed is green and owe ochre, never red. Every coloured amount has its direction in words and an arrow; a problem is hatched (`kh-hatch`).
+- **Money** is drawn only by `Money` or `BalancePill` (tabular, through `formatMoney`). Balances are signed: above zero, the caller is owed.
+- **A page** is `LedgerPage` with `LedgerLine`s (a day in the margin, a card or a `SystemLine` beside it). `ExpenseCard` and `PaymentCard` take the views from `types.ts`; with `onOpen` the title becomes the card's one keyboard stop.
+- **People** are `PersonAvatar` plates in their `KHARCHA_COLORS` colour (`--kh-c-<name>`), initials by grapheme so Devanagari keeps its vowel signs.
+- **Type:** Laila 700 for titles, hero amounts and the wordmark (`kh-display`); Inter and Noto Sans Devanagari for the rest. `kharchaFontPreloads` goes in the `_kharcha` head (Task 88).
+- **Changing a colour:** edit `kharcha.css` and run `tests/unit/kharcha-tokens.test.ts` (text 4.5:1 in both themes, white initials on each person's colour, red never for money).
+
 ## Server patterns
 
 - **Every write is one transaction:** resolve access, make the change, `writeLedger`, `recordActivity`, `bumpRevs` for everyone the change touches (the people on it and the group's members). Notifications (Task 92) will be produced in the same transaction and delivered after it.
@@ -93,3 +106,6 @@ Everything points at `kh_person`, never at a user: a payer, a share, a payment's
 - **Leaving is stamped with the database's clock** (`now()`), as `created_at` is: a former member sees what was made before they left, and nothing made after, even within the same millisecond.
 - **Money in an error message** is formatted with a no-break space between the code and the amount ("NPR 6.00"); tests normalize it.
 - **Sentry's release snippet** (a build with `SENTRY_*` in `.env`) isn't counted by `check-bundle.ts` (0279).
+- **The margin rule is drawn above the lines** (`before:z-10` on `LedgerPage`): each `LedgerLine` is positioned and painted on the page colour, so a rule beneath them disappears.
+- **A fix badge truncates** inside its column: a nowrap badge wider than a phone's middle column spilled under the amount beside it.
+- **`.storybook/mocks/kharcha.ts` is the sample data;** the section decorator is `kharcha-section.tsx`, since `kharcha.tsx` would resolve to the same import.

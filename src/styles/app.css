@@ -21,6 +21,10 @@
 /* "Diagram": Chaal's tokens and utilities (ch-*, under html[data-section="chaal"]). */
 @import "./chaal.css";
 /* chaal:end */
+/* kharcha:start */
+/* "Bahi Khata": Kharcha's tokens and utilities (kh-*, under html[data-section="kharcha"]). */
+@import "./kharcha.css";
+/* kharcha:end */
 @plugin "@tailwindcss/typography";
 
 @custom-variant dark (&:is(.dark *));

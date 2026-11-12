@@ -35,6 +35,9 @@ importers:
       '@fontsource/anek-devanagari':
         specifier: 5.3.0
         version: 5.3.0
+      '@fontsource/laila':
+        specifier: 5.3.0
+        version: 5.3.0
       '@fontsource/mukta':
         specifier: ^5.3.0
         version: 5.3.0
@@ -1369,6 +1372,9 @@ packages:
 
   '@fontsource/anek-devanagari@5.3.0':
     resolution: {integrity: sha512-xm1njSXuFruCRCv747+fUcI8fluLn0lTxsHOeHGC/17zVH5D3FuSSttN9vNCvDrtopLLAiL4lvG65WErCWX85A==}
+
+  '@fontsource/laila@5.3.0':
+    resolution: {integrity: sha512-vtIPlFZrb7VZIBfFdtO/ayWbiK9KD3lyrEqobZUbCLBy98Uz/IdwEoPSq0+jmeAexzY2PlngVmE0L8dT2NnTrQ==}
 
   '@fontsource/mukta@5.3.0':
     resolution: {integrity: sha512-BIM9rx9SmHOcVR8cmOba9LnaFwhfiaFcclwgKV9rH4DIdCmD/tBBhtY02GGukuayxSbqfZ6pXzSO88IigTewDw==}
@@ -7794,6 +7800,8 @@ snapshots:
   '@fontsource-variable/noto-sans-devanagari@5.3.0': {}
 
   '@fontsource/anek-devanagari@5.3.0': {}
+
+  '@fontsource/laila@5.3.0': {}
 
   '@fontsource/mukta@5.3.0': {}
 
