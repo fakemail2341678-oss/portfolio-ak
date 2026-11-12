@@ -659,10 +659,19 @@ const KHARCHA_FUNCTIONS: Record<string, ReadonlyArray<string>> = {
 		"updateKharchaGroup",
 		"archiveKharchaGroup",
 		"addKharchaGroupMember",
+		"addKharchaNewGroupMember",
 		"removeKharchaGroupMember",
 		"leaveKharchaGroup",
 	],
-	"kharcha/friends.ts": ["listKharchaFriends", "getKharchaFriend", "addKharchaFriend", "updateKharchaFriend"],
+	"kharcha/friends.ts": [
+		"listKharchaFriends",
+		"getKharchaFriend",
+		"addKharchaFriend",
+		"updateKharchaFriend",
+		"setKharchaFriendEmail",
+	],
+	"kharcha/threads.ts": ["listKharchaPeople", "getKharchaGroupThread", "getKharchaFriendThread"],
+	"kharcha/invites.ts": ["inviteKharchaFriend", "acceptKharchaInvite"],
 };
 // kharcha:end
 
@@ -720,6 +729,12 @@ const UNGUARDED_FILES: Record<string, { why: string; functions: ReadonlyArray<st
 		functions: ["getPublicForm", "submitFormResponse"],
 	},
 	// apps:end
+	// kharcha:start
+	"kharcha/join.ts": {
+		why: "an invite link's public lookup: who sent it, its group and whether it is open, by its random token, rate limited per visitor; taking it needs a session (kharcha/invites.ts, decision 0284)",
+		functions: ["getKharchaInvite"],
+	},
+	// kharcha:end
 	"test-crud-public.ts": {
 		why: "dev-only /dev/test-crud reads (devOnlyMiddleware); the repository only returns published rows",
 		functions: ["listPublicTestCrud", "getPublicTestCrud"],

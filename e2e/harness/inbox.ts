@@ -327,6 +327,17 @@ export async function serveHarness(port: number, query: DemoQuery) {
 				);
 				return send(response, rows[0] ? 200 : 404, rows[0] ?? { error: "not found" });
 			}
+			if (route === "GET /e2e/kharcha-threads") {
+				// The demo account's group and a friend with an account (scripts/lib/kharcha-seed.ts), for their threads' review.
+				const { rows } = await query(
+					`select m."group_id" as "groupId", f."friend_id" as "personId" from "kh_person" p
+					 join "user" u on u."id" = p."user_id" join "kh_group_member" m on m."person_id" = p."id"
+					 join "kh_friend" f on f."owner_id" = p."id" join "kh_person" o on o."id" = f."friend_id" and o."user_id" is not null
+					 where u."email" = $1 order by o."display_name" limit 1`,
+					[url.searchParams.get("email")],
+				);
+				return send(response, rows[0] ? 200 : 404, rows[0] ?? { error: "not found" });
+			}
 			// kharcha:end
 			// taskline:start
 			if (route === "GET /e2e/taskline-project") {

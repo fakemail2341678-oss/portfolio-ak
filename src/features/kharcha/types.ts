@@ -322,7 +322,74 @@ export type FriendView = {
 	email: string | null;
 	/** What they owe the caller per currency (below zero: what the caller owes them). */
 	balances: Amount[];
+	/** Whether the caller can invite them: they have an address and no account yet (Task 90). */
+	canInvite: boolean;
+	/** Whether the caller may add an address: a contact of theirs with a name only. */
+	canAddEmail: boolean;
+	/** The caller's latest invite to them that is still open. */
+	invite: { sentAt: string | null; expiresAt: string } | null;
 };
+
+/** A link made for a friend (Task 90): to copy, and emailed when asked (`sent`; at most once a day per address). */
+export type InviteResult = { url: string; expiresAt: string; sent: boolean };
+
+export const INVITE_STATUSES = ["open", "accepted", "expired"] as const;
+export type InviteStatus = (typeof INVITE_STATUSES)[number];
+
+/** What `/join/$token` shows anyone holding the link: who sent it, from which group, and whether it is still open. */
+export type JoinInvite = {
+	inviter: { name: string; color: KharchaColor };
+	group: { name: string; color: KharchaColor; icon: GroupIcon } | null;
+	status: InviteStatus;
+	expiresAt: string;
+};
+
+/** Where joining took the caller: the group the invite came from, else the thread with whoever sent it. */
+export type JoinedInvite = { groupId: string | null; inviterId: string };
+
+/** `/people` (Task 90): the caller's friends and groups, each with what is open with it, matching `q`. */
+export type PeoplePage = {
+	friends: FriendView[];
+	groups: GroupSummary[];
+	/** Friends the caller hid: listed only with `hidden`. */
+	hiddenCount: number;
+};
+
+/** A payment as a thread's card shows it. */
+export type ThreadPayment = Pick<
+	PaymentView,
+	"id" | "groupId" | "fromId" | "toId" | "amountMinor" | "currency" | "paid" | "method" | "note" | "paidOn" | "people"
+>;
+
+/**
+ * One line of a thread (Task 90, PLAN 14.5 "Conversations"): an expense's or a payment's
+ * card, or a system line ("Asha changed the amount of Momo"). `day` is the date in the margin
+ * (an expense's own, or the day a line was written in the caller's time zone); lines run in
+ * that order, then by when they were written.
+ */
+export type ThreadItem =
+	| { type: "expense"; id: string; day: IsoDate; at: string; expense: SpendRow }
+	| { type: "payment"; id: string; day: IsoDate; at: string; payment: ThreadPayment }
+	| { type: "system"; id: string; day: IsoDate; at: string; line: HomeActivity };
+
+/** A group's thread: the group, its lines (the newest `THREAD_LIMIT`), and whether older ones were left out. */
+export type GroupThread = { group: GroupView; items: ThreadItem[]; more: boolean };
+
+/** What the caller and a friend have in one group: a link to it with the balance between the two there. */
+export type FriendGroupBalance = Pick<GroupSummary, "id" | "name" | "color" | "icon" | "left"> & {
+	balances: Amount[];
+};
+
+/** A friend's thread: what is between the two outside groups, and their balance in each group they share. */
+export type FriendThread = {
+	friend: FriendView;
+	items: ThreadItem[];
+	more: boolean;
+	groups: FriendGroupBalance[];
+};
+
+/** Lines a thread loads (Task 92 pages back through older ones). */
+export const THREAD_LIMIT = 200;
 
 export type GroupMemberView = {
 	person: KharchaPerson;
@@ -384,6 +451,8 @@ export const ACTIVITY_KINDS = [
 	"member.removed",
 	"member.left",
 	"friend.added",
+	/** Someone joined Kharcha by an invite or their address (Task 90): the actor is who joined. */
+	"friend.joined",
 ] as const;
 export type ActivityKind = (typeof ACTIVITY_KINDS)[number];
 

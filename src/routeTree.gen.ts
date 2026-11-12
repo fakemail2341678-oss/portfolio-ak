@@ -216,7 +216,9 @@ import { Route as ChaalAppChaalWatchIndexRouteImport } from './routes/_chaal/app
 import { Route as ChaalAppChaalWatchChannelRouteImport } from './routes/_chaal/app/chaal/watch/$channel'
 import { Route as KharchaAppKharchaShellAccountRouteImport } from './routes/_kharcha/app/kharcha/_shell/account'
 import { Route as KharchaAppKharchaShellHomeRouteImport } from './routes/_kharcha/app/kharcha/_shell/home'
+import { Route as KharchaAppKharchaShellPeopleRouteImport } from './routes/_kharcha/app/kharcha/_shell/people'
 import { Route as KharchaAppKharchaShellSpendRouteImport } from './routes/_kharcha/app/kharcha/_shell/spend'
+import { Route as KharchaAppKharchaJoinTokenRouteImport } from './routes/_kharcha/app/kharcha/join.$token'
 import { Route as PardaAppPardaCSlugRouteImport } from './routes/_parda/app/parda/c/$slug'
 import { Route as PardaAppPardaCollectionIdRouteImport } from './routes/_parda/app/parda/collection/$id'
 import { Route as PardaAppPardaLibraryTabRouteImport } from './routes/_parda/app/parda/library/$tab'
@@ -232,6 +234,8 @@ import { Route as AdminAdminTasklineProjectsIdLabelsRouteImport } from './routes
 import { Route as AdminAdminTasklineProjectsIdMembersRouteImport } from './routes/_admin/admin/taskline/projects/$id/members'
 import { Route as AdminAdminTasklineProjectsIdWorkflowRouteImport } from './routes/_admin/admin/taskline/projects/$id/workflow'
 import { Route as KharchaAppKharchaShellEExpenseIdRouteImport } from './routes/_kharcha/app/kharcha/_shell/e.$expenseId'
+import { Route as KharchaAppKharchaShellFPersonIdRouteImport } from './routes/_kharcha/app/kharcha/_shell/f.$personId'
+import { Route as KharchaAppKharchaShellGGroupIdRouteImport } from './routes/_kharcha/app/kharcha/_shell/g.$groupId'
 import { Route as KharchaAppKharchaShellSettingsTabRouteImport } from './routes/_kharcha/app/kharcha/_shell/settings.$tab'
 import { Route as PardaAppPardaTypeIdIndexRouteImport } from './routes/_parda/app/parda/$type/$id/index'
 import { Route as PardaAppPardaTypeIdCreditsRouteImport } from './routes/_parda/app/parda/$type/$id/credits'
@@ -1358,11 +1362,23 @@ const KharchaAppKharchaShellHomeRoute =
     path: '/home',
     getParentRoute: () => KharchaAppKharchaShellRouteRoute,
   } as any)
+const KharchaAppKharchaShellPeopleRoute =
+  KharchaAppKharchaShellPeopleRouteImport.update({
+    id: '/people',
+    path: '/people',
+    getParentRoute: () => KharchaAppKharchaShellRouteRoute,
+  } as any)
 const KharchaAppKharchaShellSpendRoute =
   KharchaAppKharchaShellSpendRouteImport.update({
     id: '/spend',
     path: '/spend',
     getParentRoute: () => KharchaAppKharchaShellRouteRoute,
+  } as any)
+const KharchaAppKharchaJoinTokenRoute =
+  KharchaAppKharchaJoinTokenRouteImport.update({
+    id: '/app/kharcha/join/$token',
+    path: '/app/kharcha/join/$token',
+    getParentRoute: () => KharchaRouteRoute,
   } as any)
 const PardaAppPardaCSlugRoute = PardaAppPardaCSlugRouteImport.update({
   id: '/app/parda/c/$slug',
@@ -1448,6 +1464,18 @@ const KharchaAppKharchaShellEExpenseIdRoute =
   KharchaAppKharchaShellEExpenseIdRouteImport.update({
     id: '/e/$expenseId',
     path: '/e/$expenseId',
+    getParentRoute: () => KharchaAppKharchaShellRouteRoute,
+  } as any)
+const KharchaAppKharchaShellFPersonIdRoute =
+  KharchaAppKharchaShellFPersonIdRouteImport.update({
+    id: '/f/$personId',
+    path: '/f/$personId',
+    getParentRoute: () => KharchaAppKharchaShellRouteRoute,
+  } as any)
+const KharchaAppKharchaShellGGroupIdRoute =
+  KharchaAppKharchaShellGGroupIdRouteImport.update({
+    id: '/g/$groupId',
+    path: '/g/$groupId',
     getParentRoute: () => KharchaAppKharchaShellRouteRoute,
   } as any)
 const KharchaAppKharchaShellSettingsTabRoute =
@@ -1807,7 +1835,9 @@ export interface FileRoutesByFullPath {
   '/app/chaal/watch/$channel': typeof ChaalAppChaalWatchChannelRoute
   '/app/kharcha/account': typeof KharchaAppKharchaShellAccountRoute
   '/app/kharcha/home': typeof KharchaAppKharchaShellHomeRoute
+  '/app/kharcha/people': typeof KharchaAppKharchaShellPeopleRoute
   '/app/kharcha/spend': typeof KharchaAppKharchaShellSpendRoute
+  '/app/kharcha/join/$token': typeof KharchaAppKharchaJoinTokenRoute
   '/app/parda/c/$slug': typeof PardaAppPardaCSlugRoute
   '/app/parda/collection/$id': typeof PardaAppPardaCollectionIdRoute
   '/app/parda/library/$tab': typeof PardaAppPardaLibraryTabRoute
@@ -1838,6 +1868,8 @@ export interface FileRoutesByFullPath {
   '/admin/taskline/projects/$id/members': typeof AdminAdminTasklineProjectsIdMembersRoute
   '/admin/taskline/projects/$id/workflow': typeof AdminAdminTasklineProjectsIdWorkflowRoute
   '/app/kharcha/e/$expenseId': typeof KharchaAppKharchaShellEExpenseIdRoute
+  '/app/kharcha/f/$personId': typeof KharchaAppKharchaShellFPersonIdRoute
+  '/app/kharcha/g/$groupId': typeof KharchaAppKharchaShellGGroupIdRoute
   '/app/kharcha/settings/$tab': typeof KharchaAppKharchaShellSettingsTabRoute
   '/app/parda/$type/$id/credits': typeof PardaAppPardaTypeIdCreditsRoute
   '/app/parda/watch/$type/$id': typeof PardaAppPardaWatchTypeIdRoute
@@ -2027,7 +2059,9 @@ export interface FileRoutesByTo {
   '/app/chaal/watch/$channel': typeof ChaalAppChaalWatchChannelRoute
   '/app/kharcha/account': typeof KharchaAppKharchaShellAccountRoute
   '/app/kharcha/home': typeof KharchaAppKharchaShellHomeRoute
+  '/app/kharcha/people': typeof KharchaAppKharchaShellPeopleRoute
   '/app/kharcha/spend': typeof KharchaAppKharchaShellSpendRoute
+  '/app/kharcha/join/$token': typeof KharchaAppKharchaJoinTokenRoute
   '/app/parda/c/$slug': typeof PardaAppPardaCSlugRoute
   '/app/parda/collection/$id': typeof PardaAppPardaCollectionIdRoute
   '/app/parda/library/$tab': typeof PardaAppPardaLibraryTabRoute
@@ -2058,6 +2092,8 @@ export interface FileRoutesByTo {
   '/admin/taskline/projects/$id/members': typeof AdminAdminTasklineProjectsIdMembersRoute
   '/admin/taskline/projects/$id/workflow': typeof AdminAdminTasklineProjectsIdWorkflowRoute
   '/app/kharcha/e/$expenseId': typeof KharchaAppKharchaShellEExpenseIdRoute
+  '/app/kharcha/f/$personId': typeof KharchaAppKharchaShellFPersonIdRoute
+  '/app/kharcha/g/$groupId': typeof KharchaAppKharchaShellGGroupIdRoute
   '/app/kharcha/settings/$tab': typeof KharchaAppKharchaShellSettingsTabRoute
   '/app/parda/$type/$id/credits': typeof PardaAppPardaTypeIdCreditsRoute
   '/app/parda/watch/$type/$id': typeof PardaAppPardaWatchTypeIdRoute
@@ -2280,7 +2316,9 @@ export interface FileRoutesById {
   '/_chaal/app/chaal/watch/$channel': typeof ChaalAppChaalWatchChannelRoute
   '/_kharcha/app/kharcha/_shell/account': typeof KharchaAppKharchaShellAccountRoute
   '/_kharcha/app/kharcha/_shell/home': typeof KharchaAppKharchaShellHomeRoute
+  '/_kharcha/app/kharcha/_shell/people': typeof KharchaAppKharchaShellPeopleRoute
   '/_kharcha/app/kharcha/_shell/spend': typeof KharchaAppKharchaShellSpendRoute
+  '/_kharcha/app/kharcha/join/$token': typeof KharchaAppKharchaJoinTokenRoute
   '/_parda/app/parda/c/$slug': typeof PardaAppPardaCSlugRoute
   '/_parda/app/parda/collection/$id': typeof PardaAppPardaCollectionIdRoute
   '/_parda/app/parda/library/$tab': typeof PardaAppPardaLibraryTabRoute
@@ -2311,6 +2349,8 @@ export interface FileRoutesById {
   '/_admin/admin/taskline/projects/$id/members': typeof AdminAdminTasklineProjectsIdMembersRoute
   '/_admin/admin/taskline/projects/$id/workflow': typeof AdminAdminTasklineProjectsIdWorkflowRoute
   '/_kharcha/app/kharcha/_shell/e/$expenseId': typeof KharchaAppKharchaShellEExpenseIdRoute
+  '/_kharcha/app/kharcha/_shell/f/$personId': typeof KharchaAppKharchaShellFPersonIdRoute
+  '/_kharcha/app/kharcha/_shell/g/$groupId': typeof KharchaAppKharchaShellGGroupIdRoute
   '/_kharcha/app/kharcha/_shell/settings/$tab': typeof KharchaAppKharchaShellSettingsTabRoute
   '/_parda/app/parda/$type/$id/credits': typeof PardaAppPardaTypeIdCreditsRoute
   '/_parda/app/parda/watch/$type/$id': typeof PardaAppPardaWatchTypeIdRoute
@@ -2526,7 +2566,9 @@ export interface FileRouteTypes {
     | '/app/chaal/watch/$channel'
     | '/app/kharcha/account'
     | '/app/kharcha/home'
+    | '/app/kharcha/people'
     | '/app/kharcha/spend'
+    | '/app/kharcha/join/$token'
     | '/app/parda/c/$slug'
     | '/app/parda/collection/$id'
     | '/app/parda/library/$tab'
@@ -2557,6 +2599,8 @@ export interface FileRouteTypes {
     | '/admin/taskline/projects/$id/members'
     | '/admin/taskline/projects/$id/workflow'
     | '/app/kharcha/e/$expenseId'
+    | '/app/kharcha/f/$personId'
+    | '/app/kharcha/g/$groupId'
     | '/app/kharcha/settings/$tab'
     | '/app/parda/$type/$id/credits'
     | '/app/parda/watch/$type/$id'
@@ -2746,7 +2790,9 @@ export interface FileRouteTypes {
     | '/app/chaal/watch/$channel'
     | '/app/kharcha/account'
     | '/app/kharcha/home'
+    | '/app/kharcha/people'
     | '/app/kharcha/spend'
+    | '/app/kharcha/join/$token'
     | '/app/parda/c/$slug'
     | '/app/parda/collection/$id'
     | '/app/parda/library/$tab'
@@ -2777,6 +2823,8 @@ export interface FileRouteTypes {
     | '/admin/taskline/projects/$id/members'
     | '/admin/taskline/projects/$id/workflow'
     | '/app/kharcha/e/$expenseId'
+    | '/app/kharcha/f/$personId'
+    | '/app/kharcha/g/$groupId'
     | '/app/kharcha/settings/$tab'
     | '/app/parda/$type/$id/credits'
     | '/app/parda/watch/$type/$id'
@@ -2998,7 +3046,9 @@ export interface FileRouteTypes {
     | '/_chaal/app/chaal/watch/$channel'
     | '/_kharcha/app/kharcha/_shell/account'
     | '/_kharcha/app/kharcha/_shell/home'
+    | '/_kharcha/app/kharcha/_shell/people'
     | '/_kharcha/app/kharcha/_shell/spend'
+    | '/_kharcha/app/kharcha/join/$token'
     | '/_parda/app/parda/c/$slug'
     | '/_parda/app/parda/collection/$id'
     | '/_parda/app/parda/library/$tab'
@@ -3029,6 +3079,8 @@ export interface FileRouteTypes {
     | '/_admin/admin/taskline/projects/$id/members'
     | '/_admin/admin/taskline/projects/$id/workflow'
     | '/_kharcha/app/kharcha/_shell/e/$expenseId'
+    | '/_kharcha/app/kharcha/_shell/f/$personId'
+    | '/_kharcha/app/kharcha/_shell/g/$groupId'
     | '/_kharcha/app/kharcha/_shell/settings/$tab'
     | '/_parda/app/parda/$type/$id/credits'
     | '/_parda/app/parda/watch/$type/$id'
@@ -4534,12 +4586,26 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof KharchaAppKharchaShellHomeRouteImport
       parentRoute: typeof KharchaAppKharchaShellRouteRoute
     }
+    '/_kharcha/app/kharcha/_shell/people': {
+      id: '/_kharcha/app/kharcha/_shell/people'
+      path: '/people'
+      fullPath: '/app/kharcha/people'
+      preLoaderRoute: typeof KharchaAppKharchaShellPeopleRouteImport
+      parentRoute: typeof KharchaAppKharchaShellRouteRoute
+    }
     '/_kharcha/app/kharcha/_shell/spend': {
       id: '/_kharcha/app/kharcha/_shell/spend'
       path: '/spend'
       fullPath: '/app/kharcha/spend'
       preLoaderRoute: typeof KharchaAppKharchaShellSpendRouteImport
       parentRoute: typeof KharchaAppKharchaShellRouteRoute
+    }
+    '/_kharcha/app/kharcha/join/$token': {
+      id: '/_kharcha/app/kharcha/join/$token'
+      path: '/app/kharcha/join/$token'
+      fullPath: '/app/kharcha/join/$token'
+      preLoaderRoute: typeof KharchaAppKharchaJoinTokenRouteImport
+      parentRoute: typeof KharchaRouteRoute
     }
     '/_parda/app/parda/c/$slug': {
       id: '/_parda/app/parda/c/$slug'
@@ -4644,6 +4710,20 @@ declare module '@tanstack/react-router' {
       path: '/e/$expenseId'
       fullPath: '/app/kharcha/e/$expenseId'
       preLoaderRoute: typeof KharchaAppKharchaShellEExpenseIdRouteImport
+      parentRoute: typeof KharchaAppKharchaShellRouteRoute
+    }
+    '/_kharcha/app/kharcha/_shell/f/$personId': {
+      id: '/_kharcha/app/kharcha/_shell/f/$personId'
+      path: '/f/$personId'
+      fullPath: '/app/kharcha/f/$personId'
+      preLoaderRoute: typeof KharchaAppKharchaShellFPersonIdRouteImport
+      parentRoute: typeof KharchaAppKharchaShellRouteRoute
+    }
+    '/_kharcha/app/kharcha/_shell/g/$groupId': {
+      id: '/_kharcha/app/kharcha/_shell/g/$groupId'
+      path: '/g/$groupId'
+      fullPath: '/app/kharcha/g/$groupId'
+      preLoaderRoute: typeof KharchaAppKharchaShellGGroupIdRouteImport
       parentRoute: typeof KharchaAppKharchaShellRouteRoute
     }
     '/_kharcha/app/kharcha/_shell/settings/$tab': {
@@ -4913,8 +4993,11 @@ const ChaalRouteRouteWithChildren = ChaalRouteRoute._addFileChildren(
 interface KharchaAppKharchaShellRouteRouteChildren {
   KharchaAppKharchaShellAccountRoute: typeof KharchaAppKharchaShellAccountRoute
   KharchaAppKharchaShellHomeRoute: typeof KharchaAppKharchaShellHomeRoute
+  KharchaAppKharchaShellPeopleRoute: typeof KharchaAppKharchaShellPeopleRoute
   KharchaAppKharchaShellSpendRoute: typeof KharchaAppKharchaShellSpendRoute
   KharchaAppKharchaShellEExpenseIdRoute: typeof KharchaAppKharchaShellEExpenseIdRoute
+  KharchaAppKharchaShellFPersonIdRoute: typeof KharchaAppKharchaShellFPersonIdRoute
+  KharchaAppKharchaShellGGroupIdRoute: typeof KharchaAppKharchaShellGGroupIdRoute
   KharchaAppKharchaShellSettingsTabRoute: typeof KharchaAppKharchaShellSettingsTabRoute
 }
 
@@ -4922,9 +5005,12 @@ const KharchaAppKharchaShellRouteRouteChildren: KharchaAppKharchaShellRouteRoute
   {
     KharchaAppKharchaShellAccountRoute: KharchaAppKharchaShellAccountRoute,
     KharchaAppKharchaShellHomeRoute: KharchaAppKharchaShellHomeRoute,
+    KharchaAppKharchaShellPeopleRoute: KharchaAppKharchaShellPeopleRoute,
     KharchaAppKharchaShellSpendRoute: KharchaAppKharchaShellSpendRoute,
     KharchaAppKharchaShellEExpenseIdRoute:
       KharchaAppKharchaShellEExpenseIdRoute,
+    KharchaAppKharchaShellFPersonIdRoute: KharchaAppKharchaShellFPersonIdRoute,
+    KharchaAppKharchaShellGGroupIdRoute: KharchaAppKharchaShellGGroupIdRoute,
     KharchaAppKharchaShellSettingsTabRoute:
       KharchaAppKharchaShellSettingsTabRoute,
   }
@@ -4939,6 +5025,7 @@ interface KharchaRouteRouteChildren {
   KharchaAppKharchaSignInRoute: typeof KharchaAppKharchaSignInRoute
   KharchaAppKharchaSignUpRoute: typeof KharchaAppKharchaSignUpRoute
   KharchaAppKharchaIndexRoute: typeof KharchaAppKharchaIndexRoute
+  KharchaAppKharchaJoinTokenRoute: typeof KharchaAppKharchaJoinTokenRoute
 }
 
 const KharchaRouteRouteChildren: KharchaRouteRouteChildren = {
@@ -4947,6 +5034,7 @@ const KharchaRouteRouteChildren: KharchaRouteRouteChildren = {
   KharchaAppKharchaSignInRoute: KharchaAppKharchaSignInRoute,
   KharchaAppKharchaSignUpRoute: KharchaAppKharchaSignUpRoute,
   KharchaAppKharchaIndexRoute: KharchaAppKharchaIndexRoute,
+  KharchaAppKharchaJoinTokenRoute: KharchaAppKharchaJoinTokenRoute,
 }
 
 const KharchaRouteRouteWithChildren = KharchaRouteRoute._addFileChildren(

@@ -4,6 +4,7 @@ import {
 	createGroupInput,
 	groupIdInput,
 	groupMemberInput,
+	newGroupMemberInput,
 	updateGroupInput,
 } from "@/features/kharcha/schema";
 import type { GroupSummary, GroupView } from "@/features/kharcha/types";
@@ -45,6 +46,11 @@ export const addKharchaGroupMember = createServerFn({ method: "POST" })
 	.middleware([requireKharchaUser, withKharchaServices])
 	.validator(zodInput(groupMemberInput))
 	.handler(({ data, context }): Promise<GroupView> => groups.addMember(context, data.groupId, data.personId));
+
+export const addKharchaNewGroupMember = createServerFn({ method: "POST" })
+	.middleware([requireKharchaUser, withKharchaServices])
+	.validator(zodInput(newGroupMemberInput))
+	.handler(({ data, context }): Promise<GroupView> => groups.addNewMember(context, data));
 
 export const removeKharchaGroupMember = createServerFn({ method: "POST" })
 	.middleware([requireKharchaUser, withKharchaServices])

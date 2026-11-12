@@ -379,6 +379,9 @@ const SPECS: Record<Layer, LayerSpec> = {
 			"src/server/routes/kharcha-manifest.ts",
 			"public/kharcha",
 			"e2e/flows/kharcha.spec.ts",
+			// Invites and joining (Task 90, decision 0284).
+			"src/server/email/templates/kharcha-emails.tsx",
+			"tests/server/kharcha-social.test.ts",
 		],
 		packageScripts: ["db:seed-kharcha"],
 		crons: [],

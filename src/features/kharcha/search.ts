@@ -40,6 +40,29 @@ export const spendListInput = z.strictObject({
 });
 export type SpendListInput = z.infer<typeof spendListInput>;
 
+/** `/people` (Task 90): a search over the caller's friends and groups, and whether hidden friends are listed. */
+export const peopleSearch = z.object({
+	q: searchParam(),
+	hidden: z.literal(true).optional().catch(undefined),
+});
+export type PeopleSearch = z.infer<typeof peopleSearch>;
+export const PEOPLE_SEARCH_DEFAULTS = { q: "" } as const;
+
+/** A group's tabs (Task 90 has its thread and settings; balances and totals arrive with Tasks 91 and 94). */
+export const GROUP_TABS = ["thread", "settings"] as const;
+export type GroupTab = (typeof GROUP_TABS)[number];
+
+/** `/g/$groupId` and `/f/$personId`: the tab, and the expense open in the panel over the thread (a masked route). */
+export const threadSearch = z.object({
+	tab: enumParam(GROUP_TABS, "thread"),
+	expense: z.uuid().optional().catch(undefined),
+});
+export type ThreadSearch = z.infer<typeof threadSearch>;
+export const THREAD_SEARCH_DEFAULTS = { tab: "thread" } as const;
+
+/** An invite link's token: 32 characters of base64url (src/server/kharcha/invites/service.ts). */
+export const JOIN_TOKEN = /^[\w-]{32}$/;
+
 /** `/settings/$tab` (Task 89 has the lists; profile, notifications and recurring arrive with theirs). */
 export const SETTINGS_TABS = ["categories", "tags", "methods", "rules"] as const;
 export type SettingsTab = (typeof SETTINGS_TABS)[number];

@@ -3,19 +3,11 @@ import { and, desc, eq, gte, isNull, lte, or, type SQL, sql } from "drizzle-orm"
 import type { Amount, DuplicateRef, HomeActivity, HomeTodo, KharchaHome } from "@/features/kharcha/types";
 import { addDays, addMonths, type IsoDate, monthDays, todayInZone } from "@/lib/i18n/date-only";
 import { notFound } from "@/server/db/crud";
-import {
-	khActivity,
-	khExpense,
-	khExpenseShare,
-	khGroup,
-	khGroupMember,
-	khPayment,
-	khProfile,
-} from "@/server/db/schema";
+import { khActivity, khExpense, khExpenseShare, khGroupMember, khProfile } from "@/server/db/schema";
 import { type KharchaServices, type Me, resolveMe } from "../access";
+import { activityLines } from "../activity-lines";
 import { duplicatesOf } from "../expenses/repository";
 import { byCurrency, pairBalances } from "../ledger";
-import { loadPeople } from "../people";
 import { draftsOf } from "../receipts/service";
 import { spendRows } from "../spend/service";
 
@@ -172,75 +164,5 @@ async function recentActivity(db: KharchaServices["db"], personId: string): Prom
 		eq(khActivity.personHi, personId),
 		and(isNull(khActivity.groupId), eq(khActivity.actorId, personId)),
 	);
-	const rows = await db
-		.select({
-			id: khActivity.id,
-			kind: khActivity.kind,
-			at: khActivity.at,
-			actorId: khActivity.actorId,
-			subjectId: khActivity.subjectId,
-			expenseId: khActivity.expenseId,
-			paymentId: khActivity.paymentId,
-			data: khActivity.data,
-			expenseTitle: khExpense.title,
-			groupName: khGroup.name,
-			payment: {
-				fromId: khPayment.fromPerson,
-				toId: khPayment.toPerson,
-				amountMinor: khPayment.amountMinor,
-				currency: khPayment.currency,
-			},
-		})
-		.from(khActivity)
-		.leftJoin(khExpense, eq(khExpense.id, khActivity.expenseId))
-		.leftJoin(khGroup, eq(khGroup.id, khActivity.groupId))
-		.leftJoin(khPayment, eq(khPayment.id, khActivity.paymentId))
-		.where(visible)
-		.orderBy(desc(khActivity.at), desc(khActivity.id))
-		// An edit's rows share their instant: read enough to fold them and still fill the list.
-		.limit(RECENT_LIMIT * 4);
-
-	const lines: typeof rows = [];
-	const seen = new Set<string>();
-	for (const row of rows) {
-		const key = `${row.kind}|${row.expenseId ?? row.paymentId ?? row.subjectId ?? ""}|${row.actorId}|${row.at.getTime()}`;
-		if (seen.has(key)) continue;
-		seen.add(key);
-		lines.push(row);
-		if (lines.length === RECENT_LIMIT) break;
-	}
-
-	const ids = lines.flatMap((row) => [
-		row.actorId,
-		row.subjectId,
-		row.payment?.fromId ?? null,
-		row.payment?.toId ?? null,
-	]);
-	const people = new Map(
-		(
-			await loadPeople(
-				db,
-				personId,
-				ids.filter((id): id is string => id !== null),
-			)
-		).map((person) => [person.id, person]),
-	);
-	const person = (id: string | null | undefined) => (id ? (people.get(id) ?? null) : null);
-	return lines.map((row) => ({
-		id: row.id,
-		kind: row.kind,
-		at: row.at.toISOString(),
-		actor: person(row.actorId),
-		subject: person(row.subjectId),
-		title: row.expenseTitle ?? row.data.title ?? "",
-		group: row.groupName,
-		payment:
-			row.payment?.fromId && row.payment.currency
-				? {
-						from: person(row.payment.fromId),
-						to: person(row.payment.toId),
-						amount: { currency: row.payment.currency, amountMinor: Number(row.payment.amountMinor) },
-					}
-				: null,
-	}));
+	return activityLines(db, personId, visible, RECENT_LIMIT);
 }

@@ -307,6 +307,14 @@ export async function mergePerson(tx: Tx, fromId: string, toId: string): Promise
 	// Their own lists (Task 89): the same category, tag or method becomes one; the rest moves.
 	await mergeLists(tx, fromId, toId);
 
+	// Invites (Task 90): one of the two sent the other invited nobody; the rest move.
+	await tx.execute(sql`
+		delete from kh_invite
+		where (person_id = ${fromId} and invited_by = ${toId}) or (person_id = ${toId} and invited_by = ${fromId})
+	`);
+	await tx.execute(sql`update kh_invite set person_id = ${toId} where person_id = ${fromId}`);
+	await tx.execute(sql`update kh_invite set invited_by = ${toId} where invited_by = ${fromId}`);
+
 	// Contacts the one who goes had added.
 	await tx
 		.update(khPerson)

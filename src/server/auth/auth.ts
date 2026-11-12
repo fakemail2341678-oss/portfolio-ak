@@ -30,6 +30,7 @@ import type { SecurityNoticeKind } from "../email/templates/emails";
 import { serverEnv } from "../env";
 import { linkGuest, startGuest } from "../guests/auth-hooks";
 import { forgetUser as forgetKharchaUser } from "../kharcha/forget"; // @kharcha
+import { joinKharchaOnSignIn } from "../kharcha/invites/service"; // @kharcha
 import { errorFields, log } from "../log";
 import { acceptOnSignIn } from "../taskline/admin/invitations"; // @taskline
 import { CLIENT_IP_HEADER } from "./client-ip";
@@ -79,6 +80,19 @@ export const localizedUrl = (locale: Locale, path: string) =>
 	new URL(locale === "en" ? path : `/${locale}${path}`, serverEnv.BETTER_AUTH_URL).toString();
 
 const accountUrl = (locale: Locale) => localizedUrl(locale, "/account");
+
+/**
+ * What a new session does first, in order, each one logging its own failure (a sign-in never
+ * fails for them): a layer's invitations taken by the account's verified address. Taskline
+ * joins the team it was invited to (0212); Kharcha makes the account the person its address
+ * was added as (0284).
+ */
+const ON_SIGN_IN: ReadonlyArray<
+	(database: typeof db, session: { userId: string; impersonatedBy?: string | null | undefined }) => Promise<void>
+> = [
+	acceptOnSignIn, // @taskline
+	joinKharchaOnSignIn, // @kharcha
+];
 
 /** A security notice ("two-factor turned on", "Google linked"…) to the account's address. */
 const notify = (user: { email: string; name: string }, kind: SecurityNoticeKind, request: Request | undefined) => {
@@ -224,16 +238,13 @@ export const auth = betterAuth({
 	},
 
 	databaseHooks: {
-		// taskline:start
 		session: {
 			create: {
-				// A verified account's first session joins the Taskline team it was invited to (0212).
 				after: async (session) => {
-					await acceptOnSignIn(db, session);
+					for (const join of ON_SIGN_IN) await join(db, session);
 				},
 			},
 		},
-		// taskline:end
 		user: {
 			update: {
 				// Two-factor turned on (the setup code was confirmed) or off.

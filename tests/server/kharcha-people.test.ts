@@ -182,6 +182,12 @@ describe("mergePerson", () => {
 			methodId: cash.id,
 		});
 		await env.db.insert(schema.khReceiptDraft).values({ ownerId: guest });
+		// Invites (Task 90): one to the guest, one from them (guests send none through the service).
+		const invite = { email: "x@example.com", expiresAt: new Date(Date.now() + 86_400_000) };
+		await env.db.insert(schema.khInvite).values([
+			{ ...invite, personId: guest, invitedBy: sita, tokenHash: "a".repeat(64) },
+			{ ...invite, personId: sita, invitedBy: guest, tokenHash: "b".repeat(64) },
+		]);
 		const tagged = await expenses.createExpense(as("guest"), {
 			...base,
 			groupId: null,

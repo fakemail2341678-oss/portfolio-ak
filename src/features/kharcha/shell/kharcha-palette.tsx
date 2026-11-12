@@ -8,6 +8,7 @@ import {
 	SettingsIcon,
 	UserIcon,
 	UserPlusIcon,
+	UsersIcon,
 	WalletIcon,
 } from "lucide-react";
 import { THEME_ICONS, THEME_LABELS } from "@/components/layout/theme";
@@ -107,6 +108,14 @@ export function KharchaPalette({
 					>
 						<WalletIcon aria-hidden />
 						<span>{m.kharcha_nav_spend()}</span>
+					</CommandItem>
+					<CommandItem
+						value="go people"
+						keywords={[m.kharcha_nav_people()]}
+						onSelect={() => go(() => navigate(kharchaLinks.people()))}
+					>
+						<UsersIcon aria-hidden />
+						<span>{m.kharcha_nav_people()}</span>
 					</CommandItem>
 					<CommandItem
 						value="go settings"

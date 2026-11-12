@@ -1,5 +1,5 @@
 import { linkOptions } from "@tanstack/react-router";
-import type { SettingsTab } from "./search";
+import type { GroupTab, SettingsTab } from "./search";
 
 /**
  * Every link into Kharcha (PLAN 14.2, "Name"): pages link through these, so renaming the
@@ -15,6 +15,13 @@ export const kharchaLinks = {
 	/** The expense page; over Spend it opens as a panel (a masked route, `spendExpense`). */
 	expense: (expenseId: string) => linkOptions({ to: "/app/kharcha/e/$expenseId", params: { expenseId } }),
 	settings: (tab: SettingsTab) => linkOptions({ to: "/app/kharcha/settings/$tab", params: { tab } }),
+	people: () => linkOptions({ to: "/app/kharcha/people" }),
+	/** A group's thread, or one of its other tabs. */
+	group: (groupId: string, tab?: GroupTab) =>
+		linkOptions({ to: "/app/kharcha/g/$groupId", params: { groupId }, search: tab ? { tab } : {} }),
+	/** The thread with a friend. */
+	friend: (personId: string) => linkOptions({ to: "/app/kharcha/f/$personId", params: { personId } }),
+	join: (token: string) => linkOptions({ to: "/app/kharcha/join/$token", params: { token } }),
 };
 
 /** De-localized paths for redirects and `?redirect=` targets. */

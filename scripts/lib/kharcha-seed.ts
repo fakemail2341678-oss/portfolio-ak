@@ -10,7 +10,7 @@
  * services run. Run by Node directly (type stripping): it imports only relative `.ts`
  * files that import nothing at run time.
  */
-import { randomUUID } from "node:crypto";
+import { createHash, randomUUID } from "node:crypto";
 import { expenseDebts, paymentDebt } from "../../src/features/kharcha/money/ledger.ts";
 import { computeShares, type Split } from "../../src/features/kharcha/money/split.ts";
 import type { DemoQuery } from "./demo-data.ts";
@@ -22,6 +22,13 @@ export const KHARCHA_DEMO = [
 ] as const;
 
 const CURRENCY = "NPR";
+
+/**
+ * Asha's open invite to Maya, a friend in the trip without an account (Task 90): its link is
+ * /app/kharcha/join/<this>, for the e2e review of the join page and for trying it locally.
+ * A demo token: only its SHA-256 is stored, as for any invite.
+ */
+export const KHARCHA_DEMO_INVITE_TOKEN = "kharcha-demo-invite-token-000001";
 
 type DemoExpense = {
 	title: string;
@@ -230,6 +237,26 @@ export async function seedKharcha(
 	await query(
 		`insert into "kh_activity" ("group_id", "payment_id", "actor_id", "kind") values ($1, $2, $3, 'payment.created')`,
 		[groupId, paymentId, bikash],
+	);
+
+	// Maya: a member of the trip with an address and no account, invited by Asha.
+	const maya = await query(
+		`insert into "kh_person" ("email", "display_name", "color", "created_by") values ('maya@kharcha.example.com', 'Maya Tamang', 'pink', $1) returning "id"`,
+		[asha],
+	);
+	const mayaId = firstId(maya.rows, "person");
+	await query(`insert into "kh_friend" ("owner_id", "friend_id") values ($1, $2), ($2, $1) on conflict do nothing`, [
+		asha,
+		mayaId,
+	]);
+	await query(`insert into "kh_group_member" ("group_id", "person_id", "role") values ($1, $2, 'member')`, [
+		groupId,
+		mayaId,
+	]);
+	await query(
+		`insert into "kh_invite" ("person_id", "email", "invited_by", "group_id", "token_hash", "expires_at")
+		 values ($1, 'maya@kharcha.example.com', $2, $3, $4, now() + interval '14 days')`,
+		[mayaId, asha, groupId, createHash("sha256").update(KHARCHA_DEMO_INVITE_TOKEN).digest("hex")],
 	);
 
 	for (const personId of people) {

@@ -181,6 +181,14 @@ export class Harness {
 		if (!row.id) throw new Error(`no Kharcha expense for ${email}`);
 		return row.id;
 	}
+
+	/** The Kharcha demo account's group and a friend of theirs (Task 90), for their pages' review. */
+	async kharchaThreadIds(email: string): Promise<{ groupId: string; personId: string }> {
+		const response = await fetch(`${E2E.harnessURL}/e2e/kharcha-threads?email=${encodeURIComponent(email)}`);
+		const row = (await response.json()) as { groupId?: string; personId?: string };
+		if (!row.groupId || !row.personId) throw new Error(`no Kharcha group or friend for ${email}`);
+		return { groupId: row.groupId, personId: row.personId };
+	}
 	// kharcha:end
 
 	// taskline:start

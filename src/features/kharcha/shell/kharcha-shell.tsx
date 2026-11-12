@@ -8,6 +8,7 @@ import {
 	SearchIcon,
 	UserIcon,
 	UserPlusIcon,
+	UsersIcon,
 	WalletIcon,
 } from "lucide-react";
 import { lazy, type ReactNode, Suspense, useEffect, useRef, useState } from "react";
@@ -40,14 +41,15 @@ const CreateDialog = lazy(() => import("./create-dialogs"));
 const ExpenseDialog = lazy(() => import("../expenses/expense-dialog"));
 
 /** The shell's open dialog: one of the + menu's, or the expense dialog with what it starts from. */
-type ShellDialog = { action: Exclude<CreateAction, "expense"> } | ({ action: "expense" } & ExpenseStart);
+type ShellDialog = { action: Exclude<CreateAction, "expense" | "split"> } | ({ action: "expense" } & ExpenseStart);
 
 type NavItem = { key: string; label: () => string; icon: LucideIcon; link: () => LinkOptions };
 
-/** The rail's and the tabs' pages (PLAN 14.5 "UX"): each arrives with its route (People in 90, Insights in 94). */
+/** The rail's and the tabs' pages (PLAN 14.5 "UX"): each arrives with its route (Insights in 94). */
 const NAV: ReadonlyArray<NavItem> = [
 	{ key: "home", label: () => m.kharcha_nav_home(), icon: HouseIcon, link: () => kharchaLinks.home() },
 	{ key: "spend", label: () => m.kharcha_nav_spend(), icon: WalletIcon, link: () => kharchaLinks.spend() },
+	{ key: "people", label: () => m.kharcha_nav_people(), icon: UsersIcon, link: () => kharchaLinks.people() },
 ];
 
 /**
@@ -68,7 +70,14 @@ export function KharchaShell({ children }: { children: ReactNode }) {
 	const actions: KharchaActions = {
 		openPalette: () => setPaletteOpen(true),
 		openShortcuts: () => setShortcutsOpen(true),
-		create: (action) => setDialog({ action }),
+		create: (action) =>
+			setDialog(
+				action === "split"
+					? { action: "expense", split: true }
+					: action === "expense"
+						? { action: "expense" }
+						: { action },
+			),
 		addExpense: (start = {}) => setDialog({ action: "expense", ...start }),
 		editExpense: (expense) => setDialog({ action: "expense", expense }),
 	};
@@ -121,6 +130,9 @@ export function KharchaShell({ children }: { children: ReactNode }) {
 								{...(dialog.expense ? { expense: dialog.expense } : {})}
 								{...(dialog.draft ? { draft: dialog.draft } : {})}
 								{...(dialog.files ? { files: dialog.files } : {})}
+								{...(dialog.groupId ? { groupId: dialog.groupId } : {})}
+								{...(dialog.with ? { with: dialog.with } : {})}
+								{...(dialog.split ? { split: true } : {})}
 							/>
 						) : (
 							<CreateDialog action={dialog.action} me={me} userId={userId} onClose={() => setDialog(null)} />

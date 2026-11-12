@@ -5,6 +5,7 @@
  *
  * Plain data without Playwright imports, so the unit test can read it.
  */
+
 import type { E2EUser } from "../harness/config.ts";
 import type { PardaFixturePage } from "../harness/tmdb.ts"; // @parda
 
@@ -35,7 +36,9 @@ export type ReviewedPage = {
 		| { from: "parda-source-id" } // @parda
 		| { from: "parda-party" } // @parda
 		| { from: "parda-curated"; id: "slug" | "billboard" | "collection" } // @parda
-		| { from: "kharcha-expense-id" }; // @kharcha
+		| { from: "kharcha-expense-id" } // @kharcha
+		| { from: "kharcha-thread"; tab?: "settings" } // @kharcha
+		| { from: "kharcha-invite" }; // @kharcha
 	/** The concrete path, when it isn't `route` (the not-found page, a fixed `$param`). */
 	path?: string;
 	/** The expected HTTP status when it isn't 200. */
@@ -533,6 +536,22 @@ export const REVIEWED_PAGES: ReadonlyArray<ReviewedPage> = [
 	{ route: "/app/kharcha/settings/$tab", as: "kharcha", path: "/app/kharcha/settings/tags", label: "tags" },
 	{ route: "/app/kharcha/settings/$tab", as: "kharcha", path: "/app/kharcha/settings/methods", label: "methods" },
 	{ route: "/app/kharcha/settings/$tab", as: "kharcha", path: "/app/kharcha/settings/rules", label: "rules" },
+	{ route: "/app/kharcha/people", as: "kharcha" },
+	{ route: "/app/kharcha/g/$groupId", as: "kharcha", params: { from: "kharcha-thread" } },
+	{
+		route: "/app/kharcha/g/$groupId",
+		as: "kharcha",
+		params: { from: "kharcha-thread", tab: "settings" },
+		label: "settings",
+	},
+	{ route: "/app/kharcha/f/$personId", as: "kharcha", params: { from: "kharcha-thread" } },
+	{ route: "/app/kharcha/join/$token", params: { from: "kharcha-invite" } },
+	{
+		route: "/app/kharcha/join/$token",
+		as: "member",
+		params: { from: "kharcha-invite" },
+		label: "signed in",
+	},
 	// kharcha:end
 	// @new-feature:reviewed-pages
 	// Errors

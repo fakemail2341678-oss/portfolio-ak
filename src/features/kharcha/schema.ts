@@ -193,16 +193,50 @@ export const groupMemberInput = z.strictObject({ groupId: id, personId: id });
 
 export const personIdInput = z.strictObject({ personId: id });
 
-/** A friend by name only (a contact private to the caller), or by their address too. */
+/**
+ * A friend by name only (a contact private to the caller), or by their address too; with
+ * `invite`, someone without an account is emailed an invite at once (Task 90).
+ */
 export const addFriendInput = z.strictObject({
 	name: required({ max: NAME_MAX }),
 	email: email().optional(),
+	invite: z.boolean().default(false),
 });
 
 export const updateFriendInput = z.strictObject({
 	personId: id,
 	nickname: optionalText({ max: NAME_MAX }).optional(),
 	hidden: z.boolean().optional(),
+});
+
+/** An address for a contact of the caller's who has a name only: it merges into whoever has that address. */
+export const friendEmailInput = z.strictObject({
+	personId: id,
+	email: email(),
+	invite: z.boolean().default(false),
+});
+
+/** `/people`: the caller's friends and groups whose name has `q`; `hidden` lists the friends they hid too. */
+export const peopleInput = z.strictObject({
+	q: z.string().trim().max(80).default(""),
+	hidden: z.boolean().default(false),
+});
+
+/** A link for a friend without an account, from a group (its name shows on the page) or not; `send` emails it. */
+export const inviteInput = z.strictObject({
+	personId: id,
+	groupId: id.nullable().default(null),
+	send: z.boolean().default(false),
+});
+
+/** An invite link's token (src/features/kharcha/search.ts has the route's pattern). */
+export const joinTokenInput = z.strictObject({ token: z.string().regex(/^[\w-]{32}$/) });
+
+/** Someone new in a group: a friend made on the way (by name, or with an address), then added. */
+export const newGroupMemberInput = z.strictObject({
+	groupId: id,
+	name: required({ max: NAME_MAX }),
+	email: email().optional(),
 });
 
 // Lists (Task 89): the caller's own categories, tags, payment methods and merchant rules.
@@ -255,8 +289,12 @@ export type CreatePaymentInput = z.infer<typeof createPaymentInput>;
 export type UpdatePaymentInput = z.infer<typeof updatePaymentInput>;
 export type CreateGroupInput = z.infer<typeof createGroupInput>;
 export type UpdateGroupInput = z.infer<typeof updateGroupInput>;
-export type AddFriendInput = z.infer<typeof addFriendInput>;
+export type AddFriendInput = z.input<typeof addFriendInput>;
 export type UpdateFriendInput = z.infer<typeof updateFriendInput>;
+export type FriendEmailInput = z.input<typeof friendEmailInput>;
+export type PeopleInput = z.input<typeof peopleInput>;
+export type InviteInput = z.input<typeof inviteInput>;
+export type NewGroupMemberInput = z.infer<typeof newGroupMemberInput>;
 
 /** An IANA time zone this runtime knows ("Asia/Kathmandu"): `Intl` throws on any other. */
 export const timeZone = z

@@ -9,17 +9,41 @@ import {
 	restoreKharchaExpense,
 	updateKharchaExpense,
 } from "@/functions/kharcha/expenses";
-import { addKharchaFriend } from "@/functions/kharcha/friends";
-import { createKharchaGroup } from "@/functions/kharcha/groups";
+import {
+	addKharchaFriend,
+	listKharchaFriends,
+	setKharchaFriendEmail,
+	updateKharchaFriend,
+} from "@/functions/kharcha/friends";
+import {
+	addKharchaGroupMember,
+	addKharchaNewGroupMember,
+	archiveKharchaGroup,
+	createKharchaGroup,
+	getKharchaGroup,
+	leaveKharchaGroup,
+	listKharchaGroups,
+	removeKharchaGroupMember,
+	updateKharchaGroup,
+} from "@/functions/kharcha/groups";
+import { acceptKharchaInvite, inviteKharchaFriend } from "@/functions/kharcha/invites";
+import { getKharchaInvite } from "@/functions/kharcha/join";
 import { getKharchaLists } from "@/functions/kharcha/lists";
 import { completeKharchaOnboarding, getKharchaHome, getKharchaMe, getKharchaRev } from "@/functions/kharcha/me";
 import { createKharchaDraft, deleteKharchaDraft, getKharchaUploadSettings } from "@/functions/kharcha/receipts";
+import { getKharchaFriendThread, getKharchaGroupThread, listKharchaPeople } from "@/functions/kharcha/threads";
 import type {
 	AddFriendInput,
 	CreateExpenseInput,
 	CreateGroupInput,
+	FriendEmailInput,
+	InviteInput,
+	NewGroupMemberInput,
 	OnboardingInput,
+	PeopleInput,
 	UpdateExpenseInput,
+	UpdateFriendInput,
+	UpdateGroupInput,
 } from "./schema";
 import type { SpendListInput } from "./search";
 
@@ -37,6 +61,13 @@ export const kharchaKeys = {
 	expense: (userId: string, expenseId: string) => [...kharchaKeys.user(userId), "expense", expenseId] as const,
 	lists: (userId: string) => [...kharchaKeys.user(userId), "lists"] as const,
 	merchants: (userId: string) => [...kharchaKeys.user(userId), "merchants"] as const,
+	people: (userId: string, input: PeopleInput) => [...kharchaKeys.user(userId), "people", input] as const,
+	friends: (userId: string) => [...kharchaKeys.user(userId), "friends"] as const,
+	groups: (userId: string) => [...kharchaKeys.user(userId), "groups"] as const,
+	groupThread: (userId: string, groupId: string) => [...kharchaKeys.user(userId), "group", groupId] as const,
+	friendThread: (userId: string, personId: string) => [...kharchaKeys.user(userId), "friend", personId] as const,
+	/** Outside `user`: a visitor without a session reads it too. */
+	join: (token: string) => [...kharchaKeys.all, "join", token] as const,
 	/** Outside `user`: polling it mustn't refetch itself. */
 	rev: (userId: string) => [...kharchaKeys.all, "rev", userId] as const,
 };
@@ -61,6 +92,40 @@ export const kharchaListsQueryOptions = (userId: string) =>
 
 export const kharchaMerchantsQueryOptions = (userId: string) =>
 	queryOptions({ queryKey: kharchaKeys.merchants(userId), queryFn: () => getKharchaMerchants() });
+
+/** `/people` (Task 90): the caller's friends and groups matching the search. */
+export const kharchaPeopleQueryOptions = (userId: string, input: PeopleInput) =>
+	queryOptions({ queryKey: kharchaKeys.people(userId, input), queryFn: () => listKharchaPeople({ data: input }) });
+
+/** Who the caller can split with: the expense dialog's "Split with". */
+export const kharchaFriendsQueryOptions = (userId: string) =>
+	queryOptions({ queryKey: kharchaKeys.friends(userId), queryFn: () => listKharchaFriends() });
+
+export const kharchaGroupsQueryOptions = (userId: string) =>
+	queryOptions({ queryKey: kharchaKeys.groups(userId), queryFn: () => listKharchaGroups() });
+
+/** One group with its members (the expense dialog's "Split with" a group). */
+export const kharchaGroupQueryOptions = (userId: string, groupId: string) =>
+	queryOptions({
+		queryKey: [...kharchaKeys.user(userId), "group-view", groupId],
+		queryFn: () => getKharchaGroup({ data: { groupId } }),
+	});
+
+export const kharchaGroupThreadQueryOptions = (userId: string, groupId: string) =>
+	queryOptions({
+		queryKey: kharchaKeys.groupThread(userId, groupId),
+		queryFn: () => getKharchaGroupThread({ data: { groupId } }),
+	});
+
+export const kharchaFriendThreadQueryOptions = (userId: string, personId: string) =>
+	queryOptions({
+		queryKey: kharchaKeys.friendThread(userId, personId),
+		queryFn: () => getKharchaFriendThread({ data: { personId } }),
+	});
+
+/** An invite link's public lookup (`/join/$token`). */
+export const kharchaJoinQueryOptions = (token: string) =>
+	queryOptions({ queryKey: kharchaKeys.join(token), queryFn: () => getKharchaInvite({ data: { token } }) });
 
 /** Whether receipts can be uploaded here (Cloudinary is configured). */
 export const kharchaUploadsQueryOptions = () =>
@@ -130,6 +195,56 @@ export const kharchaMutations = {
 	deleteDraft: (queryClient: QueryClient, userId: string) =>
 		mutationOptions({
 			mutationFn: (id: string) => deleteKharchaDraft({ data: { id } }),
+			onSuccess: () => refreshKharcha(queryClient, userId),
+		}),
+	updateFriend: (queryClient: QueryClient, userId: string) =>
+		mutationOptions({
+			mutationFn: (data: UpdateFriendInput) => updateKharchaFriend({ data }),
+			onSuccess: () => refreshKharcha(queryClient, userId),
+		}),
+	setFriendEmail: (queryClient: QueryClient, userId: string) =>
+		mutationOptions({
+			mutationFn: (data: FriendEmailInput) => setKharchaFriendEmail({ data }),
+			onSuccess: () => refreshKharcha(queryClient, userId),
+		}),
+	invite: (queryClient: QueryClient, userId: string) =>
+		mutationOptions({
+			mutationFn: (data: InviteInput) => inviteKharchaFriend({ data }),
+			onSuccess: () => refreshKharcha(queryClient, userId),
+		}),
+	acceptInvite: (queryClient: QueryClient, userId: string) =>
+		mutationOptions({
+			mutationFn: (token: string) => acceptKharchaInvite({ data: { token } }),
+			onSuccess: () => refreshKharcha(queryClient, userId),
+		}),
+	updateGroup: (queryClient: QueryClient, userId: string) =>
+		mutationOptions({
+			mutationFn: (data: UpdateGroupInput) => updateKharchaGroup({ data }),
+			onSuccess: () => refreshKharcha(queryClient, userId),
+		}),
+	archiveGroup: (queryClient: QueryClient, userId: string) =>
+		mutationOptions({
+			mutationFn: (data: { groupId: string; archived: boolean }) => archiveKharchaGroup({ data }),
+			onSuccess: () => refreshKharcha(queryClient, userId),
+		}),
+	addMember: (queryClient: QueryClient, userId: string) =>
+		mutationOptions({
+			mutationFn: (data: { groupId: string; personId: string }) => addKharchaGroupMember({ data }),
+			onSuccess: () => refreshKharcha(queryClient, userId),
+		}),
+	addNewMember: (queryClient: QueryClient, userId: string) =>
+		mutationOptions({
+			mutationFn: (data: NewGroupMemberInput) => addKharchaNewGroupMember({ data }),
+			onSuccess: () => refreshKharcha(queryClient, userId),
+		}),
+	removeMember: (queryClient: QueryClient, userId: string) =>
+		mutationOptions({
+			mutationFn: (data: { groupId: string; personId: string }) => removeKharchaGroupMember({ data }),
+			onSuccess: () => refreshKharcha(queryClient, userId),
+		}),
+	leaveGroup: (queryClient: QueryClient, userId: string) =>
+		mutationOptions({
+			mutationFn: (groupId: string) => leaveKharchaGroup({ data: { groupId } }),
 			onSuccess: () => refreshKharcha(queryClient, userId),
 		}),
 };

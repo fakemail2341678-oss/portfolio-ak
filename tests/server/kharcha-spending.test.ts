@@ -215,7 +215,8 @@ describe("Kharcha: an expense's own part and its history", () => {
 			categoryId: mayaFood.id,
 		});
 		const ashaSaw = await expenses.getExpense(as("asha"), shared.id);
-		expect(ashaSaw.category).toBeNull();
+		// Her own category of the same built-in as Maya's (Task 90).
+		expect(ashaSaw.category?.id).toBe(ashaFood.id);
 		await expenses.updateExpense(as("asha"), {
 			...base,
 			title: "Dinner",

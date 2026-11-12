@@ -1,20 +1,42 @@
 import { formOptions, useStore } from "@tanstack/react-form";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useId, useRef, useState } from "react";
+import { lazy, Suspense, useId, useRef, useState } from "react";
 import { toast } from "sonner";
 import { z } from "zod";
 import { FormDialog } from "@/components/dialogs/form-dialog";
 import { formValidators, handleSaveError, useAppForm } from "@/components/forms";
+import { NativeSelect } from "@/components/ui/native-select";
 import type { ImageAsset } from "@/features/attachments/schema";
 import { createKharchaTag } from "@/functions/kharcha/lists";
-import { CURRENCIES, type CurrencyCode, currencyLabel, money, toMajor, toMinor } from "@/lib/i18n/currency";
+import {
+	CURRENCIES,
+	type CurrencyCode,
+	currencyLabel,
+	minorDigits,
+	money,
+	toMajor,
+	toMinor,
+} from "@/lib/i18n/currency";
 import { isoDate, optionalText } from "@/lib/validation";
 import { m } from "@/paraglide/messages";
 import { firstRule } from "../lists";
-import { kharchaListsQueryOptions, kharchaMerchantsQueryOptions, kharchaMutations, refreshKharcha } from "../queries";
+import { splitProblemMessage } from "../money/problem";
+import type { Paid, Split } from "../money/split";
+import {
+	kharchaFriendsQueryOptions,
+	kharchaGroupQueryOptions,
+	kharchaGroupsQueryOptions,
+	kharchaListsQueryOptions,
+	kharchaMerchantsQueryOptions,
+	kharchaMutations,
+	refreshKharcha,
+} from "../queries";
 import { MERCHANT_MAX, NOTES_MAX, TITLE_MAX } from "../schema";
-import type { ExpenseKind, ExpenseView, KharchaLists, KharchaMe, ReceiptDraftView } from "../types";
+import type { ExpenseKind, ExpenseView, KharchaLists, KharchaMe, KharchaPerson, ReceiptDraftView } from "../types";
 import { ReceiptsField } from "./receipts-field";
+import { buildSplit, draftFrom, newDraft, type SplitDraft, withPeople } from "./split-model";
+
+const SplitEditor = lazy(() => import("./split-editor"));
 
 /** "None" in a picker: shadcn's Select has no empty value. */
 const NONE = "none";
@@ -37,6 +59,9 @@ type Values = z.infer<typeof schema>;
 /** The smallest amount a currency has (one paisa, one yen). */
 const smallest = (code: string) => toMajor(1, code);
 
+/** Who the expense is split with (Task 90): nobody, a group's members, or some friends. */
+type SplitWith = { kind: "none" } | { kind: "group"; groupId: string } | { kind: "friends"; ids: string[] };
+
 export type ExpenseDialogProps = {
 	me: KharchaMe;
 	userId: string;
@@ -47,28 +72,60 @@ export type ExpenseDialogProps = {
 	draft?: ReceiptDraftView;
 	/** Files to upload at once (dropped on the page). */
 	files?: ReadonlyArray<File>;
+	/** A new expense in this group (its page's Add expense). */
+	groupId?: string;
+	/** A new expense split with these friends (a friend's page). */
+	with?: ReadonlyArray<string>;
+	/** "Split a bill": open with friends to pick. */
+	split?: boolean;
 	/** After a save, with what was saved (the + menu opens nothing; a page may). */
 	onSaved?: (expense: ExpenseView) => void;
 };
 
+const startingWith = (props: ExpenseDialogProps): SplitWith => {
+	const { expense, me } = props;
+	if (expense?.groupId) return { kind: "group", groupId: expense.groupId };
+	if (expense) {
+		const others = expense.people.filter((person) => person.id !== me.person.id).map((person) => person.id);
+		return others.length > 0 ? { kind: "friends", ids: others } : { kind: "none" };
+	}
+	if (props.groupId) return { kind: "group", groupId: props.groupId };
+	if (props.with?.length) return { kind: "friends", ids: [...props.with] };
+	return props.split ? { kind: "friends", ids: [] } : { kind: "none" };
+};
+
 /**
- * Add or edit an expense (PLAN Task 89): a dialog on a laptop, the whole screen on a phone.
- * Personal only in this task (splitting arrives in Task 90); a shared expense keeps its
- * people and split. The amount reads Devanagari digits; the merchant completes from the
- * caller's history, and choosing one fills the category, tags and method from a merchant
- * rule, or the category last given it, until the caller picks their own.
+ * Add or edit an expense (PLAN Tasks 89 and 90): a dialog on a laptop, the whole screen on a
+ * phone. The amount reads Devanagari digits; the merchant completes from the caller's
+ * history, and choosing one fills the category, tags and method from a merchant rule, or
+ * the category last given it, until the caller picks their own. "Split with" a group or
+ * friends opens the split editor (lazy); each person's share then carries their own
+ * category (the server gives them theirs).
  */
-export default function ExpenseDialog({ me, userId, onClose, expense, draft, files, onSaved }: ExpenseDialogProps) {
+export default function ExpenseDialog(props: ExpenseDialogProps) {
+	const { me, userId, onClose, expense, draft, files, onSaved } = props;
 	const queryClient = useQueryClient();
 	const { data: lists } = useQuery(kharchaListsQueryOptions(userId));
 	const { data: merchants = [] } = useQuery(kharchaMerchantsQueryOptions(userId));
+	const { data: friends = [] } = useQuery(kharchaFriendsQueryOptions(userId));
+	const { data: groups = [] } = useQuery(kharchaGroupsQueryOptions(userId));
 	const create = useMutation(kharchaMutations.createExpense(queryClient, userId));
 	const update = useMutation(kharchaMutations.updateExpense(queryClient, userId));
 	const [busy, setBusy] = useState(false);
 	const [stale, setStale] = useState(false);
+	const [splitWith, setSplitWith] = useState<SplitWith>(() => startingWith(props));
+	const [splitDraft, setSplitDraft] = useState<SplitDraft | null>(null);
 	const listId = useId();
+	const splitId = useId();
 	// What the caller chose themselves: the merchant's helpers never overwrite it.
-	const chosen = useRef({ category: Boolean(expense), tags: Boolean(expense), method: Boolean(expense) });
+	const chosen = useRef({
+		category: Boolean(expense),
+		tags: Boolean(expense),
+		method: Boolean(expense),
+		currency: Boolean(expense),
+	});
+	const groupId = splitWith.kind === "group" ? splitWith.groupId : null;
+	const { data: group } = useQuery({ ...kharchaGroupQueryOptions(userId, groupId ?? ""), enabled: groupId !== null });
 
 	const currencies = [
 		...new Set([...(expense ? [expense.currency] : []), me.profile.homeCurrency, ...me.currencies]),
@@ -101,6 +158,53 @@ export default function ExpenseDialog({ me, userId, onClose, expense, draft, fil
 				receipts: draft?.receipts ?? [],
 			};
 
+	// Everyone the expense can name now: the group's current members (and whoever is on it
+	// already), or the caller and the friends picked.
+	const known = new Map<string, KharchaPerson>([
+		[me.person.id, me.person],
+		...friends.map((friend) => [friend.person.id, friend.person] as const),
+		...(group?.members ?? []).map((member) => [member.person.id, member.person] as const),
+		...(expense?.people ?? []).map((person) => [person.id, person] as const),
+	]);
+	const participantIds =
+		splitWith.kind === "group"
+			? [
+					...new Set([
+						...(group?.members ?? []).filter((member) => member.leftAt === null).map((member) => member.person.id),
+						...(expense?.groupId === splitWith.groupId ? expense.people.map((person) => person.id) : []),
+					]),
+				]
+			: splitWith.kind === "friends"
+				? [me.person.id, ...splitWith.ids]
+				: [me.person.id];
+	const participants = participantIds.flatMap((id) => {
+		const person = known.get(id);
+		return person ? [person] : [];
+	});
+	const sharing = participants.length > 1;
+	const defaultMethod = group?.settings.defaultSplit ?? me.profile.defaultSplit;
+
+	/** The editor's draft for these people: kept as typed, people joining and leaving it. */
+	const draftFor = (people: ReadonlyArray<string>, currency: string): SplitDraft => {
+		if (splitDraft) return withPeople(splitDraft, people, me.person.id);
+		if (expense && expense.people.length > 1) {
+			return withPeople(
+				draftFrom(
+					expense.split,
+					expense.payers,
+					expense.people.map((person) => person.id),
+					me.person.id,
+					minorDigits(currency),
+				),
+				people,
+				me.person.id,
+			);
+		}
+		return newDraft(people, me.person.id, defaultMethod === "full" ? "equal" : defaultMethod);
+	};
+	// The first draft is kept at once, so its lines keep their keys while the rest is typed.
+	if (sharing && splitDraft === null) setSplitDraft(draftFor(participantIds, defaults.currency));
+
 	const form = useAppForm({
 		...formOptions({ defaultValues: defaults, validators: formValidators(schema) }),
 		onSubmit: async ({ value, formApi }) => {
@@ -109,8 +213,20 @@ export default function ExpenseDialog({ me, userId, onClose, expense, draft, fil
 				return;
 			}
 			try {
-				const tagIds = await tagIdsFor(value.tags, lists);
 				const amountMinor = toMinor(value.amount ?? 0, value.currency);
+				let shared: { payers: Paid[]; split: Split } | null = null;
+				if (sharing) {
+					const built = buildSplit(draftFor(participantIds, value.currency), amountMinor, value.currency, value.kind);
+					if (!built.ok) {
+						toast.error(splitProblemMessage(built.problem, value.currency));
+						return;
+					}
+					shared = { payers: built.payers, split: built.split };
+				} else if (splitWith.kind !== "none") {
+					toast.error(m.kharcha_split_pick_people());
+					return;
+				}
+				const tagIds = await tagIdsFor(value.tags, lists);
 				const fields = {
 					kind: value.kind,
 					title: value.title.trim(),
@@ -123,15 +239,11 @@ export default function ExpenseDialog({ me, userId, onClose, expense, draft, fil
 					tagIds,
 					methodId: value.methodId === NONE ? null : value.methodId,
 					receiptIds: value.receipts.map((receipt) => receipt.id),
+					...(shared ?? {}),
 				};
 				const saved = expense
-					? await update.mutateAsync({
-							...fields,
-							expenseId: expense.id,
-							version: expense.version,
-							...keptSplit(expense, amountMinor),
-						})
-					: await create.mutateAsync({ ...fields, groupId: null, ...(draft ? { draftId: draft.id } : {}) });
+					? await update.mutateAsync({ ...fields, expenseId: expense.id, version: expense.version })
+					: await create.mutateAsync({ ...fields, groupId, ...(draft ? { draftId: draft.id } : {}) });
 				toast.success(expense ? m.kharcha_expense_saved() : m.kharcha_expense_added());
 				onSaved?.(saved);
 				onClose();
@@ -142,10 +254,17 @@ export default function ExpenseDialog({ me, userId, onClose, expense, draft, fil
 	});
 
 	const currency = useStore(form.store, (state) => state.values.currency);
+	const kind = useStore(form.store, (state) => state.values.kind);
+	const amount = useStore(form.store, (state) => state.values.amount);
+	const amountMinor = amount && Number.isFinite(amount) ? toMinor(amount, currency) : 0;
 	const categories = (lists?.categories ?? []).filter(
 		(category) => !category.archived || category.id === expense?.mine.categoryId,
 	);
 	const methods = (lists?.methods ?? []).filter((method) => !method.archived || method.id === expense?.mine.methodId);
+	const openGroups = groups.filter((each) => !each.left && !each.archived);
+	const pickable = friends.filter(
+		(friend) => !friend.hidden || (splitWith.kind === "friends" && splitWith.ids.includes(friend.person.id)),
+	);
 
 	/** A merchant picked or typed: the rule that matches it, else the category last given it, fills what wasn't chosen. */
 	const helpWith = (merchant: string) => {
@@ -165,10 +284,32 @@ export default function ExpenseDialog({ me, userId, onClose, expense, draft, fil
 		if (rule?.methodId && !chosen.current.method) form.setFieldValue("methodId", rule.methodId);
 	};
 
+	/** "Split with" changed: a group brings its currency until the caller picks one. */
+	const chooseSplit = (value: string) => {
+		if (value === NONE) setSplitWith({ kind: "none" });
+		else if (value === "friends") setSplitWith({ kind: "friends", ids: [] });
+		else {
+			setSplitWith({ kind: "group", groupId: value });
+			const picked = groups.find((each) => each.id === value);
+			if (picked && !chosen.current.currency && currencies.includes(picked.currency as CurrencyCode)) {
+				form.setFieldValue("currency", picked.currency as CurrencyCode);
+			}
+		}
+	};
+	const toggleFriend = (personId: string, on: boolean) => {
+		if (splitWith.kind !== "friends") return;
+		setSplitWith({
+			kind: "friends",
+			ids: on ? [...splitWith.ids, personId] : splitWith.ids.filter((id) => id !== personId),
+		});
+	};
+	// A group's expense stays in its group; elsewhere the people can change.
+	const fixedGroup = Boolean(expense?.groupId);
+
 	return (
 		<form.AppForm>
 			<FormDialog
-				title={expense ? m.kharcha_expense_edit() : m.kharcha_create_expense()}
+				title={expense ? m.kharcha_expense_edit() : props.split ? m.kharcha_create_split() : m.kharcha_create_expense()}
 				description={draft ? m.kharcha_expense_from_draft() : m.kharcha_expense_description()}
 				submitLabel={expense ? m.kharcha_expense_save() : m.kharcha_expense_add()}
 				onClose={onClose}
@@ -180,9 +321,9 @@ export default function ExpenseDialog({ me, userId, onClose, expense, draft, fil
 					{(field) => (
 						<field.RadioGroupField
 							label={m.kharcha_field_kind()}
-							options={(["expense", "refund"] satisfies ExpenseKind[]).map((kind) => ({
-								value: kind,
-								label: kind === "expense" ? m.kharcha_kind_expense() : m.kharcha_kind_refund(),
+							options={(["expense", "refund"] satisfies ExpenseKind[]).map((each) => ({
+								value: each,
+								label: each === "expense" ? m.kharcha_kind_expense() : m.kharcha_kind_refund(),
 							}))}
 						/>
 					)}
@@ -201,7 +342,7 @@ export default function ExpenseDialog({ me, userId, onClose, expense, draft, fil
 					>
 						{(field) => <field.CurrencyField label={m.kharcha_field_amount()} currency={currency} />}
 					</form.AppField>
-					<form.AppField name="currency">
+					<form.AppField name="currency" listeners={{ onChange: () => (chosen.current.currency = true) }}>
 						{(field) => (
 							<field.SelectField
 								label={m.kharcha_field_currency()}
@@ -210,6 +351,63 @@ export default function ExpenseDialog({ me, userId, onClose, expense, draft, fil
 						)}
 					</form.AppField>
 				</div>
+
+				<div className="flex flex-col gap-2">
+					<label htmlFor={splitId} className="font-medium text-sm">
+						{m.kharcha_split_with()}
+					</label>
+					<NativeSelect
+						id={splitId}
+						value={splitWith.kind === "group" ? splitWith.groupId : splitWith.kind === "friends" ? "friends" : NONE}
+						onChange={(event) => chooseSplit(event.target.value)}
+						disabled={fixedGroup}
+						data-testid="kharcha-split-with"
+					>
+						{fixedGroup ? null : <option value={NONE}>{m.kharcha_split_with_none()}</option>}
+						{fixedGroup ? null : <option value="friends">{m.kharcha_split_with_friends()}</option>}
+						{(fixedGroup ? groups.filter((each) => each.id === expense?.groupId) : openGroups).map((each) => (
+							<option key={each.id} value={each.id}>
+								{m.kharcha_split_with_group({ group: each.name })}
+							</option>
+						))}
+					</NativeSelect>
+					{splitWith.kind === "friends" ? (
+						pickable.length === 0 ? (
+							<p className="text-caption text-kh-muted">{m.kharcha_split_no_friends()}</p>
+						) : (
+							<fieldset className="flex flex-wrap gap-1.5" data-testid="kharcha-split-friends">
+								<legend className="sr-only">{m.kharcha_split_with_friends()}</legend>
+								{pickable.map((friend) => (
+									<label
+										key={friend.person.id}
+										className="kh-ease flex cursor-pointer items-center gap-1.5 rounded-full border border-kh-hair px-2.5 py-1 text-sm has-[:checked]:border-kh-ink has-[:checked]:bg-kh-sel has-[:focus-visible]:ring-[3px] has-[:focus-visible]:ring-ring/50"
+									>
+										<input
+											type="checkbox"
+											className="size-3.5 accent-[var(--kh-act)]"
+											checked={splitWith.ids.includes(friend.person.id)}
+											onChange={(event) => toggleFriend(friend.person.id, event.target.checked)}
+										/>
+										{friend.person.name}
+									</label>
+								))}
+							</fieldset>
+						)
+					) : null}
+				</div>
+				{sharing ? (
+					<Suspense fallback={null}>
+						<SplitEditor
+							draft={draftFor(participantIds, currency)}
+							onChange={setSplitDraft}
+							people={participants}
+							amountMinor={amountMinor}
+							currency={currency}
+							kind={kind}
+						/>
+					</Suspense>
+				) : null}
+
 				<form.AppField name="spentOn">{(field) => <field.DateField label={m.kharcha_field_date()} />}</form.AppField>
 				<form.AppField
 					name="merchant"
@@ -246,6 +444,7 @@ export default function ExpenseDialog({ me, userId, onClose, expense, draft, fil
 						{(field) => (
 							<field.SelectField
 								label={m.kharcha_field_category()}
+								description={sharing ? m.kharcha_field_category_shared_help() : undefined}
 								options={[
 									{ value: NONE, label: m.kharcha_category_none() },
 									...categories.map((category) => ({ value: category.id, label: category.name })),
@@ -288,21 +487,6 @@ export default function ExpenseDialog({ me, userId, onClose, expense, draft, fil
 			</FormDialog>
 		</form.AppForm>
 	);
-}
-
-/**
- * A shared expense keeps its people and its split (Task 90 edits them): one payer pays
- * the new amount; several are kept as they were, and the server says when they no
- * longer add up.
- */
-function keptSplit(expense: ExpenseView, amountMinor: number) {
-	if (expense.people.length <= 1) return {};
-	const [only, ...more] = expense.payers;
-	const payers =
-		only && more.length === 0 && amountMinor !== expense.amountMinor
-			? [{ person: only.personId, amount: amountMinor }]
-			: expense.payers.map((payer) => ({ person: payer.personId, amount: payer.amountMinor }));
-	return { payers, split: expense.split };
 }
 
 /** The tags' ids, making the ones the caller typed that they don't have yet. */

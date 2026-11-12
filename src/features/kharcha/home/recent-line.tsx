@@ -50,5 +50,7 @@ export function recentSentence(line: HomeActivity): string {
 			return m.kharcha_recent_member_left({ member: subject(line.subject), group });
 		case "friend.added":
 			return m.kharcha_recent_friend_added({ actor, friend: object(line.subject) });
+		case "friend.joined":
+			return m.kharcha_recent_friend_joined({ actor });
 	}
 }

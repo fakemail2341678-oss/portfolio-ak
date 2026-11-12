@@ -2,9 +2,12 @@ import type { ImageAsset } from "../../src/features/attachments/schema";
 import type {
 	ExpenseDetail,
 	ExpenseView,
+	FriendThread,
 	FriendView,
 	GroupSummary,
+	GroupThread,
 	GroupView,
+	JoinInvite,
 	KharchaBalances,
 	KharchaHome,
 	KharchaLists,
@@ -12,6 +15,7 @@ import type {
 	KharchaPerson,
 	MerchantSuggestion,
 	PaymentView,
+	PeoplePage,
 	ReceiptDraftView,
 	SpendPage,
 } from "../../src/features/kharcha/types";
@@ -451,7 +455,170 @@ export const sampleKharchaGroup: GroupView = {
 	can: { edit: true, manage: true },
 };
 
+const friend = (who: KharchaPerson, amountMinor: number, extra: Partial<FriendView> = {}): FriendView => ({
+	person: who,
+	nickname: "",
+	hidden: false,
+	email: null,
+	balances: amountMinor === 0 ? [] : [{ currency: "NPR", amountMinor }],
+	canInvite: false,
+	canAddEmail: false,
+	invite: null,
+	...extra,
+});
+
+/** Sita has no account yet: added with her address, invited. */
+const sita: KharchaPerson = { ...person("p-sita", "Sita", "pink"), hasAccount: false };
+
 export const sampleKharchaFriends: FriendView[] = [
-	{ person: asha, nickname: "", hidden: false, email: null, balances: [{ currency: "NPR", amountMinor: -28_000 }] },
-	{ person: bikash, nickname: "", hidden: false, email: null, balances: [{ currency: "NPR", amountMinor: 214_667 }] },
+	friend(asha, -28_000),
+	friend(bikash, 214_667),
+	friend(sita, 0, {
+		canInvite: true,
+		invite: { sentAt: "2026-11-08T08:00:00.000Z", expiresAt: "2026-11-22T08:00:00.000Z" },
+	}),
 ];
+
+export const sampleKharchaPeople: PeoplePage = {
+	friends: sampleKharchaFriends,
+	groups: [
+		...sampleKharchaGroups,
+		{
+			id: "g-flat",
+			name: "Flat 3B",
+			kind: "home",
+			color: "indigo",
+			icon: "house",
+			currency: "NPR",
+			archived: false,
+			left: false,
+			members: 2,
+			balances: [],
+		},
+	],
+	hiddenCount: 1,
+};
+
+const threadRow = (id: string, title: string, amountMinor: number, spentOn: string, payer: KharchaPerson) => ({
+	...spendRow(id, title, amountMinor, spentOn, {
+		id: "c-food",
+		name: "Food and drink",
+		icon: "utensils",
+		color: "orange",
+	}),
+	groupId: "g-trip",
+	payers: [{ personId: payer.id, amountMinor }],
+	people: [me, asha, bikash],
+	myShareMinor: Math.round(amountMinor / 3),
+	myPaidMinor: payer.id === me.id ? amountMinor : 0,
+});
+
+export const sampleKharchaGroupThread: GroupThread = {
+	group: sampleKharchaGroup,
+	more: false,
+	items: [
+		{
+			type: "system",
+			id: "a-created",
+			day: "2026-10-01",
+			at: "2026-10-01T08:00:00.000Z",
+			line: {
+				id: "a-created",
+				kind: "group.created",
+				at: "2026-10-01T08:00:00.000Z",
+				actor: me,
+				subject: null,
+				title: "Pokhara trip",
+				group: "Pokhara trip",
+				payment: null,
+			},
+		},
+		{
+			type: "expense",
+			id: "e-bus",
+			day: "2026-10-03",
+			at: "2026-10-03T08:00:00.000Z",
+			expense: threadRow("e-bus", "Tourist bus", 450_000, "2026-10-03", me),
+		},
+		{
+			type: "expense",
+			id: "e-dinner",
+			day: "2026-10-04",
+			at: "2026-10-04T15:00:00.000Z",
+			expense: threadRow("e-dinner", "Lakeside dinner", 620_000, "2026-10-04", asha),
+		},
+		{
+			type: "payment",
+			id: "pay-1",
+			day: "2026-10-07",
+			at: "2026-10-07T08:00:00.000Z",
+			payment: {
+				id: "pay-1",
+				groupId: "g-trip",
+				fromId: bikash.id,
+				toId: me.id,
+				amountMinor: 100_000,
+				currency: "NPR",
+				paid: null,
+				method: "eSewa",
+				note: "",
+				paidOn: "2026-10-07",
+				people: [bikash, me],
+			},
+		},
+		{
+			type: "system",
+			id: "a-edit",
+			day: "2026-10-07",
+			at: "2026-10-07T09:00:00.000Z",
+			line: {
+				id: "a-edit",
+				kind: "expense.updated",
+				at: "2026-10-07T09:00:00.000Z",
+				actor: asha,
+				subject: null,
+				title: "Lakeside dinner",
+				group: "Pokhara trip",
+				payment: null,
+			},
+		},
+	],
+};
+
+export const sampleKharchaFriendThread: FriendThread = {
+	friend: sampleKharchaFriends[0] ?? friend(asha, 0),
+	more: false,
+	groups: [
+		{
+			id: "g-trip",
+			name: "Pokhara trip",
+			color: "teal",
+			icon: "plane",
+			left: false,
+			balances: [{ currency: "NPR", amountMinor: -28_000 }],
+		},
+	],
+	items: [
+		{
+			type: "expense",
+			id: "e-coffee-asha",
+			day: "2026-11-08",
+			at: "2026-11-08T08:00:00.000Z",
+			expense: {
+				...spendRow("e-coffee-asha", "Coffee at Himalayan Java", 84_000, "2026-11-08", null),
+				people: [me, asha],
+				payers: [{ personId: asha.id, amountMinor: 84_000 }],
+				myShareMinor: 42_000,
+				myPaidMinor: 0,
+				fixes: [],
+			},
+		},
+	],
+};
+
+export const sampleKharchaInvite: JoinInvite = {
+	inviter: { name: "Asha Gurung", color: "violet" },
+	group: { name: "Pokhara trip", color: "teal", icon: "plane" },
+	status: "open",
+	expiresAt: "2026-11-26T08:00:00.000Z",
+};

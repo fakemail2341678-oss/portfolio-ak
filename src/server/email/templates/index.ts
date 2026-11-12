@@ -23,6 +23,7 @@ import {
 	Welcome,
 	type WelcomeProps,
 } from "./emails";
+import * as kharcha from "./kharcha-emails"; // @kharcha
 import type { EmailBaseProps } from "./layout";
 import * as parda from "./parda-emails"; // @parda
 import * as taskline from "./taskline-emails"; // @taskline
@@ -43,6 +44,7 @@ export interface EmailPropsMap {
 	"taskline-notification": taskline.TaskNotificationProps; // @taskline
 	"taskline-digest": taskline.DailyDigestProps; // @taskline
 	"parda-digest": parda.EpisodeDigestProps; // @parda
+	"kharcha-invite": kharcha.KharchaInviteProps; // @kharcha
 }
 
 export type EmailTemplateId = keyof EmailPropsMap;
@@ -202,6 +204,18 @@ export const emailTemplates: EmailRegistry = {
 		},
 	},
 	// parda:end
+	// kharcha:start
+	"kharcha-invite": {
+		component: kharcha.KharchaInvite,
+		subject: ({ locale, siteName, inviter }) => m.email_kharcha_invite_subject({ inviter, site: siteName }, { locale }),
+		sample: {
+			inviter: "Asha Gurung",
+			group: "Pokhara trip",
+			url: "https://example.com/app/kharcha/join/Zk3pQ9xR2mT7vB4nL8sW1yC6hJ0dF5gA",
+			expiresInDays: 14,
+		},
+	},
+	// kharcha:end
 };
 
 export const EMAIL_TEMPLATE_IDS = Object.keys(emailTemplates) as EmailTemplateId[];

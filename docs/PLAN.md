@@ -3742,7 +3742,7 @@ As 12.1, with these differences:
 | 87 | Design direction: UX notes, comps (the owner picks), tokens, brand, the kit | high | Done |
 | 88 | Shell, brand, landing, auth pages, Home, onboarding, the create menu | high | Done |
 | 89 | Expenses and receipts: add and edit, the expense panel, categories, tags, methods, rules, a first Spend list | xhigh | Done |
-| 90 | Friends, groups and splitting: people, invites and joining, groups, the split editor, threads, freshness | xhigh | Planned |
+| 90 | Friends, groups and splitting: people, invites and joining, groups, the split editor, threads, freshness | xhigh | Done |
 | 91 | Balances and settling up: balances everywhere, settle up, simplify, remind | high | Planned |
 | 92 | Conversations, notifications and email: comments, mentions, reactions, unread, digests, the daily job | high | Planned |
 | 93 | Spend: the search language, filters, saved searches, views and charts, bulk actions, CSV import and export | xhigh | Planned |
@@ -4209,32 +4209,34 @@ Kharcha's data, money core, access and server, tested on PGlite, with no UI; Exp
 
 **For the owner:** run `pnpm db:migrate` on Neon (`0051_kharcha_expenses`).
 
-### Task 90: Friends, groups and splitting (planned)
+### Task 90: Friends, groups and splitting (done)
 
-- **People** `/people`: friends and groups, search, each with its net balance.
-- **Add a friend:**
-  - by name only (a private contact), or by email (an invite, optionally emailed). Guests can add names only;
-  - nicknames; hide a friend.
-- **Invites and joining** (`kh_invite`):
-  - `/join/$token`: a public lookup showing the inviter's name and the group, rate limited;
-  - joining on a verified sign-in, and by token after a confirm;
-  - adding an email to a contact merges it (`mergePerson`).
-- **Groups:**
-  - create one: name, kind, colour and icon, currency, a trip's dates;
-  - members: add friends or new people, or remove one at a zero balance; leave at a zero balance;
-  - settings: the default split, simplify;
-  - archive.
-- **The split editor** (lazy):
-  - who paid: one person or several;
-  - how: equal, exact, percent, shares, adjustment, or itemized with the VAT and service-charge presets;
-  - a live remainder ("रु 120 left to assign");
-  - a keyboard-only path;
-  - a summary sentence ("You paid रु 3,000; Asha owes you रु 1,000").
-- **The expense dialog** gains "Split with" (friends or a group), and each participant's share carries their own category.
-- **Threads** `/g/$groupId` and `/f/$personId`, first version: the cards and the system lines, plus a friend's balance in each group with links. Comments arrive in 92.
-- **Tests:**
-  - access-matrix rows; splits through the services; the merge on joining; invite limits;
-  - e2e: a guest splits a bill in their group.
+**Done** (decision 0284; the guide's "Invites and joining", "People and threads" and "The split editor").
+
+**What changed:**
+- **Table** (migration `0052_kharcha_invites`): `kh_invite` (person, address, sender, group, the token's SHA-256, expiry, sent, taken by); `mergePerson` moves invites and drops one between the two.
+- **Invites and joining** (`src/server/kharcha/invites/service.ts`): a single-use link for 14 days (32 characters, only its hash stored), from a group or not; guests send none, 20 a day per sender, one invite email a day per address, `kh_settings.invites` and `invites_blocked_at` honoured; the `kharcha-invite` email in the sender's language, after the commit. The public lookup (`join.ts`, 30 per visitor in 10 minutes) shows the sender, the group and the state only. Joining by the link after a confirm, or on any verified sign-in (`joinOnSignIn` in Better Auth's `session.create.after`, now a list `ON_SIGN_IN` with Taskline's), merges the invited person into the account's and writes "joined" lines.
+- **Friends:** an address for a name-only contact (merging into whoever has it, the caller's name kept as a nickname), "Email them an invite" when adding, `canInvite`, `canAddEmail` and the open invite on `FriendView`; nickname and hide on the friend's page.
+- **Groups:** someone new as a member (`addNewMember`); the new-group dialog takes kind, currency, a trip's dates, colour, icon and friends; the settings tab edits the details, default split and simplify at their version, the members (add, invite, remove), archive and leave.
+- **Each person's own category** on a shared expense: their category of the creator's built-in key, on creating and for people an edit adds.
+- **Pages:** `/people` (groups and friends with balances, `?q=`, hidden on asking), `/g/$groupId` (the thread, `?tab=settings`), `/f/$personId` (the thread, the balance in each shared group with links), `/join/$token`; People joins the rail, the tabs and the palette; Split a bill joins the + menu.
+- **Threads** (`src/server/kharcha/threads/service.ts`): cards and system lines from existing rows (`activityLines`, now shared with Home), the newest 200, oldest first, a former member's up to leaving; expenses open in the panel over the thread.
+- **The split editor** (lazy, `expenses/split-editor.tsx` on the pure `split-model.ts`): one payer or several; equal, amounts, percent, shares, adjust, itemized with the service-charge and VAT presets, or one owes all; each share live, the remainder or the sentence in a live region; native controls throughout. "Split with" (nobody, friends, a group) in the expense dialog.
+- **Demo data:** Maya Tamang, a member of the trip without an account, invited by Asha (`KHARCHA_DEMO_INVITE_TOKEN`).
+- **Tests:** `tests/server/kharcha-social.test.ts` (12), nine new access-matrix rows (56 operations), the merge test reaching `kh_invite`, the seed and spending tests updated, the guard test's `threads.ts`, `invites.ts` and the public `join.ts`; "Kharcha/People" stories (6); e2e: a guest splits a bill in their trip (equally, then exact amounts from the keyboard), six new reviewed pages (People, a group's thread and settings, a friend's thread, the invite as a visitor and signed in); 187 `kharcha_*` and `email_kharcha_*` messages in both languages.
+- **Bundle:** the entry is 299.3 kB of 300 (297.9 before: four route files).
+
+**Deviations:**
+- `/g/$groupId` has two tabs, the thread and settings (members are in settings); balances and totals arrive with Tasks 91 and 94.
+- The unsubscribe link and "never more than one a day" across invites and reminders are Task 92's; Task 90 limits invite emails to one a day per address.
+- Invites past their date are refused when used; the daily job's clean-up is Task 92's.
+- The design pass was the e2e review (axe, overflow, CLS at 3 widths × 2 languages × 2 themes) and the stories in both projects, not an impeccable critique with screenshots.
+
+**Gates:** typecheck, check, knip, `i18n:check`, the build and the bundle check, `build-storybook` (Kharcha's stories) green. Tests on what changed: the Kharcha server files, the guard, route-SEO, strip-marker, i18n and email tests (16 files, 299 tests); the Kharcha stories in both Storybook projects (24 each); e2e for Kharcha (the review and flows: 211 passed, then the invite pages again after resetting the lookup's limit in the review: 24 of 24).
+
+**For the owner:**
+- run `pnpm db:migrate` on Neon (`0052_kharcha_invites`);
+- the entry budget has 0.7 kB left: Tasks 91–94 add routes, so it needs a decision before then.
 
 ### Task 91: Balances and settling up (planned)
 

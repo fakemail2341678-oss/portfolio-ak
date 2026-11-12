@@ -12,5 +12,6 @@ export const createKharchaGroup = fn(group).mockName("createKharchaGroup");
 export const updateKharchaGroup = fn(group).mockName("updateKharchaGroup");
 export const archiveKharchaGroup = fn(group).mockName("archiveKharchaGroup");
 export const addKharchaGroupMember = fn(group).mockName("addKharchaGroupMember");
+export const addKharchaNewGroupMember = fn(group).mockName("addKharchaNewGroupMember");
 export const removeKharchaGroupMember = fn(group).mockName("removeKharchaGroupMember");
 export const leaveKharchaGroup = fn(async (): Promise<void> => {}).mockName("leaveKharchaGroup");

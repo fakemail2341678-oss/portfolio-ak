@@ -1,5 +1,5 @@
 import { createServerFn } from "@tanstack/react-start";
-import { addFriendInput, personIdInput, updateFriendInput } from "@/features/kharcha/schema";
+import { addFriendInput, friendEmailInput, personIdInput, updateFriendInput } from "@/features/kharcha/schema";
 import type { FriendView } from "@/features/kharcha/types";
 import { zodInput } from "@/functions/_lib/validator";
 import { requireKharchaUser, withKharchaServices } from "@/middleware/kharcha";
@@ -29,3 +29,8 @@ export const updateKharchaFriend = createServerFn({ method: "POST" })
 	.middleware([requireKharchaUser, withKharchaServices])
 	.validator(zodInput(updateFriendInput))
 	.handler(({ data, context }): Promise<FriendView> => friends.updateFriend(context, data));
+
+export const setKharchaFriendEmail = createServerFn({ method: "POST" })
+	.middleware([requireKharchaUser, withKharchaServices])
+	.validator(zodInput(friendEmailInput))
+	.handler(({ data, context }): Promise<FriendView> => friends.setFriendEmail(context, data));

@@ -118,9 +118,12 @@ describe("pnpm db:seed-kharcha", () => {
 			return caller(env.db, String(rows[0]?.id));
 		};
 		const [trip] = await groups.listGroups(await asha());
-		expect(trip).toMatchObject({ name: "Pokhara trip", members: 3 });
+		// Three accounts, and Maya: a member without an account, invited (Task 90).
+		expect(trip).toMatchObject({ name: "Pokhara trip", members: 4 });
 		const view = await groups.getGroup(await asha(), trip?.id ?? "");
 		expect(view.nets[0]?.people.reduce((sum, net) => sum + net.netMinor, 0)).toBe(0);
-		expect(await friends.listFriends(await asha())).toHaveLength(2);
+		const ashasFriends = await friends.listFriends(await asha());
+		expect(ashasFriends).toHaveLength(3);
+		expect(ashasFriends.find((friend) => !friend.person.hasAccount)?.invite).not.toBeNull();
 	});
 });

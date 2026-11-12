@@ -154,6 +154,32 @@ export async function replaceParts(
 	);
 }
 
+/**
+ * Each other participant's own category on a shared expense (Task 90, PLAN 14.5 "Access"):
+ * the one of theirs with the same built-in key as the creator's, so the creator's Food is
+ * the participant's Food. Only shares without one, of `people` (those new to the expense);
+ * a category of the creator's own making, or a participant without that built-in, leaves it empty.
+ */
+export async function defaultShareCategories(
+	tx: Tx,
+	expenseId: string,
+	creatorCategoryId: string | null,
+	people: ReadonlyArray<string>,
+): Promise<void> {
+	if (!creatorCategoryId || people.length === 0) return;
+	await tx.execute(sql`
+		update kh_expense_share s set category_id = theirs.id
+		from kh_category mine, kh_category theirs
+		where s.expense_id = ${expenseId} and s.category_id is null
+			and s.person_id in (${sql.join(
+				people.map((person) => sql`${person}::uuid`),
+				sql`, `,
+			)})
+			and mine.id = ${creatorCategoryId} and mine.key is not null
+			and theirs.owner_id = s.person_id and theirs.key = mine.key and theirs.archived_at is null
+	`);
+}
+
 /** Makes `tagIds` (already checked as theirs) one person's tags on an expense. */
 export async function setTags(
 	tx: Tx,

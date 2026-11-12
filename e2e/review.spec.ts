@@ -2,6 +2,8 @@
  * The browser review: every page in REVIEWED_PAGES, in en/ne × light/dark × 390/768/1280.
  * A route missing from the list fails tests/unit/e2e-pages.test.ts.
  */
+
+import { KHARCHA_DEMO_INVITE_TOKEN } from "../scripts/lib/kharcha-seed.ts"; // @kharcha
 import { E2E } from "./harness/config.ts";
 import { pardaFixturePath } from "./harness/tmdb.ts"; // @parda
 import { type Harness, RESOURCE_STATUS, signedIn, test } from "./support/fixtures.ts";
@@ -50,6 +52,16 @@ async function resolvePath(page: ReviewedPage, harness: Harness) {
 	// kharcha:start
 	if (page.params.from === "kharcha-expense-id") {
 		return page.route.replace("$expenseId", await harness.kharchaExpenseId(E2E.users.kharcha.email));
+	}
+	if (page.params.from === "kharcha-invite") {
+		// The lookup is rate limited per visitor (30 in 10 minutes); the review opens it far more often from one address.
+		await harness.resetRateLimits();
+		return page.route.replace("$token", KHARCHA_DEMO_INVITE_TOKEN);
+	}
+	if (page.params.from === "kharcha-thread") {
+		const ids = await harness.kharchaThreadIds(E2E.users.kharcha.email);
+		const path = page.route.replace("$groupId", ids.groupId).replace("$personId", ids.personId);
+		return page.params.tab ? `${path}?tab=${page.params.tab}` : path;
 	}
 	// kharcha:end
 	// taskline:start

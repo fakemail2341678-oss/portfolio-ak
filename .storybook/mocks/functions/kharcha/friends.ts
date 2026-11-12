@@ -14,3 +14,4 @@ export const listKharchaFriends = fn(async (): Promise<FriendView[]> => sampleKh
 export const getKharchaFriend = fn(friend).mockName("getKharchaFriend");
 export const addKharchaFriend = fn(friend).mockName("addKharchaFriend");
 export const updateKharchaFriend = fn(friend).mockName("updateKharchaFriend");
+export const setKharchaFriendEmail = fn(friend).mockName("setKharchaFriendEmail");

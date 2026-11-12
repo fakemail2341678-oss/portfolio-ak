@@ -288,6 +288,7 @@ Record every non-obvious choice here: **What**, **Why**, **Alternatives consider
 - [0281](#0281-kharchas-look-is-bahi-khata-a-red-cloth-bound-ledger-on-graphites-tokens): Kharcha's look is "Bahi Khata": a red cloth-bound ledger, on Graphite's tokens
 - [0282](#0282-kharchas-section-shell-and-home-a-red-rail-an-onboarding-card-and-home-from-what-exists): Kharcha's section, shell and Home: a red rail, an onboarding card, and Home from what exists
 - [0283](#0283-kharchas-expenses-and-receipts-private-lists-on-each-share-helpers-without-ai-receipts-as-attachments): Kharcha's expenses and receipts: private lists on each share, helpers without AI, receipts as attachments
+- [0284](#0284-kharchas-invites-joining-threads-and-split-editor-hashed-single-use-links-a-merge-on-joining-threads-from-history): Kharcha's invites, joining, threads and split editor: hashed single-use links, a merge on joining, threads from history
 </details>
 
 ---
@@ -4048,3 +4049,28 @@ Measured on the owner's Windows machine (Node 24.11, 12 threads, 11.7 GB), 2026-
 - **Built-ins named by key at render time:** a language switch would rename them, but every list, picker, rule and uniqueness check would need two kinds of name.
 - **Categories on the expense:** one person's choice would show to everyone on a shared expense.
 - **Uploads disabled in e2e** and a receipt draft written by the harness: the browser's upload would go untested.
+
+## 0284: Kharcha's invites, joining, threads and split editor: hashed single-use links, a merge on joining, threads from history
+
+**What:** Task 90 makes Kharcha a bill splitter.
+- **Invites** (`kh_invite`, `src/server/kharcha/invites/service.ts`): a link for a friend with an address and no account, from a group or not. The token is 24 random bytes (32 characters of base64url); only its SHA-256 is stored. It is single use and lasts 14 days; a newer link from the same sender to the same person stops the older one. Guests send none; nobody sends more than 20 a day (`INVITE_LIMIT`); an address gets at most one invite email a day, whoever sends it (the link is made either way); `kh_settings.invites` and `kh_profile.invites_blocked_at` stop them. The email (`kharcha-invite`) is in the sender's language, handed to `services.sendInvite` after the commit.
+- **The public lookup** (`src/functions/kharcha/join.ts`, `withPublicServices`, in the guard test's unguarded files): who sent it, the group it came from, and whether it is open, used or expired; never the address or a balance. 30 lookups per visitor in 10 minutes.
+- **Joining** makes the invited person the account's with `mergePerson`, in one transaction: by the link, after a confirm on `/join/$token` (refused for guests, for the sender, and once someone joined as that person), or on any verified sign-in (`joinOnSignIn`, from Better Auth's `session.create.after`), where a person waiting under the account's address merges into the account's own person (or becomes it, by `ensurePerson`, when it has none). Either writes "joined" lines (`friend.joined`) in the thread with each sender and in the invite's group. The auth hook runs a list (`ON_SIGN_IN`) whose entries are marked per layer, so strip-demo can take either.
+- **An address for a contact** (`setFriendEmail`): only for its creator's name-only contact; when someone already has the address, the contact merges into them and the caller's name for it becomes their nickname.
+- **Each person's own category on a shared expense:** a share without one gets its person's category with the same built-in key as the creator's (`defaultShareCategories`), on creating and for people added by an edit; a category of the creator's own making, or a person without that built-in, leaves it empty.
+- **Threads** (`src/server/kharcha/threads/service.ts`) are read from what exists: a group's (or a pair's, outside groups) expenses and payments outside the trash as cards, and its history (`kh_activity`, through the shared `activityLines`, which Home's Recent now uses too) as system lines, without the lines a card stands for. The newest 200 together, oldest first, each dated by its own day (an expense's `spent_on`, a line's day in the caller's time zone). A former member's thread stops when they left. A friend's page adds the balance between the two in each group both are or were in.
+- **The split editor** (lazy) edits a draft of text fields (Devanagari digits read), turned into the money core's `Split` and payers on every change (`split-model.ts`, pure); each method keeps its own numbers. The live line under it is the core's problem in words, or the sentence the split makes, from the core's debts. Every control is native, so it is keyboard-only throughout.
+
+**Why:**
+- A stored hash means a database read can't be turned into working links; single use and a confirm keep a forwarded link from quietly making someone else the invited person.
+- Merging on a verified sign-in is the rule of 0277 (an address is an identity only once verified), and it covers an account that used Kharcha before verifying, which `ensurePerson` alone can't (it runs once, when the account first appears).
+- Threads from existing rows need no new table until comments (Task 92) and keep one source of truth for what happened.
+- One email a day per address protects people without an account, who never asked for Kharcha (PLAN 14.5).
+
+**Alternatives considered:**
+- **The token stored as is:** simpler, but anyone reading the table could join as anyone invited.
+- **Joining only by link:** someone who signs up with the invited address would have to find the email again.
+- **A thread table written on every change:** duplicate state, with no message to carry until Task 92.
+- **The editor working on minor units directly:** a half-typed "12." or a Devanagari digit would be lost on every keystroke.
+
+**Numbers:** the entry is 299.3 kB of 300 (297.9 before: four route files). Tasks 91–94 add routes, so the budget needs a look before then (0279).

@@ -195,8 +195,14 @@ export async function addExpense(tx: Tx, actorId: string, input: NewExpense): Pr
 	if (input.tagIds?.length && parts.shares.some((share) => share.person === actorId)) {
 		await repo.setTags(tx, expense.id, actorId, input.tagIds);
 	}
-	await befriendDebtors(tx, await writeLedger(tx, { expense }));
 	const people = repo.partsPeople(parts);
+	await repo.defaultShareCategories(
+		tx,
+		expense.id,
+		input.categoryId ?? null,
+		people.filter((person) => person !== actorId),
+	);
+	await befriendDebtors(tx, await writeLedger(tx, { expense }));
 	await recordActivity(tx, actorId, scopeOf(expense, people), {
 		kind: "expense.created",
 		expenseId: expense.id,
@@ -414,6 +420,14 @@ export async function updateExpense(
 		});
 		const sharing = parts.shares.some((share) => share.person === me.personId);
 		if (input.tagIds && sharing) await repo.setTags(tx, expense.id, me.personId, input.tagIds);
+		// Someone new on it gets their own category of the same built-in as the editor's (Task 90).
+		const editorCategory = input.categoryId !== undefined ? input.categoryId : beforeMine.categoryId;
+		await repo.defaultShareCategories(
+			tx,
+			expense.id,
+			editorCategory,
+			people.filter((person) => person !== me.personId && !beforePeople.includes(person)),
+		);
 		if (input.receiptIds) {
 			await linkReceipts(tx, me, { entityType: EXPENSE_RECEIPTS, entityId: expense.id }, input.receiptIds);
 		}

@@ -25,6 +25,7 @@ import {
 } from "../access";
 import { fieldChanges, recordActivity } from "../activity";
 import { friendsAmong } from "../expenses/repository";
+import { befriendNew } from "../friends/service";
 import { byCurrency, groupNetOf, groupNets, netsByGroup } from "../ledger";
 import { loadPeople } from "../people";
 import { bumpRevs, saveVersioned } from "../rev";
@@ -90,7 +91,7 @@ export async function listGroups({ db, user }: KharchaServices): Promise<GroupSu
 	);
 }
 
-async function groupView(tx: Tx, me: Me, access: GroupAccess): Promise<GroupView> {
+export async function groupView(tx: Tx, me: Me, access: GroupAccess): Promise<GroupView> {
 	const { group } = access;
 	const rows = await tx
 		.select()
@@ -295,30 +296,53 @@ export async function addMember({ db, user }: KharchaServices, groupId: string, 
 		const access = await resolveGroup(tx, me, groupId);
 		assertGroupCan(access, "edit");
 		await resolveFriend(tx, me, personId);
-		const [existing] = await tx
-			.select()
-			.from(khGroupMember)
-			.where(and(eq(khGroupMember.groupId, groupId), eq(khGroupMember.personId, personId)));
-		if (existing && existing.leftAt === null) {
-			throw ruleError("CONFLICT", "Kharcha: already a member", m.kharcha_error_member_exists());
-		}
-		await assertQuota(tx, `${groupId}:members`, {
-			table: khGroupMember,
-			where: and(eq(khGroupMember.groupId, groupId), isNull(khGroupMember.leftAt)),
-			max: quotasFor(await getSettings(tx), user).groupMembers,
-		});
-		if (existing) {
-			await tx
-				.update(khGroupMember)
-				.set({ leftAt: null, role: "member" })
-				.where(and(eq(khGroupMember.groupId, groupId), eq(khGroupMember.personId, personId)));
-		} else {
-			await tx.insert(khGroupMember).values({ groupId, personId, role: "member" });
-		}
-		await recordActivity(tx, me.personId, { groupId, pair: null }, { kind: "member.added", subjectId: personId });
-		await bumpRevs(tx, await currentMemberIds(tx, groupId));
+		await joinGroup(tx, me, user, groupId, personId);
 		return groupView(tx, me, access);
 	});
+}
+
+/**
+ * Someone new in the group (Task 90): made the caller's friend on the way (by name, or by
+ * address: `befriendNew`'s rules, a guest names only), then added.
+ */
+export async function addNewMember(
+	{ db, user }: KharchaServices,
+	input: { groupId: string; name: string; email?: string | undefined },
+): Promise<GroupView> {
+	return db.transaction(async (tx) => {
+		const me = await resolveMe(tx, user);
+		const access = await resolveGroup(tx, me, input.groupId);
+		assertGroupCan(access, "edit");
+		const person = await befriendNew(tx, me, user, input);
+		await joinGroup(tx, me, user, input.groupId, person.id);
+		return groupView(tx, me, access);
+	});
+}
+
+/** A member row for `personId` (back from having left, or new), under the group's quota, with its history. */
+async function joinGroup(tx: Tx, me: Me, user: KharchaServices["user"], groupId: string, personId: string) {
+	const [existing] = await tx
+		.select()
+		.from(khGroupMember)
+		.where(and(eq(khGroupMember.groupId, groupId), eq(khGroupMember.personId, personId)));
+	if (existing && existing.leftAt === null) {
+		throw ruleError("CONFLICT", "Kharcha: already a member", m.kharcha_error_member_exists());
+	}
+	await assertQuota(tx, `${groupId}:members`, {
+		table: khGroupMember,
+		where: and(eq(khGroupMember.groupId, groupId), isNull(khGroupMember.leftAt)),
+		max: quotasFor(await getSettings(tx), user).groupMembers,
+	});
+	if (existing) {
+		await tx
+			.update(khGroupMember)
+			.set({ leftAt: null, role: "member" })
+			.where(and(eq(khGroupMember.groupId, groupId), eq(khGroupMember.personId, personId)));
+	} else {
+		await tx.insert(khGroupMember).values({ groupId, personId, role: "member" });
+	}
+	await recordActivity(tx, me.personId, { groupId, pair: null }, { kind: "member.added", subjectId: personId });
+	await bumpRevs(tx, await currentMemberIds(tx, groupId));
 }
 
 /**

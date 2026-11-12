@@ -4,11 +4,22 @@ import { sessionQueryOptions } from "@/features/auth/queries";
 import type { ExpenseView, ReceiptDraftView } from "../types";
 
 /** What the + menu can start (PLAN 14.5 "UX"): each task adds its own (Settle up in 91). */
-export const CREATE_ACTIONS = ["expense", "receipt", "friend", "group"] as const;
+export const CREATE_ACTIONS = ["expense", "split", "receipt", "friend", "group"] as const;
 export type CreateAction = (typeof CREATE_ACTIONS)[number];
 
-/** What the expense dialog opens with: an expense to edit, a receipt draft to fill in, files dropped on the page. */
-export type ExpenseStart = { expense?: ExpenseView; draft?: ReceiptDraftView; files?: ReadonlyArray<File> };
+/**
+ * What the expense dialog opens with: an expense to edit, a receipt draft to fill in, files
+ * dropped on the page; a group, or friends, to split it with (Task 90), or  to open
+ * the split with nobody chosen yet ("Split a bill").
+ */
+export type ExpenseStart = {
+	expense?: ExpenseView;
+	draft?: ReceiptDraftView;
+	files?: ReadonlyArray<File>;
+	groupId?: string;
+	with?: ReadonlyArray<string>;
+	split?: boolean;
+};
 
 export type KharchaActions = {
 	openPalette: () => void;

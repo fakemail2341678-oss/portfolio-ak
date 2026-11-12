@@ -3,6 +3,7 @@ import { and, eq } from "drizzle-orm";
 import { type ExpenseCan, type GroupCan, TRASH_DAYS } from "@/features/kharcha/types";
 import { ruleError } from "@/lib/errors";
 import { m } from "@/paraglide/messages";
+import type { Locale } from "@/paraglide/runtime";
 import type { ImageStore } from "@/server/attachments/cloudinary";
 import { notFound } from "@/server/db/crud";
 import {
@@ -41,11 +42,24 @@ import { ensurePerson } from "./people";
 /** The caller, as `requireKharchaUser` puts them in the context. */
 export type KharchaUser = { id: string; isGuest: boolean; permissions: ReadonlyArray<string> };
 
+/** An invite's email, handed over after its transaction commits (src/server/kharcha/invites/service.ts). */
+export type InviteEmail = {
+	to: string;
+	locale: Locale;
+	data: { inviter: string; group?: string | undefined; url: string; expiresInDays: number };
+};
+
 /**
  * What a Kharcha service works with. Tests pass their own. `imageStore` is Cloudinary's
- * (receipts, Task 89): null when uploads aren't configured.
+ * (receipts, Task 89): null when uploads aren't configured. `sendInvite` sends an invite's
+ * email in the background (Task 90); left out, the real one.
  */
-export type KharchaServices = { db: Db; user: KharchaUser; imageStore?: ImageStore | null };
+export type KharchaServices = {
+	db: Db;
+	user: KharchaUser;
+	imageStore?: ImageStore | null;
+	sendInvite?: (email: InviteEmail) => void;
+};
 
 /** The caller as a person: who they are in every expense, group and balance. */
 export type Me = KharchaUser & { personId: string; person: KhPersonRow };

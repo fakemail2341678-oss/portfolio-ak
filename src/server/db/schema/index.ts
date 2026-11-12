@@ -38,6 +38,7 @@ export * from "./chaal/settings"; // @chaal
 export * from "./kharcha/activity"; // @kharcha
 export * from "./kharcha/expense"; // @kharcha
 export * from "./kharcha/group"; // @kharcha
+export * from "./kharcha/invite"; // @kharcha
 export * from "./kharcha/ledger"; // @kharcha
 export * from "./kharcha/lists"; // @kharcha
 export * from "./kharcha/payment"; // @kharcha

@@ -103,6 +103,55 @@ test.describe("Kharcha", () => {
 		await expect(page.getByTestId("kharcha-expense-page")).toContainText("Rice and lentils");
 	});
 
+	test("a guest splits a bill in their group, from the keyboard where it counts (Task 90)", async ({
+		page,
+		harness,
+	}) => {
+		await harness.resetRateLimits();
+		await open(page, "/app/kharcha");
+		await page.getByTestId("kharcha-try").click();
+		await expect(page).toHaveURL(/\/app\/kharcha\/home$/);
+		await page.getByTestId("kharcha-onboarding").getByRole("button", { name: "Skip" }).click();
+
+		// People: the sample's groups and friends, each with its balance; the trip opens its thread.
+		await page.getByTestId("kharcha-rail").getByRole("link", { name: "People" }).click();
+		await expect(page).toHaveURL(/\/app\/kharcha\/people$/);
+		await page.getByTestId("kharcha-people-group").filter({ hasText: "Pokhara" }).click();
+		await expect(page).toHaveURL(/\/app\/kharcha\/g\/[0-9a-f-]{36}$/);
+		await expect(page.getByTestId("kharcha-thread")).toBeVisible();
+
+		// Add expense in the group: split with its members, equally to start with.
+		await page.getByTestId("kharcha-group-add").click();
+		const dialog = page.getByTestId("kharcha-expense-dialog");
+		const editor = dialog.getByTestId("kharcha-split-editor");
+		await expect(editor).toBeVisible();
+		await dialog.getByRole("textbox", { name: "Amount" }).fill("3000");
+		await dialog.getByRole("textbox", { name: "Title" }).fill("Paragliding");
+		const status = editor.getByTestId("kharcha-split-status");
+		await expect(status).toContainText("You paid NPR 3,000.00");
+		await expect(status).toContainText("owes you NPR 1,000.00");
+
+		// Exact amounts, chosen with the arrow keys; the remainder is said live.
+		await editor.getByRole("radio", { name: "Equally" }).focus();
+		await page.keyboard.press("ArrowRight");
+		await expect(editor.getByRole("radio", { name: "Amounts" })).toBeChecked();
+		const amounts = editor.getByTestId("kharcha-split-exact");
+		await expect(amounts).toHaveCount(3);
+		await amounts.nth(0).fill("1000");
+		await amounts.nth(1).fill("1500");
+		await expect(status).toContainText("NPR 500.00 left to assign");
+		await amounts.nth(2).fill("500");
+		await expect(status).toContainText("owes you NPR 1,500.00");
+		await expect(status).toHaveAttribute("data-ok", "true");
+		await dialog.getByRole("button", { name: "Add expense" }).click();
+		await expect(dialog).toBeHidden();
+
+		// On the group's page: its card, with what the guest lent.
+		const thread = page.getByTestId("kharcha-thread");
+		await expect(thread).toContainText("Paragliding");
+		await expect(thread).toContainText("you lent");
+	});
+
 	test("a demo account signs in on Kharcha's page, uses the palette and signs out", async ({
 		page,
 		harness,

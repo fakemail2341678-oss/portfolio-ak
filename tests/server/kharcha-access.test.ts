@@ -3,11 +3,13 @@ import * as expenses from "@/server/kharcha/expenses/service";
 import * as friends from "@/server/kharcha/friends/service";
 import * as groups from "@/server/kharcha/groups/service";
 import * as home from "@/server/kharcha/home/service";
+import * as invites from "@/server/kharcha/invites/service";
 import * as lists from "@/server/kharcha/lists/service";
 import * as me from "@/server/kharcha/me/service";
 import * as payments from "@/server/kharcha/payments/service";
 import * as receipts from "@/server/kharcha/receipts/service";
 import * as spend from "@/server/kharcha/spend/service";
+import * as threads from "@/server/kharcha/threads/service";
 import { createFakeCloudinary } from "../utils/fake-cloudinary";
 import { createTestDb } from "../utils/test-db";
 import { caller, code, insertUsers, uploadReceipt } from "./kharcha-helpers";
@@ -45,7 +47,9 @@ const as = (id: Caller) =>
 const today = "2026-11-12";
 
 type World = {
-	people: Record<"owner" | "friend" | "member" | "former" | "spare", string>;
+	people: Record<"owner" | "friend" | "member" | "former" | "spare" | "invitee", string>;
+	/** The owner's invite to the invitee (Task 90). */
+	inviteToken: string;
 	personal: string;
 	shared: string;
 	trashed: string;
@@ -88,6 +92,10 @@ async function setUp(): Promise<World> {
 		await friends.addFriend(as("owner"), { name: id, email: `${id}@example.com` });
 	}
 	const spare = (await friends.addFriend(as("owner"), { name: "Spare" })).person.id;
+	// Someone with an address and no account (Task 90): invited by the owner.
+	const invitee = (await friends.addFriend(as("owner"), { name: "Invitee", email: "invitee@elsewhere.example" })).person
+		.id;
+	const inviteToken = (await invites.inviteFriend(as("owner"), { personId: invitee })).url.split("/join/")[1] ?? "";
 
 	const personal = (await expenses.createExpense(as("owner"), expense())).id;
 	const shared = (
@@ -165,7 +173,8 @@ async function setUp(): Promise<World> {
 	const upload = await uploadReceipt(as("owner"), cloudinary);
 	const draft = (await receipts.createDraft(as("owner"), [await uploadReceipt(as("owner"), cloudinary)])).id;
 	return {
-		people: { owner, friend, member, former, spare },
+		people: { owner, friend, member, former, spare, invitee },
+		inviteToken,
 		category,
 		categories: owned.categories.map((each) => each.id),
 		tag,
@@ -479,6 +488,57 @@ const OPERATIONS: Operation[] = [
 		name: "updateFriend",
 		run: (w, by) => friends.updateFriend(as(by), { personId: w.people.member, hidden: true }),
 		expect: only({ owner: "ok" }),
+	},
+	// Task 90: people, threads, invites and joining.
+	{
+		name: "listPeople",
+		run: (_w, by) => threads.listPeople(as(by), { q: "" }),
+		expect: everyone(),
+	},
+	{
+		name: "getGroupThread",
+		run: (w, by) => threads.getGroupThread(as(by), w.group),
+		expect: only({ owner: "ok", member: "ok", former: "ok" }),
+	},
+	{
+		name: "getFriendThread",
+		run: (w, by) => threads.getFriendThread(as(by), w.people.friend),
+		expect: only({ owner: "ok" }),
+	},
+	{
+		name: "setFriendEmail (the owner's contact)",
+		run: (w, by) => friends.setFriendEmail(as(by), { personId: w.people.spare, email: "spare@elsewhere.example" }),
+		// The guest is refused before anything is looked up: guests add names only.
+		expect: only({ owner: "ok", guest: "FORBIDDEN" }),
+	},
+	{
+		name: "inviteFriend",
+		run: (w, by) => invites.inviteFriend(as(by), { personId: w.people.invitee }),
+		expect: only({ owner: "ok", guest: "FORBIDDEN" }),
+	},
+	{
+		name: "inviteFriend (from the group, the invitee not in it)",
+		run: (w, by) => invites.inviteFriend(as(by), { personId: w.people.invitee, groupId: w.group }),
+		expect: only({ owner: "BAD_REQUEST", guest: "FORBIDDEN" }),
+	},
+	{
+		name: "acceptInvite",
+		run: (w, by) => invites.acceptInvite(as(by), w.inviteToken),
+		// Anyone signed in with a link may take it (that's what it's for), never its sender or a guest.
+		expect: {
+			owner: "FORBIDDEN",
+			friend: "ok",
+			member: "ok",
+			former: "ok",
+			stranger: "ok",
+			guest: "FORBIDDEN",
+			admin: "ok",
+		},
+	},
+	{
+		name: "addNewMember",
+		run: (w, by) => groups.addNewMember(as(by), { groupId: w.group, name: "Newcomer" }),
+		expect: only({ owner: "ok", member: "ok", former: "FORBIDDEN" }),
 	},
 ];
 
