@@ -284,6 +284,7 @@ Record every non-obvious choice here: **What**, **Why**, **Alternatives consider
 - [0277](#0277-kharcha-is-a-layer-of-its-own-and-people-not-users-are-who-money-is-owed-to): Kharcha is a layer of its own, and people, not users, are who money is owed to
 - [0278](#0278-kharchas-money-integer-minor-units-per-currency-exact-splits-and-a-ledger-every-balance-sums): Kharcha's money: integer minor units per currency, exact splits, and a ledger every balance sums
 - [0279](#0279-the-entry-budget-rises-to-300-kb-for-kharchas-routes-and-sentrys-release-snippet-isnt-counted): The entry budget rises to 300 kB for Kharcha's routes, and Sentry's release snippet isn't counted
+- [0280](#0280-local-gates-narrow-to-what-changed-an-incremental-typecheck-stories_only-and-no-docgen): Local gates narrow to what changed: an incremental typecheck, `STORIES_ONLY`, and no docgen
 </details>
 
 ---
@@ -3962,3 +3963,18 @@ Measured on the owner's Windows machine (Node 24.11, 12 threads, 11.7 GB), 2026-
 **Alternatives considered:**
 - **Splitting route definitions out of the entry now:** the lasting fix, but it touches every layer's routes; it belongs to a wrap-up's trim, not to a task with no pages.
 - **Building without the Sentry variables for the check:** works, but anyone with such a `.env` would see a false failure first.
+
+## 0280: Local gates narrow to what changed: an incremental typecheck, `STORIES_ONLY`, and no docgen
+
+**What:** the owner asked (2026-11-12) for every local test gate to run only on what a task touched, never skipped, with the full suites at a Part's last task; CI still runs everything on every PR.
+- `pnpm typecheck` passes `--incremental --tsBuildInfoFile node_modules/.cache/tsc/tsbuildinfo`: a repeat run rechecks only changed files and what depends on them (82 s, then 41 s). CI starts without the file, so it checks everything.
+- `STORIES_ONLY` (comma-separated folders or story files, relative to the repository root) replaces `.storybook/main.ts`'s `stories` glob. `build-storybook` and the story tests (`@storybook/addon-vitest` reads the same list) then cover only those. Unset, every story.
+- `typescript: { reactDocgen: false }` in `.storybook/main.ts`. A build narrowed to the 11 form stories took 1,055 s, and Rolldown's timings put 1,048 s of it in `storybook:react-docgen-plugin` (2,859 transforms). Without docgen that build takes 9 s, and the full build (70 story files) 21 s; Task 86 had it at over 10 minutes.
+
+**Why:** docgen only infers the Controls panel's props. No story uses autodocs or `argTypes`, and no addon here reads them; the story tests (play functions, axe) don't use them either. Narrowing alone saved nothing while docgen's cost didn't depend on the stories. The env var isn't `STORYBOOK_`-prefixed: Storybook copies those variables into the preview bundle.
+
+**Alternatives considered:**
+- **Docgen through `react-docgen-typescript`:** Storybook documents it as slower than `react-docgen`, for a panel nobody reads.
+- **Babel's include and exclude from `vite.config.ts` (0155) in Storybook's config too:** tried first; Babel ran 3.8 s, not the cost.
+- **A wrapper script taking paths as arguments:** an env var needs no new file and works for `build-storybook` and `vitest` alike.
+- **Narrowing knip, the build, `i18n:check` or the bundle check:** each reads the whole project or the whole build by nature.

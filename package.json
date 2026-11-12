@@ -11,7 +11,7 @@
 		"build": "vite build",
 		"start": "node --env-file-if-exists=.env .output/server/index.mjs",
 		"preview": "vite preview",
-		"typecheck": "pnpm i18n:compile && node --max-old-space-size=4096 node_modules/typescript/bin/tsc --noEmit",
+		"typecheck": "pnpm i18n:compile && node --max-old-space-size=4096 node_modules/typescript/bin/tsc --noEmit --incremental --tsBuildInfoFile node_modules/.cache/tsc/tsbuildinfo",
 		"check": "biome check --error-on-warnings",
 		"check:fix": "biome check --write",
 		"knip": "knip",

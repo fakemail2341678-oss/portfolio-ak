@@ -48,6 +48,8 @@ Vitest for logic, server code and components; Storybook for every component in a
 - **No server:** server functions and the auth client are mocked (`.storybook/mocks/`).
 - **Fields:** wrap them in `FieldStory` (`src/components/forms/story-harness.tsx`) and add a `play` function for anything interactive.
 - **What not to import:** components must not import Start runtime helpers (`createIsomorphicFn`); Storybook has no Start plugin.
+- **Narrowing to what changed** (0280): `STORIES_ONLY` limits `.storybook/main.ts`'s `stories` to some folders or story files, comma-separated, relative to the repository root (PowerShell: `$env:STORIES_ONLY="src/features/kharcha,src/components/forms"; pnpm build-storybook`). The story tests read the same list, so it narrows `test:storybook` too; a path filter (`pnpm exec vitest run --project storybook src/features/kharcha`) does the same there. Unset, every story. A narrowed build doesn't prove the whole Storybook builds: a Part's last task and CI build it all.
+- **No docgen** (0280): `typescript: { reactDocgen: false }`. It only inferred the Controls panel's props and took nearly all of every build (over 10 minutes); the full build now takes about 20 s. A story that wants controls declares them in `args` or `argTypes`.
 
 ## E2E and the browser review (`pnpm test:e2e`)
 

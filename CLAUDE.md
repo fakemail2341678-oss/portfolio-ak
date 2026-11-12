@@ -58,7 +58,7 @@ pnpm diagnose            # checks Node, .env, database latency and migrations, p
 pnpm dev                 # http://localhost:3000, on DATABASE_URL from .env
 pnpm dev:local           # same, on a local PGlite database in .data/pglite (fast; kept between runs, 0155)
 pnpm dev:offline         # same, on in-memory PGlite with every outside service off (0149)
-pnpm typecheck           # compiles messages, then tsc with a 4 GB heap (0222: the default 2 GB no longer fits)
+pnpm typecheck           # compiles messages, then tsc with a 4 GB heap (0222: the default 2 GB no longer fits), incremental (0280)
 pnpm check               # Biome lint + format check (warnings fail). pnpm check:fix to fix
 pnpm knip                # unused files, exports, types and dependencies (knip.json)
 pnpm test                # unit + server (PGlite) + jsdom component tests

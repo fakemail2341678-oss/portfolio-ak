@@ -5,8 +5,24 @@ import type { StorybookConfig } from "@storybook/react-vite";
  * not the app's: TanStack Start, Nitro and env validation have no place in a
  * component workshop, and server functions are swapped for mocks there.
  */
+
+/**
+ * `STORIES_ONLY` narrows Storybook to some folders or story files, comma-separated and
+ * relative to the repository root, so a task builds and tests only what it touched (0280):
+ * `$env:STORIES_ONLY="src/features/kharcha"; pnpm build-storybook`. Unset, every story.
+ * Not `STORYBOOK_`-prefixed: Storybook copies those variables into the preview bundle.
+ */
+const only = (process.env.STORIES_ONLY ?? "")
+	.split(",")
+	.map((entry) => entry.trim().replaceAll("\\", "/").replace(/\/+$/, ""))
+	.filter(Boolean);
+const stories =
+	only.length > 0
+		? only.map((entry) => (/\.stories\.tsx?$/.test(entry) ? `../${entry}` : `../${entry}/**/*.stories.@(ts|tsx)`))
+		: ["../src/**/*.stories.@(ts|tsx)"];
+
 const config: StorybookConfig = {
-	stories: ["../src/**/*.stories.@(ts|tsx)"],
+	stories,
 	addons: ["@storybook/addon-a11y", "@storybook/addon-vitest"],
 	framework: {
 		name: "@storybook/react-vite",
@@ -14,6 +30,9 @@ const config: StorybookConfig = {
 	},
 	staticDirs: ["../public"],
 	core: { disableTelemetry: true },
+	// No docgen (0280): it only infers the Controls panel's props, nothing here uses autodocs
+	// or argTypes, and it took 1,048 of a narrowed build's 1,052 seconds (2,859 modules).
+	typescript: { reactDocgen: false },
 	viteFinal: (config) => ({
 		...config,
 		build: {
