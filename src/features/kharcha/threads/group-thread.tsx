@@ -16,7 +16,9 @@ import { kharchaGroupThreadQueryOptions } from "../queries";
 import type { GroupTab, ThreadSearch } from "../search";
 import { useKharchaActions, useKharchaUserId } from "../shell/actions";
 import type { GroupView } from "../types";
+import { Composer } from "./composer";
 import { ThreadLines } from "./thread-lines";
+import { useMarkRead } from "./use-read";
 
 const ExpenseSheet = lazy(() => import("../expenses/expense-sheet"));
 const GroupSettings = lazy(() => import("../groups/group-settings"));
@@ -42,6 +44,7 @@ export function GroupThreadView({ groupId, search }: { groupId: string; search: 
 	const { data } = useSuspenseQuery(kharchaGroupThreadQueryOptions(userId, groupId));
 	const { addExpense, settleUp } = useKharchaActions();
 	const { group } = data;
+	useMarkRead(userId, search.tab === "thread" ? data.talk : { ...data.talk, unread: 0 });
 	const owes = group.balances.some((balance) => balance.amountMinor < 0);
 	const open = group.nets.length > 0;
 	const close = () =>
@@ -139,6 +142,8 @@ export function GroupThreadView({ groupId, search }: { groupId: string; search: 
 						items={data.items}
 						more={data.more}
 						label={m.kharcha_thread_label({ name: group.name })}
+						userId={userId}
+						talk={data.talk}
 						onPayment={group.can.edit ? (paymentId) => settleUp({ paymentId }) : undefined}
 						expenseLink={(expenseId) =>
 							({ className, children }) => (
@@ -154,6 +159,14 @@ export function GroupThreadView({ groupId, search }: { groupId: string; search: 
 							)}
 					/>
 				)}
+				{search.tab === "thread" && data.talk.canComment ? (
+					<Composer
+						talk={data.talk}
+						userId={userId}
+						onAddExpense={() => addExpense({ groupId: group.id })}
+						label={m.kharcha_comment_in({ name: group.name })}
+					/>
+				) : null}
 			</div>
 
 			{search.expense ? (

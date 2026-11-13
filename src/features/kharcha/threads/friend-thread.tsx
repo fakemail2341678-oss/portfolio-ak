@@ -34,8 +34,10 @@ import type { ThreadSearch } from "../search";
 import { REMIND_WINDOW_MS } from "../settle/remind";
 import { useKharchaActions, useKharchaUserId } from "../shell/actions";
 import type { FriendThread, FriendView } from "../types";
+import { Composer } from "./composer";
 import type { FriendDialogKind } from "./friend-dialogs";
 import { ThreadLines } from "./thread-lines";
+import { useMarkRead } from "./use-read";
 
 const ExpenseSheet = lazy(() => import("../expenses/expense-sheet"));
 const FriendDialog = lazy(() => import("./friend-dialogs"));
@@ -64,6 +66,7 @@ export function FriendThreadView({ personId, search }: { personId: string; searc
 	const update = useMutation(kharchaMutations.updateFriend(queryClient, userId));
 	const remind = useMutation(kharchaMutations.remind(queryClient, userId));
 	const { friend } = data;
+	useMarkRead(userId, data.talk);
 	const primary = primaryAction(data);
 	const reminded = remindedRecently(data.remind.lastAt);
 	const sendReminder = async () => {
@@ -232,6 +235,8 @@ export function FriendThreadView({ personId, search }: { personId: string; searc
 						items={data.items}
 						more={data.more}
 						label={m.kharcha_thread_label({ name: friend.person.name })}
+						userId={userId}
+						talk={data.talk}
 						onPayment={(paymentId) => settleUp({ paymentId })}
 						expenseLink={(expenseId) =>
 							({ className, children }) => (
@@ -247,6 +252,14 @@ export function FriendThreadView({ personId, search }: { personId: string; searc
 							)}
 					/>
 				)}
+				{data.talk.canComment ? (
+					<Composer
+						talk={data.talk}
+						userId={userId}
+						onAddExpense={add}
+						label={m.kharcha_comment_to({ name: friend.person.name })}
+					/>
+				) : null}
 			</div>
 
 			{search.expense ? (

@@ -384,9 +384,14 @@ const SPECS: Record<Layer, LayerSpec> = {
 			"tests/server/kharcha-social.test.ts",
 			// Settling up and reminders (Task 91, decision 0285).
 			"tests/server/kharcha-settle.test.ts",
+			// Conversations, notifications and email (Task 92, decision 0286).
+			"src/server/routes/cron-kharcha.ts",
+			"src/server/routes/kharcha-unsubscribe.ts",
+			"tests/server/kharcha-talk.test.ts",
+			"tests/unit/kharcha-talk.test.ts",
 		],
 		packageScripts: ["db:seed-kharcha"],
-		crons: [],
+		crons: ["/api/cron/kharcha"],
 		// Its functions arrive before their pages (Tasks 89 to 91 call the rest); the entry goes when every one has a caller.
 		knipEntries: ["src/functions/kharcha/*.ts"],
 		schema: [],

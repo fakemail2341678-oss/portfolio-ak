@@ -1,6 +1,8 @@
 import "@tanstack/react-start/server-only";
 import { and, desc, eq, inArray, isNull, lte, notInArray, or, type SQL, sql } from "drizzle-orm";
+import { threadKey } from "@/features/kharcha/notifications";
 import type { PeopleInput } from "@/features/kharcha/schema";
+import type { CommentView, ThreadState } from "@/features/kharcha/types";
 import {
 	type ActivityKind,
 	type Amount,
@@ -28,6 +30,7 @@ import type { Db, Tx } from "@/server/db/types";
 import { type KharchaServices, type Me, resolveFriend, resolveGroup, resolveMe } from "../access";
 import { pairOf } from "../activity";
 import { activityLines } from "../activity-lines";
+import { commentsOf, resolveThread, talkOf, threadStates } from "../conversations/service";
 import { friendsOf, oneFriend } from "../friends/service";
 import { groupView, listGroups } from "../groups/service";
 import { byCurrency } from "../ledger";
@@ -39,7 +42,7 @@ import { spendRows } from "../spend/service";
  * Kharcha's people page and threads (docs/guides/kharcha.md "People and threads", Task 90;
  * PLAN 14.5 "Conversations"): each group and each friend is a page of the book holding the
  * cards of its expenses and payments and the system lines of its history, in the order they
- * happened. Comments arrive in Task 92. What a thread shows is what the caller may see: a
+ * happened, with its comments (Task 92). What a thread shows is what the caller may see: a
  * former member's group stops when they left (the access table in the guide).
  */
 
@@ -57,7 +60,39 @@ export async function listPeople(services: KharchaServices, input: PeopleInput):
 	const friends = (await friendsOf(services.db, me)).filter((friend) => has(friend.person.name));
 	const groups = (await listGroups(services)).filter((group) => has(group.name));
 	const shown = input.hidden ? friends : friends.filter((friend) => !friend.hidden);
-	return { friends: shown, groups, hiddenCount: friends.filter((friend) => friend.hidden).length };
+	// Task 92: each conversation's unread lines and last move; the list runs newest first, and
+	// focus mode keeps only those unread or unsettled.
+	const threads = new Map<string, ThreadState>([
+		...(await threadStates(services.db, me, "g")),
+		...(await threadStates(services.db, me, "f")),
+	]);
+	const [profile] = await services.db
+		.select({ focus: khProfile.focus })
+		.from(khProfile)
+		.where(eq(khProfile.userId, me.id));
+	const focus = profile?.focus === true;
+	const stateOf = (key: string) => threads.get(key) ?? { unread: 0, latestAt: null };
+	const newest = (a: string, b: string) => (stateOf(b).latestAt ?? "").localeCompare(stateOf(a).latestAt ?? "");
+	const keep = (key: string, balances: ReadonlyArray<{ amountMinor: number }>) =>
+		!focus || stateOf(key).unread > 0 || balances.some((balance) => balance.amountMinor !== 0);
+	const keptGroups = groups
+		.filter((group) => keep(threadKey("g", group.id), group.balances))
+		.sort((a, b) => newest(threadKey("g", a.id), threadKey("g", b.id)));
+	const keptFriends = shown
+		.filter((friend) => keep(threadKey("f", friend.person.id), friend.balances))
+		.sort((a, b) => newest(threadKey("f", a.person.id), threadKey("f", b.person.id)));
+	const listed = [
+		...keptGroups.map((group) => threadKey("g", group.id)),
+		...keptFriends.map((friend) => threadKey("f", friend.person.id)),
+	];
+	return {
+		friends: keptFriends,
+		groups: keptGroups,
+		hiddenCount: friends.filter((friend) => friend.hidden).length,
+		threads: Object.fromEntries(listed.map((key) => [key, stateOf(key)])),
+		focus,
+		focusHidden: groups.length + shown.length - keptGroups.length - keptFriends.length,
+	};
 }
 
 async function timeZoneOf(db: Db | Tx, me: Me): Promise<string> {
@@ -109,6 +144,7 @@ async function threadItems(
 		expenses: Array<{ id: string; day: IsoDate; at: Date }>;
 		payments: Array<{ id: string; day: IsoDate; at: Date }>;
 		activity: SQL | undefined;
+		comments: CommentView[];
 	},
 ): Promise<{ items: ThreadItem[]; more: boolean }> {
 	const zone = await timeZoneOf(db, me);
@@ -133,6 +169,12 @@ async function threadItems(
 			day: todayInZone(zone, new Date(line.at)),
 			at: line.at,
 		})),
+		...sources.comments.map((comment) => ({
+			type: "comment" as const,
+			id: comment.id,
+			day: todayInZone(zone, new Date(comment.createdAt)),
+			at: comment.createdAt,
+		})),
 	];
 	// Newest first to cut, then oldest first to read.
 	entries.sort((a, b) => (a.day === b.day ? b.at.localeCompare(a.at) : b.day.localeCompare(a.day)));
@@ -152,6 +194,7 @@ async function threadItems(
 		kept.filter((entry) => entry.type === "payment").map((entry) => entry.id),
 	);
 	const byId = new Map(lines.map((line) => [line.id, line]));
+	const comments = new Map(sources.comments.map((comment) => [comment.id, comment]));
 	const items = kept.flatMap((entry): ThreadItem[] => {
 		if (entry.type === "expense") {
 			const expense = expenses.get(entry.id);
@@ -160,6 +203,10 @@ async function threadItems(
 		if (entry.type === "payment") {
 			const payment = payments.get(entry.id);
 			return payment ? [{ ...entry, type: "payment", payment }] : [];
+		}
+		if (entry.type === "comment") {
+			const comment = comments.get(entry.id);
+			return comment ? [{ ...entry, type: "comment", comment }] : [];
 		}
 		const line = byId.get(entry.id);
 		return line ? [{ ...entry, type: "system", line }] : [];
@@ -206,8 +253,10 @@ export async function getGroupThread({ db, user }: KharchaServices, groupId: str
 			notInArray(khActivity.kind, CARDED),
 			until ? lte(khActivity.at, until) : undefined,
 		);
-		const { items, more } = await threadItems(tx, me, { expenses, payments, activity });
-		return { group: await groupView(tx, me, access), items, more };
+		const thread = await resolveThread(tx, me, threadKey("g", groupId));
+		const comments = await commentsOf(tx, me, thread, THREAD_LIMIT);
+		const { items, more } = await threadItems(tx, me, { expenses, payments, activity, comments });
+		return { group: await groupView(tx, me, access), items, more, talk: await talkOf(tx, me, thread) };
 	});
 }
 
@@ -253,7 +302,9 @@ export async function getFriendThread({ db, user }: KharchaServices, personId: s
 			eq(khActivity.personHi, hi),
 			notInArray(khActivity.kind, CARDED),
 		);
-		const { items, more } = await threadItems(tx, me, { expenses, payments, activity });
+		const thread = await resolveThread(tx, me, threadKey("f", personId));
+		const comments = await commentsOf(tx, me, thread, THREAD_LIMIT);
+		const { items, more } = await threadItems(tx, me, { expenses, payments, activity, comments });
 		const { person } = await resolveFriend(tx, me, personId);
 		return {
 			friend,
@@ -262,6 +313,7 @@ export async function getFriendThread({ db, user }: KharchaServices, personId: s
 			groups: await sharedGroups(tx, me, personId),
 			remind: await remindState(tx, me, user, person),
 			payNote: await payNoteOf(tx, personId),
+			talk: await talkOf(tx, me, thread),
 		};
 	});
 }

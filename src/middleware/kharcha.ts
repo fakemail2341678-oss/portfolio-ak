@@ -25,8 +25,9 @@ export const requireKharchaUser = createMiddleware({ type: "function" })
 	});
 
 /**
- * Kharcha's services: `context.db`, `context.user` (from `requireKharchaUser`) and
- * `context.imageStore` (Cloudinary, for receipts; null when it isn't configured):
+ * Kharcha's services: `context.db`, `context.user` (from `requireKharchaUser`),
+ * `context.imageStore` (Cloudinary, for receipts; null when it isn't configured) and
+ * `context.deliver` (instant notification emails in the background, Task 92):
  *
  *   createServerFn({ method: "POST" })
  *     .middleware([requireKharchaUser, withKharchaServices])
@@ -36,9 +37,10 @@ export const requireKharchaUser = createMiddleware({ type: "function" })
 export const withKharchaServices = createMiddleware({ type: "function" })
 	.middleware([requireKharchaUser])
 	.server(async ({ next, context }) => {
-		const [{ db }, { imageStore }] = await Promise.all([
+		const [{ db }, { imageStore }, { backgroundDelivery }] = await Promise.all([
 			import("@/server/db/client"),
 			import("@/server/attachments/store"),
+			import("@/server/kharcha/notify/deliver"),
 		]);
-		return next({ context: { db, imageStore, user: context.kharchaUser } });
+		return next({ context: { db, imageStore, deliver: backgroundDelivery(db), user: context.kharchaUser } });
 	});

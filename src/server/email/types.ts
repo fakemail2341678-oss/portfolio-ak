@@ -5,6 +5,8 @@ export type EmailMessage = {
 	text: string;
 	/** Optional tag for provider dashboards, e.g. the template id. */
 	tag?: string;
+	/** Extra headers, such as `List-Unsubscribe` (Kharcha's emails to people without an account). */
+	headers?: Record<string, string>;
 };
 
 export type SendResult = { id: string };

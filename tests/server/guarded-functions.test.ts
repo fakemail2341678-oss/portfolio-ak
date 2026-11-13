@@ -675,6 +675,16 @@ const KHARCHA_FUNCTIONS: Record<string, ReadonlyArray<string>> = {
 	"kharcha/threads.ts": ["listKharchaPeople", "getKharchaGroupThread", "getKharchaFriendThread"],
 	"kharcha/invites.ts": ["inviteKharchaFriend", "acceptKharchaInvite"],
 	"kharcha/settle.ts": ["getKharchaSettleUp", "remindKharchaFriend"],
+	"kharcha/conversations.ts": [
+		"createKharchaComment",
+		"updateKharchaComment",
+		"deleteKharchaComment",
+		"reactKharchaComment",
+		"markKharchaThreadRead",
+		"markKharchaNotificationsRead",
+		"updateKharchaNotifySettings",
+		"setKharchaFocus",
+	],
 };
 // kharcha:end
 

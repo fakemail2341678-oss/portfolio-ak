@@ -159,6 +159,9 @@ export default defineConfig(async ({ command, mode }) => {
 					// kharcha:start
 					"/app/kharcha/manifest.webmanifest": { handler: "./src/server/routes/kharcha-manifest.ts", method: "GET" },
 					"/ne/app/kharcha/manifest.webmanifest": { handler: "./src/server/routes/kharcha-manifest.ts", method: "GET" },
+					// Kharcha's daily job, and the unsubscribe link of its emails to people without an account (decision 0286).
+					"/api/cron/kharcha": { handler: "./src/server/routes/cron-kharcha.ts", method: "GET" },
+					"/api/kharcha/unsubscribe": { handler: "./src/server/routes/kharcha-unsubscribe.ts" },
 					// kharcha:end
 				},
 				// Security headers on every response (pages, assets, API). The CSP is per

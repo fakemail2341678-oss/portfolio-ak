@@ -28,6 +28,7 @@ pnpm db:seed-kharcha --password "…"    # Kharcha's three demo accounts sharing
 - `/api/cron/attachments` (03:17 UTC) deletes removed images and day-old unlinked uploads from Cloudinary.
 - `/api/cron/guests` (03:41 UTC) deletes guest sessions older than 7 days, with their app data and uploads (decision 0186).
 - `/api/cron/chaal` (02:45 UTC) deletes Chaal's activity rows older than 90 days (decision 0266). <!-- @chaal -->
+- `/api/cron/kharcha` (01:30 UTC: 07:15 in Kathmandu) emails Kharcha's digests, purges its trash past 30 days, clears invites a month past their date and prunes read notifications older than 90 days (decision 0286). <!-- @kharcha -->
 - `/api/cron/parda` (02:30 UTC) refreshes Parda's title snapshot and its US certificates, rolls up the sources' plays and probe runs into the day's scores, checks followed series for new episodes (at most 1,500, under 35 TMDB requests a second: under a minute) and emails the new-episode digest through Resend (decisions 0229, 0238, 0240 and 0241). <!-- @parda -->
 
 **Parda's watch parties** (decision 0243) need `PARDA_REALTIME_KEY`, an Ably API key (the whole `appId.keyId:secret`), in the Vercel env. Without it the party's UI is hidden and its page is a 404. The key stays on the server; browsers get a token for one party's channel.

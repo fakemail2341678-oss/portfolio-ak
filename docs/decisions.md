@@ -290,6 +290,7 @@ Record every non-obvious choice here: **What**, **Why**, **Alternatives consider
 - [0283](#0283-kharchas-expenses-and-receipts-private-lists-on-each-share-helpers-without-ai-receipts-as-attachments): Kharcha's expenses and receipts: private lists on each share, helpers without AI, receipts as attachments
 - [0284](#0284-kharchas-invites-joining-threads-and-split-editor-hashed-single-use-links-a-merge-on-joining-threads-from-history): Kharcha's invites, joining, threads and split editor: hashed single-use links, a merge on joining, threads from history
 - [0285](#0285-kharchas-settling-up-choices-from-the-ledger-a-rate-checked-in-integers-reminders-as-history): Kharcha's settling up: choices from the ledger, a rate checked in integers, reminders as history
+- [0286](#0286-kharchas-conversations-thread-keys-read-marks-tasklines-notifications-and-one-email-a-day-to-people-without-an-account): Kharcha's conversations: thread keys, read marks, Taskline's notifications, and one email a day to people without an account
 </details>
 
 ---
@@ -4101,3 +4102,33 @@ Measured on the owner's Windows machine (Node 24.11, 12 threads, 11.7 GB), 2026-
 - **Category totals over everyone's shares by built-in key:** custom categories have none, and the names would still be someone else's.
 
 **Numbers:** the entry is 299.5 kB of 300 (299.3 before: no route file, the tab names and the + menu's item). The budget still needs a decision before Tasks 92–94 add routes.
+
+## 0286: Kharcha's conversations: thread keys, read marks, Taskline's notifications, and one email a day to people without an account
+
+**What:** Task 92 adds comments (in a group's thread, between two friends, on an expense) with mentions and reactions, unread state per thread, focus mode, notifications on Home and the bell, instant and digest email with settings per kind, unsubscribing for people without an account, and the daily job.
+- **A thread is named from the reader's side:** `g:<group>`, `f:<the other person>`, `e:<expense>` (`threadKey`, `THREAD_KEY`). Comments store the group, the pair (`person_lo` < `person_hi`, as `kh_activity`) or the expense, so access, cascades and `mergePerson` work as for history; read marks (`kh_read`: person, key, time) and notifications (`thread`) store the key.
+- **Access is the thread's:** a group's (former members read up to leaving, write nothing; archived groups take nothing), a friend's (`resolveFriend`), an expense's (outside the trash, its group's rules). Only the author edits or deletes; anyone who can write reacts, from a fixed set of six.
+- **Mentions are people, shown by handle:** the server keeps the mentioned ids that are in the thread; the text says `@` and the person's own name (`kh_person.display_name`), the same for every reader, since a nickname is one reader's. The body is plain text: links (http and https) and mentions are found when it is drawn, never stored as markup.
+- **Unread** is the lines from others (history and comments) since the read mark, counted from joining in a group. A page marks its thread read from the browser after it renders (`useMarkRead`), never in the loader, so preloading a link reads nothing; reading a thread also reads its notifications.
+- **Notifications are Taskline's pattern (0214):** `produce` in the change's transaction (never the actor, only people with an account, the first event naming someone wins), `deliver` after the commit (`waitUntil`), one `kharcha-notification` per recipient and thread, coalesced for five minutes, the rest in the daily `kharcha-digest`. A row is always on Home; the setting per kind (`kh_profile.notify`, only what differs from the defaults) says only how it is emailed: at once, the digest, or not at all. By default only "added you", payments and reminders are instant. An account's reminder is a notification whose instant email is the reminder's own template.
+- **The bell rides on the `rev` poll:** `getKharchaRev` answers `{ rev, unread }` every 15 s, instead of a second poll every 60 s.
+- **People without an account** get only invites and reminders, at most one email a day whatever its kind (`kh_person.mailed_at`, claimed under a row lock), and none once they unsubscribe (`kh_person.unsubscribed_at`). Each carries `List-Unsubscribe` and `List-Unsubscribe-Post` (RFC 8058) and a footer link to `/api/kharcha/unsubscribe`, an HMAC of the person: POST stops the emails, GET is a page that asks first. It is a Nitro route with its own small page, not a route of the app.
+- **The daily job** (`/api/cron/kharcha`, 01:30 UTC): the digests, the trash past 30 days (receipts to the attachments' clean-up), invites a month past their date, read notifications older than 90 days. Each step idempotent.
+
+**Why:**
+- A key from the reader's side is what a link, a read mark and a notification need: "my thread with Asha" is the same for every row of mine, and a merge renames one prefix.
+- Storing the thread's own columns on comments keeps them under the same resolvers and cascades as the history beside them.
+- A nickname in the text would show one reader's private name to the others (0277).
+- A mark from the loader would clear a badge the caller never saw (link preloading runs loaders).
+- One deliverer shape across Taskline and Kharcha; the instant/digest split keeps mail down without hiding anything from Home.
+- The entry budget has a fraction of a kilobyte left (0279): a page route for the unsubscribe and a second poll would both cost it; a visitor without an account has no session for an app page either.
+- RFC 8058 one-click needs a POST endpoint that works without a session or a cookie; a GET that unsubscribes would be triggered by mail scanners.
+
+**Alternatives considered:**
+- **Thread columns on `kh_read` and `kh_notification`:** a unique index over four nullable columns, and the friend's thread still needs "the other one" from each side.
+- **Mentions parsed from the text on the server:** names with spaces and repeated names make it guesswork; the composer knows whom it picked.
+- **Comments rendered as markdown or HTML:** a sanitizer for a feature that needs links and names only.
+- **Its own unread poll every 60 s** (14.5 "Freshness"): one more request per open tab for a number the 15 s poll can carry.
+- **A `kh_email_optout` table:** the person is already one row per address.
+
+**Numbers:** the entry is 299.8 kB of 300 (299.5 before: no route file; the settings tab and the bell's link).

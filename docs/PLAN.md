@@ -3744,7 +3744,7 @@ As 12.1, with these differences:
 | 89 | Expenses and receipts: add and edit, the expense panel, categories, tags, methods, rules, a first Spend list | xhigh | Done |
 | 90 | Friends, groups and splitting: people, invites and joining, groups, the split editor, threads, freshness | xhigh | Done |
 | 91 | Balances and settling up: balances everywhere, settle up, simplify, remind | high | Done |
-| 92 | Conversations, notifications and email: comments, mentions, reactions, unread, digests, the daily job | high | Planned |
+| 92 | Conversations, notifications and email: comments, mentions, reactions, unread, digests, the daily job | high | Done |
 | 93 | Spend: the search language, filters, saved searches, views and charts, bulk actions, CSV import and export | xhigh | Planned |
 | 94 | Budgets, recurring expenses and insights | high | Planned |
 | 95 | Expenses moved in: migration, redirects, the old app removed | high | Planned |
@@ -4264,20 +4264,35 @@ Kharcha's data, money core, access and server, tested on PGlite, with no UI; Exp
 - no migration this task;
 - the entry budget has 0.5 kB left: Tasks 92–94 add routes, so it needs a decision before then.
 
-### Task 92: Conversations, notifications and email (planned)
+### Task 92: Conversations, notifications and email (done)
 
-- **Comments** in friend and group threads and on expenses:
-  - plain text with @mentions and links;
-  - edit and delete;
-  - reactions from a fixed emoji set.
-- **Threads:**
-  - an unread state per thread;
-  - the list pane ordered by latest activity, with badges;
-  - focus mode.
-- **Notifications** (`kh_notification`): Home's Updates and a bell with the unread count; mark read.
-- **Email:** instant and digest, settings per kind, unsubscribing for people without an account, and the four templates.
-- **The daily job** `/api/cron/kharcha`, with the steps that exist so far: digests, the trash purge, invite expiry, notification pruning.
-- **Tests:** the access rows, produce and deliver, coalescing, unsubscribe, the cron steps; e2e: a mention notifies the other demo account.
+**Done** (decision 0286; the guide's "Conversations and notifications").
+
+**What changed:**
+- **Tables** (migration `0053_kharcha_conversations`): `kh_comment` (the group, the pair or the expense; author, body, mentions, edited, deleted), `kh_reaction`, `kh_read` (person, thread key, time), `kh_notification` (Taskline's shape with a `thread` key, `group_id` and `expense_id` to cascade); `kh_person.mailed_at` and `unsubscribed_at`. `mergePerson` moves comments, mentions, reactions, read marks and notifications, and drops the thread of the two.
+- **Thread keys** (`src/features/kharcha/notifications.ts`): `g:<group>`, `f:<the other person>`, `e:<expense>`, from the reader's side; with the reactions, the kinds and their defaults, the sentences, and `commentParts`/`mentionAt`.
+- **Server:** `conversations/service.ts` (`resolveThread`, comments, edits, deletes, reactions, `talkOf`, `threadStates`, `markThreadRead`), `notify/` (`produce`, `deliver`: instant with five-minute coalescing and the digest; `inbox`: Updates, the count, mark read, settings, focus, pruning; `contact-mail`: one email a day and the unsubscribe HMAC), `cron.ts`. Expenses (added, changed, deleted), payments (to you), groups (added you: creating, adding a friend or someone new) and reminders produce; the middleware's `deliver` sends instant rows after the commit. An account's reminder is a notification whose instant email is `kharcha-reminder`. Invites and reminders to people without an account claim the day's one email and carry `List-Unsubscribe` (RFC 8058). `getKharchaRev` answers `{ rev, unread }`. One functions file (`conversations.ts`: 8).
+- **Routes outside the app:** `/api/cron/kharcha` (01:30 UTC, in `vercel.json`) and `/api/kharcha/unsubscribe` (POST stops, GET asks), Nitro routes in `vite.config.ts`.
+- **Email:** `kharcha-notification` and `kharcha-digest`; the invite and the reminder get an unsubscribe footer for people without an account; `EmailMessage.headers` (Resend passes them, the console prints them).
+- **Pages:** comments and the composer (`@` suggestions, the + for an expense, ⌘/Ctrl+Enter) in a group's and a friend's thread and on the expense page and panel; each thread marked read once seen; People by latest activity with unread badges and the Focus button; Home's **Updates** (the newest 20, Mark all read) and the bell in the rail and the phone's bar; **Settings → Notifications** (`/settings/notifications`, how each kind is emailed).
+- **Tests:** `tests/server/kharcha-talk.test.ts` (11), `tests/unit/kharcha-talk.test.ts` (6), twelve new access-matrix rows (74 operations; the world gains a comment), the merge test reaching the new references, the guard test's `conversations.ts`; "Kharcha/Talk" stories (4); e2e: a mention by Asha notifies Bikash, who opens it from Updates; one new reviewed page (Settings → Notifications); 82 `kharcha_*` and `email_kharcha_*` messages in both languages.
+- **Bundle:** the entry is 299.8 kB of 300 (299.5 before: no route file).
+
+**Deviations:**
+- The bell's count rides on the 15 s `rev` poll instead of a poll of its own every 60 s (0286).
+- The bell opens Home's Updates (`/home#updates`) rather than a list of its own: no new route.
+- Notification settings choose how each kind is **emailed**; every notification is on Home either way. Budgets and recurring expenses add their kinds with Task 94.
+- Unsubscribing is a Nitro route with its own small page, not an app route (the entry budget, and the visitor has no session).
+- Mentions show the person's own name (their handle), not the reader's nickname for them.
+- Restoring an expense tells nobody; reactions notify nobody.
+- The design pass was the e2e review (axe, overflow, CLS, hydration at 3 widths × 2 languages × 2 themes) and the stories in both projects, not an impeccable critique with screenshots.
+
+**Gates:** typecheck, check, knip, `i18n:check`, the build and the bundle check, `build-storybook` (Kharcha's stories) green. Tests on what changed: the Kharcha server and unit files, the guard, route-SEO, strip-marker, email and i18n tests (18 files, 346 tests); the Kharcha stories in both Storybook projects (33 each); e2e for Kharcha (the review and flows: 270 passed; the flows again after the guest's sample gained a comment: 6 of 6).
+
+**For the owner:**
+- run `pnpm db:migrate` on Neon (`0053_kharcha_conversations`);
+- `CRON_SECRET` must be set in Vercel for `/api/cron/kharcha` (it is, if the other jobs run);
+- the entry budget has 0.2 kB left: Tasks 93 and 94 add routes (`/import`, `/insights/$tab`), so it needs a decision before them.
 
 ### Task 93: Spend: search, views and bulk actions (planned)
 

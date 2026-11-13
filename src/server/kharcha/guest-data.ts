@@ -10,6 +10,7 @@ import type { Locale } from "@/paraglide/runtime";
 import {
 	khActivity,
 	khCategory,
+	khComment,
 	khExpense,
 	khExpensePayer,
 	khExpenseShare,
@@ -21,6 +22,7 @@ import {
 	khPayment,
 	khPerson,
 	khProfile,
+	khReaction,
 } from "@/server/db/schema";
 import type { Tx } from "@/server/db/types";
 import type { GuestData } from "@/server/guests/data";
@@ -445,6 +447,18 @@ export async function seedSample(tx: Tx, userId: string, locale: Locale): Promis
 		})),
 		{ groupId: groups.trip.id, paymentId: payment.id, actorId: me.id, kind: "payment.created" as const },
 	]);
+	// A comment in the trip from Asha (Task 92), with a mention and the guest's reaction: the trip shows unread.
+	const bikash = friends[1]?.name ?? "";
+	const [comment] = await tx
+		.insert(khComment)
+		.values({
+			groupId: groups.trip.id,
+			authorId: id.asha,
+			body: m.kharcha_seed_comment_boat({ bikash: `@${bikash}` }, t),
+			mentions: [id.bikash],
+		})
+		.returning({ id: khComment.id });
+	if (comment) await tx.insert(khReaction).values({ commentId: comment.id, personId: me.id, emoji: "👍" });
 	await bumpRevs(tx, [me.id]);
 }
 

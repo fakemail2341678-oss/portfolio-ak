@@ -533,6 +533,12 @@ export const REVIEWED_PAGES: ReadonlyArray<ReviewedPage> = [
 	{ route: "/app/kharcha/spend", as: "kharcha" },
 	{ route: "/app/kharcha/e/$expenseId", as: "kharcha", params: { from: "kharcha-expense-id" } },
 	{ route: "/app/kharcha/settings/$tab", as: "kharcha", path: "/app/kharcha/settings/profile", label: "profile" },
+	{
+		route: "/app/kharcha/settings/$tab",
+		as: "kharcha",
+		path: "/app/kharcha/settings/notifications",
+		label: "notifications",
+	},
 	{ route: "/app/kharcha/settings/$tab", as: "kharcha", path: "/app/kharcha/settings/categories", label: "categories" },
 	{ route: "/app/kharcha/settings/$tab", as: "kharcha", path: "/app/kharcha/settings/tags", label: "tags" },
 	{ route: "/app/kharcha/settings/$tab", as: "kharcha", path: "/app/kharcha/settings/methods", label: "methods" },

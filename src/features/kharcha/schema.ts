@@ -2,6 +2,7 @@ import { z } from "zod";
 import { CURRENCIES } from "@/lib/i18n/currency";
 import { email, isoDate, optionalText, required } from "@/lib/validation";
 import { FULL_BP, MAX_AMOUNT_MINOR, MAX_WEIGHT, SPLIT_METHODS } from "./money/split";
+import { COMMENT_MAX, NOTIFY_EMAILS, NOTIFY_KINDS, REACTIONS, THREAD_KEY, type ThreadKey } from "./notifications";
 import {
 	CATEGORY_ICONS,
 	EXPENSE_KINDS,
@@ -343,3 +344,37 @@ export const settleUpInput = z.strictObject({
 
 export type ProfileInput = z.input<typeof profileInput>;
 export type SettleUpInput = z.input<typeof settleUpInput>;
+
+/** A thread from the reader's side (Task 92): `g:<group>`, `f:<person>` or `e:<expense>`. */
+export const threadKeyInput = z
+	.string()
+	.regex(THREAD_KEY)
+	.transform((key) => key as ThreadKey);
+
+/** A new comment: plain text, with the people it mentions (the server keeps those who can read it). */
+export const createCommentInput = z.strictObject({
+	id: id.optional(),
+	thread: threadKeyInput,
+	body: required({ max: COMMENT_MAX }),
+	mentions: z.array(id).max(20).default([]),
+});
+export const updateCommentInput = z.strictObject({
+	commentId: id,
+	body: required({ max: COMMENT_MAX }),
+	mentions: z.array(id).max(20).default([]),
+});
+export const commentIdInput = z.strictObject({ commentId: id });
+export const reactInput = z.strictObject({ commentId: id, emoji: z.enum(REACTIONS), on: z.boolean() });
+export const threadInput = z.strictObject({ thread: threadKeyInput });
+/** Mark notifications read: these, or (none named) all of the caller's. */
+export const markNotificationsInput = z.strictObject({ ids: z.array(id).max(100).optional() });
+/** Settings → Notifications: how each kind is emailed. */
+export const notifySettingsInput = z.strictObject({
+	notify: z.partialRecord(z.enum(NOTIFY_KINDS), z.enum(NOTIFY_EMAILS)),
+});
+export const focusInput = z.strictObject({ focus: z.boolean() });
+
+export type CreateCommentInput = z.input<typeof createCommentInput>;
+export type UpdateCommentInput = z.input<typeof updateCommentInput>;
+export type ReactInput = z.input<typeof reactInput>;
+export type NotifySettingsInput = z.input<typeof notifySettingsInput>;

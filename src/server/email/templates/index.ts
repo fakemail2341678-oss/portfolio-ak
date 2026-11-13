@@ -46,6 +46,8 @@ export interface EmailPropsMap {
 	"parda-digest": parda.EpisodeDigestProps; // @parda
 	"kharcha-invite": kharcha.KharchaInviteProps; // @kharcha
 	"kharcha-reminder": kharcha.KharchaReminderProps; // @kharcha
+	"kharcha-notification": kharcha.KharchaNotificationProps; // @kharcha
+	"kharcha-digest": kharcha.KharchaDigestProps; // @kharcha
 }
 
 export type EmailTemplateId = keyof EmailPropsMap;
@@ -227,6 +229,42 @@ export const emailTemplates: EmailRegistry = {
 			],
 			payNote: "eSewa 9801234567",
 			url: "https://example.com/app/kharcha/f/3f1c2a9e-8b7d-4c6e-9a5f-1d2e3c4b5a69",
+			unsubscribeUrl:
+				"https://example.com/api/kharcha/unsubscribe?p=3f1c2a9e-8b7d-4c6e-9a5f-1d2e3c4b5a69&t=sample&l=en",
+		},
+	},
+	"kharcha-notification": {
+		component: kharcha.KharchaNotification,
+		subject: ({ locale, siteName, heading }) =>
+			m.email_kharcha_notification_subject({ heading, site: siteName }, { locale }),
+		sample: {
+			heading: "Pokhara trip",
+			items: ["Asha Gurung mentioned you", "Asha Gurung added Boat on Phewa"],
+			excerpt: "@Sita Thapa the boat was NPR 1,800 for the four of us. I paid.",
+			url: "https://example.com/app/kharcha/g/3f1c2a9e-8b7d-4c6e-9a5f-1d2e3c4b5a69",
+			settingsUrl: "https://example.com/app/kharcha/settings/notifications",
+		},
+	},
+	"kharcha-digest": {
+		component: kharcha.KharchaDigest,
+		subject: kharcha.digestSubject,
+		sample: {
+			name: "Sita Thapa",
+			items: [
+				{
+					id: "n1",
+					text: "Asha Gurung added Boat on Phewa",
+					url: "https://example.com/app/kharcha/e/3f1c2a9e-8b7d-4c6e-9a5f-1d2e3c4b5a69",
+				},
+				{
+					id: "n2",
+					text: "Bikash Rai commented in Pokhara trip",
+					url: "https://example.com/app/kharcha/g/3f1c2a9e-8b7d-4c6e-9a5f-1d2e3c4b5a69",
+				},
+			],
+			more: 0,
+			url: "https://example.com/app/kharcha/home",
+			settingsUrl: "https://example.com/app/kharcha/settings/notifications",
 		},
 	},
 	// kharcha:end

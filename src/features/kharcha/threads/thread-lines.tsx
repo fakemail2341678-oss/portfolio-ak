@@ -2,13 +2,14 @@ import { m } from "@/paraglide/messages";
 import { recentSentence } from "../home/recent-line";
 import { type CardLink, ExpenseCard, PaymentCard } from "../kit/cards";
 import { LedgerLine, LedgerPage, SystemLine } from "../kit/ledger";
-import type { ThreadItem } from "../types";
+import type { ThreadItem, ThreadTalk } from "../types";
+import { CommentLine } from "./comment-line";
 
 /**
  * A thread's page of the book (Task 90, PLAN 14.5 "Conversations"): its lines oldest
  * first, each day once in the margin: expense cards that open the expense, payment cards,
- * and the app's own system lines. `expenseLink` makes an expense's link (the panel over the
- * thread, masked as its page); `onPayment` opens a payment to edit (Task 91).
+ * the app's own system lines and comments (Task 92). `expenseLink` makes an expense's link (the
+ * panel over the thread, masked as its page); `onPayment` opens a payment to edit (Task 91).
  */
 export function ThreadLines({
 	items,
@@ -16,12 +17,16 @@ export function ThreadLines({
 	expenseLink,
 	onPayment,
 	label,
+	userId,
+	talk,
 }: {
 	items: ReadonlyArray<ThreadItem>;
 	more: boolean;
 	expenseLink: (expenseId: string) => CardLink;
 	onPayment?: ((paymentId: string) => void) | undefined;
 	label: string;
+	userId: string;
+	talk: ThreadTalk;
 }) {
 	return (
 		<section
@@ -52,6 +57,8 @@ export function ThreadLines({
 									payment={item.payment}
 									{...(onPayment ? { onOpen: () => onPayment(item.payment.id) } : {})}
 								/>
+							) : item.type === "comment" ? (
+								<CommentLine comment={item.comment} userId={userId} mentionable={talk.mentionable} />
 							) : (
 								<SystemLine>{recentSentence(item.line)}</SystemLine>
 							)}

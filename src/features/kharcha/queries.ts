@@ -1,5 +1,15 @@
 import { mutationOptions, type QueryClient, queryOptions } from "@tanstack/react-query";
 import {
+	createKharchaComment,
+	deleteKharchaComment,
+	markKharchaNotificationsRead,
+	markKharchaThreadRead,
+	reactKharchaComment,
+	setKharchaFocus,
+	updateKharchaComment,
+	updateKharchaNotifySettings,
+} from "@/functions/kharcha/conversations";
+import {
 	createKharchaExpense,
 	deleteKharchaExpense,
 	getKharchaExpense,
@@ -49,16 +59,20 @@ import { getKharchaSettleUp, remindKharchaFriend } from "@/functions/kharcha/set
 import { getKharchaFriendThread, getKharchaGroupThread, listKharchaPeople } from "@/functions/kharcha/threads";
 import type {
 	AddFriendInput,
+	CreateCommentInput,
 	CreateExpenseInput,
 	CreateGroupInput,
 	CreatePaymentInput,
 	FriendEmailInput,
 	InviteInput,
 	NewGroupMemberInput,
+	NotifySettingsInput,
 	OnboardingInput,
 	PeopleInput,
 	ProfileInput,
+	ReactInput,
 	SettleUpInput,
+	UpdateCommentInput,
 	UpdateExpenseInput,
 	UpdateFriendInput,
 	UpdateGroupInput,
@@ -306,6 +320,52 @@ export const kharchaMutations = {
 	updateProfile: (queryClient: QueryClient, userId: string) =>
 		mutationOptions({
 			mutationFn: (data: ProfileInput) => updateKharchaProfile({ data }),
+			onSuccess: () => refreshKharcha(queryClient, userId),
+		}),
+	comment: (queryClient: QueryClient, userId: string) =>
+		mutationOptions({
+			mutationFn: (data: CreateCommentInput) => createKharchaComment({ data }),
+			onSuccess: () => refreshKharcha(queryClient, userId),
+		}),
+	editComment: (queryClient: QueryClient, userId: string) =>
+		mutationOptions({
+			mutationFn: (data: UpdateCommentInput) => updateKharchaComment({ data }),
+			onSuccess: () => refreshKharcha(queryClient, userId),
+		}),
+	deleteComment: (queryClient: QueryClient, userId: string) =>
+		mutationOptions({
+			mutationFn: (commentId: string) => deleteKharchaComment({ data: { commentId } }),
+			onSuccess: () => refreshKharcha(queryClient, userId),
+		}),
+	react: (queryClient: QueryClient, userId: string) =>
+		mutationOptions({
+			mutationFn: (data: ReactInput) => reactKharchaComment({ data }),
+			onSuccess: () => refreshKharcha(queryClient, userId),
+		}),
+	/** Reading a thread clears its badge on People and its notifications: those two refetch, nothing else. */
+	readThread: (queryClient: QueryClient, userId: string) =>
+		mutationOptions({
+			mutationFn: (thread: string) => markKharchaThreadRead({ data: { thread } }),
+			onSuccess: () =>
+				Promise.all([
+					queryClient.invalidateQueries({ queryKey: [...kharchaKeys.user(userId), "people"] }),
+					queryClient.invalidateQueries({ queryKey: kharchaKeys.home(userId) }),
+					queryClient.invalidateQueries({ queryKey: kharchaKeys.rev(userId) }),
+				]),
+		}),
+	readNotifications: (queryClient: QueryClient, userId: string) =>
+		mutationOptions({
+			mutationFn: (ids?: string[]) => markKharchaNotificationsRead({ data: ids ? { ids } : {} }),
+			onSuccess: () => refreshKharcha(queryClient, userId),
+		}),
+	notifySettings: (queryClient: QueryClient, userId: string) =>
+		mutationOptions({
+			mutationFn: (data: NotifySettingsInput) => updateKharchaNotifySettings({ data }),
+			onSuccess: () => refreshKharcha(queryClient, userId),
+		}),
+	focus: (queryClient: QueryClient, userId: string) =>
+		mutationOptions({
+			mutationFn: (focus: boolean) => setKharchaFocus({ data: { focus } }),
 			onSuccess: () => refreshKharcha(queryClient, userId),
 		}),
 	leaveGroup: (queryClient: QueryClient, userId: string) =>

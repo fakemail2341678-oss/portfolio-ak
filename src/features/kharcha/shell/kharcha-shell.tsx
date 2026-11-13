@@ -1,6 +1,7 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Link, type LinkOptions, useLocation } from "@tanstack/react-router";
 import {
+	BellIcon,
 	FileUpIcon,
 	HouseIcon,
 	type LucideIcon,
@@ -71,7 +72,7 @@ export function KharchaShell({ children }: { children: ReactNode }) {
 	const [paletteOpen, setPaletteOpen] = useState(false);
 	const [shortcutsOpen, setShortcutsOpen] = useState(false);
 	const [dialog, setDialog] = useState<ShellDialog | null>(null);
-	useFreshness(session ? userId : "");
+	const unread = useFreshness(session ? userId : "");
 	const actions: KharchaActions = {
 		openPalette: () => setPaletteOpen(true),
 		openShortcuts: () => setShortcutsOpen(true),
@@ -101,9 +102,9 @@ export function KharchaShell({ children }: { children: ReactNode }) {
 			<ConfirmProvider>
 				<div className="flex min-h-dvh flex-1 bg-kh-ground text-kh-ink" data-testid="kharcha-shell">
 					<NavigationProgress />
-					<Rail person={me?.person} onSearch={actions.openPalette} />
+					<Rail person={me?.person} onSearch={actions.openPalette} unread={unread} />
 					<div className="flex min-w-0 flex-1 flex-col pb-16 md:pb-0">
-						<PhoneBar person={me?.person} onSearch={actions.openPalette} />
+						<PhoneBar person={me?.person} onSearch={actions.openPalette} unread={unread} />
 						{guest ? <GuestBanner /> : null}
 						<InKharchaShell value>{children}</InKharchaShell>
 					</div>
@@ -220,23 +221,59 @@ function useDropReceipts(onFiles: (files: File[]) => void, enabled: boolean): bo
 /**
  * Freshness (PLAN 14.5): the `rev` query polls every 15 s while the page is visible and on
  * focus; when it moved since the last read, everything the caller's pages show refetches.
+ * The same answer carries the bell's unread count (Task 92), which it returns.
  */
-function useFreshness(userId: string) {
+function useFreshness(userId: string): number {
 	const queryClient = useQueryClient();
-	const { data: rev } = useQuery({ ...kharchaRevQueryOptions(userId), enabled: Boolean(userId) });
+	const { data: pulse } = useQuery({ ...kharchaRevQueryOptions(userId), enabled: Boolean(userId) });
+	const rev = pulse?.rev;
 	const seen = useRef<number | undefined>(undefined);
 	useEffect(() => {
 		if (rev === undefined) return;
 		if (seen.current !== undefined && seen.current !== rev) void refreshKharcha(queryClient, userId);
 		seen.current = rev;
 	}, [rev, queryClient, userId]);
+	return pulse?.unread ?? 0;
+}
+
+/** "Updates", with how many are unread: a link to Home's Updates (Task 92). */
+function Bell({ unread, className, place }: { unread: number; className: string; place: "rail" | "bar" }) {
+	return (
+		<Link {...kharchaLinks.updates()} className={cn("relative", className)} data-testid={`kharcha-bell-${place}`}>
+			<BellIcon className="size-5" aria-hidden />
+			{place === "rail" ? m.kharcha_nav_updates() : <span className="sr-only">{m.kharcha_nav_updates()}</span>}
+			{unread > 0 ? (
+				<>
+					<span className="sr-only">{` ${m.kharcha_bell_unread({ count: formatNumber(unread) })}`}</span>
+					<span
+						className={cn(
+							"kh-figures absolute grid h-4 min-w-4 place-items-center rounded-full bg-kh-thread px-1 font-semibold text-[0.625rem] text-kh-cloth-deep leading-none",
+							place === "rail" ? "start-[calc(50%+0.25rem)] top-1" : "end-1.5 top-1.5",
+						)}
+						aria-hidden
+						data-testid="kharcha-bell-count"
+					>
+						{unread > 99 ? `${formatNumber(99)}+` : formatNumber(unread)}
+					</span>
+				</>
+			) : null}
+		</Link>
+	);
 }
 
 const railItem =
 	"kh-ease flex w-13 flex-col items-center gap-1 rounded-md px-0.5 pt-2 pb-1.5 text-center font-medium text-[0.6875rem] leading-tight outline-none focus-visible:ring-[3px] focus-visible:ring-kh-thread";
 
 /** The laptop's rail: red bookcloth edged with the yellow thread (decision 0281). */
-function Rail({ person, onSearch }: { person: Parameters<typeof KharchaUserMenu>[0]["person"]; onSearch: () => void }) {
+function Rail({
+	person,
+	onSearch,
+	unread,
+}: {
+	person: Parameters<typeof KharchaUserMenu>[0]["person"];
+	onSearch: () => void;
+	unread: number;
+}) {
 	return (
 		<nav
 			aria-label={m.kharcha_nav_label()}
@@ -264,6 +301,7 @@ function Rail({ person, onSearch }: { person: Parameters<typeof KharchaUserMenu>
 					{item.label()}
 				</Link>
 			))}
+			<Bell unread={unread} place="rail" className={cn(railItem, "hover:bg-kh-cloth-deep/70 hover:text-kh-on-cloth")} />
 			<button
 				type="button"
 				onClick={onSearch}
@@ -284,9 +322,11 @@ function Rail({ person, onSearch }: { person: Parameters<typeof KharchaUserMenu>
 function PhoneBar({
 	person,
 	onSearch,
+	unread,
 }: {
 	person: Parameters<typeof KharchaUserMenu>[0]["person"];
 	onSearch: () => void;
+	unread: number;
 }) {
 	return (
 		<header
@@ -299,6 +339,11 @@ function PhoneBar({
 			>
 				<KharchaWordmark onCloth className="text-[1.0625rem]" />
 			</Link>
+			<Bell
+				unread={unread}
+				place="bar"
+				className="kh-ease grid size-11 place-items-center rounded-md outline-none hover:bg-kh-cloth-deep/70 focus-visible:ring-[3px] focus-visible:ring-kh-thread"
+			/>
 			<button
 				type="button"
 				onClick={onSearch}

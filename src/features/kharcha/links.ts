@@ -10,6 +10,8 @@ export const kharchaLinks = {
 	signIn: (redirect?: string) => linkOptions({ to: "/app/kharcha/sign-in", search: { redirect } }),
 	signUp: (redirect?: string) => linkOptions({ to: "/app/kharcha/sign-up", search: { redirect } }),
 	home: () => linkOptions({ to: "/app/kharcha/home" }),
+	/** Home's Updates (Task 92): where the bell goes. */
+	updates: () => linkOptions({ to: "/app/kharcha/home", hash: "updates" }),
 	account: () => linkOptions({ to: "/app/kharcha/account" }),
 	spend: () => linkOptions({ to: "/app/kharcha/spend" }),
 	/** The expense page; over Spend it opens as a panel (a masked route, `spendExpense`). */

@@ -304,6 +304,44 @@ export async function mergePerson(tx: Tx, fromId: string, toId: string): Promise
 		where person_lo = ${fromId} or person_hi = ${fromId}
 	`);
 
+	// Conversations (Task 92): comments, mentions and reactions move; the thread of the two is no thread.
+	await tx.execute(sql`update kh_comment set author_id = ${toId} where author_id = ${fromId}`);
+	await tx.execute(sql`
+		update kh_comment set mentions = array_replace(mentions, ${fromId}::uuid, ${toId}::uuid)
+		where ${fromId}::uuid = any(mentions)
+	`);
+	await tx.execute(sql`
+		delete from kh_comment
+		where person_lo = least(${fromId}::uuid, ${toId}::uuid) and person_hi = greatest(${fromId}::uuid, ${toId}::uuid)
+	`);
+	await tx.execute(sql`
+		update kh_comment set
+			person_lo = least(case when person_lo = ${fromId} then person_hi else person_lo end, ${toId}::uuid),
+			person_hi = greatest(case when person_lo = ${fromId} then person_hi else person_lo end, ${toId}::uuid)
+		where person_lo = ${fromId} or person_hi = ${fromId}
+	`);
+	await tx.execute(sql`
+		insert into kh_reaction (comment_id, person_id, emoji, created_at)
+		select comment_id, ${toId}, emoji, created_at from kh_reaction where person_id = ${fromId}
+		on conflict do nothing
+	`);
+	await tx.execute(sql`delete from kh_reaction where person_id = ${fromId}`);
+	// Read marks: the one who goes reads as the one who stays; a thread with them is the thread with the stayer.
+	await tx.execute(sql`
+		insert into kh_read (person_id, thread, read_at)
+		select ${toId}, thread, read_at from kh_read where person_id = ${fromId}
+		on conflict (person_id, thread) do update set read_at = greatest(kh_read.read_at, excluded.read_at)
+	`);
+	await tx.execute(sql`delete from kh_read where person_id = ${fromId}`);
+	await tx.execute(sql`
+		insert into kh_read (person_id, thread, read_at)
+		select person_id, ${`f:${toId}`}, read_at from kh_read where thread = ${`f:${fromId}`}
+		on conflict (person_id, thread) do update set read_at = greatest(kh_read.read_at, excluded.read_at)
+	`);
+	await tx.execute(sql`delete from kh_read where thread = ${`f:${fromId}`} or thread = 'f:' || person_id::text`);
+	await tx.execute(sql`update kh_notification set actor_id = ${toId} where actor_id = ${fromId}`);
+	await tx.execute(sql`update kh_notification set thread = ${`f:${toId}`} where thread = ${`f:${fromId}`}`);
+
 	// Their own lists (Task 89): the same category, tag or method becomes one; the rest moves.
 	await mergeLists(tx, fromId, toId);
 

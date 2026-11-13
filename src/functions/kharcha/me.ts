@@ -1,6 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
 import { onboardingInput, profileInput } from "@/features/kharcha/schema";
-import type { KharchaBalances, KharchaHome, KharchaMe } from "@/features/kharcha/types";
+import type { KharchaBalances, KharchaHome, KharchaMe, KharchaPulse } from "@/features/kharcha/types";
 import { zodInput } from "@/functions/_lib/validator";
 import { requireKharchaUser, withKharchaServices } from "@/middleware/kharcha";
 import * as home from "@/server/kharcha/home/service";
@@ -15,10 +15,10 @@ export const getKharchaMe = createServerFn({ method: "GET" })
 	.middleware([requireKharchaUser, withKharchaServices])
 	.handler(({ context }): Promise<KharchaMe> => me.getMe(context));
 
-/** Polled by open pages: a change that touches the caller moves it. */
+/** Polled by open pages: a change that touches the caller moves its `rev`; `unread` is the bell's (Task 92). */
 export const getKharchaRev = createServerFn({ method: "GET" })
 	.middleware([requireKharchaUser, withKharchaServices])
-	.handler(({ context }): Promise<number> => me.getRev(context));
+	.handler(({ context }): Promise<KharchaPulse> => me.getPulse(context));
 
 export const getKharchaBalances = createServerFn({ method: "GET" })
 	.middleware([requireKharchaUser, withKharchaServices])

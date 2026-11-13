@@ -1,6 +1,7 @@
 import "@tanstack/react-start/server-only";
 import { and, eq, isNotNull, isNull } from "drizzle-orm";
 import { convertAt } from "@/features/kharcha/money/convert";
+import { threadKey } from "@/features/kharcha/notifications";
 import type { CreatePaymentInput, UpdatePaymentInput } from "@/features/kharcha/schema";
 import type { PaymentView } from "@/features/kharcha/types";
 import { ruleError } from "@/lib/errors";
@@ -23,6 +24,7 @@ import {
 import { type ActivityScope, fieldChanges, pairOf, recordActivity } from "../activity";
 import { currentMembersAmong } from "../expenses/repository";
 import { writeLedger } from "../ledger";
+import { deliverAfter, produce } from "../notify/produce";
 import { befriend, loadPeople } from "../people";
 import { bumpRevs, saveVersioned } from "../rev";
 import { assertCurrencyOffered, assertFormerSettled, touched } from "../rules";
@@ -138,8 +140,11 @@ export async function getPayment({ db, user }: KharchaServices, paymentId: strin
  * Records a payment. In a group: between two of its current members, by any of them.
  * Outside one: the caller paid a friend, or a friend paid the caller.
  */
-export async function createPayment({ db, user }: KharchaServices, input: CreatePaymentInput): Promise<PaymentView> {
-	return db.transaction(async (tx) => {
+export async function createPayment(
+	{ db, user, deliver }: KharchaServices,
+	input: CreatePaymentInput,
+): Promise<PaymentView> {
+	const { view, instant } = await db.transaction(async (tx) => {
 		const me = await resolveMe(tx, user);
 		const group = input.groupId ? await resolveGroup(tx, me, input.groupId) : null;
 		if (input.fromId === input.toId) {
@@ -168,8 +173,24 @@ export async function createPayment({ db, user }: KharchaServices, input: Create
 			max: quotasFor(settings, user).payments,
 		});
 		const payment = await addPayment(tx, me.personId, input);
-		return paymentView(tx, me, { payment, group, can: { edit: true, delete: true, restore: false } });
+		// Task 92: whoever was paid hears (never the one who recorded it).
+		const { instant } = await produce(tx, { personId: me.personId, name: me.person.displayName }, [
+			{
+				kind: "payment.received",
+				to: [payment.toPerson],
+				thread: payment.groupId ? threadKey("g", payment.groupId) : threadKey("f", payment.fromPerson),
+				groupId: payment.groupId,
+				data: {
+					amounts: [{ currency: payment.currency, amountMinor: payment.amountMinor }],
+					...(group ? { group: group.group.name } : {}),
+				},
+			},
+		]);
+		const view = await paymentView(tx, me, { payment, group, can: { edit: true, delete: true, restore: false } });
+		return { view, instant };
 	});
+	deliverAfter(deliver, instant);
+	return view;
 }
 
 /** The payment form's save, at the `version` it was loaded with. Who paid whom doesn't change: delete it and record another. */

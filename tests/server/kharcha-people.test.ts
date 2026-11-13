@@ -1,6 +1,7 @@
 import { eq } from "drizzle-orm";
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from "vitest";
 import * as schema from "@/server/db/schema";
+import * as talk from "@/server/kharcha/conversations/service";
 import * as expenses from "@/server/kharcha/expenses/service";
 import { forgetUser } from "@/server/kharcha/forget";
 import * as friends from "@/server/kharcha/friends/service";
@@ -195,6 +196,9 @@ describe("mergePerson", () => {
 			merchant: "Momo house",
 		});
 		expect(tagged.mine).toMatchObject({ categoryId: food.id, tagIds: [tag.id], methodId: cash.id });
+		// Conversations (Task 92): a comment to Maya (her notification names the guest), its reaction, the read mark.
+		const note = await talk.createComment(as("guest"), { thread: `f:${maya}`, body: "Hi from my phone", mentions: [] });
+		await talk.react(as("guest"), { commentId: note.id, emoji: "👍", on: true });
 		await expectLedgerConsistent(env.db);
 
 		const before = await referencesTo(guest);
@@ -202,8 +206,13 @@ describe("mergePerson", () => {
 		// A thread's two people are stored lower id first: the guest is one or the other.
 		const pair = (before["kh_activity.person_lo"] ?? 0) + (before["kh_activity.person_hi"] ?? 0);
 		expect(pair).toBeGreaterThan(0);
+		const commentPair = (before["kh_comment.person_lo"] ?? 0) + (before["kh_comment.person_hi"] ?? 0);
+		expect(commentPair).toBeGreaterThan(0);
 		expect(
-			Object.entries(before).filter(([column, count]) => count === 0 && !column.startsWith("kh_activity.person_")),
+			Object.entries(before).filter(
+				([column, count]) =>
+					count === 0 && !column.startsWith("kh_activity.person_") && !column.startsWith("kh_comment.person_"),
+			),
 		).toEqual([]);
 		expect(Object.keys(before).length).toBeGreaterThanOrEqual(18);
 

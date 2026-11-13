@@ -19,11 +19,12 @@ import type { Amount, KharchaHome as Home } from "../types";
 import { OnboardingCard } from "./onboarding";
 import { recentSentence } from "./recent-line";
 import { TodoList } from "./todos";
+import { Updates } from "./updates";
 
 /**
  * Home (PLAN 14.5 "UX"): a to-do list first (each later task adds its kinds), then what the
  * caller is owed and owes per currency, this month's spending against last month's, and
- * recent activity. "Split with people" puts the balances first, "track my spending" the
+ * the updates (notifications, Task 92) and recent activity. "Split with people" puts the balances first, "track my spending" the
  * month; on a laptop the to-dos hold the left column. Onboarding sits above it all until done.
  */
 export function KharchaHome() {
@@ -74,13 +75,21 @@ export function KharchaHome() {
 				<Sheet className="lg:col-start-2" testId="kharcha-home-summary">
 					{summary}
 				</Sheet>
-				<Sheet className="self-start lg:col-start-1 lg:row-span-2 lg:row-start-1" testId="kharcha-home-todo">
+				<Sheet className="self-start lg:col-start-1 lg:row-start-1" testId="kharcha-home-todo">
 					<SheetHead title={m.kharcha_home_todo()} count={home.todos.length} />
 					{home.todos.length === 0 ? (
 						<KharchaEmpty kind="todo" className="border-0 py-10" />
 					) : (
 						<TodoList todos={home.todos} />
 					)}
+				</Sheet>
+				<Sheet
+					className="scroll-mt-20 self-start lg:col-start-1 lg:row-start-2"
+					testId="kharcha-home-updates"
+					id="updates"
+				>
+					<SheetHead title={m.kharcha_home_updates()} count={home.unread} />
+					<Updates updates={home.updates} unread={home.unread} timeZone={me.profile.timeZone} userId={userId} />
 				</Sheet>
 				<Sheet className="self-start lg:col-start-2" testId="kharcha-home-recent">
 					<SheetHead title={m.kharcha_home_recent()} />
@@ -106,9 +115,20 @@ export function KharchaHome() {
 	);
 }
 
-function Sheet({ children, className, testId }: { children: ReactNode; className?: string; testId: string }) {
+function Sheet({
+	children,
+	className,
+	testId,
+	id,
+}: {
+	children: ReactNode;
+	className?: string;
+	testId: string;
+	id?: string;
+}) {
 	return (
 		<section
+			id={id}
 			className={cn("overflow-hidden rounded-lg border border-kh-hair bg-kh-page", className)}
 			data-testid={testId}
 		>

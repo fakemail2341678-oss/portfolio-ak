@@ -1,6 +1,7 @@
 import "@tanstack/react-start/server-only";
 import { and, asc, desc, eq, inArray, isNull, sql } from "drizzle-orm";
 import { simplify } from "@/features/kharcha/money/simplify";
+import { threadKey } from "@/features/kharcha/notifications";
 import type { CreateGroupInput, UpdateGroupInput } from "@/features/kharcha/schema";
 import {
 	GROUP_KIND_ICON,
@@ -27,6 +28,7 @@ import { fieldChanges, recordActivity } from "../activity";
 import { friendsAmong } from "../expenses/repository";
 import { befriendNew } from "../friends/service";
 import { byCurrency, groupNetOf, groupNets, groupPairs, netsByGroup } from "../ledger";
+import { deliverAfter, produce } from "../notify/produce";
 import { loadPeople } from "../people";
 import { bumpRevs, saveVersioned } from "../rev";
 import { amountList, assertCurrencyOffered, currentMemberIds } from "../rules";
@@ -238,8 +240,8 @@ export async function addGroup(tx: Tx, ownerId: string, input: NewGroup): Promis
 	return group;
 }
 
-export async function createGroup({ db, user }: KharchaServices, input: CreateGroupInput): Promise<GroupView> {
-	return db.transaction(async (tx) => {
+export async function createGroup({ db, user, deliver }: KharchaServices, input: CreateGroupInput): Promise<GroupView> {
+	const { view, instant } = await db.transaction(async (tx) => {
 		const me = await resolveMe(tx, user);
 		const settings = await getSettings(tx);
 		const quotas = quotasFor(settings, user);
@@ -256,9 +258,24 @@ export async function createGroup({ db, user }: KharchaServices, input: CreateGr
 			max: quotas.groups,
 		});
 		const group = await addGroup(tx, me.personId, { ...input, memberIds: others });
-		return groupView(tx, me, await resolveGroup(tx, me, group.id));
+		const { instant } = await notifyAdded(tx, me, group, others);
+		return { view: await groupView(tx, me, await resolveGroup(tx, me, group.id)), instant };
 	});
+	deliverAfter(deliver, instant);
+	return view;
 }
+
+/** Task 92: "added you to a group", to everyone added with an account. */
+const notifyAdded = (tx: Tx, me: Me, group: KhGroupRow, people: ReadonlyArray<string>) =>
+	produce(tx, { personId: me.personId, name: me.person.displayName }, [
+		{
+			kind: "group.added",
+			to: people,
+			thread: threadKey("g", group.id),
+			groupId: group.id,
+			data: { group: group.name },
+		},
+	]);
 
 /** The group form's save, at the `version` it was loaded with. */
 export async function updateGroup({ db, user }: KharchaServices, input: UpdateGroupInput): Promise<GroupView> {
@@ -331,15 +348,22 @@ export async function archiveGroup(
 }
 
 /** Adds one of the caller's friends to the group; someone who left comes back as a member. */
-export async function addMember({ db, user }: KharchaServices, groupId: string, personId: string): Promise<GroupView> {
-	return db.transaction(async (tx) => {
+export async function addMember(
+	{ db, user, deliver }: KharchaServices,
+	groupId: string,
+	personId: string,
+): Promise<GroupView> {
+	const { view, instant } = await db.transaction(async (tx) => {
 		const me = await resolveMe(tx, user);
 		const access = await resolveGroup(tx, me, groupId);
 		assertGroupCan(access, "edit");
 		await resolveFriend(tx, me, personId);
 		await joinGroup(tx, me, user, groupId, personId);
-		return groupView(tx, me, access);
+		const { instant } = await notifyAdded(tx, me, access.group, [personId]);
+		return { view: await groupView(tx, me, access), instant };
 	});
+	deliverAfter(deliver, instant);
+	return view;
 }
 
 /**
@@ -347,17 +371,20 @@ export async function addMember({ db, user }: KharchaServices, groupId: string, 
  * address: `befriendNew`'s rules, a guest names only), then added.
  */
 export async function addNewMember(
-	{ db, user }: KharchaServices,
+	{ db, user, deliver }: KharchaServices,
 	input: { groupId: string; name: string; email?: string | undefined },
 ): Promise<GroupView> {
-	return db.transaction(async (tx) => {
+	const { view, instant } = await db.transaction(async (tx) => {
 		const me = await resolveMe(tx, user);
 		const access = await resolveGroup(tx, me, input.groupId);
 		assertGroupCan(access, "edit");
 		const person = await befriendNew(tx, me, user, input);
 		await joinGroup(tx, me, user, input.groupId, person.id);
-		return groupView(tx, me, access);
+		const { instant } = await notifyAdded(tx, me, access.group, [person.id]);
+		return { view: await groupView(tx, me, access), instant };
 	});
+	deliverAfter(deliver, instant);
+	return view;
 }
 
 /** A member row for `personId` (back from having left, or new), under the group's quota, with its history. */

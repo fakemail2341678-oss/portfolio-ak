@@ -2,13 +2,14 @@ import "@tanstack/react-start/server-only";
 import { eq, sql } from "drizzle-orm";
 import type { OnboardingInput, ProfileInput } from "@/features/kharcha/schema";
 import { offeredCurrencies } from "@/features/kharcha/settings";
-import type { Amount, KharchaBalances, KharchaMe } from "@/features/kharcha/types";
+import type { Amount, KharchaBalances, KharchaMe, KharchaPulse } from "@/features/kharcha/types";
 import { todayInZone } from "@/lib/i18n/date-only";
 import { getLocale } from "@/paraglide/runtime";
 import { notFound } from "@/server/db/crud";
 import { khProfile } from "@/server/db/schema";
 import { type KharchaServices, resolveMe } from "../access";
 import { byCurrency, pairBalances } from "../ledger";
+import { notifySettingsOf, unreadCount } from "../notify/inbox";
 import { personDto } from "../people";
 import { bumpRevs, revOf } from "../rev";
 import { assertCurrencyOffered } from "../rules";
@@ -30,6 +31,8 @@ export async function getMe({ db, user }: KharchaServices): Promise<KharchaMe> {
 			payNote: profile.payNote,
 			onboarded: profile.onboardedAt !== null,
 			start: profile.start,
+			notify: notifySettingsOf(profile.notify as Record<string, string>),
+			focus: profile.focus,
 		},
 		today: todayInZone(profile.timeZone),
 		currencies: offeredCurrencies(settings),
@@ -39,8 +42,14 @@ export async function getMe({ db, user }: KharchaServices): Promise<KharchaMe> {
 	};
 }
 
-/** What open pages poll (PLAN 14.5 "Freshness"): one indexed read, no writes. */
+/** The caller's `rev`; 0 before their first use. */
 export const getRev = ({ db, user }: KharchaServices): Promise<number> => revOf(db, user.id);
+
+/** What open pages poll (PLAN 14.5 "Freshness"): the `rev` and the bell's count (Task 92), two indexed reads, no writes. */
+export async function getPulse({ db, user }: KharchaServices): Promise<KharchaPulse> {
+	const [rev, unread] = await Promise.all([getRev({ db, user }), unreadCount(db, user.id)]);
+	return { rev, unread };
+}
 
 /**
  * What the caller is owed and owes in all, per currency: the sum of what each person owes

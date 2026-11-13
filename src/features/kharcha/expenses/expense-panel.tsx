@@ -16,6 +16,9 @@ import { Money } from "../kit/money";
 import { kharchaLinks } from "../links";
 import { kharchaMutations } from "../queries";
 import { useKharchaActions } from "../shell/actions";
+import { CommentLine } from "../threads/comment-line";
+import { Composer } from "../threads/composer";
+import { useMarkRead } from "../threads/use-read";
 import { type ExpenseDetail, TRASH_DAYS } from "../types";
 import { historySentence } from "./history";
 
@@ -26,8 +29,8 @@ const day = (value: string) => formatDate(isoDateInstant(value), { dateStyle: "m
 /**
  * An expense, read (PLAN Task 89, "the expense page"): what it was and the caller's part of
  * it, what it still needs (fix badges, a possible duplicate to dismiss), its receipts, its
- * history, and its one primary action, Edit; deleting goes to the trash, restorable for
- * 30 days. The page and the panel over Spend both show it.
+ * history, its comments (Task 92), and its one primary action, Edit; deleting goes to the
+ * trash, restorable for 30 days. The page and the panel over Spend both show it.
  */
 export function ExpensePanel({ expense, userId }: { expense: ExpenseDetail; userId: string }) {
 	const queryClient = useQueryClient();
@@ -36,6 +39,7 @@ export function ExpensePanel({ expense, userId }: { expense: ExpenseDetail; user
 	const trash = useMutation(kharchaMutations.trashExpense(queryClient, userId));
 	const duplicate = useMutation(kharchaMutations.markDuplicate(queryClient, userId));
 	const [viewing, setViewing] = useState<number | null>(null);
+	useMarkRead(userId, expense.talk);
 	const title = expense.title || expense.merchant || m.kharcha_untitled();
 	const shared = expense.people.length > 1;
 
@@ -240,6 +244,34 @@ export function ExpensePanel({ expense, userId }: { expense: ExpenseDetail; user
 						</li>
 					))}
 				</ol>
+			</section>
+
+			<section
+				aria-labelledby={`${expense.id}-comments`}
+				className="flex flex-col gap-2"
+				data-testid="kharcha-expense-comments"
+			>
+				<h2 id={`${expense.id}-comments`} className="font-semibold text-sm">
+					{m.kharcha_comments()}
+				</h2>
+				{expense.comments.length > 0 ? (
+					<ol className="flex flex-col divide-y divide-kh-rule">
+						{expense.comments.map((comment) => (
+							<li key={comment.id} className="py-1.5">
+								<CommentLine comment={comment} userId={userId} mentionable={expense.talk.mentionable} />
+							</li>
+						))}
+					</ol>
+				) : (
+					<p className="text-caption text-kh-muted">{m.kharcha_comments_none()}</p>
+				)}
+				{expense.talk.canComment ? (
+					<Composer
+						talk={expense.talk}
+						userId={userId}
+						label={m.kharcha_comment_on({ title: expense.title || expense.merchant })}
+					/>
+				) : null}
 			</section>
 
 			{viewing !== null ? (

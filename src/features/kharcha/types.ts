@@ -2,6 +2,7 @@ import type { ImageAsset } from "@/features/attachments/schema";
 import type { IsoDate, IsoMonth } from "@/lib/i18n/date-only";
 import type { Transfer } from "./money/simplify";
 import type { Split, SplitMethod } from "./money/split";
+import type { NotificationData, NotifyEmail, NotifyKind, Reaction, ThreadKey } from "./notifications";
 
 /**
  * Kharcha's shared types (docs/guides/kharcha.md, PLAN 14.5): what the server returns and
@@ -113,6 +114,10 @@ export type KharchaProfile = {
 	payNote: string;
 	onboarded: boolean;
 	start: KharchaStart;
+	/** How each kind of notification is emailed (Task 92): their choice, else the default. */
+	notify: Record<NotifyKind, NotifyEmail>;
+	/** Focus mode (Task 92): People shows only unread and unsettled conversations. */
+	focus: boolean;
 };
 
 /** The caller in Kharcha: their person, their preferences, today in their time zone and the limits that apply. */
@@ -177,6 +182,54 @@ export type KharchaHome = {
 		spent: Array<{ currency: string; current: number; previous: number }>;
 	};
 	recent: HomeActivity[];
+	/** Task 92: the newest notifications (Updates), and how many are unread in all. */
+	updates: NotificationView[];
+	unread: number;
+};
+
+/** What the shell polls (PLAN 14.5 "Freshness"): the caller's `rev`, and their unread notifications for the bell. */
+export type KharchaPulse = { rev: number; unread: number };
+
+/** A notification as Home's Updates show it (Task 92): what happened, in words from `data`, and where it points. */
+export type NotificationView = {
+	id: string;
+	kind: NotifyKind;
+	thread: ThreadKey;
+	data: NotificationData;
+	at: string;
+	read: boolean;
+};
+
+/** A comment in a thread (Task 92): plain text with the people it mentions, reactions, and what the caller may do. */
+export type CommentView = {
+	id: string;
+	/** Null once the author is gone. */
+	author: KharchaPerson | null;
+	body: string;
+	/** The people it mentions, each by the handle written after "@" (their own name, the same for every reader). */
+	mentions: MentionHandle[];
+	createdAt: string;
+	editedAt: string | null;
+	reactions: Array<{ emoji: Reaction; count: number; mine: boolean }>;
+	can: { edit: boolean; delete: boolean; react: boolean };
+};
+
+/** A thread's place in the list (Task 92): lines from others since the caller last read it, and when it last moved. */
+export type ThreadState = { unread: number; latestAt: string | null };
+
+/** Someone a comment can mention: "@" and their own name, which every reader sees the same. */
+export type MentionHandle = { id: string; handle: string };
+
+/**
+ * A thread's conversation (Task 92): its key, whether the caller can write in it, who a
+ * comment can mention (everyone in it with an account, the caller aside), and how many
+ * lines from others came since the caller last read it.
+ */
+export type ThreadTalk = {
+	thread: ThreadKey;
+	canComment: boolean;
+	mentionable: Array<KharchaPerson & { handle: string }>;
+	unread: number;
 };
 
 export type ExpenseCan = { edit: boolean; delete: boolean; restore: boolean };
@@ -242,7 +295,12 @@ export type ExpenseActivityLine = {
 };
 
 /** The expense page and panel: the expense and its history. */
-export type ExpenseDetail = ExpenseView & { activity: ExpenseActivityLine[] };
+export type ExpenseDetail = ExpenseView & {
+	activity: ExpenseActivityLine[];
+	/** Task 92: its comments, oldest first, and its conversation. */
+	comments: CommentView[];
+	talk: ThreadTalk;
+};
 
 /** A row of Spend (Task 89): an expense the caller is on, with their share and their own category. */
 export type SpendRow = Pick<
@@ -355,6 +413,12 @@ export type PeoplePage = {
 	groups: GroupSummary[];
 	/** Friends the caller hid: listed only with `hidden`. */
 	hiddenCount: number;
+	/** Task 92: each listed thread's unread lines and last move, by key (`g:<group>`, `f:<person>`). */
+	threads: Record<string, ThreadState>;
+	/** Focus mode is on: only unread and unsettled conversations are listed. */
+	focus: boolean;
+	/** The conversations focus mode leaves out. */
+	focusHidden: number;
 };
 
 /** A payment as a thread's card shows it. */
@@ -372,10 +436,11 @@ export type ThreadPayment = Pick<
 export type ThreadItem =
 	| { type: "expense"; id: string; day: IsoDate; at: string; expense: SpendRow }
 	| { type: "payment"; id: string; day: IsoDate; at: string; payment: ThreadPayment }
-	| { type: "system"; id: string; day: IsoDate; at: string; line: HomeActivity };
+	| { type: "system"; id: string; day: IsoDate; at: string; line: HomeActivity }
+	| { type: "comment"; id: string; day: IsoDate; at: string; comment: CommentView };
 
 /** A group's thread: the group, its lines (the newest `THREAD_LIMIT`), and whether older ones were left out. */
-export type GroupThread = { group: GroupView; items: ThreadItem[]; more: boolean };
+export type GroupThread = { group: GroupView; items: ThreadItem[]; more: boolean; talk: ThreadTalk };
 
 /** What the caller and a friend have in one group: a link to it with the balance between the two there. */
 export type FriendGroupBalance = Pick<GroupSummary, "id" | "name" | "color" | "icon" | "left"> & {
@@ -398,6 +463,7 @@ export type FriendThread = {
 	remind: RemindState;
 	/** How the friend asked to be paid (their profile's pay note); empty when they wrote none. */
 	payNote: string;
+	talk: ThreadTalk;
 };
 
 /** A reminder sent (Task 91): when, so the button can say "reminded today". */

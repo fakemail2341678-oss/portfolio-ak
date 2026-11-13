@@ -8,6 +8,7 @@ import { type KharchaServices, type Me, resolveMe } from "../access";
 import { activityLines } from "../activity-lines";
 import { duplicatesOf } from "../expenses/repository";
 import { byCurrency, pairBalances } from "../ledger";
+import { unreadCount, updatesOf } from "../notify/inbox";
 import { loadPeople } from "../people";
 import { draftsOf } from "../receipts/service";
 import { spendRows } from "../spend/service";
@@ -121,6 +122,8 @@ export async function getHome(services: KharchaServices): Promise<KharchaHome> {
 		openWith: open.size,
 		month: { current, previous, spent: await monthSpending(db, me.personId, current, previous) },
 		recent: await recentActivity(db, me.personId),
+		updates: await updatesOf(db, me.id),
+		unread: await unreadCount(db, me.id),
 	};
 }
 

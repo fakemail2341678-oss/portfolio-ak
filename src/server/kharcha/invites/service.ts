@@ -25,6 +25,7 @@ import {
 	resolveMe,
 } from "../access";
 import { pairOf, recordActivity } from "../activity";
+import { claimContactMail, unsubscribeHeaders, unsubscribeUrl } from "../notify/contact-mail";
 import { ensurePerson, mergePerson, personOfUser } from "../people";
 import { bumpRevs } from "../rev";
 import { currentMemberIds } from "../rules";
@@ -57,6 +58,7 @@ export function sendInviteEmail(email: InviteEmail): void {
 			locale: email.locale,
 			siteName: KHARCHA_NAME,
 			data: email.data,
+			...(email.data.unsubscribeUrl ? { headers: unsubscribeHeaders(email.data.unsubscribeUrl) } : {}),
 		})
 			.then(() => undefined)
 			.catch((error: unknown) => {
@@ -79,8 +81,8 @@ type Made = { result: InviteResult; email: InviteEmail | null };
  * Makes an invite for `person` (a friend of the caller's, checked) in the caller's
  * transaction. Refused when invites are off, the caller is blocked from sending them, the
  * person has joined already or has no address. An older open invite of the caller's to
- * them stops working. `send` emails it, at most once a day per address (PLAN 14.5:
- * "never more than one a day"); the link works either way.
+ * them stops working. `send` emails it, unless they unsubscribed or got an email from Kharcha
+ * in the last day, an invite or a reminder (PLAN 14.5: "never more than one a day"); the link works either way.
  */
 export async function makeInvite(
 	tx: Tx,
@@ -110,14 +112,8 @@ export async function makeInvite(
 				gt(khInvite.expiresAt, now),
 			),
 		);
-	const [recent] = options.send
-		? await tx
-				.select({ id: khInvite.id })
-				.from(khInvite)
-				.where(and(eq(khInvite.email, person.email), gt(khInvite.sentAt, new Date(now.getTime() - 86_400_000))))
-				.limit(1)
-		: [];
-	const sent = options.send && !recent;
+	// One email a day to someone without an account, of any kind, and none once they unsubscribed (Task 92).
+	const sent = options.send && (await claimContactMail(tx, person.id, now)) === "ok";
 	const token = newInviteToken();
 	const expiresAt = new Date(now.getTime() + INVITE_DAYS * 86_400_000);
 	await tx.insert(khInvite).values({
@@ -143,6 +139,7 @@ export async function makeInvite(
 						group: options.group ?? undefined,
 						url,
 						expiresInDays: INVITE_DAYS,
+						unsubscribeUrl: unsubscribeUrl(person.id, locale),
 					},
 				}
 			: null,

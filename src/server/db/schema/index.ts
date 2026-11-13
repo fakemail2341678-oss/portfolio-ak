@@ -36,6 +36,7 @@ export * from "./chaal/preference"; // @chaal
 export * from "./chaal/puzzle-attempt"; // @chaal
 export * from "./chaal/settings"; // @chaal
 export * from "./kharcha/activity"; // @kharcha
+export * from "./kharcha/conversation"; // @kharcha
 export * from "./kharcha/expense"; // @kharcha
 export * from "./kharcha/group"; // @kharcha
 export * from "./kharcha/invite"; // @kharcha

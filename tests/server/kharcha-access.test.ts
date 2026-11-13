@@ -1,4 +1,5 @@
 import { beforeAll, beforeEach, describe, expect, it } from "vitest";
+import * as talk from "@/server/kharcha/conversations/service";
 import * as expenses from "@/server/kharcha/expenses/service";
 import * as friends from "@/server/kharcha/friends/service";
 import * as groups from "@/server/kharcha/groups/service";
@@ -7,6 +8,7 @@ import * as home from "@/server/kharcha/home/service";
 import * as invites from "@/server/kharcha/invites/service";
 import * as lists from "@/server/kharcha/lists/service";
 import * as me from "@/server/kharcha/me/service";
+import * as inbox from "@/server/kharcha/notify/inbox";
 import * as payments from "@/server/kharcha/payments/service";
 import * as receipts from "@/server/kharcha/receipts/service";
 import * as settle from "@/server/kharcha/settle/service";
@@ -60,6 +62,8 @@ type World = {
 	oldExpense: string;
 	newExpense: string;
 	groupPayment: string;
+	/** The owner's comment in the group (Task 92), written after the former member left. */
+	groupComment: string;
 	/** The owner's own lists (Task 89), an upload of theirs no expense took, and a receipt draft. */
 	category: string;
 	categories: string[];
@@ -158,6 +162,9 @@ async function setUp(): Promise<World> {
 			paidOn: today,
 		})
 	).id;
+	const groupComment = (
+		await talk.createComment(as("owner"), { thread: `g:${group}`, body: "Boat at six?", mentions: [member] })
+	).id;
 	const owned = await lists.getLists(as("owner"));
 	const category = owned.categories[0]?.id ?? "";
 	const method = owned.methods[0]?.id ?? "";
@@ -192,6 +199,7 @@ async function setUp(): Promise<World> {
 		oldExpense,
 		newExpense,
 		groupPayment,
+		groupComment,
 	};
 }
 
@@ -567,6 +575,66 @@ const OPERATIONS: Operation[] = [
 		name: "getGroupTotals",
 		run: (w, by) => totals.getGroupTotals(as(by), w.group),
 		expect: only({ owner: "ok", member: "ok", former: "ok" }),
+	},
+	{
+		name: "createComment: in the group's thread",
+		run: (w, by) => talk.createComment(as(by), { thread: `g:${w.group}`, body: "Hello", mentions: [] }),
+		expect: only({ owner: "ok", member: "ok", former: "FORBIDDEN" }),
+	},
+	{
+		name: "createComment: on the shared expense",
+		run: (w, by) => talk.createComment(as(by), { thread: `e:${w.shared}`, body: "Hello", mentions: [] }),
+		expect: only({ owner: "ok", friend: "ok" }),
+	},
+	{
+		name: "createComment: on an expense in the trash",
+		run: (w, by) => talk.createComment(as(by), { thread: `e:${w.trashed}`, body: "Hello", mentions: [] }),
+		expect: only({ owner: "FORBIDDEN", friend: "FORBIDDEN" }),
+	},
+	{
+		name: "createComment: to the owner's friend (their thread)",
+		run: (w, by) => talk.createComment(as(by), { thread: `f:${w.people.friend}`, body: "Hello", mentions: [] }),
+		expect: only({ owner: "ok" }),
+	},
+	{
+		name: "updateComment: the owner's, in the group",
+		run: (w, by) => talk.updateComment(as(by), { commentId: w.groupComment, body: "Boat at seven?", mentions: [] }),
+		expect: only({ owner: "ok", member: "FORBIDDEN" }),
+	},
+	{
+		name: "deleteComment: the owner's, in the group",
+		run: (w, by) => talk.deleteComment(as(by), w.groupComment),
+		expect: only({ owner: "ok", member: "FORBIDDEN" }),
+	},
+	{
+		name: "react: to the owner's comment in the group",
+		run: (w, by) => talk.react(as(by), { commentId: w.groupComment, emoji: "👍", on: true }),
+		expect: only({ owner: "ok", member: "ok" }),
+	},
+	{
+		name: "markThreadRead: the group's",
+		run: (w, by) => talk.markThreadRead(as(by), `g:${w.group}`),
+		expect: only({ owner: "ok", member: "ok", former: "ok" }),
+	},
+	{
+		name: "markThreadRead: the shared expense's",
+		run: (w, by) => talk.markThreadRead(as(by), `e:${w.shared}`),
+		expect: only({ owner: "ok", friend: "ok" }),
+	},
+	{
+		name: "markRead (the caller's own notifications)",
+		run: (_w, by) => inbox.markRead(as(by)),
+		expect: everyone(),
+	},
+	{
+		name: "updateNotifySettings (the caller's own)",
+		run: (_w, by) => inbox.updateNotifySettings(as(by), { notify: { "expense.added": "instant" } }),
+		expect: everyone(),
+	},
+	{
+		name: "setFocus (the caller's own)",
+		run: (_w, by) => inbox.setFocus(as(by), true),
+		expect: everyone(),
 	},
 	{
 		name: "updateProfile (the caller's own)",

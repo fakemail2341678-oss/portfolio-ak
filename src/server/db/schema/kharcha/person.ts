@@ -40,6 +40,12 @@ export const khPerson = pgTable(
 		color: text().$type<KharchaColor>().notNull(),
 		/** The person who added this contact; null for a user's own person. */
 		createdBy: uuid().references((): AnyPgColumn => khPerson.id, { onDelete: "set null" }),
+		/**
+		 * Task 92: someone without an account gets at most one email a day (an invite or a
+		 * reminder); this is when the last one went. `unsubscribed_at` stops all of them.
+		 */
+		mailedAt: timestamp({ withTimezone: true }),
+		unsubscribedAt: timestamp({ withTimezone: true }),
 		createdAt: timestamp({ withTimezone: true }).defaultNow().notNull(),
 	},
 	(table) => [

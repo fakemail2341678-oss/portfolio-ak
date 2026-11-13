@@ -1,7 +1,9 @@
-import { useSuspenseQuery } from "@tanstack/react-query";
+import { useMutation, useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
 import { getRouteApi, Link } from "@tanstack/react-router";
-import { UserPlusIcon, UsersIcon } from "lucide-react";
+import { FocusIcon, UserPlusIcon, UsersIcon } from "lucide-react";
 import type { ReactNode } from "react";
+import { toast } from "sonner";
+import { errorMessage } from "@/components/errors/error-page";
 import { FilterBar } from "@/components/filters/filter-bar";
 import { SearchFilter } from "@/components/filters/filters";
 import { MAIN_CONTENT } from "@/components/layout/skip-link";
@@ -13,10 +15,11 @@ import { GroupPlate } from "../kit/group-plate";
 import { BalancePill } from "../kit/money";
 import { PersonAvatar } from "../kit/person-avatar";
 import { kharchaLinks } from "../links";
-import { kharchaPeopleQueryOptions } from "../queries";
+import { threadKey } from "../notifications";
+import { kharchaMutations, kharchaPeopleQueryOptions } from "../queries";
 import type { PeopleSearch } from "../search";
 import { useKharchaActions, useKharchaUserId } from "../shell/actions";
-import type { FriendView, GroupSummary } from "../types";
+import type { FriendView, GroupSummary, ThreadState } from "../types";
 
 const route = getRouteApi("/_kharcha/app/kharcha/_shell/people");
 
@@ -24,6 +27,8 @@ const route = getRouteApi("/_kharcha/app/kharcha/_shell/people");
  * People (Task 90): the caller's groups, then their friends, each with what is open with
  * it ("NPR 1,200.00 ↙ owed to you", or settled). Every row opens its thread. The search is
  * in the address (`?q=`), so it works without JavaScript; hidden friends are listed on asking.
+ * Task 92: each list runs by latest activity, with the unread lines as a badge; focus mode
+ * (the caller's setting) keeps only conversations unread or unsettled.
  */
 export function PeoplePage() {
 	return <PeopleView search={route.useSearch()} />;
@@ -35,7 +40,13 @@ export function PeopleView({ search }: { search: PeopleSearch }) {
 	const hidden = search.hidden === true;
 	const { data } = useSuspenseQuery(kharchaPeopleQueryOptions(userId, { q: search.q, hidden }));
 	const { create } = useKharchaActions();
+	const queryClient = useQueryClient();
+	const focus = useMutation({
+		...kharchaMutations.focus(queryClient, userId),
+		onError: (error) => toast.error(errorMessage(error)),
+	});
 	const nothing = data.friends.length === 0 && data.groups.length === 0;
+	const stateOf = (key: string): ThreadState => data.threads[key] ?? { unread: 0, latestAt: null };
 	return (
 		<main {...MAIN_CONTENT} className="flex flex-1 flex-col" data-testid="kharcha-people">
 			<header className="flex flex-wrap items-center gap-x-4 gap-y-3 border-kh-hair border-b bg-kh-page px-4 py-4 sm:px-8 md:py-5">
@@ -43,7 +54,20 @@ export function PeopleView({ search }: { search: PeopleSearch }) {
 					<h1 className="kh-display text-kh-title">{m.kharcha_nav_people()}</h1>
 					<p className="text-caption text-kh-muted">{m.kharcha_people_lede()}</p>
 				</div>
-				<div className="ms-auto hidden items-center gap-2 md:flex">
+				<div className="ms-auto flex items-center gap-2">
+					<Button
+						variant="outline"
+						aria-pressed={data.focus}
+						onClick={() => focus.mutate(!data.focus)}
+						disabled={focus.isPending}
+						className={data.focus ? "border-kh-act bg-kh-sel" : undefined}
+						data-testid="kharcha-people-focus"
+					>
+						<FocusIcon aria-hidden />
+						{m.kharcha_people_focus()}
+					</Button>
+				</div>
+				<div className="hidden items-center gap-2 md:flex">
 					<Button variant="outline" onClick={() => create("group")} data-testid="kharcha-people-new-group">
 						<UsersIcon aria-hidden />
 						{m.kharcha_create_group()}
@@ -65,6 +89,14 @@ export function PeopleView({ search }: { search: PeopleSearch }) {
 						className="min-w-48 flex-1"
 					/>
 				</FilterBar>
+
+				{data.focus ? (
+					<p className="text-caption text-kh-muted" data-testid="kharcha-people-focus-note">
+						{data.focusHidden > 0
+							? m.kharcha_people_focus_hidden({ count: formatNumber(data.focusHidden) })
+							: m.kharcha_people_focus_on()}
+					</p>
+				) : null}
 
 				{nothing ? (
 					<KharchaEmpty
@@ -94,7 +126,7 @@ export function PeopleView({ search }: { search: PeopleSearch }) {
 								testId="kharcha-people-groups"
 							>
 								{data.groups.map((group) => (
-									<GroupRow key={group.id} group={group} />
+									<GroupRow key={group.id} group={group} state={stateOf(threadKey("g", group.id))} />
 								))}
 							</PeopleSection>
 						) : null}
@@ -105,7 +137,7 @@ export function PeopleView({ search }: { search: PeopleSearch }) {
 								testId="kharcha-people-friends"
 							>
 								{data.friends.map((friend) => (
-									<FriendRow key={friend.person.id} friend={friend} />
+									<FriendRow key={friend.person.id} friend={friend} state={stateOf(threadKey("f", friend.person.id))} />
 								))}
 							</PeopleSection>
 						) : null}
@@ -157,9 +189,23 @@ function PeopleSection({
 }
 
 const ROW =
-	"kh-ease grid min-h-14 grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3 px-4 py-2.5 outline-none hover:bg-kh-sel focus-visible:bg-kh-sel focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:ring-inset sm:px-5";
+	"kh-ease grid min-h-14 grid-cols-[auto_minmax(0,1fr)_auto_auto] items-center gap-3 px-4 py-2.5 outline-none hover:bg-kh-sel focus-visible:bg-kh-sel focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:ring-inset sm:px-5";
 
-function GroupRow({ group }: { group: GroupSummary }) {
+/** A conversation's unread lines (Task 92): a badge, said in words to screen readers; nothing when all is read. */
+function Unread({ state }: { state: ThreadState }) {
+	if (state.unread === 0) return <span aria-hidden />;
+	return (
+		<span
+			className="kh-figures grid h-5 min-w-5 place-items-center rounded-full bg-kh-act px-1.5 font-semibold text-[0.6875rem] text-kh-on-act leading-none"
+			data-testid="kharcha-people-unread"
+		>
+			<span aria-hidden>{state.unread > 99 ? `${formatNumber(99)}+` : formatNumber(state.unread)}</span>
+			<span className="sr-only">{m.kharcha_people_unread({ count: formatNumber(state.unread) })}</span>
+		</span>
+	);
+}
+
+function GroupRow({ group, state }: { group: GroupSummary; state: ThreadState }) {
 	const notes = [
 		group.left ? m.kharcha_group_you_left() : m.kharcha_group_members({ count: formatNumber(group.members) }),
 		group.archived ? m.kharcha_group_archived() : "",
@@ -172,13 +218,14 @@ function GroupRow({ group }: { group: GroupSummary }) {
 					<span className="block truncate font-semibold">{group.name}</span>
 					<span className="block truncate text-caption text-kh-muted">{notes.join(" · ")}</span>
 				</span>
+				<Unread state={state} />
 				<BalancePill balances={group.balances} />
 			</Link>
 		</li>
 	);
 }
 
-function FriendRow({ friend }: { friend: FriendView }) {
+function FriendRow({ friend, state }: { friend: FriendView; state: ThreadState }) {
 	const note = friend.person.hasAccount
 		? ""
 		: friend.invite
@@ -196,6 +243,7 @@ function FriendRow({ friend }: { friend: FriendView }) {
 						</span>
 					) : null}
 				</span>
+				<Unread state={state} />
 				<BalancePill balances={friend.balances} />
 			</Link>
 		</li>

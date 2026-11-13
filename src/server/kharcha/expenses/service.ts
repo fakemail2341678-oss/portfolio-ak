@@ -3,6 +3,7 @@ import { and, asc, eq, inArray, isNotNull, isNull } from "drizzle-orm";
 import { firstRule } from "@/features/kharcha/lists";
 import { splitProblemMessage } from "@/features/kharcha/money/problem";
 import { computeShares, type Paid, payersProblem, type Split, type SplitProblem } from "@/features/kharcha/money/split";
+import { threadKey } from "@/features/kharcha/notifications";
 import type { CreateExpenseInput, UpdateExpenseInput } from "@/features/kharcha/schema";
 import type {
 	ActivityData,
@@ -32,8 +33,10 @@ import {
 	resolveMe,
 } from "../access";
 import { type ActivityScope, fieldChanges, pairOf, recordActivity } from "../activity";
+import { commentsOf, resolveThread, talkOf } from "../conversations/service";
 import { writeLedger } from "../ledger";
 import * as lists from "../lists/repository";
+import { deliverAfter, produce } from "../notify/produce";
 import { loadPeople } from "../people";
 import { EXPENSE_RECEIPTS, linkReceipts, receiptIdsOf, receiptsOf, takeDraft } from "../receipts/service";
 import { bumpRevs, saveVersioned } from "../rev";
@@ -310,7 +313,13 @@ export async function getExpense({ db, user, imageStore }: KharchaServices, expe
 		const me = await resolveMe(tx, user);
 		const access = await resolveExpense(tx, me, expenseId);
 		const view = await expenseView(tx, me, access, imageStore);
-		return { ...view, activity: await historyOf(tx, me, expenseId) };
+		const thread = await resolveThread(tx, me, threadKey("e", expenseId));
+		return {
+			...view,
+			activity: await historyOf(tx, me, expenseId),
+			comments: await commentsOf(tx, me, thread),
+			talk: await talkOf(tx, me, thread),
+		};
 	});
 }
 
@@ -324,10 +333,10 @@ const withDefaults = (
 });
 
 export async function createExpense(
-	{ db, user, imageStore }: KharchaServices,
+	{ db, user, imageStore, deliver }: KharchaServices,
 	input: CreateExpenseInput,
 ): Promise<ExpenseView> {
-	return db.transaction(async (tx) => {
+	const { view, instant } = await db.transaction(async (tx) => {
 		const me = await resolveMe(tx, user);
 		const group = input.groupId ? await resolveGroup(tx, me, input.groupId) : null;
 		if (group) assertGroupCan(group, "edit");
@@ -349,8 +358,45 @@ export async function createExpense(
 		if (receiptIds.length > 0 || input.draftId) {
 			await linkReceipts(tx, me, { entityType: EXPENSE_RECEIPTS, entityId: expense.id }, receiptIds);
 		}
-		return expenseView(tx, me, { expense, group, can: { edit: true, delete: true, restore: false } }, imageStore);
+		const { instant } = await notifyExpense(
+			tx,
+			me,
+			"expense.added",
+			expense,
+			repo.partsPeople(parts),
+			group?.group.name ?? null,
+		);
+		const view = await expenseView(
+			tx,
+			me,
+			{ expense, group, can: { edit: true, delete: true, restore: false } },
+			imageStore,
+		);
+		return { view, instant };
 	});
+	deliverAfter(deliver, instant);
+	return view;
+}
+
+/** Tells the people on an expense (Task 92): added, changed or deleted; the actor never. */
+function notifyExpense(
+	tx: Tx,
+	me: Me,
+	kind: "expense.added" | "expense.updated" | "expense.deleted",
+	expense: KhExpenseRow,
+	people: ReadonlyArray<string>,
+	group: string | null,
+) {
+	return produce(tx, { personId: me.personId, name: me.person.displayName }, [
+		{
+			kind,
+			to: people,
+			thread: threadKey("e", expense.id),
+			groupId: expense.groupId,
+			expenseId: expense.id,
+			data: { title: expense.title || expense.merchant, ...(group ? { group } : {}) },
+		},
+	]);
 }
 
 /** The names a private field's history shows: a category's, a method's, tags joined. */
@@ -379,10 +425,10 @@ async function privateNames(tx: Tx, mine: Pick<ExpenseMine, "categoryId" | "meth
  * only on an expense that is theirs alone: on a shared one, their lists stay private.
  */
 export async function updateExpense(
-	{ db, user, imageStore }: KharchaServices,
+	{ db, user, imageStore, deliver }: KharchaServices,
 	input: UpdateExpenseInput,
 ): Promise<ExpenseView> {
-	return db.transaction(async (tx) => {
+	const { view, instant } = await db.transaction(async (tx) => {
 		const me = await resolveMe(tx, user);
 		const access = await resolveExpense(tx, me, input.expenseId);
 		assertSourceCan(access, "edit");
@@ -467,8 +513,18 @@ export async function updateExpense(
 			].map((entry) => ({ ...entry, expenseId: expense.id })),
 		);
 		await bumpRevs(tx, await touched(tx, expense.groupId, [me.personId, ...beforePeople, ...people]));
-		return expenseView(tx, me, { ...access, expense }, imageStore);
+		const { instant } = await notifyExpense(
+			tx,
+			me,
+			"expense.updated",
+			expense,
+			[...beforePeople, ...people],
+			access.group?.group.name ?? null,
+		);
+		return { view: await expenseView(tx, me, { ...access, expense }, imageStore), instant };
 	});
+	deliverAfter(deliver, instant);
+	return view;
 }
 
 /**
@@ -495,12 +551,12 @@ export async function setNotDuplicate(
  * stay with it until the trash is emptied.
  */
 async function setDeleted(
-	{ db, user, imageStore }: KharchaServices,
+	{ db, user, imageStore, deliver }: KharchaServices,
 	expenseId: string,
 	deleted: boolean,
 	now = new Date(),
 ): Promise<ExpenseView> {
-	return db.transaction(async (tx) => {
+	const { view, instant } = await db.transaction(async (tx) => {
 		const me = await resolveMe(tx, user);
 		const access = await resolveExpense(tx, me, expenseId, now);
 		assertSourceCan(access, deleted ? "delete" : "restore");
@@ -523,8 +579,11 @@ async function setDeleted(
 			data: { title: expense.title || expense.merchant },
 		});
 		await bumpRevs(tx, await touched(tx, expense.groupId, [me.personId, ...people]));
+		const { instant } = deleted
+			? await notifyExpense(tx, me, "expense.deleted", expense, people, access.group?.group.name ?? null)
+			: { instant: [] };
 		const editable = access.can.delete || access.can.restore;
-		return expenseView(
+		const view = await expenseView(
 			tx,
 			me,
 			{
@@ -534,7 +593,10 @@ async function setDeleted(
 			},
 			imageStore,
 		);
+		return { view, instant };
 	});
+	deliverAfter(deliver, instant);
+	return view;
 }
 
 export const deleteExpense = (services: KharchaServices, expenseId: string, now?: Date) =>

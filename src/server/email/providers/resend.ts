@@ -30,6 +30,7 @@ export class ResendProvider implements EmailProvider {
 			html: message.html,
 			text: message.text,
 			...(message.tag ? { tags: [{ name: "template", value: message.tag }] } : {}),
+			...(message.headers ? { headers: message.headers } : {}),
 		});
 		if (error || !data) {
 			throw new ResendDeliveryError(`Resend rejected the email: ${error?.name ?? "unknown"}: ${error?.message ?? ""}`);

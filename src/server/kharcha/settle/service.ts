@@ -2,6 +2,7 @@ import "@tanstack/react-start/server-only";
 import { waitUntil } from "@vercel/functions";
 import { and, desc, eq, gt, inArray, isNotNull, isNull, ne, or, sql } from "drizzle-orm";
 import { KHARCHA_NAME } from "@/features/kharcha/brand";
+import { threadKey } from "@/features/kharcha/notifications";
 import type { SettleUpInput } from "@/features/kharcha/schema";
 import { REMIND_WINDOW_MS } from "@/features/kharcha/settle/remind";
 import type { Amount, RemindResult, RemindState, SettleChoice, SettleUp } from "@/features/kharcha/types";
@@ -27,6 +28,8 @@ import { pairOf, recordActivity } from "../activity";
 import { friendsOf } from "../friends/service";
 import { groupSettlementsOf } from "../groups/service";
 import { byCurrency, pairBalances } from "../ledger";
+import { claimContactMail, contactMailable, unsubscribeHeaders, unsubscribeUrl } from "../notify/contact-mail";
+import { deliverAfter, produce } from "../notify/produce";
 import { loadPeople } from "../people";
 import { bumpRevs } from "../rev";
 import { getSettings } from "../settings";
@@ -236,6 +239,7 @@ export function sendReminderEmail(email: ReminderEmail): void {
 			locale: email.locale,
 			siteName: KHARCHA_NAME,
 			data: email.data,
+			...(email.data.unsubscribeUrl ? { headers: unsubscribeHeaders(email.data.unsubscribeUrl) } : {}),
 		})
 			.then(() => undefined)
 			.catch((error: unknown) => {
@@ -300,6 +304,7 @@ export async function remindState(tx: Tx, me: Me, caller: KharchaUser, person: K
 	const available =
 		(await mayRemind(tx, me, caller)) === "ok" &&
 		(await addressOf(tx, person)) !== null &&
+		(person.userId !== null || (await contactMailable(tx, person.id))) &&
 		(await owedBy(tx, me, person.id)).length > 0;
 	return { available, lastAt: last?.toISOString() ?? null };
 }
@@ -311,11 +316,11 @@ export async function remindState(tx: Tx, me: Me, caller: KharchaUser, person: K
  * writes a line in the two people's thread.
  */
 export async function remindFriend(
-	{ db, user: caller, sendReminder = sendReminderEmail }: KharchaServices,
+	{ db, user: caller, sendReminder = sendReminderEmail, deliver }: KharchaServices,
 	personId: string,
 	now = new Date(),
 ): Promise<RemindResult> {
-	const email = await db.transaction(async (tx) => {
+	const { email, instant } = await db.transaction(async (tx) => {
 		const me = await resolveMe(tx, caller);
 		const { person } = await resolveFriend(tx, me, personId);
 		const allowed = await mayRemind(tx, me, caller);
@@ -347,6 +352,14 @@ export async function remindFriend(
 			)
 			.limit(1);
 		if (recent) throw ruleError("RATE_LIMITED", "Kharcha: reminded today", m.kharcha_error_reminded_today());
+		// Someone without an account (Task 92): one email a day of any kind, none once they unsubscribed.
+		if (!person.userId) {
+			const mail = await claimContactMail(tx, person.id, now);
+			if (mail === "unsubscribed") {
+				throw ruleError("FORBIDDEN", "Kharcha: unsubscribed", m.kharcha_error_unsubscribed());
+			}
+			if (mail === "today") throw ruleError("RATE_LIMITED", "Kharcha: emailed today", m.kharcha_error_mailed_today());
+		}
 		await recordActivity(
 			tx,
 			me.personId,
@@ -354,9 +367,24 @@ export async function remindFriend(
 			{ kind: "friend.reminded", subjectId: person.id },
 		);
 		await bumpRevs(tx, [me.personId, person.id]);
+		// An account hears on Home too; its email is this one, at once, unless they chose the digest or none.
+		const produced = await produce(
+			tx,
+			{ personId: me.personId, name: me.person.displayName },
+			[
+				{
+					kind: "reminder",
+					to: [person.id],
+					thread: threadKey("f", me.personId),
+					data: { amounts },
+					sentNow: true,
+				},
+			],
+			now,
+		);
 		const locale = address.locale ?? getLocale();
 		const payNote = await payNoteOf(tx, me.personId);
-		return {
+		const email = {
 			to: address.email,
 			locale,
 			data: {
@@ -364,9 +392,13 @@ export async function remindFriend(
 				amounts,
 				payNote: payNote || undefined,
 				url: localizedUrl(person.userId ? `/app/kharcha/f/${me.personId}` : "/app/kharcha", locale),
+				unsubscribeUrl: person.userId ? undefined : unsubscribeUrl(person.id, locale),
 			},
 		} satisfies ReminderEmail;
+		const emailed = !person.userId || produced.emails.get(person.id) === "instant";
+		return { email: emailed ? email : null, instant: produced.instant };
 	});
-	sendReminder(email);
+	if (email) sendReminder(email);
+	deliverAfter(deliver, instant);
 	return { remindedAt: now.toISOString() };
 }

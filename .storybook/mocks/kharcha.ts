@@ -1,5 +1,7 @@
 import type { ImageAsset } from "../../src/features/attachments/schema";
+import { NOTIFY_DEFAULTS, type ThreadKey } from "../../src/features/kharcha/notifications";
 import type {
+	CommentView,
 	ExpenseDetail,
 	ExpenseView,
 	FriendThread,
@@ -53,6 +55,8 @@ export const sampleKharchaMe: KharchaMe = {
 		payNote: "",
 		onboarded: true,
 		start: "split",
+		notify: { ...NOTIFY_DEFAULTS },
+		focus: false,
 	},
 	today: "2026-11-12",
 	currencies: ["NPR", "INR", "USD"],
@@ -131,6 +135,59 @@ export const sampleKharchaHome: KharchaHome = {
 			payment: null,
 		},
 	],
+	updates: [
+		{
+			id: "n-1",
+			kind: "comment.mention",
+			thread: "g:g-trip" as ThreadKey,
+			data: {
+				actor: "Asha",
+				title: "Pokhara trip",
+				group: "Pokhara trip",
+				excerpt: "@Maya the boat was NPR 1,800 for all of us.",
+			},
+			at: "2026-11-12T09:30:00.000Z",
+			read: false,
+		},
+		{
+			id: "n-2",
+			kind: "payment.received",
+			thread: "f:p-asha" as ThreadKey,
+			data: { actor: "Asha", amounts: [{ currency: "NPR", amountMinor: 60_000 }] },
+			at: "2026-11-12T06:00:00.000Z",
+			read: false,
+		},
+		{
+			id: "n-3",
+			kind: "expense.added",
+			thread: "e:e-momo" as ThreadKey,
+			data: { actor: "Bikash", title: "Momo at Thamel", group: "Pokhara trip" },
+			at: "2026-11-11T08:10:00.000Z",
+			read: true,
+		},
+	],
+	unread: 2,
+};
+
+/** Who can be mentioned in the trip, from Maya's side (Task 92). */
+export const sampleKharchaMentionable = [
+	{ ...asha, hasAccount: true, handle: "Asha Gurung" },
+	{ ...bikash, hasAccount: true, handle: "Bikash Rai" },
+];
+
+/** A comment in the trip's thread (Task 92): a mention, a link and reactions. */
+export const sampleKharchaComment: CommentView = {
+	id: "c-boat",
+	author: asha,
+	body: "@Bikash Rai the boat on Phewa was NPR 1,800 for the four of us. Photos: https://example.com/phewa.",
+	mentions: [{ id: bikash.id, handle: "Bikash Rai" }],
+	createdAt: "2026-10-07T10:00:00.000Z",
+	editedAt: null,
+	reactions: [
+		{ emoji: "👍", count: 2, mine: true },
+		{ emoji: "😂", count: 1, mine: false },
+	],
+	can: { edit: false, delete: false, react: true },
 };
 
 const can = { edit: true, delete: true, restore: false };
@@ -209,6 +266,18 @@ export const sampleKharchaDetail: ExpenseDetail = {
 	receipts: [receiptImage("r-1")],
 	fixes: ["duplicate"],
 	duplicates: [{ id: "e-groceries-2", title: "Bhatbhateni Store", spentOn: "2026-11-10" }],
+	comments: [
+		{
+			...sampleKharchaComment,
+			id: "c-rice",
+			body: "Was the rice the 25 kg bag?",
+			mentions: [],
+			reactions: [],
+			author: me,
+			can: { edit: true, delete: true, react: true },
+		},
+	],
+	talk: { thread: "e:e-groceries" as ThreadKey, canComment: true, mentionable: [], unread: 0 },
 	activity: [
 		{
 			id: "x-1",
@@ -499,6 +568,12 @@ export const sampleKharchaPeople: PeoplePage = {
 		},
 	],
 	hiddenCount: 1,
+	threads: {
+		"g:g-trip": { unread: 3, latestAt: "2026-11-12T09:30:00.000Z" },
+		"f:p-asha": { unread: 1, latestAt: "2026-11-12T06:00:00.000Z" },
+	},
+	focus: false,
+	focusHidden: 0,
 };
 
 const threadRow = (id: string, title: string, amountMinor: number, spentOn: string, payer: KharchaPerson) => ({
@@ -584,7 +659,9 @@ export const sampleKharchaGroupThread: GroupThread = {
 				payment: null,
 			},
 		},
+		{ type: "comment", id: "c-boat", day: "2026-10-07", at: "2026-10-07T10:00:00.000Z", comment: sampleKharchaComment },
 	],
+	talk: { thread: "g:g-trip" as ThreadKey, canComment: true, mentionable: sampleKharchaMentionable, unread: 0 },
 };
 
 export const sampleKharchaFriendThread: FriendThread = {
@@ -618,6 +695,12 @@ export const sampleKharchaFriendThread: FriendThread = {
 	],
 	remind: { available: false, lastAt: null },
 	payNote: "eSewa 9801234567",
+	talk: {
+		thread: "f:p-asha" as ThreadKey,
+		canComment: true,
+		mentionable: [{ ...asha, hasAccount: true, handle: "Asha Gurung" }],
+		unread: 0,
+	},
 };
 
 /** The settle-up dialog in the trip (Task 91): its simplified suggestions, and Asha's pay note. */

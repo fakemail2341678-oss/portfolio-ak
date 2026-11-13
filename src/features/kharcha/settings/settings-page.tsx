@@ -26,6 +26,7 @@ import { SETTINGS_TABS, type SettingsTab } from "../search";
 import { useKharchaUserId } from "../shell/actions";
 import type { CategoryView, KharchaLists, MethodView, RuleView, TagView } from "../types";
 import type { ListDialog } from "./list-dialogs";
+import { NotifyForm } from "./notify-form";
 import { ProfileForm } from "./profile-form";
 
 const ListDialogs = lazy(() => import("./list-dialogs"));
@@ -33,6 +34,7 @@ const route = getRouteApi("/_kharcha/app/kharcha/_shell/settings/$tab");
 
 export const SETTINGS_TAB_LABELS: Record<SettingsTab, () => string> = {
 	profile: () => m.kharcha_settings_profile(),
+	notifications: () => m.kharcha_settings_notifications(),
 	categories: () => m.kharcha_settings_categories(),
 	tags: () => m.kharcha_settings_tags(),
 	methods: () => m.kharcha_settings_methods(),
@@ -52,7 +54,8 @@ const moved = (ids: ReadonlyArray<string>, index: number, by: number) => {
  * and their own: colours, icons, order, archive; deleting one leaves its expenses
  * uncategorized), tags, payment methods, and merchant rules (tried in order, the first
  * match wins). Everything is the caller's alone. Profile (Task 91): the home currency,
- * the time zone and the pay note. Notifications and recurring expenses arrive as tabs with their tasks.
+ * the time zone and the pay note. Notifications (Task 92): how each kind is emailed. Recurring
+ * expenses arrive as a tab with Task 94.
  */
 export function SettingsPage() {
 	return <SettingsView tab={route.useParams().tab} />;
@@ -92,6 +95,7 @@ export function SettingsView({ tab }: { tab: SettingsTab }) {
 			</header>
 			<div className="flex w-full max-w-3xl flex-col gap-4 px-4 py-4 sm:px-8 sm:py-6">
 				{tab === "profile" ? <ProfileForm /> : null}
+				{tab === "notifications" ? <NotifyForm /> : null}
 				{tab === "categories" ? (
 					<Section
 						description={m.kharcha_settings_categories_help()}

@@ -63,6 +63,6 @@ export const THREAD_SEARCH_DEFAULTS = { tab: "thread" } as const;
 /** An invite link's token: 32 characters of base64url (src/server/kharcha/invites/service.ts). */
 export const JOIN_TOKEN = /^[\w-]{32}$/;
 
-/** `/settings/$tab`: the profile (Task 91), the lists (Task 89); notifications and recurring arrive with theirs. */
-export const SETTINGS_TABS = ["profile", "categories", "tags", "methods", "rules"] as const;
+/** `/settings/$tab`: the profile (Task 91), notifications (Task 92), the lists (Task 89); recurring arrives with Task 94. */
+export const SETTINGS_TABS = ["profile", "notifications", "categories", "tags", "methods", "rules"] as const;
 export type SettingsTab = (typeof SETTINGS_TABS)[number];

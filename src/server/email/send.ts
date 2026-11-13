@@ -14,6 +14,8 @@ export type SendEmailOptions<K extends EmailTemplateId> = {
 	locale: Locale;
 	/** The name the email is signed with: a product's own (Taskline's) instead of the app's. */
 	siteName?: string;
+	/** Extra headers, such as `List-Unsubscribe`. */
+	headers?: Record<string, string>;
 };
 
 /**
@@ -35,5 +37,10 @@ export const sendEmail = async <K extends EmailTemplateId>(
 		locale: options.locale,
 		siteName: options.siteName ?? clientEnv.VITE_APP_TITLE,
 	});
-	return provider.send({ to: options.to, ...email, tag: options.template });
+	return provider.send({
+		to: options.to,
+		...email,
+		tag: options.template,
+		...(options.headers ? { headers: options.headers } : {}),
+	});
 };

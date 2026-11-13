@@ -196,6 +196,47 @@ test.describe("Kharcha", () => {
 		await expect(thread).not.toContainText("NPR 100.00");
 	});
 
+	test("a mention in the trip's thread notifies the other demo account (Task 92)", async ({ page, harness }) => {
+		await harness.resetRateLimits();
+		const signIn = async (email: string) => {
+			await open(page, "/app/kharcha/sign-in");
+			await page.getByRole("textbox", { name: "Email" }).fill(email);
+			await page.getByRole("textbox", { name: "Password" }).fill(E2E.password);
+			await page.getByRole("button", { name: "Log in" }).click();
+			await expect(page).toHaveURL(/\/app\/kharcha\/home$/);
+		};
+		const signOut = async () => {
+			await page.getByTestId("user-menu").first().click();
+			await page.getByTestId("sign-out").click();
+			await expect(page).toHaveURL(/\/app\/kharcha$/);
+		};
+
+		await signIn(E2E.users.kharcha.email);
+		const { groupId } = await harness.kharchaThreadIds(E2E.users.kharcha.email);
+		await open(page, `/app/kharcha/g/${groupId}`);
+		const text = page.getByTestId("kharcha-composer-text");
+		await text.click();
+		await text.pressSequentially("@Bik");
+		await expect(page.getByTestId("kharcha-mention-options")).toBeVisible();
+		await page.keyboard.press("Tab");
+		await text.pressSequentially("can you book the boat for six?");
+		await page.keyboard.press("ControlOrMeta+Enter");
+		const comment = page.getByTestId("kharcha-comment").filter({ hasText: "book the boat for six" });
+		await expect(comment).toBeVisible();
+		await expect(comment.locator("mark")).toHaveText(/^@Bikash/);
+		await signOut();
+
+		await signIn("bikash@kharcha.example.com");
+		await expect(page.getByTestId("kharcha-bell-rail").or(page.getByTestId("kharcha-bell-bar")).first()).toBeVisible();
+		const update = page.getByTestId("kharcha-update").filter({ hasText: "Asha Gurung mentioned you" });
+		await expect(update).toBeVisible();
+		await expect(update).toHaveAttribute("data-unread", "true");
+		await update.click();
+		await expect(page).toHaveURL(new RegExp(`/app/kharcha/g/${groupId}`));
+		await expect(page.getByTestId("kharcha-comment").filter({ hasText: "book the boat for six" })).toBeVisible();
+		await signOut();
+	});
+
 	test("a demo account signs in on Kharcha's page, uses the palette and signs out", async ({
 		page,
 		harness,

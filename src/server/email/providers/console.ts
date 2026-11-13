@@ -24,6 +24,7 @@ export class ConsoleProvider implements EmailProvider {
 				`To:      ${message.to}`,
 				`Subject: ${message.subject}`,
 				...(message.tag ? [`Tag:     ${message.tag}`] : []),
+				...Object.entries(message.headers ?? {}).map(([name, value]) => `${name}: ${value}`),
 				rule,
 				message.text,
 				rule,
