@@ -608,6 +608,7 @@ const KHARCHA_FUNCTIONS: Record<string, ReadonlyArray<string>> = {
 		"getKharchaBalances",
 		"getKharchaHome",
 		"completeKharchaOnboarding",
+		"updateKharchaProfile",
 	],
 	"kharcha/expenses.ts": [
 		"getKharchaExpense",
@@ -662,6 +663,7 @@ const KHARCHA_FUNCTIONS: Record<string, ReadonlyArray<string>> = {
 		"addKharchaNewGroupMember",
 		"removeKharchaGroupMember",
 		"leaveKharchaGroup",
+		"getKharchaGroupTotals",
 	],
 	"kharcha/friends.ts": [
 		"listKharchaFriends",
@@ -672,6 +674,7 @@ const KHARCHA_FUNCTIONS: Record<string, ReadonlyArray<string>> = {
 	],
 	"kharcha/threads.ts": ["listKharchaPeople", "getKharchaGroupThread", "getKharchaFriendThread"],
 	"kharcha/invites.ts": ["inviteKharchaFriend", "acceptKharchaInvite"],
+	"kharcha/settle.ts": ["getKharchaSettleUp", "remindKharchaFriend"],
 };
 // kharcha:end
 

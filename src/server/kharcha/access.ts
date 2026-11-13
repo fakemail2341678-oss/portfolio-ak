@@ -1,6 +1,6 @@
 import "@tanstack/react-start/server-only";
 import { and, eq } from "drizzle-orm";
-import { type ExpenseCan, type GroupCan, TRASH_DAYS } from "@/features/kharcha/types";
+import { type Amount, type ExpenseCan, type GroupCan, TRASH_DAYS } from "@/features/kharcha/types";
 import { ruleError } from "@/lib/errors";
 import { m } from "@/paraglide/messages";
 import type { Locale } from "@/paraglide/runtime";
@@ -49,16 +49,24 @@ export type InviteEmail = {
 	data: { inviter: string; group?: string | undefined; url: string; expiresInDays: number };
 };
 
+/** A reminder's email (Task 91), handed over after its transaction commits (src/server/kharcha/settle/service.ts). */
+export type ReminderEmail = {
+	to: string;
+	locale: Locale;
+	data: { sender: string; amounts: Amount[]; payNote?: string | undefined; url: string };
+};
+
 /**
  * What a Kharcha service works with. Tests pass their own. `imageStore` is Cloudinary's
- * (receipts, Task 89): null when uploads aren't configured. `sendInvite` sends an invite's
- * email in the background (Task 90); left out, the real one.
+ * (receipts, Task 89): null when uploads aren't configured. `sendInvite` and `sendReminder`
+ * send an invite's or a reminder's email in the background (Tasks 90 and 91); left out, the real one.
  */
 export type KharchaServices = {
 	db: Db;
 	user: KharchaUser;
 	imageStore?: ImageStore | null;
 	sendInvite?: (email: InviteEmail) => void;
+	sendReminder?: (email: ReminderEmail) => void;
 };
 
 /** The caller as a person: who they are in every expense, group and balance. */

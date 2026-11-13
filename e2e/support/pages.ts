@@ -37,7 +37,7 @@ export type ReviewedPage = {
 		| { from: "parda-party" } // @parda
 		| { from: "parda-curated"; id: "slug" | "billboard" | "collection" } // @parda
 		| { from: "kharcha-expense-id" } // @kharcha
-		| { from: "kharcha-thread"; tab?: "settings" } // @kharcha
+		| { from: "kharcha-thread"; tab?: "balances" | "totals" | "settings" } // @kharcha
 		| { from: "kharcha-invite" }; // @kharcha
 	/** The concrete path, when it isn't `route` (the not-found page, a fixed `$param`). */
 	path?: string;
@@ -532,12 +532,25 @@ export const REVIEWED_PAGES: ReadonlyArray<ReviewedPage> = [
 	// Task 89: Spend, an expense's page, and the four Settings tabs.
 	{ route: "/app/kharcha/spend", as: "kharcha" },
 	{ route: "/app/kharcha/e/$expenseId", as: "kharcha", params: { from: "kharcha-expense-id" } },
+	{ route: "/app/kharcha/settings/$tab", as: "kharcha", path: "/app/kharcha/settings/profile", label: "profile" },
 	{ route: "/app/kharcha/settings/$tab", as: "kharcha", path: "/app/kharcha/settings/categories", label: "categories" },
 	{ route: "/app/kharcha/settings/$tab", as: "kharcha", path: "/app/kharcha/settings/tags", label: "tags" },
 	{ route: "/app/kharcha/settings/$tab", as: "kharcha", path: "/app/kharcha/settings/methods", label: "methods" },
 	{ route: "/app/kharcha/settings/$tab", as: "kharcha", path: "/app/kharcha/settings/rules", label: "rules" },
 	{ route: "/app/kharcha/people", as: "kharcha" },
 	{ route: "/app/kharcha/g/$groupId", as: "kharcha", params: { from: "kharcha-thread" } },
+	{
+		route: "/app/kharcha/g/$groupId",
+		as: "kharcha",
+		params: { from: "kharcha-thread", tab: "balances" },
+		label: "balances",
+	},
+	{
+		route: "/app/kharcha/g/$groupId",
+		as: "kharcha",
+		params: { from: "kharcha-thread", tab: "totals" },
+		label: "totals",
+	},
 	{
 		route: "/app/kharcha/g/$groupId",
 		as: "kharcha",

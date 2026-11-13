@@ -1,5 +1,5 @@
 import { createServerFn } from "@tanstack/react-start";
-import { onboardingInput } from "@/features/kharcha/schema";
+import { onboardingInput, profileInput } from "@/features/kharcha/schema";
 import type { KharchaBalances, KharchaHome, KharchaMe } from "@/features/kharcha/types";
 import { zodInput } from "@/functions/_lib/validator";
 import { requireKharchaUser, withKharchaServices } from "@/middleware/kharcha";
@@ -33,3 +33,9 @@ export const completeKharchaOnboarding = createServerFn({ method: "POST" })
 	.middleware([requireKharchaUser, withKharchaServices])
 	.validator(zodInput(onboardingInput))
 	.handler(({ data, context }): Promise<void> => me.completeOnboarding(context, data));
+
+/** Settings → Profile (Task 91): the home currency, the time zone and the pay note. */
+export const updateKharchaProfile = createServerFn({ method: "POST" })
+	.middleware([requireKharchaUser, withKharchaServices])
+	.validator(zodInput(profileInput))
+	.handler(({ data, context }): Promise<KharchaMe> => me.updateProfile(context, data));

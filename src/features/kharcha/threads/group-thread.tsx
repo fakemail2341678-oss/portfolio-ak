@@ -1,12 +1,13 @@
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { getRouteApi, Link, useNavigate } from "@tanstack/react-router";
-import { ArchiveIcon, PlusIcon } from "lucide-react";
+import { ArchiveIcon, HandCoinsIcon, PlusIcon } from "lucide-react";
 import { lazy, Suspense } from "react";
 import { MAIN_CONTENT } from "@/components/layout/skip-link";
 import { Button } from "@/components/ui/button";
 import { formatDayMonth, formatNumber } from "@/lib/i18n/intl";
 import { cn } from "@/lib/utils";
 import { m } from "@/paraglide/messages";
+import { GroupBalances, SettledNotice } from "../groups/group-balances";
 import { GROUP_KIND_LABELS } from "../groups/labels";
 import { KharchaEmpty } from "../kit/empty";
 import { GroupPlate } from "../kit/group-plate";
@@ -19,13 +20,15 @@ import { ThreadLines } from "./thread-lines";
 
 const ExpenseSheet = lazy(() => import("../expenses/expense-sheet"));
 const GroupSettings = lazy(() => import("../groups/group-settings"));
+const GroupTotals = lazy(() => import("../groups/group-totals"));
 const route = getRouteApi("/_kharcha/app/kharcha/_shell/g/$groupId");
 
 /**
- * A group's page (Task 90): its header (the plate, the name, the caller's balance in it,
- * one primary action: Add expense), the thread or the settings by `?tab=`, and the expense
- * panel over it. A former member reads the history up to leaving; an archived group takes
- * nothing new.
+ * A group's page (Tasks 90 and 91): its header (the plate, the name, the caller's balance in
+ * it, one primary action: Settle up while the caller owes, else Add expense), the thread,
+ * balances, totals or settings by `?tab=`, and the expense panel over it. A former member
+ * reads the history up to leaving; an archived group takes nothing new. Once everyone is
+ * settled, its owner is offered to archive it.
  */
 export function GroupThreadPage() {
 	const { groupId } = route.useParams();
@@ -37,8 +40,10 @@ export function GroupThreadView({ groupId, search }: { groupId: string; search: 
 	const userId = useKharchaUserId();
 	const navigate = useNavigate();
 	const { data } = useSuspenseQuery(kharchaGroupThreadQueryOptions(userId, groupId));
-	const { addExpense } = useKharchaActions();
+	const { addExpense, settleUp } = useKharchaActions();
 	const { group } = data;
+	const owes = group.balances.some((balance) => balance.amountMinor < 0);
+	const open = group.nets.length > 0;
 	const close = () =>
 		navigate({
 			from: "/app/kharcha/g/$groupId",
@@ -57,17 +62,37 @@ export function GroupThreadView({ groupId, search }: { groupId: string; search: 
 					</div>
 					<div className="flex items-center gap-3">
 						<BalancePill balances={group.balances} />
+						{group.can.edit && open ? (
+							<Button
+								variant={owes ? "default" : "outline"}
+								onClick={() => settleUp({ groupId: group.id })}
+								data-testid="kharcha-group-settle"
+							>
+								<HandCoinsIcon aria-hidden />
+								<span className="max-sm:sr-only">{m.kharcha_create_settle()}</span>
+							</Button>
+						) : null}
 						{group.can.edit ? (
-							<Button onClick={() => addExpense({ groupId: group.id })} data-testid="kharcha-group-add">
+							<Button
+								variant={owes && open ? "outline" : "default"}
+								onClick={() => addExpense({ groupId: group.id })}
+								data-testid="kharcha-group-add"
+							>
 								<PlusIcon aria-hidden />
 								<span className="max-sm:sr-only">{m.kharcha_create_expense()}</span>
 							</Button>
 						) : null}
 					</div>
 				</div>
-				<nav aria-label={m.kharcha_group_tabs()} className="-mb-px flex gap-1">
+				<nav aria-label={m.kharcha_group_tabs()} className="-mb-px flex gap-1 overflow-x-auto">
 					<TabLink groupId={group.id} tab="thread" current={search.tab}>
 						{m.kharcha_group_tab_thread()}
+					</TabLink>
+					<TabLink groupId={group.id} tab="balances" current={search.tab}>
+						{m.kharcha_group_tab_balances()}
+					</TabLink>
+					<TabLink groupId={group.id} tab="totals" current={search.tab}>
+						{m.kharcha_group_tab_totals()}
 					</TabLink>
 					<TabLink groupId={group.id} tab="settings" current={search.tab}>
 						{m.kharcha_group_tab_settings()}
@@ -85,9 +110,16 @@ export function GroupThreadView({ groupId, search }: { groupId: string; search: 
 						{group.left ? m.kharcha_group_left_notice() : m.kharcha_group_archived_notice()}
 					</p>
 				) : null}
+				{data.items.length > 0 && search.tab !== "settings" ? <SettledNotice group={group} userId={userId} /> : null}
 				{search.tab === "settings" ? (
 					<Suspense fallback={null}>
 						<GroupSettings group={group} userId={userId} />
+					</Suspense>
+				) : search.tab === "balances" ? (
+					<GroupBalances group={group} />
+				) : search.tab === "totals" ? (
+					<Suspense fallback={null}>
+						<GroupTotals groupId={group.id} userId={userId} />
 					</Suspense>
 				) : data.items.length === 0 ? (
 					<KharchaEmpty
@@ -107,6 +139,7 @@ export function GroupThreadView({ groupId, search }: { groupId: string; search: 
 						items={data.items}
 						more={data.more}
 						label={m.kharcha_thread_label({ name: group.name })}
+						onPayment={group.can.edit ? (paymentId) => settleUp({ paymentId }) : undefined}
 						expenseLink={(expenseId) =>
 							({ className, children }) => (
 								<Link
@@ -168,7 +201,7 @@ function TabLink({
 			search={{ tab }}
 			aria-current={active ? "page" : undefined}
 			className={cn(
-				"kh-ease rounded-t-md border-b-2 px-3 py-2 font-medium text-sm outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50",
+				"kh-ease shrink-0 rounded-t-md border-b-2 px-2.5 py-2 font-medium text-sm outline-none sm:px-3 focus-visible:ring-[3px] focus-visible:ring-ring/50",
 				active ? "border-kh-act text-kh-ink" : "border-transparent text-kh-muted hover:text-kh-ink",
 			)}
 			data-testid={`kharcha-group-tab-${tab}`}

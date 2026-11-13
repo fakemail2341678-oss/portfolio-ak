@@ -25,13 +25,14 @@ import {
 	khProfile,
 } from "@/server/db/schema";
 import type { Db, Tx } from "@/server/db/types";
-import { type KharchaServices, type Me, resolveGroup, resolveMe } from "../access";
+import { type KharchaServices, type Me, resolveFriend, resolveGroup, resolveMe } from "../access";
 import { pairOf } from "../activity";
 import { activityLines } from "../activity-lines";
 import { friendsOf, oneFriend } from "../friends/service";
 import { groupView, listGroups } from "../groups/service";
 import { byCurrency } from "../ledger";
 import { loadPeople } from "../people";
+import { payNoteOf, remindState } from "../settle/service";
 import { spendRows } from "../spend/service";
 
 /**
@@ -253,7 +254,15 @@ export async function getFriendThread({ db, user }: KharchaServices, personId: s
 			notInArray(khActivity.kind, CARDED),
 		);
 		const { items, more } = await threadItems(tx, me, { expenses, payments, activity });
-		return { friend, items, more, groups: await sharedGroups(tx, me, personId) };
+		const { person } = await resolveFriend(tx, me, personId);
+		return {
+			friend,
+			items,
+			more,
+			groups: await sharedGroups(tx, me, personId),
+			remind: await remindState(tx, me, user, person),
+			payNote: await payNoteOf(tx, personId),
+		};
 	});
 }
 

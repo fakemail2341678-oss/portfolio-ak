@@ -16,7 +16,7 @@ const onboardingForm = z.object({ homeCurrency: z.enum(CURRENCIES), timeZone, st
 type OnboardingValues = z.infer<typeof onboardingForm>;
 
 /** The zones this runtime knows, with the given ones first. */
-const zones = (...first: string[]): string[] => {
+export const zones = (...first: string[]): string[] => {
 	const all = typeof Intl.supportedValuesOf === "function" ? Intl.supportedValuesOf("timeZone") : [];
 	return [...new Set([...first, ...all])];
 };

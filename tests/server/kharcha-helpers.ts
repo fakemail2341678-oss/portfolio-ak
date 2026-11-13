@@ -10,7 +10,10 @@ import * as receipts from "@/server/kharcha/receipts/service";
 
 /** Shared by Kharcha's server tests (docs/guides/kharcha.md "Testing"). */
 
-/** A caller of Kharcha's services; receipts need an `imageStore` (tests/utils/fake-cloudinary.ts). */
+/**
+ * A caller of Kharcha's services; receipts need an `imageStore` (tests/utils/fake-cloudinary.ts).
+ * Reminders' emails go nowhere unless a test passes its own `sendReminder`.
+ */
 export const caller = (
 	db: Db,
 	id: string,
@@ -19,6 +22,7 @@ export const caller = (
 	db,
 	user: { id, isGuest: guest, permissions },
 	imageStore,
+	sendReminder: () => undefined,
 });
 
 /** A receipt the caller uploaded (signed, put on the fake Cloudinary, confirmed): its attachment id. */

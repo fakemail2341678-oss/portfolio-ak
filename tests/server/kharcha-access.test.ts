@@ -2,12 +2,14 @@ import { beforeAll, beforeEach, describe, expect, it } from "vitest";
 import * as expenses from "@/server/kharcha/expenses/service";
 import * as friends from "@/server/kharcha/friends/service";
 import * as groups from "@/server/kharcha/groups/service";
+import * as totals from "@/server/kharcha/groups/totals";
 import * as home from "@/server/kharcha/home/service";
 import * as invites from "@/server/kharcha/invites/service";
 import * as lists from "@/server/kharcha/lists/service";
 import * as me from "@/server/kharcha/me/service";
 import * as payments from "@/server/kharcha/payments/service";
 import * as receipts from "@/server/kharcha/receipts/service";
+import * as settle from "@/server/kharcha/settle/service";
 import * as spend from "@/server/kharcha/spend/service";
 import * as threads from "@/server/kharcha/threads/service";
 import { createFakeCloudinary } from "../utils/fake-cloudinary";
@@ -539,6 +541,37 @@ const OPERATIONS: Operation[] = [
 		name: "addNewMember",
 		run: (w, by) => groups.addNewMember(as(by), { groupId: w.group, name: "Newcomer" }),
 		expect: only({ owner: "ok", member: "ok", former: "FORBIDDEN" }),
+	},
+	// Task 91: balances and settling up.
+	{
+		name: "getSettleUp: in the group",
+		run: (w, by) => settle.getSettleUp(as(by), { groupId: w.group }),
+		expect: only({ owner: "ok", member: "ok", former: "FORBIDDEN" }),
+	},
+	{
+		name: "getSettleUp: with the friend",
+		run: (w, by) => settle.getSettleUp(as(by), { groupId: null, personId: w.people.friend }),
+		expect: only({ owner: "ok" }),
+	},
+	{
+		name: "getSettleUp: everything of the caller's",
+		run: (_w, by) => settle.getSettleUp(as(by), { groupId: null }),
+		expect: everyone(),
+	},
+	{
+		name: "remindFriend (the friend owes the owner)",
+		run: (w, by) => settle.remindFriend(as(by), w.people.friend),
+		expect: only({ owner: "ok" }),
+	},
+	{
+		name: "getGroupTotals",
+		run: (w, by) => totals.getGroupTotals(as(by), w.group),
+		expect: only({ owner: "ok", member: "ok", former: "ok" }),
+	},
+	{
+		name: "updateProfile (the caller's own)",
+		run: (_w, by) => me.updateProfile(as(by), { homeCurrency: "USD", timeZone: "Asia/Kolkata", payNote: "Cash" }),
+		expect: everyone(),
 	},
 ];
 

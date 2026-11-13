@@ -45,6 +45,7 @@ export interface EmailPropsMap {
 	"taskline-digest": taskline.DailyDigestProps; // @taskline
 	"parda-digest": parda.EpisodeDigestProps; // @parda
 	"kharcha-invite": kharcha.KharchaInviteProps; // @kharcha
+	"kharcha-reminder": kharcha.KharchaReminderProps; // @kharcha
 }
 
 export type EmailTemplateId = keyof EmailPropsMap;
@@ -213,6 +214,19 @@ export const emailTemplates: EmailRegistry = {
 			group: "Pokhara trip",
 			url: "https://example.com/app/kharcha/join/Zk3pQ9xR2mT7vB4nL8sW1yC6hJ0dF5gA",
 			expiresInDays: 14,
+		},
+	},
+	"kharcha-reminder": {
+		component: kharcha.KharchaReminder,
+		subject: ({ locale, siteName, sender }) => m.email_kharcha_reminder_subject({ sender, site: siteName }, { locale }),
+		sample: {
+			sender: "Asha Gurung",
+			amounts: [
+				{ currency: "NPR", amountMinor: 186_667 },
+				{ currency: "USD", amountMinor: 1_250 },
+			],
+			payNote: "eSewa 9801234567",
+			url: "https://example.com/app/kharcha/f/3f1c2a9e-8b7d-4c6e-9a5f-1d2e3c4b5a69",
 		},
 	},
 	// kharcha:end

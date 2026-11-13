@@ -6,6 +6,7 @@ import type {
 	FriendView,
 	GroupSummary,
 	GroupThread,
+	GroupTotals,
 	GroupView,
 	JoinInvite,
 	KharchaBalances,
@@ -17,6 +18,7 @@ import type {
 	PaymentView,
 	PeoplePage,
 	ReceiptDraftView,
+	SettleUp,
 	SpendPage,
 } from "../../src/features/kharcha/types";
 import type { Session } from "../../src/lib/session";
@@ -614,6 +616,47 @@ export const sampleKharchaFriendThread: FriendThread = {
 			},
 		},
 	],
+	remind: { available: false, lastAt: null },
+	payNote: "eSewa 9801234567",
+};
+
+/** The settle-up dialog in the trip (Task 91): its simplified suggestions, and Asha's pay note. */
+export const sampleKharchaSettleUp: SettleUp = {
+	group: { id: "g-trip", name: "Pokhara trip", currency: "NPR" },
+	choices: [
+		{ groupId: "g-trip", group: "Pokhara trip", fromId: bikash.id, toId: me.id, amountMinor: 186_667, currency: "NPR" },
+		{
+			groupId: "g-trip",
+			group: "Pokhara trip",
+			fromId: bikash.id,
+			toId: asha.id,
+			amountMinor: 433_333,
+			currency: "NPR",
+		},
+	],
+	people: [me, asha, bikash],
+	pickable: [me.id, asha.id, bikash.id],
+	payNotes: { [asha.id]: "eSewa 9801234567" },
+};
+
+/** The trip's Totals tab (Task 91). */
+export const sampleKharchaGroupTotals: GroupTotals = {
+	currencies: [
+		{
+			currency: "NPR",
+			spentMinor: 1_070_000,
+			members: [
+				{ personId: bikash.id, paidMinor: 0, shareMinor: 620_000 },
+				{ personId: me.id, paidMinor: 450_000, shareMinor: 263_333 },
+				{ personId: asha.id, paidMinor: 620_000, shareMinor: 186_667 },
+			],
+			mine: [
+				{ category: { id: "c-travel", name: "Travel", icon: "bus", color: "blue" }, shareMinor: 150_000 },
+				{ category: { id: "c-food", name: "Food and drink", icon: "utensils", color: "orange" }, shareMinor: 113_333 },
+			],
+		},
+	],
+	people: [me, asha, bikash],
 };
 
 export const sampleKharchaInvite: JoinInvite = {

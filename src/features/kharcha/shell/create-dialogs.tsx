@@ -40,7 +40,7 @@ export default function CreateDialog({
 	userId,
 	onClose,
 }: {
-	action: Exclude<CreateAction, "expense" | "split">;
+	action: Exclude<CreateAction, "expense" | "split" | "settle">;
 	me: KharchaMe;
 	userId: string;
 	onClose: () => void;

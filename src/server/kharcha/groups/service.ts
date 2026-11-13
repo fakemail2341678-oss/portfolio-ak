@@ -26,7 +26,7 @@ import {
 import { fieldChanges, recordActivity } from "../activity";
 import { friendsAmong } from "../expenses/repository";
 import { befriendNew } from "../friends/service";
-import { byCurrency, groupNetOf, groupNets, netsByGroup } from "../ledger";
+import { byCurrency, groupNetOf, groupNets, groupPairs, netsByGroup } from "../ledger";
 import { loadPeople } from "../people";
 import { bumpRevs, saveVersioned } from "../rev";
 import { amountList, assertCurrencyOffered, currentMemberIds } from "../rules";
@@ -110,18 +110,7 @@ export async function groupView(tx: Tx, me: Me, access: GroupAccess): Promise<Gr
 	const order = new Map(rows.map((row, index) => [row.personId, index]));
 	const all = await groupNets(tx, group.id);
 	const settings = settingsOf(group.settings);
-	const nets = [...new Set(all.map((net) => net.currency))].sort().map((currency) => {
-		const ofCurrency = all
-			.filter((net) => net.currency === currency)
-			.sort((a, b) => (order.get(a.personId) ?? 0) - (order.get(b.personId) ?? 0));
-		return {
-			currency,
-			people: ofCurrency.map((net) => ({ personId: net.personId, netMinor: net.netMinor })),
-			suggested: settings.simplify
-				? simplify(ofCurrency.map((net) => ({ person: net.personId, net: net.netMinor })))
-				: [],
-		};
-	});
+	const nets = await settlements(tx, group.id, settings.simplify, all, order);
 	const mine = all
 		.filter((net) => net.personId === me.personId)
 		.map((net) => ({ currency: net.currency, amountMinor: net.netMinor }))
@@ -141,6 +130,58 @@ export async function groupView(tx: Tx, me: Me, access: GroupAccess): Promise<Gr
 		nets,
 		can: access.can,
 	};
+}
+
+/**
+ * A group's nets per currency and how to settle them (Task 91): with `simplify`, the fewest
+ * payments (largest debtor to largest creditor); without, who owes whom pair by pair. Both
+ * in the members' order, so the same ledger always reads the same.
+ */
+async function settlements(
+	tx: Tx,
+	groupId: string,
+	simplified: boolean,
+	all: Awaited<ReturnType<typeof groupNets>>,
+	order: ReadonlyMap<string, number>,
+): Promise<GroupView["nets"]> {
+	const rank = (personId: string) => order.get(personId) ?? Number.MAX_SAFE_INTEGER;
+	const pairs = simplified ? [] : await groupPairs(tx, groupId);
+	return [...new Set(all.map((net) => net.currency))].sort().map((currency) => {
+		const ofCurrency = all
+			.filter((net) => net.currency === currency)
+			.sort((a, b) => rank(a.personId) - rank(b.personId));
+		return {
+			currency,
+			people: ofCurrency.map((net) => ({ personId: net.personId, netMinor: net.netMinor })),
+			suggested: simplified
+				? simplify(ofCurrency.map((net) => ({ person: net.personId, net: net.netMinor })))
+				: pairs
+						.filter((pair) => pair.currency === currency)
+						.sort((a, b) => rank(a.from) - rank(b.from) || rank(a.to) - rank(b.to))
+						.map(({ from, to, amount }) => ({ from, to, amount })),
+		};
+	});
+}
+
+/** A group's current members in their order, and how to settle it: what settle-up offers (Task 91). */
+export async function groupSettlementsOf(
+	tx: Tx,
+	group: KhGroupRow,
+): Promise<{ memberIds: string[]; nets: GroupView["nets"] }> {
+	const rows = await tx
+		.select({ personId: khGroupMember.personId, leftAt: khGroupMember.leftAt })
+		.from(khGroupMember)
+		.where(eq(khGroupMember.groupId, group.id))
+		.orderBy(asc(khGroupMember.joinedAt), asc(khGroupMember.personId));
+	const order = new Map(rows.map((row, index) => [row.personId, index]));
+	const nets = await settlements(
+		tx,
+		group.id,
+		settingsOf(group.settings).simplify,
+		await groupNets(tx, group.id),
+		order,
+	);
+	return { memberIds: rows.filter((row) => row.leftAt === null).map((row) => row.personId), nets };
 }
 
 export async function getGroup({ db, user }: KharchaServices, groupId: string): Promise<GroupView> {

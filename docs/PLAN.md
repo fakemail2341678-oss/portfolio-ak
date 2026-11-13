@@ -3743,7 +3743,7 @@ As 12.1, with these differences:
 | 88 | Shell, brand, landing, auth pages, Home, onboarding, the create menu | high | Done |
 | 89 | Expenses and receipts: add and edit, the expense panel, categories, tags, methods, rules, a first Spend list | xhigh | Done |
 | 90 | Friends, groups and splitting: people, invites and joining, groups, the split editor, threads, freshness | xhigh | Done |
-| 91 | Balances and settling up: balances everywhere, settle up, simplify, remind | high | Planned |
+| 91 | Balances and settling up: balances everywhere, settle up, simplify, remind | high | Done |
 | 92 | Conversations, notifications and email: comments, mentions, reactions, unread, digests, the daily job | high | Planned |
 | 93 | Spend: the search language, filters, saved searches, views and charts, bulk actions, CSV import and export | xhigh | Planned |
 | 94 | Budgets, recurring expenses and insights | high | Planned |
@@ -4238,21 +4238,31 @@ Kharcha's data, money core, access and server, tested on PGlite, with no UI; Exp
 - run `pnpm db:migrate` on Neon (`0052_kharcha_invites`);
 - the entry budget has 0.7 kB left: Tasks 91–94 add routes, so it needs a decision before then.
 
-### Task 91: Balances and settling up (planned)
+### Task 91: Balances and settling up (done)
 
-- **Balances** everywhere:
-  - Home's totals per currency;
-  - each friend, overall and per group;
-  - each group: every member's net, pairwise or simplified;
-  - a group's Totals tab: spent per member and per category.
-- **Settle up:**
-  - full or partial; pick the person, with simplify's suggestions;
-  - a method label, a note and a date;
-  - another currency at a typed rate;
-  - payment cards; edit, and delete to the trash.
-- **Remind:** an email to users and invited contacts, once a day per friend, behind an admin switch. Your "pay me" note is shown to friends.
-- **Settled states:** a group that is all settled offers to archive; a friend at zero shows as settled.
-- **Tests:** balances after every kind of change, simplify, other currencies, partial payments, the remind limits; e2e: settle up in a group.
+**Done** (decision 0285; the guide's "Balances and settling up").
+
+**What changed:**
+- **Money core:** `money/convert.ts` (`convertAt`: an amount at a typed rate in the other currency's minor units, BigInt, half up). The payments service refuses a paid amount the rate doesn't give, or the same currency (`assertPaidAtRate`).
+- **Balances:** `groupPairs` in the ledger (who owes whom in a group, netted per pair); a group's `nets[].suggested` is the fewest payments with simplify on, the pairs with it off. Home's to-dos add "debts to settle" (each friend the caller owes, up to 5).
+- **Settle up** (`src/server/kharcha/settle/service.ts`, `src/functions/kharcha/settle.ts`): `getKharchaSettleUp` gives the open debts as choices (a group's suggestions; a friend's balance outside groups and in each open group both are in; or every balance of the caller's), who can be picked, and pay notes. The lazy dialog (`settle/settle-dialog.tsx`): a choice or "someone else", a partial amount said in words, another currency at a typed rate with what was handed over shown live, a method (the caller's methods suggested), a note and a date, the recipient's pay note; a payment card opens it to edit, delete sends it to the trash with an Undo. Settle up joins the + menu and the palette.
+- **Remind** (`remindKharchaFriend`): the `kharcha-reminder` email (amounts, the sender's pay note, a link) to an account's or a contact's address, in the recipient's saved language else the sender's; once a day per friend through a `friend.reminded` activity line (shown in the thread); refused for guests, with reminders off, for a blocked sender, with nothing owed or no address.
+- **Pages:** a group's **Balances** (`?tab=balances`: members' nets in words, the suggestions with a Settle button each, the archive offer once all are settled) and **Totals** (`?tab=totals`, `getKharchaGroupTotals`, lazy, prefetched by the loader: spent, each member's share and what they paid, the caller's share by their own category); **Settings → Profile** (`/settings/profile`, `updateKharchaProfile`: the pay note, the home currency, the time zone; it also saves the email language, as onboarding now does). The headers' one primary action follows the state: Settle up while the caller owes, Remind while a friend owes them, else Add expense; the rest in the friend's More menu.
+- **Tests:** `tests/server/kharcha-settle.test.ts` (9), `convertAt` in `kharcha-money.test.ts`, six new access-matrix rows (62 operations), the guard test's `settle.ts` and two new functions; "Kharcha/Settle" stories (5); e2e: a guest settles up in their trip (a suggestion, partly), then edits and deletes the payment; three new reviewed pages (Balances, Totals, Profile); 79 `kharcha_*` and `email_kharcha_*` messages in both languages.
+- **Bundle:** the entry is 299.5 kB of 300 (299.3 before: no route file was added).
+
+**Deviations:**
+- Reminders need no table: the activity line is the record and the limit (0285). The cross-kind "one email a day" for people without an account, and unsubscribing, stay Task 92's.
+- A group's totals by category are the caller's own share by their own categories, since categories are private (0285).
+- Simplify off now suggests who owes whom pair by pair, where it suggested nothing.
+- The design pass was the e2e review (axe, overflow, CLS, hydration at 3 widths × 2 languages × 2 themes) and the stories in both projects, not an impeccable critique with screenshots. It found and fixed a Nepali hydration mismatch (currency names differ between Node and Chrome) and two unnamed scroll regions.
+- The guest's sample didn't grow: it already holds a payment, and its friends have no addresses to remind.
+
+**Gates:** typecheck, check, knip, `i18n:check`, the build and the bundle check, `build-storybook` (Kharcha's stories) green. Tests on what changed: the Kharcha server and unit files, the guard, route-SEO, strip-marker, email and i18n tests (15 files, 306 tests); the Kharcha stories in both Storybook projects (29 each); e2e for Kharcha (the review and flows: 242 passed and 15 failed, then those 15 again after fixes: 13 passed, then the totals page's 12 after naming its scroll regions: 12 passed).
+
+**For the owner:**
+- no migration this task;
+- the entry budget has 0.5 kB left: Tasks 92–94 add routes, so it needs a decision before then.
 
 ### Task 92: Conversations, notifications and email (planned)
 

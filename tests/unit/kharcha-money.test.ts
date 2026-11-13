@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { convertAt } from "@/features/kharcha/money/convert";
 import { expenseDebts, netBalances, pairBalances, paymentDebt, totalDebt } from "@/features/kharcha/money/ledger";
 import { simplify } from "@/features/kharcha/money/simplify";
 import {
@@ -463,5 +464,25 @@ describe("properties over random expenses", () => {
 				).toBe(true);
 			}
 		}
+	});
+});
+
+describe("convertAt (a payment in another currency, Task 91)", () => {
+	it("converts in integers at the typed rate, rounding half up to the other currency's digits", () => {
+		// NPR 1,000.00 at 0.625 rupees: INR 625.00.
+		expect(convertAt(100_000, 2, 2, "0.625")).toBe(62_500);
+		// NPR 1,000.00 at 1.1 yen: ¥1,100 (yen have no minor digits).
+		expect(convertAt(100_000, 2, 0, "1.1")).toBe(1_100);
+		// ¥1,100 at 0.9 rupees: NPR 990.00.
+		expect(convertAt(1_100, 0, 2, "0.9")).toBe(99_000);
+		// KWD has three digits: USD 10.00 at 0.30725 dinars is KWD 3.073 (3.0725 rounds up).
+		expect(convertAt(1_000, 2, 3, "0.30725")).toBe(3_073);
+		// Half a paisa rounds up; just under it rounds down.
+		expect(convertAt(1, 2, 2, "0.5")).toBe(1);
+		expect(convertAt(1, 2, 2, "0.49999999")).toBe(0);
+		// A whole rate, eight decimals, and amounts past floating point's exact integers.
+		expect(convertAt(250, 2, 2, "133")).toBe(33_250);
+		expect(convertAt(100, 2, 2, "0.00000001")).toBe(0);
+		expect(convertAt(9_007_199_254_740, 2, 2, "1000")).toBe(9_007_199_254_740_000);
 	});
 });

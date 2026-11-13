@@ -8,11 +8,15 @@ import { type KharchaServices, type Me, resolveMe } from "../access";
 import { activityLines } from "../activity-lines";
 import { duplicatesOf } from "../expenses/repository";
 import { byCurrency, pairBalances } from "../ledger";
+import { loadPeople } from "../people";
 import { draftsOf } from "../receipts/service";
 import { spendRows } from "../spend/service";
 
 /** How many lines Home's "Recent" shows. */
 export const RECENT_LIMIT = 8;
+
+/** How many friends the caller owes Home lists as debts to settle (Task 91). */
+export const SETTLE_LIMIT = 5;
 
 /** How many possible duplicates Home lists at most, and how far back it looks for them. */
 export const DUPLICATES_LIMIT = 5;
@@ -94,8 +98,25 @@ export async function getHome(services: KharchaServices): Promise<KharchaHome> {
 	const current = today.slice(0, 7);
 	const previous = addMonths(current, -1);
 
+	// Debts to settle (Task 91): each friend the caller owes, in all, per currency.
+	const owing = new Map<string, Amount[]>();
+	for (const pair of pairs) {
+		if (pair.amountMinor >= 0) continue;
+		owing.set(pair.personId, [
+			...(owing.get(pair.personId) ?? []),
+			{ currency: pair.currency, amountMinor: -pair.amountMinor },
+		]);
+	}
+	const owingIds = [...owing.keys()].slice(0, SETTLE_LIMIT);
+	const settle = (await loadPeople(db, me.personId, owingIds)).map(
+		(person): HomeTodo => ({ kind: "settle", person, owe: (owing.get(person.id) ?? []).sort(byCurrency) }),
+	);
+	const todos = await todosOf(services, me, today);
+	const receipts = todos.filter((todo) => todo.kind === "receipt");
+	const others = todos.filter((todo) => todo.kind !== "receipt");
+
 	return {
-		todos: await todosOf(services, me, today),
+		todos: [...receipts, ...settle, ...others],
 		balances: { owed: amounts(owed), owe: amounts(owe) },
 		openWith: open.size,
 		month: { current, previous, spent: await monthSpending(db, me.personId, current, previous) },

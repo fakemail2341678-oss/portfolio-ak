@@ -21,6 +21,7 @@ import {
 	archiveKharchaGroup,
 	createKharchaGroup,
 	getKharchaGroup,
+	getKharchaGroupTotals,
 	leaveKharchaGroup,
 	listKharchaGroups,
 	removeKharchaGroupMember,
@@ -29,21 +30,39 @@ import {
 import { acceptKharchaInvite, inviteKharchaFriend } from "@/functions/kharcha/invites";
 import { getKharchaInvite } from "@/functions/kharcha/join";
 import { getKharchaLists } from "@/functions/kharcha/lists";
-import { completeKharchaOnboarding, getKharchaHome, getKharchaMe, getKharchaRev } from "@/functions/kharcha/me";
+import {
+	completeKharchaOnboarding,
+	getKharchaHome,
+	getKharchaMe,
+	getKharchaRev,
+	updateKharchaProfile,
+} from "@/functions/kharcha/me";
+import {
+	createKharchaPayment,
+	deleteKharchaPayment,
+	getKharchaPayment,
+	restoreKharchaPayment,
+	updateKharchaPayment,
+} from "@/functions/kharcha/payments";
 import { createKharchaDraft, deleteKharchaDraft, getKharchaUploadSettings } from "@/functions/kharcha/receipts";
+import { getKharchaSettleUp, remindKharchaFriend } from "@/functions/kharcha/settle";
 import { getKharchaFriendThread, getKharchaGroupThread, listKharchaPeople } from "@/functions/kharcha/threads";
 import type {
 	AddFriendInput,
 	CreateExpenseInput,
 	CreateGroupInput,
+	CreatePaymentInput,
 	FriendEmailInput,
 	InviteInput,
 	NewGroupMemberInput,
 	OnboardingInput,
 	PeopleInput,
+	ProfileInput,
+	SettleUpInput,
 	UpdateExpenseInput,
 	UpdateFriendInput,
 	UpdateGroupInput,
+	UpdatePaymentInput,
 } from "./schema";
 import type { SpendListInput } from "./search";
 
@@ -66,6 +85,9 @@ export const kharchaKeys = {
 	groups: (userId: string) => [...kharchaKeys.user(userId), "groups"] as const,
 	groupThread: (userId: string, groupId: string) => [...kharchaKeys.user(userId), "group", groupId] as const,
 	friendThread: (userId: string, personId: string) => [...kharchaKeys.user(userId), "friend", personId] as const,
+	groupTotals: (userId: string, groupId: string) => [...kharchaKeys.user(userId), "group-totals", groupId] as const,
+	settleUp: (userId: string, input: SettleUpInput) => [...kharchaKeys.user(userId), "settle-up", input] as const,
+	payment: (userId: string, paymentId: string) => [...kharchaKeys.user(userId), "payment", paymentId] as const,
 	/** Outside `user`: a visitor without a session reads it too. */
 	join: (token: string) => [...kharchaKeys.all, "join", token] as const,
 	/** Outside `user`: polling it mustn't refetch itself. */
@@ -121,6 +143,24 @@ export const kharchaFriendThreadQueryOptions = (userId: string, personId: string
 	queryOptions({
 		queryKey: kharchaKeys.friendThread(userId, personId),
 		queryFn: () => getKharchaFriendThread({ data: { personId } }),
+	});
+
+/** A group's Totals tab (Task 91). */
+export const kharchaGroupTotalsQueryOptions = (userId: string, groupId: string) =>
+	queryOptions({
+		queryKey: kharchaKeys.groupTotals(userId, groupId),
+		queryFn: () => getKharchaGroupTotals({ data: { groupId } }),
+	});
+
+/** The settle-up dialog's choices (Task 91): in a group, with a friend, or every open balance. */
+export const kharchaSettleUpQueryOptions = (userId: string, input: SettleUpInput) =>
+	queryOptions({ queryKey: kharchaKeys.settleUp(userId, input), queryFn: () => getKharchaSettleUp({ data: input }) });
+
+/** One payment, to edit (a card's "Edit"). */
+export const kharchaPaymentQueryOptions = (userId: string, paymentId: string) =>
+	queryOptions({
+		queryKey: kharchaKeys.payment(userId, paymentId),
+		queryFn: () => getKharchaPayment({ data: { paymentId } }),
 	});
 
 /** An invite link's public lookup (`/join/$token`). */
@@ -240,6 +280,32 @@ export const kharchaMutations = {
 	removeMember: (queryClient: QueryClient, userId: string) =>
 		mutationOptions({
 			mutationFn: (data: { groupId: string; personId: string }) => removeKharchaGroupMember({ data }),
+			onSuccess: () => refreshKharcha(queryClient, userId),
+		}),
+	createPayment: (queryClient: QueryClient, userId: string) =>
+		mutationOptions({
+			mutationFn: (data: CreatePaymentInput) => createKharchaPayment({ data }),
+			onSuccess: () => refreshKharcha(queryClient, userId),
+		}),
+	updatePayment: (queryClient: QueryClient, userId: string) =>
+		mutationOptions({
+			mutationFn: (data: UpdatePaymentInput) => updateKharchaPayment({ data }),
+			onSuccess: () => refreshKharcha(queryClient, userId),
+		}),
+	trashPayment: (queryClient: QueryClient, userId: string) =>
+		mutationOptions({
+			mutationFn: ({ paymentId, restore }: { paymentId: string; restore: boolean }) =>
+				restore ? restoreKharchaPayment({ data: { paymentId } }) : deleteKharchaPayment({ data: { paymentId } }),
+			onSuccess: () => refreshKharcha(queryClient, userId),
+		}),
+	remind: (queryClient: QueryClient, userId: string) =>
+		mutationOptions({
+			mutationFn: (personId: string) => remindKharchaFriend({ data: { personId } }),
+			onSuccess: () => refreshKharcha(queryClient, userId),
+		}),
+	updateProfile: (queryClient: QueryClient, userId: string) =>
+		mutationOptions({
+			mutationFn: (data: ProfileInput) => updateKharchaProfile({ data }),
 			onSuccess: () => refreshKharcha(queryClient, userId),
 		}),
 	leaveGroup: (queryClient: QueryClient, userId: string) =>

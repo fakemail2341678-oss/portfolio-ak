@@ -1,4 +1,12 @@
-import { type LucideIcon, ReceiptTextIcon, ScanLineIcon, SplitIcon, UserPlusIcon, UsersIcon } from "lucide-react";
+import {
+	HandCoinsIcon,
+	type LucideIcon,
+	ReceiptTextIcon,
+	ScanLineIcon,
+	SplitIcon,
+	UserPlusIcon,
+	UsersIcon,
+} from "lucide-react";
 import type { ReactNode } from "react";
 import {
 	DropdownMenu,
@@ -14,6 +22,7 @@ import { CREATE_ACTIONS, type CreateAction, useKharchaActions } from "./actions"
 export const CREATE_ITEMS: Record<CreateAction, { icon: LucideIcon; label: () => string }> = {
 	expense: { icon: ReceiptTextIcon, label: () => m.kharcha_create_expense() },
 	split: { icon: SplitIcon, label: () => m.kharcha_create_split() },
+	settle: { icon: HandCoinsIcon, label: () => m.kharcha_create_settle() },
 	receipt: { icon: ScanLineIcon, label: () => m.kharcha_create_receipt() },
 	friend: { icon: UserPlusIcon, label: () => m.kharcha_create_friend() },
 	group: { icon: UsersIcon, label: () => m.kharcha_create_group() },
@@ -21,7 +30,7 @@ export const CREATE_ITEMS: Record<CreateAction, { icon: LucideIcon; label: () =>
 
 /**
  * The + menu (PLAN 14.5 "UX"): what can be started from anywhere, with what exists so far.
- * Settle up arrives with its task (91). `children` is the
+ * `children` is the
  * trigger: Home's button on a laptop, the floating + on a phone.
  */
 export function CreateMenu({

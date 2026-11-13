@@ -1,9 +1,10 @@
 import "@tanstack/react-start/server-only";
 import { eq, sql } from "drizzle-orm";
-import type { OnboardingInput } from "@/features/kharcha/schema";
+import type { OnboardingInput, ProfileInput } from "@/features/kharcha/schema";
 import { offeredCurrencies } from "@/features/kharcha/settings";
 import type { Amount, KharchaBalances, KharchaMe } from "@/features/kharcha/types";
 import { todayInZone } from "@/lib/i18n/date-only";
+import { getLocale } from "@/paraglide/runtime";
 import { notFound } from "@/server/db/crud";
 import { khProfile } from "@/server/db/schema";
 import { type KharchaServices, resolveMe } from "../access";
@@ -74,9 +75,33 @@ export async function completeOnboarding({ db, user }: KharchaServices, input: O
 				homeCurrency: input.homeCurrency,
 				timeZone: input.timeZone,
 				start: input.start,
+				locale: getLocale(),
 				onboardedAt: sql`coalesce(${khProfile.onboardedAt}, now())`,
 			})
 			.where(eq(khProfile.userId, user.id));
 		await bumpRevs(tx, [me.personId]);
 	});
+}
+
+/**
+ * Settings → Profile (Task 91): the home currency (one the admin offers), the time zone, and
+ * the pay note friends see when they settle up. Saving also keeps the visit's language as the
+ * language of their emails (a reminder from a friend arrives in it).
+ */
+export async function updateProfile({ db, user }: KharchaServices, input: ProfileInput): Promise<KharchaMe> {
+	const me = await resolveMe(db, user);
+	assertCurrencyOffered(await getSettings(db), input.homeCurrency);
+	await db.transaction(async (tx) => {
+		await tx
+			.update(khProfile)
+			.set({
+				homeCurrency: input.homeCurrency,
+				timeZone: input.timeZone,
+				payNote: (input.payNote ?? "").trim(),
+				locale: getLocale(),
+			})
+			.where(eq(khProfile.userId, user.id));
+		await bumpRevs(tx, [me.personId]);
+	});
+	return getMe({ db, user });
 }

@@ -1,8 +1,19 @@
 import { useMutation, useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
 import { getRouteApi, Link, useNavigate } from "@tanstack/react-router";
-import { EyeIcon, EyeOffIcon, MailIcon, MoreHorizontalIcon, PencilIcon, PlusIcon, SendIcon } from "lucide-react";
+import {
+	BellRingIcon,
+	EyeIcon,
+	EyeOffIcon,
+	HandCoinsIcon,
+	MailIcon,
+	MoreHorizontalIcon,
+	PencilIcon,
+	PlusIcon,
+	SendIcon,
+} from "lucide-react";
 import { lazy, Suspense, useState } from "react";
 import { toast } from "sonner";
+import { errorMessage } from "@/components/errors/error-page";
 import { MAIN_CONTENT } from "@/components/layout/skip-link";
 import { Button } from "@/components/ui/button";
 import {
@@ -20,8 +31,9 @@ import { PersonAvatar } from "../kit/person-avatar";
 import { kharchaLinks } from "../links";
 import { kharchaFriendThreadQueryOptions, kharchaMutations } from "../queries";
 import type { ThreadSearch } from "../search";
+import { REMIND_WINDOW_MS } from "../settle/remind";
 import { useKharchaActions, useKharchaUserId } from "../shell/actions";
-import type { FriendView } from "../types";
+import type { FriendThread, FriendView } from "../types";
 import type { FriendDialogKind } from "./friend-dialogs";
 import { ThreadLines } from "./thread-lines";
 
@@ -30,10 +42,11 @@ const FriendDialog = lazy(() => import("./friend-dialogs"));
 const route = getRouteApi("/_kharcha/app/kharcha/_shell/f/$personId");
 
 /**
- * The thread with a friend (Task 90): their plate and name, what is open between the two,
- * one primary action (Add expense, split with them), and a More menu (rename, an address,
- * an invite, hide). Then the groups both are in with the balance in each, and the page of
- * what is between them outside groups.
+ * The thread with a friend (Tasks 90 and 91): their plate and name, what is open between the
+ * two, one primary action by the state (Settle up while the caller owes them, Remind while
+ * they owe the caller, else Add expense), and a More menu with the rest (rename, an address,
+ * an invite, hide). Then how they asked to be paid, the groups both are in with the balance
+ * in each, and the page of what is between them outside groups.
  */
 export function FriendThreadPage() {
 	const { personId } = route.useParams();
@@ -46,10 +59,23 @@ export function FriendThreadView({ personId, search }: { personId: string; searc
 	const navigate = useNavigate();
 	const queryClient = useQueryClient();
 	const { data } = useSuspenseQuery(kharchaFriendThreadQueryOptions(userId, personId));
-	const { addExpense } = useKharchaActions();
+	const { addExpense, settleUp } = useKharchaActions();
 	const [dialog, setDialog] = useState<FriendDialogKind | null>(null);
 	const update = useMutation(kharchaMutations.updateFriend(queryClient, userId));
+	const remind = useMutation(kharchaMutations.remind(queryClient, userId));
 	const { friend } = data;
+	const primary = primaryAction(data);
+	const reminded = remindedRecently(data.remind.lastAt);
+	const sendReminder = async () => {
+		try {
+			await remind.mutateAsync(friend.person.id);
+			toast.success(m.kharcha_remind_sent({ name: friend.person.name }));
+		} catch (error) {
+			toast.error(errorMessage(error));
+		}
+	};
+	const settle = () => settleUp({ personId: friend.person.id });
+	const add = () => addExpense({ with: [friend.person.id] });
 	const close = () =>
 		navigate({
 			from: "/app/kharcha/f/$personId",
@@ -77,10 +103,26 @@ export function FriendThreadView({ personId, search }: { personId: string; searc
 				</div>
 				<div className="flex items-center gap-2">
 					<BalancePill balances={friend.balances} />
-					<Button onClick={() => addExpense({ with: [friend.person.id] })} data-testid="kharcha-friend-add">
-						<PlusIcon aria-hidden />
-						<span className="max-sm:sr-only">{m.kharcha_create_expense()}</span>
-					</Button>
+					{primary === "settle" ? (
+						<Button onClick={settle} data-testid="kharcha-friend-settle">
+							<HandCoinsIcon aria-hidden />
+							<span className="max-sm:sr-only">{m.kharcha_create_settle()}</span>
+						</Button>
+					) : primary === "remind" ? (
+						<Button
+							onClick={() => void sendReminder()}
+							disabled={reminded || remind.isPending}
+							data-testid="kharcha-friend-remind"
+						>
+							<BellRingIcon aria-hidden />
+							<span className="max-sm:sr-only">{reminded ? m.kharcha_remind_done() : m.kharcha_remind()}</span>
+						</Button>
+					) : (
+						<Button onClick={add} data-testid="kharcha-friend-add">
+							<PlusIcon aria-hidden />
+							<span className="max-sm:sr-only">{m.kharcha_create_expense()}</span>
+						</Button>
+					)}
 					<DropdownMenu modal={false}>
 						<DropdownMenuTrigger asChild>
 							<Button variant="outline" size="icon" data-testid="kharcha-friend-more">
@@ -89,6 +131,28 @@ export function FriendThreadView({ personId, search }: { personId: string; searc
 							</Button>
 						</DropdownMenuTrigger>
 						<DropdownMenuContent align="end" className="min-w-52">
+							{primary === "add" ? null : (
+								<DropdownMenuItem onSelect={add} data-testid="kharcha-friend-more-add">
+									<PlusIcon aria-hidden />
+									{m.kharcha_create_expense()}
+								</DropdownMenuItem>
+							)}
+							{primary !== "settle" && friend.balances.length > 0 ? (
+								<DropdownMenuItem onSelect={settle} data-testid="kharcha-friend-more-settle">
+									<HandCoinsIcon aria-hidden />
+									{m.kharcha_create_settle()}
+								</DropdownMenuItem>
+							) : null}
+							{primary !== "remind" && data.remind.available ? (
+								<DropdownMenuItem
+									onSelect={() => void sendReminder()}
+									disabled={reminded}
+									data-testid="kharcha-friend-more-remind"
+								>
+									<BellRingIcon aria-hidden />
+									{reminded ? m.kharcha_remind_done() : m.kharcha_remind()}
+								</DropdownMenuItem>
+							) : null}
 							<DropdownMenuItem onSelect={() => setDialog("nickname")} data-testid="kharcha-friend-rename">
 								<PencilIcon aria-hidden />
 								{m.kharcha_friend_rename()}
@@ -115,6 +179,15 @@ export function FriendThreadView({ personId, search }: { personId: string; searc
 			</header>
 
 			<div className="flex flex-1 flex-col gap-6 px-4 py-4 sm:px-8 sm:py-6">
+				{data.payNote ? (
+					<p
+						className="rounded-md border border-kh-hair bg-kh-page px-3 py-2 text-sm"
+						data-testid="kharcha-friend-pay-note"
+					>
+						<span className="font-medium">{m.kharcha_settle_pay_note({ name: friend.person.name })}</span>{" "}
+						<span className="break-words">{data.payNote}</span>
+					</p>
+				) : null}
 				{data.groups.length > 0 ? (
 					<section aria-labelledby="kharcha-friend-groups" className="flex flex-col gap-2">
 						<h2 id="kharcha-friend-groups" className="font-semibold text-sm">
@@ -159,6 +232,7 @@ export function FriendThreadView({ personId, search }: { personId: string; searc
 						items={data.items}
 						more={data.more}
 						label={m.kharcha_thread_label({ name: friend.person.name })}
+						onPayment={(paymentId) => settleUp({ paymentId })}
 						expenseLink={(expenseId) =>
 							({ className, children }) => (
 								<Link
@@ -187,6 +261,18 @@ export function FriendThreadView({ personId, search }: { personId: string; searc
 			) : null}
 		</main>
 	);
+}
+
+/** The header's one action (PLAN 14.5 "UX"): settle what the caller owes, remind them of what they owe, or add. */
+function primaryAction(thread: FriendThread): "settle" | "remind" | "add" {
+	if (thread.friend.balances.some((balance) => balance.amountMinor < 0)) return "settle";
+	if (thread.remind.available) return "remind";
+	return "add";
+}
+
+/** A reminder within the last day: the next one waits (one a day per friend). */
+function remindedRecently(lastAt: string | null): boolean {
+	return lastAt !== null && Date.now() - new Date(lastAt).getTime() < REMIND_WINDOW_MS;
 }
 
 /** Whether they are on Kharcha, in words: invited until the day it lapses, or not yet. */

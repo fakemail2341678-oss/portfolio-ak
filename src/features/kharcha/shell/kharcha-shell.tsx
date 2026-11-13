@@ -30,6 +30,7 @@ import {
 	InKharchaShell,
 	type KharchaActions,
 	KharchaActionsContext,
+	type SettleStart,
 	useKharchaUserId,
 } from "./actions";
 import { CreateMenu } from "./create-menu";
@@ -39,9 +40,13 @@ import { KharchaShortcutsDialog } from "./shortcuts-dialog";
 
 const CreateDialog = lazy(() => import("./create-dialogs"));
 const ExpenseDialog = lazy(() => import("../expenses/expense-dialog"));
+const SettleDialog = lazy(() => import("../settle/settle-dialog"));
 
-/** The shell's open dialog: one of the + menu's, or the expense dialog with what it starts from. */
-type ShellDialog = { action: Exclude<CreateAction, "expense" | "split"> } | ({ action: "expense" } & ExpenseStart);
+/** The shell's open dialog: one of the + menu's, the expense dialog or the settle-up dialog with what it starts from. */
+type ShellDialog =
+	| { action: Exclude<CreateAction, "expense" | "split" | "settle"> }
+	| ({ action: "expense" } & ExpenseStart)
+	| { action: "settle"; start: SettleStart };
 
 type NavItem = { key: string; label: () => string; icon: LucideIcon; link: () => LinkOptions };
 
@@ -76,10 +81,13 @@ export function KharchaShell({ children }: { children: ReactNode }) {
 					? { action: "expense", split: true }
 					: action === "expense"
 						? { action: "expense" }
-						: { action },
+						: action === "settle"
+							? { action: "settle", start: {} }
+							: { action },
 			),
 		addExpense: (start = {}) => setDialog({ action: "expense", ...start }),
 		editExpense: (expense) => setDialog({ action: "expense", expense }),
+		settleUp: (start = {}) => setDialog({ action: "settle", start }),
 	};
 	useHotkeys({
 		"mod+k": () => setPaletteOpen((open) => !open),
@@ -134,6 +142,8 @@ export function KharchaShell({ children }: { children: ReactNode }) {
 								{...(dialog.with ? { with: dialog.with } : {})}
 								{...(dialog.split ? { split: true } : {})}
 							/>
+						) : dialog.action === "settle" ? (
+							<SettleDialog me={me} userId={userId} start={dialog.start} onClose={() => setDialog(null)} />
 						) : (
 							<CreateDialog action={dialog.action} me={me} userId={userId} onClose={() => setDialog(null)} />
 						)}

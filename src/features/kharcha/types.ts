@@ -151,12 +151,14 @@ export type HomeActivity = {
 };
 
 /**
- * One of Home's to-dos (PLAN 14.5 "UX"): a receipt that needs its details, or a possible
- * duplicate to look at. Later tasks add debts to settle, budgets and recurring expenses.
+ * One of Home's to-dos (PLAN 14.5 "UX"): a receipt that needs its details, a possible
+ * duplicate to look at, or a friend the caller owes (Task 91: what they owe them in all,
+ * per currency). Later tasks add budgets and recurring expenses.
  */
 export type HomeTodo =
 	| { kind: "receipt"; draft: ReceiptDraftView }
-	| { kind: "duplicate"; expense: SpendRow; of: { id: string; title: string; spentOn: IsoDate } };
+	| { kind: "duplicate"; expense: SpendRow; of: { id: string; title: string; spentOn: IsoDate } }
+	| { kind: "settle"; person: KharchaPerson; owe: Amount[] };
 
 /**
  * Home (PLAN 14.5 "UX"): the caller's to-dos (each later task adds its kinds: debts to
@@ -380,12 +382,71 @@ export type FriendGroupBalance = Pick<GroupSummary, "id" | "name" | "color" | "i
 	balances: Amount[];
 };
 
+/**
+ * Whether the caller can remind a friend of what they owe (Task 91): `available` when
+ * reminders are on, the caller isn't a guest or blocked, the friend has an address and owes
+ * them; `lastAt` is the caller's latest reminder to them (one a day).
+ */
+export type RemindState = { available: boolean; lastAt: string | null };
+
 /** A friend's thread: what is between the two outside groups, and their balance in each group they share. */
 export type FriendThread = {
 	friend: FriendView;
 	items: ThreadItem[];
 	more: boolean;
 	groups: FriendGroupBalance[];
+	remind: RemindState;
+	/** How the friend asked to be paid (their profile's pay note); empty when they wrote none. */
+	payNote: string;
+};
+
+/** A reminder sent (Task 91): when, so the button can say "reminded today". */
+export type RemindResult = { remindedAt: string };
+
+/**
+ * One way to settle up (Task 91): an open debt, as the payment that would clear it. In a
+ * group it is one of the group's suggestions (simplified, or who owes whom); outside groups
+ * the balance between two friends there.
+ */
+export type SettleChoice = {
+	groupId: string | null;
+	/** The group's name; null outside groups. */
+	group: string | null;
+	fromId: string;
+	toId: string;
+	amountMinor: number;
+	currency: string;
+};
+
+/**
+ * The settle-up dialog's options (Task 91): the open debts to pick from (the caller's
+ * first), who can be chosen as payer and recipient (`pickable`: a group's current members,
+ * or the caller and their friends), and how each person asked to be paid.
+ */
+export type SettleUp = {
+	group: { id: string; name: string; currency: string } | null;
+	choices: SettleChoice[];
+	/** Everyone the choices and the pickers name. */
+	people: KharchaPerson[];
+	pickable: string[];
+	/** Pay notes by person id, only those who wrote one. */
+	payNotes: Record<string, string>;
+};
+
+/**
+ * A group's Totals tab (Task 91), per currency: what the group spent (its expenses less its
+ * refunds), each member's part (what they paid, their share), and the caller's own share by
+ * their own category (categories are private: decision 0285). A former member's stop when they left.
+ */
+export type GroupTotals = {
+	currencies: Array<{
+		currency: string;
+		spentMinor: number;
+		members: Array<{ personId: string; paidMinor: number; shareMinor: number }>;
+		/** The caller's share by category; `category` null: uncategorized. */
+		mine: Array<{ category: CategoryChip | null; shareMinor: number }>;
+	}>;
+	people: KharchaPerson[];
 };
 
 /** Lines a thread loads (Task 92 pages back through older ones). */
@@ -428,7 +489,10 @@ export type GroupView = Omit<GroupSummary, "members"> & {
 	settings: Required<GroupSettings>;
 	version: number;
 	members: GroupMemberView[];
-	/** Every member's net per currency (above zero: they are owed), and how to settle when `simplify` is on. */
+	/**
+	 * Every member's net per currency (above zero: they are owed), and how to settle: the
+	 * fewest payments when `simplify` is on, else who owes whom, pair by pair (Task 91).
+	 */
 	nets: Array<{ currency: string; people: Array<{ personId: string; netMinor: number }>; suggested: Transfer[] }>;
 	can: GroupCan;
 };
@@ -453,6 +517,8 @@ export const ACTIVITY_KINDS = [
 	"friend.added",
 	/** Someone joined Kharcha by an invite or their address (Task 90): the actor is who joined. */
 	"friend.joined",
+	/** The actor reminded the subject of what they owe (Task 91), by email. */
+	"friend.reminded",
 ] as const;
 export type ActivityKind = (typeof ACTIVITY_KINDS)[number];
 

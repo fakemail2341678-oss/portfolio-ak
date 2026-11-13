@@ -1,10 +1,10 @@
 import { useQuery } from "@tanstack/react-query";
 import { createContext, useContext, useState } from "react";
 import { sessionQueryOptions } from "@/features/auth/queries";
-import type { ExpenseView, ReceiptDraftView } from "../types";
+import type { ExpenseView, ReceiptDraftView, SettleChoice } from "../types";
 
 /** What the + menu can start (PLAN 14.5 "UX"): each task adds its own (Settle up in 91). */
-export const CREATE_ACTIONS = ["expense", "split", "receipt", "friend", "group"] as const;
+export const CREATE_ACTIONS = ["expense", "split", "settle", "receipt", "friend", "group"] as const;
 export type CreateAction = (typeof CREATE_ACTIONS)[number];
 
 /**
@@ -21,6 +21,13 @@ export type ExpenseStart = {
 	split?: boolean;
 };
 
+/**
+ * What the settle-up dialog opens with (Task 91): a group's or a friend's open debts, one
+ * of them already picked, or (none of these) every open balance of the caller's; or a
+ * payment to edit.
+ */
+export type SettleStart = { groupId?: string; personId?: string; choice?: SettleChoice; paymentId?: string };
+
 export type KharchaActions = {
 	openPalette: () => void;
 	openShortcuts: () => void;
@@ -28,6 +35,8 @@ export type KharchaActions = {
 	/** The expense dialog: a new expense (from a draft or dropped files), or one to edit. */
 	addExpense: (start?: ExpenseStart) => void;
 	editExpense: (expense: ExpenseView) => void;
+	/** The settle-up dialog (Task 91): record a payment, or edit one (`paymentId`). */
+	settleUp: (start?: SettleStart) => void;
 };
 
 const noop = () => undefined;
@@ -39,6 +48,7 @@ export const KharchaActionsContext = createContext<KharchaActions>({
 	create: noop,
 	addExpense: noop,
 	editExpense: noop,
+	settleUp: noop,
 });
 
 export const useKharchaActions = () => useContext(KharchaActionsContext);

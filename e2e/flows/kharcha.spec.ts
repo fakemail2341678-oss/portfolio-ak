@@ -152,6 +152,50 @@ test.describe("Kharcha", () => {
 		await expect(thread).toContainText("you lent");
 	});
 
+	test("a guest settles up in their group, partly, then edits and deletes the payment (Task 91)", async ({
+		page,
+		harness,
+	}) => {
+		await harness.resetRateLimits();
+		await open(page, "/app/kharcha");
+		await page.getByTestId("kharcha-try").click();
+		await expect(page).toHaveURL(/\/app\/kharcha\/home$/);
+		await page.getByTestId("kharcha-onboarding").getByRole("button", { name: "Skip" }).click();
+		await page.getByTestId("kharcha-rail").getByRole("link", { name: "People" }).click();
+		await page.getByTestId("kharcha-people-group").filter({ hasText: "Pokhara" }).click();
+		await expect(page.getByTestId("kharcha-thread")).toBeVisible();
+
+		// Balances: each member's net, and the payments that would settle the trip.
+		await page.getByTestId("kharcha-group-tab-balances").click();
+		await expect(page).toHaveURL(/\?tab=balances$/);
+		await expect(page.getByTestId("kharcha-balance-member").first()).toBeVisible();
+		const transfer = page.getByTestId("kharcha-balance-transfer").first();
+		await transfer.getByTestId("kharcha-balance-settle").click();
+
+		// The suggestion is picked; a smaller amount is a partial payment, said in words.
+		const dialog = page.getByTestId("kharcha-settle-dialog");
+		await expect(dialog.getByRole("radio", { checked: true })).toHaveCount(1);
+		await dialog.getByRole("textbox", { name: "Amount" }).fill("100");
+		await expect(dialog).toContainText("A partial payment");
+		await dialog.getByRole("combobox", { name: /Paid with/ }).fill("Cash");
+		await dialog.getByRole("button", { name: "Record payment" }).click();
+		await expect(dialog).toBeHidden();
+		await expect(page.getByText("Payment recorded.")).toBeVisible();
+
+		// On the thread: its card, which opens to edit; deleting sends it to the trash.
+		await page.getByTestId("kharcha-group-tab-thread").click();
+		const thread = page.getByTestId("kharcha-thread");
+		await expect(thread).toContainText("NPR 100.00");
+		await expect(thread).toContainText("Cash");
+		await thread.getByRole("button").filter({ hasText: /paid/ }).last().click();
+		const edit = page.getByTestId("kharcha-settle-dialog");
+		await expect(edit.getByRole("textbox", { name: "Amount" })).toHaveValue(/100/);
+		await edit.getByTestId("kharcha-settle-delete").click();
+		await expect(edit).toBeHidden();
+		await expect(page.getByText("Payment moved to the trash for 30 days.")).toBeVisible();
+		await expect(thread).not.toContainText("NPR 100.00");
+	});
+
 	test("a demo account signs in on Kharcha's page, uses the palette and signs out", async ({
 		page,
 		harness,

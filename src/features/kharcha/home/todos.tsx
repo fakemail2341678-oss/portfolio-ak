@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
-import { Trash2Icon } from "lucide-react";
+import { HandCoinsIcon, Trash2Icon } from "lucide-react";
 import { toast } from "sonner";
 import { useConfirm } from "@/components/dialogs/confirm";
 import { errorMessage } from "@/components/errors/error-page";
@@ -11,15 +11,18 @@ import { formatDate, formatDateTime, formatNumber } from "@/lib/i18n/intl";
 import { m } from "@/paraglide/messages";
 import { ExpenseCard } from "../kit/cards";
 import { FixBadge } from "../kit/fix-badge";
+import { BalancePill } from "../kit/money";
+import { PersonAvatar } from "../kit/person-avatar";
 import { kharchaLinks } from "../links";
 import { kharchaMutations } from "../queries";
 import { useKharchaActions, useKharchaUserId } from "../shell/actions";
 import type { HomeTodo, ReceiptDraftView } from "../types";
 
 /**
- * Home's to-dos (PLAN 14.5 "Home is a to-do list", Task 89): receipts waiting for their
- * details, then possible duplicates. Each has its one next step: "Add details" opens the
- * expense dialog with the receipt; a duplicate opens its expense, where it can be dismissed.
+ * Home's to-dos (PLAN 14.5 "Home is a to-do list", Tasks 89 and 91): receipts waiting for
+ * their details, debts to settle, then possible duplicates. Each has its one next step: "Add
+ * details" opens the expense dialog with the receipt; "Settle up" the settle-up dialog with
+ * that friend; a duplicate opens its expense, where it can be dismissed.
  */
 export function TodoList({ todos }: { todos: ReadonlyArray<HomeTodo> }) {
 	return (
@@ -27,6 +30,8 @@ export function TodoList({ todos }: { todos: ReadonlyArray<HomeTodo> }) {
 			{todos.map((todo) =>
 				todo.kind === "receipt" ? (
 					<DraftTodo key={todo.draft.id} draft={todo.draft} />
+				) : todo.kind === "settle" ? (
+					<SettleTodo key={todo.person.id} todo={todo} />
 				) : (
 					<li
 						key={todo.expense.id}
@@ -54,6 +59,28 @@ export function TodoList({ todos }: { todos: ReadonlyArray<HomeTodo> }) {
 				),
 			)}
 		</ul>
+	);
+}
+
+function SettleTodo({ todo }: { todo: Extract<HomeTodo, { kind: "settle" }> }) {
+	const { settleUp } = useKharchaActions();
+	return (
+		<li className="flex flex-wrap items-center gap-3 px-4 py-3 sm:px-5" data-testid="kharcha-todo-settle">
+			<PersonAvatar name={todo.person.name} color={todo.person.color} />
+			<div className="flex min-w-0 flex-1 flex-col gap-1">
+				<Link {...kharchaLinks.friend(todo.person.id)} className="truncate font-semibold hover:underline">
+					{todo.person.name}
+				</Link>
+				<BalancePill
+					balances={todo.owe.map((amount) => ({ ...amount, amountMinor: -amount.amountMinor }))}
+					layout="inline"
+				/>
+			</div>
+			<Button size="sm" onClick={() => settleUp({ personId: todo.person.id })} data-testid="kharcha-todo-settle-up">
+				<HandCoinsIcon aria-hidden />
+				{m.kharcha_create_settle()}
+			</Button>
+		</li>
 	);
 }
 

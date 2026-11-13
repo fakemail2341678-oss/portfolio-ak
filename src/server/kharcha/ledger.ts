@@ -155,6 +155,36 @@ export async function groupNets(db: Db | Tx, groupId: string): Promise<GroupNet[
 	return [...sums.values()].filter((entry) => entry.netMinor !== 0);
 }
 
+export type PairDebt = { from: string; to: string; currency: string; amount: number };
+
+/**
+ * Who owes whom in a group, pair by pair, per currency (a group with simplify off, Task 91):
+ * the debts each way between two people netted to one. Pairs at zero are left out.
+ */
+export async function groupPairs(db: Db | Tx, groupId: string): Promise<PairDebt[]> {
+	const rows = await db
+		.select({ debtor: khLedger.debtorId, creditor: khLedger.creditorId, currency: khLedger.currency, amount: total })
+		.from(khLedger)
+		.where(eq(khLedger.groupId, groupId))
+		.groupBy(khLedger.debtorId, khLedger.creditorId, khLedger.currency);
+	// Above zero: `lo` owes `hi`.
+	const sums = new Map<string, { lo: string; hi: string; currency: string; amount: number }>();
+	for (const row of rows) {
+		const [lo, hi] = row.debtor < row.creditor ? [row.debtor, row.creditor] : [row.creditor, row.debtor];
+		const key = `${lo}|${hi}|${row.currency}`;
+		const entry = sums.get(key) ?? { lo, hi, currency: row.currency, amount: 0 };
+		entry.amount += row.debtor === lo ? row.amount : -row.amount;
+		sums.set(key, entry);
+	}
+	return [...sums.values()]
+		.filter((entry) => entry.amount !== 0)
+		.map((entry) =>
+			entry.amount > 0
+				? { from: entry.lo, to: entry.hi, currency: entry.currency, amount: entry.amount }
+				: { from: entry.hi, to: entry.lo, currency: entry.currency, amount: -entry.amount },
+		);
+}
+
 /** One person's net in a group per currency; empty when they are settled there. */
 export async function groupNetOf(db: Db | Tx, groupId: string, personId: string): Promise<Amount[]> {
 	const credited = await db

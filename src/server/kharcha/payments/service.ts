@@ -1,8 +1,10 @@
 import "@tanstack/react-start/server-only";
 import { and, eq, isNotNull, isNull } from "drizzle-orm";
+import { convertAt } from "@/features/kharcha/money/convert";
 import type { CreatePaymentInput, UpdatePaymentInput } from "@/features/kharcha/schema";
 import type { PaymentView } from "@/features/kharcha/types";
 import { ruleError } from "@/lib/errors";
+import { minorDigits } from "@/lib/i18n/currency";
 import type { IsoDate } from "@/lib/i18n/date-only";
 import { m } from "@/paraglide/messages";
 import { type KhPaymentRow, khPayment } from "@/server/db/schema";
@@ -43,6 +45,23 @@ const paidColumns = (paid: { currency: string; amountMinor: number; rate: string
 	paidAmountMinor: paid?.amountMinor ?? null,
 	rate: paid?.rate ?? null,
 });
+
+/**
+ * What was handed over in another currency must be that currency, and the amount at the typed
+ * rate (decision 0285): the browser shows it from the same function, so a mismatch is a
+ * stale or forged form.
+ */
+function assertPaidAtRate(input: Pick<NewPayment, "amountMinor" | "currency" | "paid">): void {
+	const { paid } = input;
+	if (!paid) return;
+	if (paid.currency === input.currency) {
+		throw ruleError("BAD_REQUEST", "Kharcha payment: the same currency", m.kharcha_error_paid_same_currency());
+	}
+	const expected = convertAt(input.amountMinor, minorDigits(input.currency), minorDigits(paid.currency), paid.rate);
+	if (expected !== paid.amountMinor) {
+		throw ruleError("BAD_REQUEST", "Kharcha payment: paid amount and rate disagree", m.kharcha_error_paid_rate());
+	}
+}
 
 export type NewPayment = {
 	id?: string | undefined;
@@ -142,6 +161,7 @@ export async function createPayment({ db, user }: KharchaServices, input: Create
 		const settings = await getSettings(tx);
 		assertCurrencyOffered(settings, input.currency);
 		if (input.paid) assertCurrencyOffered(settings, input.paid.currency);
+		assertPaidAtRate(input);
 		await assertQuota(tx, `${me.personId}:payments`, {
 			table: khPayment,
 			where: eq(khPayment.createdBy, me.personId),
@@ -164,6 +184,7 @@ export async function updatePayment({ db, user }: KharchaServices, input: Update
 			assertCurrencyOffered(settings, input.currency);
 			if (input.paid) assertCurrencyOffered(settings, input.paid.currency);
 		}
+		assertPaidAtRate(input);
 		const payment = await saveVersioned(tx, khPayment, {
 			id: before.id,
 			version: input.version,

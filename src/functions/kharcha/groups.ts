@@ -7,10 +7,11 @@ import {
 	newGroupMemberInput,
 	updateGroupInput,
 } from "@/features/kharcha/schema";
-import type { GroupSummary, GroupView } from "@/features/kharcha/types";
+import type { GroupSummary, GroupTotals, GroupView } from "@/features/kharcha/types";
 import { zodInput } from "@/functions/_lib/validator";
 import { requireKharchaUser, withKharchaServices } from "@/middleware/kharcha";
 import * as groups from "@/server/kharcha/groups/service";
+import * as totals from "@/server/kharcha/groups/totals";
 
 /**
  * Kharcha's groups and their members (docs/guides/kharcha.md): anyone signed in, guests
@@ -61,3 +62,9 @@ export const leaveKharchaGroup = createServerFn({ method: "POST" })
 	.middleware([requireKharchaUser, withKharchaServices])
 	.validator(zodInput(groupIdInput))
 	.handler(({ data, context }): Promise<void> => groups.leaveGroup(context, data.groupId));
+
+/** A group's Totals tab (Task 91): spent per member and the caller's share per category, per currency. */
+export const getKharchaGroupTotals = createServerFn({ method: "GET" })
+	.middleware([requireKharchaUser, withKharchaServices])
+	.validator(zodInput(groupIdInput))
+	.handler(({ data, context }): Promise<GroupTotals> => totals.getGroupTotals(context, data.groupId));

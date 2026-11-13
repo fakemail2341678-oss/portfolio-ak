@@ -382,6 +382,8 @@ const SPECS: Record<Layer, LayerSpec> = {
 			// Invites and joining (Task 90, decision 0284).
 			"src/server/email/templates/kharcha-emails.tsx",
 			"tests/server/kharcha-social.test.ts",
+			// Settling up and reminders (Task 91, decision 0285).
+			"tests/server/kharcha-settle.test.ts",
 		],
 		packageScripts: ["db:seed-kharcha"],
 		crons: [],

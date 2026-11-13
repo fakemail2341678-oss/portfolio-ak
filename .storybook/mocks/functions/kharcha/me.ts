@@ -10,3 +10,6 @@ export const getKharchaBalances = fn(async (): Promise<KharchaBalances> => sampl
 );
 export const getKharchaHome = fn(async (): Promise<KharchaHome> => sampleKharchaHome).mockName("getKharchaHome");
 export const completeKharchaOnboarding = fn(async (): Promise<void> => undefined).mockName("completeKharchaOnboarding");
+export const updateKharchaProfile = fn(async (): Promise<KharchaMe> => sampleKharchaMe).mockName(
+	"updateKharchaProfile",
+);

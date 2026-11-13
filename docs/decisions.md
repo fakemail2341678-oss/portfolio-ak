@@ -289,6 +289,7 @@ Record every non-obvious choice here: **What**, **Why**, **Alternatives consider
 - [0282](#0282-kharchas-section-shell-and-home-a-red-rail-an-onboarding-card-and-home-from-what-exists): Kharcha's section, shell and Home: a red rail, an onboarding card, and Home from what exists
 - [0283](#0283-kharchas-expenses-and-receipts-private-lists-on-each-share-helpers-without-ai-receipts-as-attachments): Kharcha's expenses and receipts: private lists on each share, helpers without AI, receipts as attachments
 - [0284](#0284-kharchas-invites-joining-threads-and-split-editor-hashed-single-use-links-a-merge-on-joining-threads-from-history): Kharcha's invites, joining, threads and split editor: hashed single-use links, a merge on joining, threads from history
+- [0285](#0285-kharchas-settling-up-choices-from-the-ledger-a-rate-checked-in-integers-reminders-as-history): Kharcha's settling up: choices from the ledger, a rate checked in integers, reminders as history
 </details>
 
 ---
@@ -4074,3 +4075,29 @@ Measured on the owner's Windows machine (Node 24.11, 12 threads, 11.7 GB), 2026-
 - **The editor working on minor units directly:** a half-typed "12." or a Devanagari digit would be lost on every keystroke.
 
 **Numbers:** the entry is 299.3 kB of 300 (297.9 before: four route files). Tasks 91–94 add routes, so the budget needs a look before then (0279).
+
+## 0285: Kharcha's settling up: choices from the ledger, a rate checked in integers, reminders as history
+
+**What:** Task 91 adds balances everywhere, settling up (full or partial, in another currency), simplify's suggestions put to use, a group's totals, and reminders by email.
+- **Settle-up's choices come from the ledger** (`getKharchaSettleUp`), never a stored plan: in a group its suggestions; with a friend the balance between the two outside groups, then in each open group both are in; from the + menu every balance of the caller's outside groups and each open group's suggestions that name them. A payment is recorded in the scope it was picked in.
+- **Simplify off shows who owes whom, pair by pair** (`groupPairs`: each pair's debts netted), rather than nothing: `GroupView.nets[].suggested` is always how to settle, simplified or not.
+- **Another currency at a typed rate:** the debt is settled in its own currency; `convertAt` (BigInt, half up, each currency's own digits) gives what was handed over. The browser shows it, the server recomputes it and refuses a mismatch or the same currency. The rate stays a decimal string.
+- **Reminders are history:** a `friend.reminded` line in the two people's thread is both what they read and the once-a-day limit (24 hours, the sender's profile row locked while checking). They go to an account's address or a contact's, in the recipient's saved language (`kh_profile.locale`, now written by onboarding and Settings → Profile), else the sender's; only while `kh_settings.reminders` is on, never from a guest or a sender whose `invites_blocked_at` is set (14.5: it covers invites and reminders).
+- **A group's totals by category are the caller's own share by their own categories.**
+- **No new route:** balances and totals are tabs of `/g/$groupId`, the pay note is Settings → Profile; the dialog and the totals are lazy.
+
+**Why:**
+- A debt in a group settled outside it would leave the group's nets off zero, and leaving needs a zero there; choosing the scope keeps both true.
+- With simplify off, a group still needs a way to settle; the pairs are what the ledger holds.
+- Floating point never touches money (14.6); checking on the server keeps a stale or forged form from storing an amount the rate doesn't give.
+- An activity row already says who reminded whom and when, for the thread; a table of its own would hold the same thing twice, and needed a migration.
+- Categories are private (0283): a group-wide breakdown would show one person another's labels.
+- The entry budget had 0.7 kB left (0284).
+
+**Alternatives considered:**
+- **Splitting one payment across a friend's groups,** as some apps do: the dialog would decide the scopes for the caller, and a partial payment's split would be guesswork.
+- **A typed paid amount with the rate derived:** the plan asks for a typed rate; the amount follows from it.
+- **A `kh_reminder` table:** the same facts as the activity line.
+- **Category totals over everyone's shares by built-in key:** custom categories have none, and the names would still be someone else's.
+
+**Numbers:** the entry is 299.5 kB of 300 (299.3 before: no route file, the tab names and the + menu's item). The budget still needs a decision before Tasks 92–94 add routes.

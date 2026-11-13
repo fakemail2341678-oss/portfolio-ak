@@ -8,17 +8,19 @@ import type { ThreadItem } from "../types";
  * A thread's page of the book (Task 90, PLAN 14.5 "Conversations"): its lines oldest
  * first, each day once in the margin: expense cards that open the expense, payment cards,
  * and the app's own system lines. `expenseLink` makes an expense's link (the panel over the
- * thread, masked as its page).
+ * thread, masked as its page); `onPayment` opens a payment to edit (Task 91).
  */
 export function ThreadLines({
 	items,
 	more,
 	expenseLink,
+	onPayment,
 	label,
 }: {
 	items: ReadonlyArray<ThreadItem>;
 	more: boolean;
 	expenseLink: (expenseId: string) => CardLink;
+	onPayment?: ((paymentId: string) => void) | undefined;
 	label: string;
 }) {
 	return (
@@ -46,7 +48,10 @@ export function ThreadLines({
 									link={expenseLink(item.expense.id)}
 								/>
 							) : item.type === "payment" ? (
-								<PaymentCard payment={item.payment} />
+								<PaymentCard
+									payment={item.payment}
+									{...(onPayment ? { onOpen: () => onPayment(item.payment.id) } : {})}
+								/>
 							) : (
 								<SystemLine>{recentSentence(item.line)}</SystemLine>
 							)}

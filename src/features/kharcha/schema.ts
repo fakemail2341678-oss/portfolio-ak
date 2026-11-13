@@ -321,3 +321,25 @@ export const onboardingInput = z.strictObject({
 });
 
 export type OnboardingInput = z.infer<typeof onboardingInput>;
+
+/** How friends can pay the caller, in their own words (Task 91): shown to them when they settle up. */
+export const PAY_NOTE_MAX = 200;
+
+/** Settings → Profile (Task 91): the home currency, the time zone, and the pay note. */
+export const profileInput = z.strictObject({
+	homeCurrency: currency,
+	timeZone,
+	payNote: optionalText({ max: PAY_NOTE_MAX }).default(""),
+});
+
+/**
+ * The settle-up dialog's options (Task 91): in a group, with a friend, or (neither) every
+ * open balance of the caller's.
+ */
+export const settleUpInput = z.strictObject({
+	groupId: id.nullable().default(null),
+	personId: id.optional(),
+});
+
+export type ProfileInput = z.input<typeof profileInput>;
+export type SettleUpInput = z.input<typeof settleUpInput>;
