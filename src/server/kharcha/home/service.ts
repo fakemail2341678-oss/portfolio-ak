@@ -6,11 +6,13 @@ import { notFound } from "@/server/db/crud";
 import { khActivity, khExpense, khExpenseShare, khGroupMember, khProfile } from "@/server/db/schema";
 import { type KharchaServices, type Me, resolveMe } from "../access";
 import { activityLines } from "../activity-lines";
+import { budgetViews } from "../budgets/service";
 import { duplicatesOf } from "../expenses/repository";
 import { byCurrency, pairBalances } from "../ledger";
 import { unreadCount, updatesOf } from "../notify/inbox";
 import { loadPeople } from "../people";
 import { draftsOf } from "../receipts/service";
+import { recurringViews } from "../recurring/service";
 import { spendRows } from "../spend/service";
 
 /** How many lines Home's "Recent" shows. */
@@ -115,15 +117,28 @@ export async function getHome(services: KharchaServices): Promise<KharchaHome> {
 	const todos = await todosOf(services, me, today);
 	const receipts = todos.filter((todo) => todo.kind === "receipt");
 	const others = todos.filter((todo) => todo.kind !== "receipt");
+	// Task 94: budgets at 80% or over, and recurring expenses made tomorrow (the day before, PLAN 14.5).
+	const budgets = await budgetViews(db, me.personId, today);
+	const tomorrow = addDays(today, 1);
+	const recurring = (await recurringViews(db, me.personId)).filter(
+		(each) => !each.paused && !each.ended && each.nextOn === tomorrow,
+	);
+	const planned: HomeTodo[] = [
+		...budgets
+			.filter((budget) => budget.current.state !== "ok")
+			.map((budget): HomeTodo => ({ kind: "budget", budget })),
+		...recurring.map((each): HomeTodo => ({ kind: "recurring", recurring: each })),
+	];
 
 	return {
-		todos: [...receipts, ...settle, ...others],
+		todos: [...receipts, ...settle, ...planned, ...others],
 		balances: { owed: amounts(owed), owe: amounts(owe) },
 		openWith: open.size,
 		month: { current, previous, spent: await monthSpending(db, me.personId, current, previous) },
 		recent: await recentActivity(db, me.personId),
 		updates: await updatesOf(db, me.id),
 		unread: await unreadCount(db, me.id),
+		budgets,
 	};
 }
 

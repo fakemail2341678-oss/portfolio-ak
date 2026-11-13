@@ -2,7 +2,13 @@ import "@tanstack/react-start/server-only";
 import { waitUntil } from "@vercel/functions";
 import { and, asc, eq, gt, inArray, isNull, lt, notInArray, or, sql } from "drizzle-orm";
 import { KHARCHA_NAME } from "@/features/kharcha/brand";
-import { notificationSentence, parseThread, type ThreadKey, threadPath } from "@/features/kharcha/notifications";
+import {
+	type NotifyTarget,
+	notificationSentence,
+	notifyPath,
+	parseThread,
+	type ThreadKey,
+} from "@/features/kharcha/notifications";
 import { localizedUrl } from "@/lib/seo";
 import { baseLocale, isLocale, type Locale } from "@/paraglide/runtime";
 import { khGroupMember, khNotification, khPerson, khProfile, user } from "@/server/db/schema";
@@ -60,7 +66,7 @@ type Row = Awaited<ReturnType<ReturnType<typeof withRecipient>["where"]>>[number
 
 const localeOf = (row: Pick<Row, "locale">): Locale => (row.locale && isLocale(row.locale) ? row.locale : baseLocale);
 
-const linkOf = (thread: string, locale: Locale) => localizedUrl(threadPath(thread as ThreadKey), locale);
+const linkOf = (thread: string, locale: Locale) => localizedUrl(notifyPath(thread as NotifyTarget), locale);
 
 /** The rows whose recipient may still read them; the others will never be emailed. */
 async function reachableRows(db: Db, rows: Row[]): Promise<Row[]> {
@@ -108,6 +114,7 @@ async function recentlyEmailed(db: Db, row: Row, except: ReadonlyArray<string>, 
 const headingOf = (row: Row, locale: Locale) => {
 	const { kind } = parseThread(row.thread as ThreadKey);
 	const data = row.data;
+	if (row.thread.startsWith("b:")) return notificationSentence(row.kind, data, locale);
 	if (kind === "g") return data.group ?? data.title ?? KHARCHA_NAME;
 	if (kind === "e") return data.title ?? KHARCHA_NAME;
 	return data.actor ?? notificationSentence(row.kind, data, locale);

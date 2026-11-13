@@ -22,6 +22,7 @@ import { m } from "@/paraglide/messages";
 import { CategoryIcon } from "../kit/category-icon";
 import { kharchaLinks } from "../links";
 import { kharchaKeys, kharchaListsQueryOptions, refreshKharcha } from "../queries";
+import { RecurringList } from "../recurring/recurring-list";
 import { SETTINGS_TABS, type SettingsTab } from "../search";
 import { useKharchaUserId } from "../shell/actions";
 import type { CategoryView, KharchaLists, MethodView, RuleView, TagView } from "../types";
@@ -39,6 +40,7 @@ export const SETTINGS_TAB_LABELS: Record<SettingsTab, () => string> = {
 	tags: () => m.kharcha_settings_tags(),
 	methods: () => m.kharcha_settings_methods(),
 	rules: () => m.kharcha_settings_rules(),
+	recurring: () => m.kharcha_settings_recurring(),
 };
 
 /** Moves one item of a list up or down: the whole new order. */
@@ -55,7 +57,7 @@ const moved = (ids: ReadonlyArray<string>, index: number, by: number) => {
  * uncategorized), tags, payment methods, and merchant rules (tried in order, the first
  * match wins). Everything is the caller's alone. Profile (Task 91): the home currency,
  * the time zone and the pay note. Notifications (Task 92): how each kind is emailed. Recurring
- * expenses arrive as a tab with Task 94.
+ * (Task 94): the caller's recurring expenses.
  */
 export function SettingsPage() {
 	return <SettingsView tab={route.useParams().tab} />;
@@ -96,6 +98,7 @@ export function SettingsView({ tab }: { tab: SettingsTab }) {
 			<div className="flex w-full max-w-3xl flex-col gap-4 px-4 py-4 sm:px-8 sm:py-6">
 				{tab === "profile" ? <ProfileForm /> : null}
 				{tab === "notifications" ? <NotifyForm /> : null}
+				{tab === "recurring" ? <RecurringList /> : null}
 				{tab === "categories" ? (
 					<Section
 						description={m.kharcha_settings_categories_help()}

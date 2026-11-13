@@ -89,6 +89,7 @@ export const sampleKharchaBalances: KharchaBalances = {
 
 export const sampleKharchaHome: KharchaHome = {
 	todos: [],
+	budgets: [],
 	balances: sampleKharchaBalances,
 	openWith: 2,
 	month: {

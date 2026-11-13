@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { enumParam, pageParam, pageSizeParam, resolvedPageSize, searchParam } from "@/lib/list/params";
+import { dateParam, enumParam, pageParam, pageSizeParam, resolvedPageSize, searchParam } from "@/lib/list/params";
 
 /**
  * Kharcha's URL contracts (src/lib/list): what route files import, never `schema.ts` (0194).
@@ -95,6 +95,76 @@ export const THREAD_SEARCH_DEFAULTS = { tab: "thread" } as const;
 /** An invite link's token: 32 characters of base64url (src/server/kharcha/invites/service.ts). */
 export const JOIN_TOKEN = /^[\w-]{32}$/;
 
-/** `/settings/$tab`: the profile (Task 91), notifications (Task 92), the lists (Task 89); recurring arrives with Task 94. */
-export const SETTINGS_TABS = ["profile", "notifications", "categories", "tags", "methods", "rules"] as const;
+/** `/settings/$tab`: the profile (Task 91), notifications (Task 92), the lists (Task 89), recurring expenses (Task 94). */
+export const SETTINGS_TABS = [
+	"profile",
+	"notifications",
+	"categories",
+	"tags",
+	"methods",
+	"rules",
+	"recurring",
+] as const;
 export type SettingsTab = (typeof SETTINGS_TABS)[number];
+
+/** `/insights/$tab` (Task 94, decision 0288): the overview, budgets, trends and a statement. */
+export const INSIGHTS_TABS = ["overview", "budgets", "trends", "statement"] as const;
+export type InsightsTab = (typeof INSIGHTS_TABS)[number];
+
+const MONTH = /^\d{4}-(0[1-9]|1[0-2])$/;
+const CODE = /^[A-Z]{3}$/;
+const DAY = /^\d{4}-\d{2}-\d{2}$/;
+
+/**
+ * Insights' address: the month the overview and trends end at, the currency shown (each
+ * total is one currency's), and a statement's days. Missing, the page's: this month, the
+ * caller's home currency or the one they spent most in, this month's days.
+ */
+export const insightsSearch = z.object({
+	month: z.string().regex(MONTH).optional().catch(undefined),
+	currency: z.string().regex(CODE).optional().catch(undefined),
+	from: dateParam(),
+	to: dateParam(),
+});
+export type InsightsSearch = z.infer<typeof insightsSearch>;
+
+/** The overview's and the trends' input: the month (else this one) and the currency (else the page picks). */
+export const insightsInput = z.strictObject({
+	month: z.string().regex(MONTH).optional(),
+	currency: z.string().regex(CODE).optional(),
+});
+export type InsightsInput = z.infer<typeof insightsInput>;
+
+/** Expenses a statement lists; its totals count them all. */
+export const STATEMENT_LINES_MAX = 1_000;
+
+/** The longest statement, in days. */
+export const STATEMENT_DAYS_MAX = 731;
+
+/** A statement's days (else this month's), the first not after the last, at most two years. */
+export const statementInput = z
+	.strictObject({ from: z.string().regex(DAY).optional(), to: z.string().regex(DAY).optional() })
+	.refine(
+		({ from, to }) =>
+			!from ||
+			!to ||
+			(from <= to &&
+				(Date.parse(`${to}T00:00:00Z`) - Date.parse(`${from}T00:00:00Z`)) / 86_400_000 < STATEMENT_DAYS_MAX),
+	);
+export type StatementInput = z.infer<typeof statementInput>;
+
+/**
+ * A statement's days from the address: in order, and at most `STATEMENT_DAYS_MAX` long
+ * (counted back from the last), so a hand-typed address never fails the server's check.
+ */
+export function statementOf(search: Pick<InsightsSearch, "from" | "to">): StatementInput {
+	let { from, to } = search;
+	if (from && to && from > to) [from, to] = [to, from];
+	if (from && to) {
+		const earliest = new Date(Date.parse(`${to}T00:00:00Z`) - (STATEMENT_DAYS_MAX - 1) * 86_400_000)
+			.toISOString()
+			.slice(0, 10);
+		if (from < earliest) from = earliest;
+	}
+	return { ...(from ? { from } : {}), ...(to ? { to } : {}) };
+}

@@ -282,6 +282,59 @@ test.describe("Kharcha", () => {
 		await expect(box).toHaveValue("category:Groceries");
 	});
 
+	test("the daily job makes a guest's recurring rent and sends a budget's alert (Task 94)", async ({
+		page,
+		harness,
+	}) => {
+		await harness.resetRateLimits();
+		await open(page, "/app/kharcha");
+		await page.getByTestId("kharcha-try").click();
+		await expect(page).toHaveURL(/\/app\/kharcha\/home$/);
+		await page.getByTestId("kharcha-onboarding").getByRole("button", { name: "Skip" }).click();
+		const cron = async () => {
+			const response = await fetch(`${E2E.baseURL}/api/cron/kharcha`, {
+				headers: { authorization: `Bearer ${E2E.cronSecret}` },
+			});
+			expect(response.status).toBe(200);
+			return (await response.json()) as { recurring: { made: number }; budgets: { sent: number } };
+		};
+
+		// The sample's rent repeats monthly: Settings → Recurring lists it.
+		await open(page, "/app/kharcha/settings/recurring");
+		const rent = page.getByTestId("kharcha-recurring-item");
+		await expect(rent).toHaveCount(1);
+		await expect(rent).toContainText("Every month");
+
+		// Its next one falls due today (the harness moves its days back a month), and the job makes it once.
+		const session = (await (await page.request.get("/api/auth/get-session")).json()) as { user: { id: string } };
+		const due = await fetch(`${E2E.harnessURL}/e2e/kharcha-recurring-due?user=${session.user.id}`, { method: "POST" });
+		expect(due.status).toBe(200);
+		expect((await cron()).recurring.made).toBeGreaterThanOrEqual(1);
+		expect((await cron()).recurring.made).toBe(0);
+		await page.reload({ waitUntil: "networkidle" });
+		await expect(rent).toContainText("Added 2 times");
+		await open(page, "/app/kharcha/home");
+		await expect(page.getByTestId("kharcha-updates")).toContainText("was added again, as it repeats");
+
+		// A monthly budget for everything with a limit this month is over: the next run tells them, once.
+		await open(page, "/app/kharcha/insights/budgets");
+		await page.getByTestId("kharcha-budget-new").click();
+		const dialog = page.getByTestId("kharcha-budget-dialog");
+		await dialog.getByRole("textbox", { name: "Limit" }).fill("100");
+		await dialog.getByRole("button", { name: "Save" }).click();
+		await expect(dialog).toBeHidden();
+		const everything = page.getByTestId("kharcha-budget").filter({ hasText: "Everything" });
+		await expect(everything.getByTestId("kharcha-budget-meter")).toHaveAttribute("data-state", "over");
+		// Other guests' budgets may alert in the same run: what counts is this guest's one line.
+		expect((await cron()).budgets.sent).toBeGreaterThanOrEqual(1);
+		await cron();
+		await open(page, "/app/kharcha/home");
+		const alert = page.getByTestId("kharcha-update").filter({ hasText: "Your Everything budget is used up" });
+		await expect(alert).toHaveCount(1);
+		await alert.click();
+		await expect(page).toHaveURL(/\/app\/kharcha\/insights\/budgets$/);
+	});
+
 	test("a demo account signs in on Kharcha's page, uses the palette and signs out", async ({
 		page,
 		harness,

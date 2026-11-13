@@ -25,6 +25,8 @@ export const E2E = {
 	realtimeKey: "e2e.key:e2e-realtime-secret-0123456789", // @parda
 	/** CHAAL_TOKEN_KEY for the server under test: 32 bytes in base64, never used anywhere else. */
 	chaalTokenKey: "ZTJlLWNoYWFsLXRva2VuLWtleS0zMi1ieXRlcy0wMDE=", // @chaal
+	/** The daily jobs' bearer (Task 94: the flows call `/api/cron/kharcha`). */
+	cronSecret: "e2e-cron-secret-0123456789", // @kharcha
 	users: {
 		admin: { email: "admin@example.com", name: "E2E Admin" },
 		editor: { email: "editor@example.com", name: "Demo Editor" },

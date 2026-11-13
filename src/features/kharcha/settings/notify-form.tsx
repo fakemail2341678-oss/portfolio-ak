@@ -17,6 +17,8 @@ export const NOTIFY_KIND_LABELS: Record<NotifyKind, () => string> = {
 	"comment.mention": () => m.kharcha_notify_kind_mention(),
 	"comment.thread": () => m.kharcha_notify_kind_comment(),
 	reminder: () => m.kharcha_notify_kind_reminder(),
+	"budget.alert": () => m.kharcha_notify_kind_budget(),
+	"recurring.made": () => m.kharcha_notify_kind_recurring(),
 };
 
 const NOTIFY_EMAIL_LABELS: Record<NotifyEmail, () => string> = {

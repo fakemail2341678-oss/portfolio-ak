@@ -1,8 +1,10 @@
 import { z } from "zod";
 import { CURRENCIES } from "@/lib/i18n/currency";
 import { email, isoDate, optionalText, required } from "@/lib/validation";
+import { BUDGET_PERIODS } from "./budgets/period";
 import { FULL_BP, MAX_AMOUNT_MINOR, MAX_WEIGHT, SPLIT_METHODS } from "./money/split";
 import { COMMENT_MAX, NOTIFY_EMAILS, NOTIFY_KINDS, REACTIONS, THREAD_KEY, type ThreadKey } from "./notifications";
+import { RECURRING_EVERY_MAX, RECURRING_UNITS } from "./recurring/cadence";
 import {
 	CATEGORY_ICONS,
 	EXPENSE_KINDS,
@@ -436,3 +438,53 @@ export type CreateCommentInput = z.input<typeof createCommentInput>;
 export type UpdateCommentInput = z.input<typeof updateCommentInput>;
 export type ReactInput = z.input<typeof reactInput>;
 export type NotifySettingsInput = z.input<typeof notifySettingsInput>;
+
+/* Planning (Task 94, decision 0288): budgets and recurring expenses. */
+
+/** "YYYY-MM": a monthly budget's own month. */
+export const MONTH_PATTERN = /^\d{4}-(0[1-9]|1[0-2])$/;
+
+/** A new budget: one of the caller's categories (null: everything), a currency, a period and its amount. */
+export const createBudgetInput = z.strictObject({
+	categoryId: id.nullable().default(null),
+	currency,
+	period: z.enum(BUDGET_PERIODS),
+	amountMinor: minor,
+	startsOn: isoDate(),
+});
+/** A budget's amount and first day, at the `version` it was loaded at; what it is about stays. */
+export const updateBudgetInput = z.strictObject({
+	budgetId: id,
+	version: z.number().int().min(1),
+	amountMinor: minor,
+	startsOn: isoDate(),
+});
+/** A monthly budget's own amount for one month; null goes back to the budget's amount. */
+export const budgetMonthInput = z.strictObject({
+	budgetId: id,
+	month: z.string().regex(MONTH_PATTERN),
+	amountMinor: minor.nullable(),
+});
+export const budgetIdInput = z.strictObject({ budgetId: id });
+
+const cadence = {
+	unit: z.enum(RECURRING_UNITS),
+	every: z.number().int().min(1).max(RECURRING_EVERY_MAX).default(1),
+	endsOn: isoDate().nullable().default(null),
+};
+/** "Repeat…" on an expense: how often from its day, and until when. */
+export const repeatExpenseInput = z.strictObject({ expenseId: id, ...cadence });
+/** A recurring expense's cadence and end, at its `version`; what it makes is the expense it came from. */
+export const updateRecurringInput = z.strictObject({
+	recurringId: id,
+	version: z.number().int().min(1),
+	...cadence,
+});
+export const recurringIdInput = z.strictObject({ recurringId: id });
+export const pauseRecurringInput = z.strictObject({ recurringId: id, paused: z.boolean() });
+
+export type CreateBudgetInput = z.input<typeof createBudgetInput>;
+export type UpdateBudgetInput = z.input<typeof updateBudgetInput>;
+export type BudgetMonthInput = z.input<typeof budgetMonthInput>;
+export type RepeatExpenseInput = z.input<typeof repeatExpenseInput>;
+export type UpdateRecurringInput = z.input<typeof updateRecurringInput>;

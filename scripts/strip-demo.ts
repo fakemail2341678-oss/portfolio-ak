@@ -358,6 +358,7 @@ const SPECS: Record<Layer, LayerSpec> = {
 			"src/server/db/schema/kharcha",
 			".storybook/mocks/functions/kharcha",
 			".storybook/mocks/kharcha.ts",
+			".storybook/mocks/kharcha-plan.ts",
 			"scripts/seed-kharcha.ts",
 			"scripts/lib/kharcha-seed.ts",
 			"tests/unit/kharcha-money.test.ts",
@@ -392,6 +393,9 @@ const SPECS: Record<Layer, LayerSpec> = {
 			// Spend's search, saved searches, bulk actions and CSV (Task 93, decision 0287).
 			"tests/server/kharcha-search.test.ts",
 			"tests/unit/kharcha-query.test.ts",
+			// Budgets, recurring expenses and insights (Task 94, decision 0288).
+			"tests/server/kharcha-plan.test.ts",
+			"tests/unit/kharcha-plan.test.ts",
 		],
 		packageScripts: ["db:seed-kharcha"],
 		crons: ["/api/cron/kharcha"],
@@ -406,7 +410,7 @@ const SHARED: ReadonlyArray<{ paths: string[]; layers: Layer[] }> = [
 	{ paths: ["src/components/forms/csv-source.tsx"], layers: ["apps", "taskline"] },
 	{ paths: ["src/server/db/quota.ts"], layers: ["apps", "taskline", "kharcha"] },
 	{ paths: [".impeccable/config.json"], layers: ["portfolio", "parda"] },
-	{ paths: ["src/components/data-display/scroll-region.tsx"], layers: ["taskline", "parda", "chaal"] },
+	{ paths: ["src/components/data-display/scroll-region.tsx"], layers: ["taskline", "parda", "chaal", "kharcha"] },
 	// The horizontal rail (Task 61) is core, but only Parda uses it so far.
 	{ paths: ["src/components/data-display/rail.tsx"], layers: ["parda"] },
 	// The server's LRU cache (decision 0255) is core; Parda's TMDB answers and Chaal's Lichess answers use it.

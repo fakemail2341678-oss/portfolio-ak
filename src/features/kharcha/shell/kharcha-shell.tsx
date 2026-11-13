@@ -2,6 +2,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Link, type LinkOptions, useLocation } from "@tanstack/react-router";
 import {
 	BellIcon,
+	ChartPieIcon,
 	FileUpIcon,
 	HouseIcon,
 	type LucideIcon,
@@ -49,14 +50,34 @@ type ShellDialog =
 	| ({ action: "expense" } & ExpenseStart)
 	| { action: "settle"; start: SettleStart };
 
-type NavItem = { key: string; label: () => string; icon: LucideIcon; link: () => LinkOptions };
+type NavItem = {
+	key: string;
+	label: () => string;
+	icon: LucideIcon;
+	link: () => LinkOptions;
+	/** A page with tabs of its own (Insights): current on any of them, by the start of its path. */
+	section?: string;
+};
 
-/** The rail's and the tabs' pages (PLAN 14.5 "UX"): each arrives with its route (Insights in 94). */
+/** The rail's and the tabs' pages (PLAN 14.5 "UX"): each arrived with its route (Insights in 94). */
 const NAV: ReadonlyArray<NavItem> = [
 	{ key: "home", label: () => m.kharcha_nav_home(), icon: HouseIcon, link: () => kharchaLinks.home() },
 	{ key: "spend", label: () => m.kharcha_nav_spend(), icon: WalletIcon, link: () => kharchaLinks.spend() },
+	{
+		key: "insights",
+		label: () => m.kharcha_nav_insights(),
+		icon: ChartPieIcon,
+		link: () => kharchaLinks.insights("overview"),
+		section: "/app/kharcha/insights/",
+	},
 	{ key: "people", label: () => m.kharcha_nav_people(), icon: UsersIcon, link: () => kharchaLinks.people() },
 ];
+
+/** Whether a page of the nav is the current one: the router's own match, or (with tabs) its section. */
+function useSectionCurrent(): (item: NavItem) => boolean {
+	const pathname = useLocation({ select: (location) => location.pathname });
+	return (item) => Boolean(item.section && pathname.includes(item.section));
+}
 
 /**
  * Kharcha's frame (PLAN 14.5 "UX", decision 0282): on a laptop the red bookcloth rail
@@ -109,7 +130,7 @@ export function KharchaShell({ children }: { children: ReactNode }) {
 						<InKharchaShell value>{children}</InKharchaShell>
 					</div>
 					<PhoneTabs guest={guest} />
-					<div className="fixed end-4 bottom-20 z-30 md:hidden">
+					<div className="fixed end-4 bottom-20 z-30 md:hidden print:hidden">
 						<CreateMenu side="top">
 							<button
 								type="button"
@@ -274,10 +295,11 @@ function Rail({
 	onSearch: () => void;
 	unread: number;
 }) {
+	const inSection = useSectionCurrent();
 	return (
 		<nav
 			aria-label={m.kharcha_nav_label()}
-			className="sticky top-0 hidden h-dvh w-16 shrink-0 flex-col items-center gap-1 bg-kh-cloth pt-4 pb-3 text-kh-cloth-muted shadow-[inset_-2px_0_0_var(--kh-thread)] md:flex"
+			className="sticky top-0 hidden h-dvh w-16 shrink-0 flex-col items-center gap-1 bg-kh-cloth pt-4 pb-3 text-kh-cloth-muted shadow-[inset_-2px_0_0_var(--kh-thread)] md:flex print:hidden"
 			data-testid="kharcha-rail"
 		>
 			<Link
@@ -291,7 +313,12 @@ function Rail({
 				<Link
 					key={item.key}
 					{...item.link()}
-					className={cn(railItem, "hover:bg-kh-cloth-deep/70 hover:text-kh-on-cloth")}
+					className={cn(
+						railItem,
+						"hover:bg-kh-cloth-deep/70 hover:text-kh-on-cloth",
+						inSection(item) && "bg-kh-cloth-deep text-kh-on-cloth [&>svg]:text-kh-thread",
+					)}
+					aria-current={inSection(item) ? "page" : undefined}
 					activeProps={{
 						className: "bg-kh-cloth-deep text-kh-on-cloth [&>svg]:text-kh-thread",
 						"aria-current": "page",
@@ -330,7 +357,7 @@ function PhoneBar({
 }) {
 	return (
 		<header
-			className="sticky top-0 z-20 flex h-13 shrink-0 items-center gap-1 bg-kh-cloth ps-3.5 pe-1.5 text-kh-on-cloth shadow-[inset_0_-2px_0_var(--kh-thread)] md:hidden"
+			className="sticky top-0 z-20 flex h-13 shrink-0 items-center gap-1 bg-kh-cloth ps-3.5 pe-1.5 text-kh-on-cloth shadow-[inset_0_-2px_0_var(--kh-thread)] md:hidden print:hidden"
 			data-testid="kharcha-bar"
 		>
 			<Link
@@ -361,19 +388,21 @@ function PhoneBar({
 /** The phone's bottom tabs: the pages, and the account (a guest's is sign-up). */
 function PhoneTabs({ guest }: { guest: boolean }) {
 	const location = useLocation();
+	const inSection = useSectionCurrent();
 	const tab =
 		"kh-ease flex min-h-12 flex-col items-center justify-center gap-0.5 rounded-md text-[0.6875rem] outline-none focus-visible:ring-[3px] focus-visible:ring-ring";
 	return (
 		<nav
 			aria-label={m.kharcha_tabs_label()}
-			className="fixed inset-x-0 bottom-0 z-30 grid h-16 auto-cols-fr grid-flow-col items-center border-kh-hair border-t bg-kh-page px-2 text-kh-muted md:hidden"
+			className="fixed inset-x-0 bottom-0 z-30 grid h-16 auto-cols-fr grid-flow-col items-center border-kh-hair border-t bg-kh-page px-2 text-kh-muted md:hidden print:hidden"
 			data-testid="kharcha-tabs"
 		>
 			{NAV.map((item) => (
 				<Link
 					key={item.key}
 					{...item.link()}
-					className={tab}
+					className={cn(tab, inSection(item) && "font-semibold text-kh-mark")}
+					aria-current={inSection(item) ? "page" : undefined}
 					activeProps={{ className: "font-semibold text-kh-mark", "aria-current": "page" }}
 				>
 					<item.icon className="size-5" aria-hidden />
@@ -405,7 +434,7 @@ function GuestBanner() {
 	return (
 		<aside
 			aria-label={m.guest_banner_label()}
-			className="border-kh-hair border-b bg-kh-page"
+			className="border-kh-hair border-b bg-kh-page print:hidden"
 			data-testid="guest-banner"
 		>
 			<p className="flex flex-wrap items-center gap-x-3 gap-y-1 px-4 py-2 text-caption sm:px-8">

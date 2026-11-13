@@ -44,6 +44,7 @@ export * from "./kharcha/ledger"; // @kharcha
 export * from "./kharcha/lists"; // @kharcha
 export * from "./kharcha/payment"; // @kharcha
 export * from "./kharcha/person"; // @kharcha
+export * from "./kharcha/plan"; // @kharcha
 export * from "./kharcha/settings"; // @kharcha
 export * from "./kharcha/spend"; // @kharcha
 export * from "./parda/alerts"; // @parda

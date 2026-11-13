@@ -19,7 +19,7 @@ import { ruleError } from "@/lib/errors";
 import type { IsoDate } from "@/lib/i18n/date-only";
 import { m } from "@/paraglide/messages";
 import type { ImageStore } from "@/server/attachments/cloudinary";
-import { type KhExpenseRow, khActivity, khCategory, khExpense, khMethod, khTag } from "@/server/db/schema";
+import { type KhExpenseRow, khActivity, khCategory, khExpense, khMethod, khRecurring, khTag } from "@/server/db/schema";
 import type { Db, Tx } from "@/server/db/types";
 import {
 	assertGroupCan,
@@ -168,6 +168,8 @@ export type NewExpense = {
 	categoryId?: string | null;
 	methodId?: string | null;
 	tagIds?: string[];
+	/** The recurring expense that makes it, and which occurrence it is (Task 94). */
+	recurring?: { id: string; n: number } | undefined;
 };
 
 /**
@@ -191,6 +193,7 @@ export async function addExpense(tx: Tx, actorId: string, input: NewExpense): Pr
 			currency: input.currency,
 			spentOn: input.spentOn,
 			split: input.split,
+			...(input.recurring ? { recurringId: input.recurring.id, recurringN: input.recurring.n } : {}),
 		},
 		parts,
 		{ personId: actorId, categoryId: input.categoryId ?? null, methodId: input.methodId ?? null },
@@ -254,8 +257,13 @@ async function expenseView(
 		? await tx.select({ id: khMethod.id, name: khMethod.name }).from(khMethod).where(eq(khMethod.id, mine.methodId))
 		: [];
 	const receipts = await receiptsOf(tx, store, EXPENSE_RECEIPTS, [expense.id]);
+	const [recurring] = expense.recurringId
+		? await tx.select({ ownerId: khRecurring.ownerId }).from(khRecurring).where(eq(khRecurring.id, expense.recurringId))
+		: [];
 	return {
 		id: expense.id,
+		recurring:
+			expense.recurringId && recurring ? { id: expense.recurringId, mine: recurring.ownerId === me.personId } : null,
 		groupId: expense.groupId,
 		kind: expense.kind,
 		title: expense.title,
@@ -332,40 +340,56 @@ const withDefaults = (
 	split: input.split ?? ({ method: "full", person: me.personId } satisfies Split),
 });
 
+/** What `addCheckedExpense` takes: a new expense as the form sends it, and (the daily job's) the recurring occurrence it is. */
+export type CheckedExpense = Omit<CreateExpenseInput, "draftId" | "receiptIds"> & {
+	recurring?: { id: string; n: number } | undefined;
+};
+
+/**
+ * A new expense, checked as `createExpense` checks it, then written: the group (a current
+ * member, not archived), an offered currency, the people (members or friends), the caller's
+ * own lists, the quota, the helpers; then the rows and "added" for the others on it.
+ * `createExpense` calls it, and so does the daily job making a recurring expense (Task 94).
+ */
+export async function addCheckedExpense(tx: Tx, me: Me, input: CheckedExpense) {
+	const group = input.groupId ? await resolveGroup(tx, me, input.groupId) : null;
+	if (group) assertGroupCan(group, "edit");
+	const settings = await getSettings(tx);
+	assertCurrencyOffered(settings, input.currency);
+	const { payers, split } = withDefaults(me, input);
+	const parts = partsFor(input.amountMinor, input.currency, payers, split);
+	await assertPeople(tx, me, group, repo.partsPeople(parts));
+	await assertMine(tx, me, input);
+	await assertQuota(tx, `${me.personId}:expenses`, {
+		table: khExpense,
+		where: eq(khExpense.createdBy, me.personId),
+		max: quotasFor(settings, me).expenses,
+	});
+	const own = await helped(tx, me, input.merchant, input);
+	const expense = await addExpense(tx, me.personId, { ...input, payers, split, ...own });
+	const { instant } = await notifyExpense(
+		tx,
+		me,
+		"expense.added",
+		expense,
+		repo.partsPeople(parts),
+		group?.group.name ?? null,
+	);
+	return { expense, group, instant };
+}
+
 export async function createExpense(
 	{ db, user, imageStore, deliver }: KharchaServices,
 	input: CreateExpenseInput,
 ): Promise<ExpenseView> {
 	const { view, instant } = await db.transaction(async (tx) => {
 		const me = await resolveMe(tx, user);
-		const group = input.groupId ? await resolveGroup(tx, me, input.groupId) : null;
-		if (group) assertGroupCan(group, "edit");
-		const settings = await getSettings(tx);
-		assertCurrencyOffered(settings, input.currency);
-		const { payers, split } = withDefaults(me, input);
-		const parts = partsFor(input.amountMinor, input.currency, payers, split);
-		await assertPeople(tx, me, group, repo.partsPeople(parts));
-		await assertMine(tx, me, input);
-		await assertQuota(tx, `${me.personId}:expenses`, {
-			table: khExpense,
-			where: eq(khExpense.createdBy, me.personId),
-			max: quotasFor(settings, user).expenses,
-		});
-		const own = await helped(tx, me, input.merchant, input);
-		const expense = await addExpense(tx, me.personId, { ...input, payers, split, ...own });
+		const { expense, group, instant } = await addCheckedExpense(tx, me, input);
 		if (input.draftId) await takeDraft(tx, me, input.draftId, expense.id);
 		const receiptIds = input.receiptIds ?? (input.draftId ? await receiptIdsOf(tx, EXPENSE_RECEIPTS, expense.id) : []);
 		if (receiptIds.length > 0 || input.draftId) {
 			await linkReceipts(tx, me, { entityType: EXPENSE_RECEIPTS, entityId: expense.id }, receiptIds);
 		}
-		const { instant } = await notifyExpense(
-			tx,
-			me,
-			"expense.added",
-			expense,
-			repo.partsPeople(parts),
-			group?.group.name ?? null,
-		);
 		const view = await expenseView(
 			tx,
 			me,

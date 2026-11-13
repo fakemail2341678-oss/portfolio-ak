@@ -292,6 +292,7 @@ Record every non-obvious choice here: **What**, **Why**, **Alternatives consider
 - [0285](#0285-kharchas-settling-up-choices-from-the-ledger-a-rate-checked-in-integers-reminders-as-history): Kharcha's settling up: choices from the ledger, a rate checked in integers, reminders as history
 - [0286](#0286-kharchas-conversations-thread-keys-read-marks-tasklines-notifications-and-one-email-a-day-to-people-without-an-account): Kharcha's conversations: thread keys, read marks, Taskline's notifications, and one email a day to people without an account
 - [0287](#0287-kharchas-spend-a-search-language-compiled-to-bound-sql-the-period-in-q-built-in-searches-in-code): Kharcha's Spend: a search language compiled to bound SQL, the period in `q`, built-in searches in code
+- [0288](#0288-kharchas-planning-budgets-on-the-owners-share-alerts-claimed-once-recurring-expenses-numbered-from-their-first-day): Kharcha's planning: budgets on the owner's share, alerts claimed once, recurring expenses numbered from their first day
 </details>
 
 ---
@@ -4157,3 +4158,22 @@ Measured on the owner's Windows machine (Node 24.11, 12 threads, 11.7 GB), 2026-
 - **Ids in queries** (`category:<uuid>`): exact, but unreadable in a link and wrong after a merge of lists; names in any case match what people type.
 - **`is:duplicate` as SQL alone:** Postgres' character classes don't see Devanagari marks the way `merchantKey` does, so the badge and the search would disagree.
 - **Built-in searches as rows made on first use:** renameable and deletable, but a migration for each new one and nothing gained.
+
+## 0288: Kharcha's planning: budgets on the owner's share, alerts claimed once, recurring expenses numbered from their first day
+
+**What** (Task 94): budgets, recurring expenses and Insights.
+- **Budgets** (`kh_budget`: owner, a category or none for everything, currency, week / month / year, amount, first day; `kh_budget_month`: a monthly budget's own amount for one month) count what Spend counts: the owner's share of each expense outside the trash, a refund against it. Weeks start on Sunday as Spend's do; months and years are the calendar's, in the owner's time zone. One per category, currency and period (a unique index over `coalesce(category_id, nil uuid)`). A budget's history is its last six periods, from its first; all of an owner's budgets are summed from one read of their spending per currency, category and day.
+- **Alerts** at 80% and 100% are the daily job's: a period's threshold is claimed in `kh_budget_alert` (`on conflict do nothing`, its key the budget, the period's first day and the threshold) and only a claimed row notifies, so a second run, or two at once, sends nothing more. A jump past both at once marks both and tells only 100%. Their notification points at `b:<budget>` (Insights' budgets): `NotifyTarget` is a thread key or that, while comments and read marks still take thread keys only.
+- **Recurring expenses** (`kh_recurring`) are their owner's: a template (the expense's kind, words, amount, currency, payers and split, and the owner's own category, method and tags), every n weeks, months or years, an end date, pause. Occurrence n's day is counted from `starts_on`, never from the previous one, so the 31st stays the month's last day and 29 February falls on the 28th. The daily job makes, as the owner and through `addCheckedExpense` (the same checks as the expense dialog's save), every occurrence missed by today in their time zone (at most 60 a run), one transaction per recurring expense with its row locked. Each expense made carries `recurring_id` and `recurring_n` from a counter that only grows (`seq`), unique together; a new cadence counts again from the last one made, and the counter carries on. Something that can no longer be made (the group archived or left, a friend no longer one, a quota, the currency, a split that no longer adds up) pauses it with that reason; resuming starts after today and makes nothing that was missed.
+- **"Repeat…"** keeps the expense as occurrence 0; the next is the first after both its day and today, so no past month is made up.
+- **Insights** `/insights/$tab` (overview, budgets, trends, statement) are sums over the caller's shares, each in one currency (the one asked for, else the home currency, else the largest). Trends keep four lines and fold the rest into "Other", so the kit's five chart colours are never cycled. The statement prints through the browser: the shell hides itself (`print:hidden`) and the page goes to white.
+- **The entry budget rises to 305 kB** (the owner's choice, as 0279): Insights' route took the entry from 300.0 to 301.3 kB. Task 97 trims.
+
+**Why:** a budget is about what the caller spent, which Kharcha already defines as their share (PLAN 14.5); summing per day once and bucketing in code keeps every period of every budget exact without a query per period. Claiming an alert before telling makes "once per period" a property of a primary key, not of a schedule. Counting occurrences from the first day is the only rule that keeps month ends and leap days right forever; a number that only grows keeps "each occurrence once" true across a change of cadence, where dates or occurrence numbers alone would collide.
+
+**Alternatives considered:**
+- **Alerts as each expense is saved:** instant, but every write path (bulk actions, imports, merges, edits of old expenses) would have to recompute budgets in its transaction; the plan puts them in the daily job.
+- **Unique on (recurring id, day):** an edit of a made expense's day could collide with a later occurrence and stop the job; the counter can't.
+- **Stepping from the previous occurrence:** 31 January, then 28 February, then 28 March, for ever.
+- **A thread for budgets** (`b:` in `THREAD_KEY`): comments and read marks would then accept a budget; a separate target type keeps them out.
+- **Splitting route definitions out of the entry now:** the lasting fix (0279's alternative), left for the wrap-up.

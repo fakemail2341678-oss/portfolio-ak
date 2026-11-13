@@ -26,6 +26,9 @@ export const QUOTA_DEFAULTS = {
 	/** Receipts on one expense, and receipts waiting for their details. */
 	receipts: 10,
 	drafts: 100,
+	/** Task 94: budgets and recurring expenses a person keeps. */
+	budgets: 30,
+	recurring: 30,
 } as const;
 
 /** A guest's are smaller: enough to try everything, too few to fill the database. */
@@ -41,6 +44,8 @@ export const GUEST_QUOTA_DEFAULTS = {
 	rules: 20,
 	receipts: 5,
 	drafts: 10,
+	budgets: 10,
+	recurring: 10,
 } as const;
 
 export type KharchaQuotas = { [Key in keyof typeof QUOTA_DEFAULTS]: number };
@@ -60,6 +65,8 @@ const quotas = (defaults: KharchaQuotas) =>
 			rules: limit(defaults.rules),
 			receipts: limit(defaults.receipts),
 			drafts: limit(defaults.drafts),
+			budgets: limit(defaults.budgets),
+			recurring: limit(defaults.recurring),
 		})
 		.default(defaults);
 

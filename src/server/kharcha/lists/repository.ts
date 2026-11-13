@@ -30,6 +30,19 @@ const sameName = (a: string, b: string) => a.toLocaleLowerCase() === b.toLocaleL
  * is one: what used the other's now uses the stayer's, and the other's goes. The rest,
  * the rules and the receipt drafts move, after what the stayer had.
  */
+/**
+ * A merged list item where else it is held by id (Task 94): the one who goes' budgets (a
+ * category's budget, before the category's row goes and takes it along) and their
+ * recurring expenses' templates.
+ */
+async function remapIn(tx: Tx, ownerId: string, from: string, to: string): Promise<void> {
+	await tx.execute(sql`update kh_budget set category_id = ${to} where owner_id = ${ownerId} and category_id = ${from}`);
+	await tx.execute(sql`
+		update kh_recurring set template = replace(template::text, ${from}, ${to})::jsonb
+		where owner_id = ${ownerId} and template::text like '%' || ${from} || '%'
+	`);
+}
+
 export async function mergeLists(tx: Tx, fromId: string, toId: string): Promise<void> {
 	const theirs = await tx.select().from(khCategory).where(eq(khCategory.ownerId, toId));
 	for (const category of await tx.select().from(khCategory).where(eq(khCategory.ownerId, fromId))) {
@@ -39,6 +52,7 @@ export async function mergeLists(tx: Tx, fromId: string, toId: string): Promise<
 		if (!same) continue;
 		await tx.update(khExpenseShare).set({ categoryId: same.id }).where(eq(khExpenseShare.categoryId, category.id));
 		await tx.update(khMerchantRule).set({ categoryId: same.id }).where(eq(khMerchantRule.categoryId, category.id));
+		await remapIn(tx, fromId, category.id, same.id);
 		await tx.delete(khCategory).where(eq(khCategory.id, category.id));
 	}
 	const categoryEnd = await nextPosition(tx, khCategory, toId);
@@ -60,6 +74,7 @@ export async function mergeLists(tx: Tx, fromId: string, toId: string): Promise<
 			update kh_merchant_rule set tag_ids = array_replace(tag_ids, ${tag.id}::uuid, ${same.id}::uuid)
 			where ${tag.id}::uuid = any(tag_ids)
 		`);
+		await remapIn(tx, fromId, tag.id, same.id);
 		await tx.delete(khTag).where(eq(khTag.id, tag.id));
 	}
 	await tx.update(khTag).set({ ownerId: toId }).where(eq(khTag.ownerId, fromId));
@@ -70,6 +85,7 @@ export async function mergeLists(tx: Tx, fromId: string, toId: string): Promise<
 		if (!same) continue;
 		await tx.update(khExpensePayer).set({ methodId: same.id }).where(eq(khExpensePayer.methodId, method.id));
 		await tx.update(khMerchantRule).set({ methodId: same.id }).where(eq(khMerchantRule.methodId, method.id));
+		await remapIn(tx, fromId, method.id, same.id);
 		await tx.delete(khMethod).where(eq(khMethod.id, method.id));
 	}
 	const methodEnd = await nextPosition(tx, khMethod, toId);

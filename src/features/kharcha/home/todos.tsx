@@ -1,26 +1,30 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
-import { HandCoinsIcon, Trash2Icon } from "lucide-react";
+import { HandCoinsIcon, RepeatIcon, SkipForwardIcon, Trash2Icon } from "lucide-react";
 import { toast } from "sonner";
 import { useConfirm } from "@/components/dialogs/confirm";
 import { errorMessage } from "@/components/errors/error-page";
 import { Button } from "@/components/ui/button";
 import { CloudImage } from "@/features/attachments/components/cloud-image";
+import { skipKharchaRecurring } from "@/functions/kharcha/recurring";
 import { isoDateInstant } from "@/lib/i18n/date-only";
 import { formatDate, formatDateTime, formatNumber } from "@/lib/i18n/intl";
 import { m } from "@/paraglide/messages";
+import { BudgetMeter } from "../budgets/budget-meter";
+import { recurringName } from "../budgets/labels";
 import { ExpenseCard } from "../kit/cards";
 import { FixBadge } from "../kit/fix-badge";
-import { BalancePill } from "../kit/money";
+import { BalancePill, Money } from "../kit/money";
 import { PersonAvatar } from "../kit/person-avatar";
 import { kharchaLinks } from "../links";
 import { kharchaMutations } from "../queries";
 import { useKharchaActions, useKharchaUserId } from "../shell/actions";
-import type { HomeTodo, ReceiptDraftView } from "../types";
+import type { HomeTodo, ReceiptDraftView, RecurringView } from "../types";
 
 /**
- * Home's to-dos (PLAN 14.5 "Home is a to-do list", Tasks 89 and 91): receipts waiting for
- * their details, debts to settle, then possible duplicates. Each has its one next step: "Add
+ * Home's to-dos (PLAN 14.5 "Home is a to-do list", Tasks 89, 91 and 94): receipts waiting
+ * for their details, debts to settle, budgets near or over their limit, recurring expenses
+ * made tomorrow, then possible duplicates. Each has its one next step: "Add
  * details" opens the expense dialog with the receipt; "Settle up" the settle-up dialog with
  * that friend; a duplicate opens its expense, where it can be dismissed.
  */
@@ -32,6 +36,18 @@ export function TodoList({ todos }: { todos: ReadonlyArray<HomeTodo> }) {
 					<DraftTodo key={todo.draft.id} draft={todo.draft} />
 				) : todo.kind === "settle" ? (
 					<SettleTodo key={todo.person.id} todo={todo} />
+				) : todo.kind === "budget" ? (
+					<li key={todo.budget.id} className="flex flex-col gap-2 px-4 py-3 sm:px-5" data-testid="kharcha-todo-budget">
+						<BudgetMeter budget={todo.budget} />
+						<Link
+							{...kharchaLinks.insights("budgets")}
+							className="self-start text-caption text-kh-mark underline underline-offset-4"
+						>
+							{m.kharcha_todo_budget_open()}
+						</Link>
+					</li>
+				) : todo.kind === "recurring" ? (
+					<RecurringTodo key={todo.recurring.id} recurring={todo.recurring} />
 				) : (
 					<li
 						key={todo.expense.id}
@@ -59,6 +75,44 @@ export function TodoList({ todos }: { todos: ReadonlyArray<HomeTodo> }) {
 				),
 			)}
 		</ul>
+	);
+}
+
+/** A recurring expense made tomorrow (Task 94): what, how much, and Skip or a look in Settings. */
+function RecurringTodo({ recurring }: { recurring: RecurringView }) {
+	const userId = useKharchaUserId();
+	const queryClient = useQueryClient();
+	const change = useMutation({
+		...kharchaMutations.recurring(queryClient, userId),
+		onError: (error) => toast.error(errorMessage(error)),
+	});
+	const name = recurringName(recurring);
+	return (
+		<li className="flex flex-wrap items-center gap-3 px-4 py-3 sm:px-5" data-testid="kharcha-todo-recurring">
+			<span className="grid size-8 shrink-0 place-items-center rounded-md border border-kh-hair bg-kh-ground text-kh-muted">
+				<RepeatIcon className="size-4" aria-hidden />
+			</span>
+			<div className="flex min-w-0 flex-1 flex-col gap-0.5">
+				<Link {...kharchaLinks.settings("recurring")} className="truncate font-semibold hover:underline">
+					{name}
+				</Link>
+				<p className="flex flex-wrap items-baseline gap-x-2 text-caption text-kh-muted">
+					<Money amountMinor={recurring.amountMinor} currency={recurring.currency} size="sm" />
+					<span>{m.kharcha_todo_recurring_tomorrow()}</span>
+				</p>
+			</div>
+			<Button
+				size="sm"
+				variant="outline"
+				onClick={() => change.mutate(() => skipKharchaRecurring({ data: { recurringId: recurring.id } }))}
+				disabled={change.isPending}
+				data-testid="kharcha-todo-recurring-skip"
+			>
+				<SkipForwardIcon aria-hidden />
+				{m.kharcha_recurring_skip()}
+				<span className="sr-only">{` ${name}`}</span>
+			</Button>
+		</li>
 	);
 }
 

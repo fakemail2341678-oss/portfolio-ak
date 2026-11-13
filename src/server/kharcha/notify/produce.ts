@@ -4,8 +4,8 @@ import {
 	type NotificationData,
 	type NotifyEmail,
 	type NotifyKind,
+	type NotifyTarget,
 	notifyMode,
-	type ThreadKey,
 } from "@/features/kharcha/notifications";
 import { khNotification, khPerson, khProfile, user } from "@/server/db/schema";
 import type { Tx } from "@/server/db/types";
@@ -30,7 +30,7 @@ export type NotifyEvent = {
 	/** People ids; filtered as above. */
 	to: ReadonlyArray<string | null | undefined>;
 	/** Where it points, from the recipients' side (a friend's thread is `f:<the actor>`). */
-	thread: ThreadKey;
+	thread: NotifyTarget;
 	groupId?: string | null;
 	expenseId?: string | null;
 	data: NotificationData;

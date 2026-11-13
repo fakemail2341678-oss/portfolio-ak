@@ -1,4 +1,5 @@
 import { useSuspenseQuery } from "@tanstack/react-query";
+import { Link } from "@tanstack/react-router";
 import { ArrowDownLeftIcon, ArrowUpRightIcon, CheckIcon, PlusIcon, SearchIcon } from "lucide-react";
 import type { ReactNode } from "react";
 import { MAIN_CONTENT } from "@/components/layout/skip-link";
@@ -9,9 +10,11 @@ import { isoDateInstant, todayInZone } from "@/lib/i18n/date-only";
 import { formatDate, formatMonthShort, formatNumber } from "@/lib/i18n/intl";
 import { cn } from "@/lib/utils";
 import { m } from "@/paraglide/messages";
+import { BudgetMeter } from "../budgets/budget-meter";
 import { KharchaEmpty } from "../kit/empty";
 import { LedgerLine, LedgerPage } from "../kit/ledger";
 import { Money } from "../kit/money";
+import { kharchaLinks } from "../links";
 import { kharchaHomeQueryOptions, kharchaMeQueryOptions } from "../queries";
 import { useKharchaActions, useKharchaUserId } from "../shell/actions";
 import { CreateMenu } from "../shell/create-menu";
@@ -74,6 +77,7 @@ export function KharchaHome() {
 			<div className="grid flex-1 content-start gap-4 px-4 py-4 sm:gap-6 sm:px-8 sm:py-6 lg:grid-cols-[minmax(0,1.35fr)_minmax(0,1fr)] lg:grid-rows-[auto_1fr]">
 				<Sheet className="lg:col-start-2" testId="kharcha-home-summary">
 					{summary}
+					{home.budgets.length > 0 ? <Budgets home={home} /> : null}
 				</Sheet>
 				<Sheet className="self-start lg:col-start-1 lg:row-start-1" testId="kharcha-home-todo">
 					<SheetHead title={m.kharcha_home_todo()} count={home.todos.length} />
@@ -112,6 +116,30 @@ export function KharchaHome() {
 				</Sheet>
 			</div>
 		</main>
+	);
+}
+
+/** How many budgets Home shows; the rest are in Insights. */
+const HOME_BUDGETS = 4;
+
+/** Task 94: the caller's budgets this period, the ones nearest their limit first. */
+function Budgets({ home }: { home: Home }) {
+	const shown = [...home.budgets].sort((a, b) => b.current.percent - a.current.percent).slice(0, HOME_BUDGETS);
+	return (
+		<div
+			className="flex flex-col gap-3 border-kh-hair border-b px-4 py-4 last:border-b-0 sm:px-5"
+			data-testid="kharcha-home-budgets"
+		>
+			<div className="flex items-baseline justify-between gap-2">
+				<p className="font-semibold text-caption">{m.kharcha_home_budgets()}</p>
+				<Link {...kharchaLinks.insights("budgets")} className="text-caption text-kh-mark underline underline-offset-4">
+					{m.kharcha_home_budgets_all()}
+				</Link>
+			</div>
+			{shown.map((budget) => (
+				<BudgetMeter key={budget.id} budget={budget} />
+			))}
+		</div>
 	);
 }
 

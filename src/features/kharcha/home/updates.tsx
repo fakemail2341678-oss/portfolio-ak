@@ -9,13 +9,14 @@ import { cn } from "@/lib/utils";
 import { m } from "@/paraglide/messages";
 import { LedgerLine, LedgerPage } from "../kit/ledger";
 import { kharchaLinks } from "../links";
-import { notificationSentence, parseThread, type ThreadKey } from "../notifications";
+import { type NotifyTarget, notificationSentence, parseThread } from "../notifications";
 import { kharchaMutations } from "../queries";
 import type { NotificationView } from "../types";
 
-/** Where a notification goes: its group's thread, the friend's, or the expense. */
-const linkTo = (thread: ThreadKey) => {
-	const { kind, id } = parseThread(thread);
+/** Where a notification goes: its group's thread, the friend's, the expense, or Insights' budgets (Task 94). */
+const linkTo = (thread: NotifyTarget) => {
+	if (thread.startsWith("b:")) return kharchaLinks.insights("budgets");
+	const { kind, id } = parseThread(thread as Parameters<typeof parseThread>[0]);
 	return kind === "g" ? kharchaLinks.group(id) : kind === "f" ? kharchaLinks.friend(id) : kharchaLinks.expense(id);
 };
 

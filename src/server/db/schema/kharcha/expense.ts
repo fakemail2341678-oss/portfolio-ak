@@ -12,6 +12,7 @@ import {
 	primaryKey,
 	text,
 	timestamp,
+	uniqueIndex,
 	uuid,
 } from "drizzle-orm/pg-core";
 import type { Split } from "@/features/kharcha/money/split";
@@ -19,6 +20,7 @@ import type { ExpenseKind } from "@/features/kharcha/types";
 import { khGroup } from "./group";
 import { khCategory, khMethod, khTag } from "./lists";
 import { khPerson } from "./person";
+import { khRecurring } from "./plan";
 
 const tsvector = customType<{ data: string }>({ dataType: () => "tsvector" });
 
@@ -55,6 +57,9 @@ export const khExpense = pgTable(
 		deletedAt: timestamp({ withTimezone: true }),
 		/** The CSV import that made it, if one did (its idempotency key, Task 93). */
 		importKey: uuid(),
+		/** The recurring expense that made it, and which of its occurrences it is (Task 94): unique together. */
+		recurringId: uuid().references(() => khRecurring.id, { onDelete: "set null" }),
+		recurringN: integer(),
 		/** Spend's words (Task 93): the title, merchant and notes, `simple` (no stemming, any script). */
 		search: tsvector().generatedAlwaysAs(sql`to_tsvector('simple', title || ' ' || merchant || ' ' || notes)`),
 		createdAt: timestamp({ withTimezone: true }).defaultNow().notNull(),
@@ -67,6 +72,9 @@ export const khExpense = pgTable(
 		index("kh_expense_search_idx").using("gin", table.search),
 		index("kh_expense_group_idx").on(table.groupId, table.spentOn),
 		index("kh_expense_created_by_idx").on(table.createdBy),
+		uniqueIndex("kh_expense_recurring_unique")
+			.on(table.recurringId, table.recurringN)
+			.where(sql`${table.recurringId} is not null`),
 		index("kh_expense_trash_idx").on(table.deletedAt).where(sql`${table.deletedAt} is not null`),
 		check("kh_expense_amount_positive", sql`${table.amountMinor} > 0`),
 		check("kh_expense_kind_valid", sql`${table.kind} in ('expense', 'refund')`),

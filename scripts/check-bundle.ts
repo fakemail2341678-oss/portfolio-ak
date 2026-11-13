@@ -34,7 +34,10 @@ import { gzipSync } from "node:zlib";
 // 290.5 kB after sharing Chaal's page heads; the rest is for Tasks 81–84, and Task 85 trims.
 // Part 8 Task 86 (0279): 300. Part 7 left 294.6 kB and Kharcha's catalogue entries 295.0; the room
 // is for Kharcha's routes (about 16 at 0.3 kB, less Expenses' 3, Task 95), and Task 97 trims.
-const ENTRY_BUDGET_KB = 300;
+// Task 94 (0288): 305, the owner's choice. Tasks 88 to 93 used that room (300.0 kB); Insights' route
+// with its address and the Recurring tab's loader took it to 301.3; Tasks 95 and 96 add the old
+// addresses and the admin's routes, and Task 97 trims.
+const ENTRY_BUDGET_KB = 305;
 const ROUTE_BUDGET_KB = 300;
 const FONT_BUDGET_KB = 150;
 /** Code that must never be preloaded by every page, found by a string it always contains: its pages load it. */

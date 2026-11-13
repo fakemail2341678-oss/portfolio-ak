@@ -2,6 +2,7 @@ import "@tanstack/react-start/server-only";
 import { and, eq, inArray, isNull, notInArray } from "drizzle-orm";
 import { removeForEntities } from "@/server/attachments/repository";
 import {
+	khBudget,
 	khCategory,
 	khExpense,
 	khExpensePayer,
@@ -14,6 +15,7 @@ import {
 	khPayment,
 	khPerson,
 	khReceiptDraft,
+	khRecurring,
 	khTag,
 } from "@/server/db/schema";
 import type { Db, Tx } from "@/server/db/types";
@@ -108,7 +110,7 @@ export async function forgetUsers(tx: Tx, userIds: ReadonlyArray<string>): Promi
 	// Their own friend lists; the lists of whoever stays keep them.
 	await tx.delete(khFriend).where(inArray(khFriend.ownerId, people));
 
-	// Their own categories, tags, methods, rules and receipt drafts (Task 89): what stays
+	// Their own categories, tags, methods, rules, receipt drafts (Task 89), budgets and recurring expenses (Task 94): what stays
 	// shared loses them (the foreign keys set its category and method null, its tags go).
 	const drafts = await tx
 		.select({ id: khReceiptDraft.id })
@@ -119,7 +121,7 @@ export async function forgetUsers(tx: Tx, userIds: ReadonlyArray<string>): Promi
 		DRAFT_RECEIPTS,
 		drafts.map((row) => row.id),
 	);
-	for (const table of [khReceiptDraft, khMerchantRule, khTag, khMethod, khCategory]) {
+	for (const table of [khReceiptDraft, khMerchantRule, khRecurring, khBudget, khTag, khMethod, khCategory]) {
 		await tx.delete(table).where(inArray(table.ownerId, people));
 	}
 

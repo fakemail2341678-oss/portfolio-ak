@@ -23,6 +23,17 @@ export const parseThread = (key: ThreadKey): { kind: ThreadKind; id: string } =>
 	id: key.slice(2),
 });
 
+/**
+ * Where a notification points (Task 94): a thread, or a budget (`b:<budget>`, which opens
+ * Insights' budgets). Comments and read marks take thread keys only.
+ */
+export type NotifyTarget = ThreadKey | `b:${string}`;
+export const budgetTarget = (budgetId: string): NotifyTarget => `b:${budgetId}`;
+
+/** A notification's page, unlocalized: its thread's, or Insights' budgets. */
+export const notifyPath = (target: NotifyTarget): string =>
+	target.startsWith("b:") ? "/app/kharcha/insights/budgets" : threadPath(target as ThreadKey);
+
 /** A thread's page, unlocalized: a group's, a friend's or an expense's. */
 export const threadPath = (key: ThreadKey): string => {
 	const { kind, id } = parseThread(key);
@@ -48,8 +59,8 @@ export const reactionLabel = (emoji: Reaction): string =>
 	})[emoji]();
 
 /**
- * What someone hears about (PLAN 14.5 "Notifications and email"). Budgets and recurring
- * expenses add theirs with Task 94.
+ * What someone hears about (PLAN 14.5 "Notifications and email"): Task 94 adds a budget at
+ * 80% or 100% and a recurring expense made.
  */
 export const NOTIFY_KINDS = [
 	"group.added",
@@ -60,6 +71,8 @@ export const NOTIFY_KINDS = [
 	"comment.mention",
 	"comment.thread",
 	"reminder",
+	"budget.alert",
+	"recurring.made",
 ] as const;
 export type NotifyKind = (typeof NOTIFY_KINDS)[number];
 
@@ -77,6 +90,8 @@ export const NOTIFY_DEFAULTS: Readonly<Record<NotifyKind, NotifyEmail>> = {
 	"comment.mention": "digest",
 	"comment.thread": "digest",
 	reminder: "instant",
+	"budget.alert": "digest",
+	"recurring.made": "digest",
 };
 
 /** A person's choices over the defaults (`kh_profile.notify`): only what they changed is stored. */
@@ -102,6 +117,9 @@ export type NotificationData = {
 	group?: string;
 	amounts?: Amount[];
 	excerpt?: string;
+	/** A budget's alert (Task 94): the threshold reached, and the period's limit (`amounts` holds what was spent). */
+	threshold?: number;
+	limit?: Amount;
 };
 
 const amountsText = (amounts: ReadonlyArray<Amount> | undefined, locale?: Locale) =>
@@ -131,6 +149,18 @@ export function notificationSentence(kind: NotifyKind, data: NotificationData, l
 				: m.kharcha_notify_comment_friend({ actor }, options);
 		case "reminder":
 			return m.kharcha_notify_reminder({ actor, amount: amountsText(data.amounts, locale) }, options);
+		case "budget.alert": {
+			const values = {
+				name: title || m.kharcha_budget_everything({}, options),
+				spent: amountsText(data.amounts, locale),
+				limit: data.limit ? formatMoney(data.limit.amountMinor, data.limit.currency, locale) : "",
+			};
+			return data.threshold === 100
+				? m.kharcha_notify_budget_over(values, options)
+				: m.kharcha_notify_budget_near(values, options);
+		}
+		case "recurring.made":
+			return m.kharcha_notify_recurring({ title }, options);
 	}
 }
 

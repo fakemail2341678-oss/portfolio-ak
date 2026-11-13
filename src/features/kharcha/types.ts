@@ -1,8 +1,10 @@
 import type { ImageAsset } from "@/features/attachments/schema";
 import type { IsoDate, IsoMonth } from "@/lib/i18n/date-only";
+import type { BudgetPeriod, BudgetState } from "./budgets/period";
 import type { Transfer } from "./money/simplify";
-import type { Split, SplitMethod } from "./money/split";
-import type { NotificationData, NotifyEmail, NotifyKind, Reaction, ThreadKey } from "./notifications";
+import type { Paid, Split, SplitMethod } from "./money/split";
+import type { NotificationData, NotifyEmail, NotifyKind, NotifyTarget, Reaction, ThreadKey } from "./notifications";
+import type { RecurringUnit } from "./recurring/cadence";
 
 /**
  * Kharcha's shared types (docs/guides/kharcha.md, PLAN 14.5): what the server returns and
@@ -165,7 +167,10 @@ export type HomeActivity = {
 export type HomeTodo =
 	| { kind: "receipt"; draft: ReceiptDraftView }
 	| { kind: "duplicate"; expense: SpendRow; of: { id: string; title: string; spentOn: IsoDate } }
-	| { kind: "settle"; person: KharchaPerson; owe: Amount[] };
+	| { kind: "settle"; person: KharchaPerson; owe: Amount[] }
+	/** Task 94: a budget at 80% of its period or over it, and a recurring expense made tomorrow. */
+	| { kind: "budget"; budget: BudgetView }
+	| { kind: "recurring"; recurring: RecurringView };
 
 /**
  * Home (PLAN 14.5 "UX"): the caller's to-dos (each later task adds its kinds: debts to
@@ -187,6 +192,8 @@ export type KharchaHome = {
 	/** Task 92: the newest notifications (Updates), and how many are unread in all. */
 	updates: NotificationView[];
 	unread: number;
+	/** Task 94: the caller's budgets and how each stands this period. */
+	budgets: BudgetView[];
 };
 
 /** What the shell polls (PLAN 14.5 "Freshness"): the caller's `rev`, and their unread notifications for the bell. */
@@ -196,7 +203,8 @@ export type KharchaPulse = { rev: number; unread: number };
 export type NotificationView = {
 	id: string;
 	kind: NotifyKind;
-	thread: ThreadKey;
+	/** A thread, or a budget (Task 94: `b:<budget>`, Insights' budgets). */
+	thread: NotifyTarget;
 	data: NotificationData;
 	at: string;
 	read: boolean;
@@ -252,6 +260,8 @@ export type DuplicateRef = { id: string; title: string; spentOn: IsoDate };
 
 export type ExpenseView = {
 	id: string;
+	/** Task 94: the recurring expense that made it or that it started, and whether it is the caller's own. */
+	recurring?: { id: string; mine: boolean } | null;
 	groupId: string | null;
 	kind: ExpenseKind;
 	title: string;
@@ -643,3 +653,143 @@ export type ActivityData = { field?: string; from?: ActivityValue; to?: Activity
 
 /** Spend's chart: the bucket the smaller ones of a list are summed into. */
 export const SPEND_OTHER_BUCKET = "*other";
+
+/* Planning (Task 94, decision 0288): budgets, recurring expenses and insights. */
+
+/** A budget as the caller sees it, with how it stands in the period holding today. */
+export type BudgetView = {
+	id: string;
+	/** Null: everything they spend in the currency. */
+	category: CategoryChip | null;
+	currency: string;
+	period: BudgetPeriod;
+	/** The amount of every period without one of its own. */
+	amountMinor: number;
+	startsOn: IsoDate;
+	version: number;
+	/** A monthly budget's own amounts, by month. */
+	months: Array<{ month: IsoMonth; amountMinor: number }>;
+	/** The period holding today: its days, its amount, what was spent, how it stands. */
+	current: BudgetPeriodView;
+	/** The periods before it, newest first (up to six, from the budget's first). */
+	history: BudgetPeriodView[];
+};
+
+export type BudgetPeriodView = {
+	start: IsoDate;
+	end: IsoDate;
+	amountMinor: number;
+	spentMinor: number;
+	state: BudgetState;
+	percent: number;
+};
+
+/** What a recurring expense makes: an expense, its people and split, and the owner's own category, method and tags. */
+export type RecurringTemplate = {
+	kind: ExpenseKind;
+	title: string;
+	merchant: string;
+	notes: string;
+	amountMinor: number;
+	currency: string;
+	payers: Paid[];
+	split: Split;
+	categoryId: string | null;
+	methodId: string | null;
+	tagIds: string[];
+};
+
+/** Why the daily job paused a recurring expense: it couldn't make it. */
+export const RECURRING_PROBLEMS = ["group", "people", "quota", "currency", "split"] as const;
+export type RecurringProblem = (typeof RECURRING_PROBLEMS)[number];
+
+export type RecurringView = {
+	id: string;
+	kind: ExpenseKind;
+	title: string;
+	merchant: string;
+	amountMinor: number;
+	currency: string;
+	/** The owner's share of each one it makes. */
+	myShareMinor: number;
+	group: { id: string; name: string } | null;
+	/** The people on it besides the owner. */
+	people: KharchaPerson[];
+	category: CategoryChip | null;
+	unit: RecurringUnit;
+	every: number;
+	startsOn: IsoDate;
+	nextOn: IsoDate;
+	endsOn: IsoDate | null;
+	/** Past its end date: nothing more to make. */
+	ended: boolean;
+	paused: boolean;
+	problem: RecurringProblem | null;
+	lastMadeOn: IsoDate | null;
+	/** How many expenses it has made. */
+	made: number;
+	version: number;
+};
+
+/** Insights' overview (`/insights/overview`): one month of the caller's spending in one currency. */
+export type InsightsOverview = {
+	month: IsoMonth;
+	previous: IsoMonth;
+	/** The currencies the caller spent in over the two months, and the one shown. */
+	currencies: string[];
+	currency: string;
+	total: number;
+	previousTotal: number;
+	/** By their own category ("" is uncategorized), this month and last. */
+	byCategory: Array<SpendBucket & { color: KharchaColor | null; previousMinor: number }>;
+	/** The month's top merchants (the title when there is no merchant). */
+	merchants: SpendBucket[];
+	/** Every day of the month, with what was spent. */
+	days: Array<{ day: IsoDate; amountMinor: number }>;
+};
+
+/** One line of a trend: a value per month, oldest first. */
+export type TrendSeries = { key: string; label: string; color: KharchaColor | null; values: number[] };
+
+/** Insights' trends (`/insights/trends`): twelve months to `month`, in one currency. */
+export type InsightsTrends = {
+	months: IsoMonth[];
+	currencies: string[];
+	currency: string;
+	totals: number[];
+	byCategory: TrendSeries[];
+	byTag: TrendSeries[];
+	/** Shared spending: the caller's share by group, and outside groups by friend. */
+	shared: TrendSeries[];
+};
+
+/** One expense on a statement: the caller's share, with their own category. */
+export type StatementLine = {
+	id: string;
+	spentOn: IsoDate;
+	kind: ExpenseKind;
+	title: string;
+	merchant: string;
+	category: CategoryChip | null;
+	group: string | null;
+	amountMinor: number;
+	myShareMinor: number;
+};
+
+/** Insights' statement (`/insights/statement`): a range of days, per currency. */
+export type InsightsStatement = {
+	from: IsoDate;
+	to: IsoDate;
+	currencies: Array<{
+		currency: string;
+		/** Expenses, refunds, and the two together (the caller's share). */
+		spent: number;
+		refunds: number;
+		net: number;
+		count: number;
+		byCategory: SpendBucket[];
+		lines: StatementLine[];
+	}>;
+	/** More expenses than a statement lists (`STATEMENT_MAX`): the totals still count them all. */
+	truncated: boolean;
+};

@@ -352,6 +352,20 @@ export async function mergePerson(tx: Tx, fromId: string, toId: string): Promise
 		where owner_id = ${fromId}
 	`);
 	await tx.execute(sql`update kh_import set owner_id = ${toId} where owner_id = ${fromId}`);
+	// Budgets and recurring expenses (Task 94): they move; where both had a budget for the
+	// same category (merged above), currency and period, the stayer's wins.
+	await tx.execute(sql`
+		delete from kh_budget f using kh_budget t
+		where f.owner_id = ${fromId} and t.owner_id = ${toId} and f.currency = t.currency and f.period = t.period
+			and f.category_id is not distinct from t.category_id
+	`);
+	await tx.execute(sql`update kh_budget set owner_id = ${toId} where owner_id = ${fromId}`);
+	await tx.execute(sql`update kh_recurring set owner_id = ${toId} where owner_id = ${fromId}`);
+	// A template names people by id, as a split does.
+	await tx.execute(sql`
+		update kh_recurring set template = replace(template::text, ${fromId}, ${toId})::jsonb
+		where template::text like '%' || ${fromId} || '%'
+	`);
 
 	// Invites (Task 90): one of the two sent the other invited nobody; the rest move.
 	await tx.execute(sql`

@@ -1,5 +1,5 @@
 import { linkOptions } from "@tanstack/react-router";
-import type { GroupTab, SettingsTab } from "./search";
+import type { GroupTab, InsightsSearch, InsightsTab, SettingsTab } from "./search";
 
 /**
  * Every link into Kharcha (PLAN 14.2, "Name"): pages link through these, so renaming the
@@ -18,6 +18,9 @@ export const kharchaLinks = {
 	import: () => linkOptions({ to: "/app/kharcha/import" }),
 	/** The expense page; over Spend it opens as a panel (a masked route, `spendExpense`). */
 	expense: (expenseId: string) => linkOptions({ to: "/app/kharcha/e/$expenseId", params: { expenseId } }),
+	/** Insights (Task 94): a tab, with its month, currency or days. */
+	insights: (tab: InsightsTab, search: InsightsSearch = {}) =>
+		linkOptions({ to: "/app/kharcha/insights/$tab", params: { tab }, search }),
 	settings: (tab: SettingsTab) => linkOptions({ to: "/app/kharcha/settings/$tab", params: { tab } }),
 	people: () => linkOptions({ to: "/app/kharcha/people" }),
 	/** A group's thread, or one of its other tabs. */

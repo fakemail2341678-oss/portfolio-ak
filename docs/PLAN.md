@@ -3746,7 +3746,7 @@ As 12.1, with these differences:
 | 91 | Balances and settling up: balances everywhere, settle up, simplify, remind | high | Done |
 | 92 | Conversations, notifications and email: comments, mentions, reactions, unread, digests, the daily job | high | Done |
 | 93 | Spend: the search language, filters, saved searches, views and charts, bulk actions, CSV import and export | xhigh | Done |
-| 94 | Budgets, recurring expenses and insights | high | Planned |
+| 94 | Budgets, recurring expenses and insights | high | Done |
 | 95 | Expenses moved in: migration, redirects, the old app removed | high | Planned |
 | 96 | Admin: overview, settings, default categories, abuse controls | medium | Planned |
 | 97 | Wrap-up: full e2e, accessibility pass, template matrix, finish review | medium | Planned |
@@ -4322,26 +4322,33 @@ Kharcha's data, money core, access and server, tested on PGlite, with no UI; Exp
 - run `pnpm db:migrate` on Neon (`0054_kharcha_spend`);
 - the entry budget is now full (300.0 of 300 kB) and Task 94 adds `/insights/$tab`: it needs your decision first (raise it mid-part and trim at Task 97 as 0279 did, or split route definitions out of the entry now).
 
-### Task 94: Budgets, recurring expenses and insights (planned)
+### Task 94: Budgets, recurring expenses and insights (done)
 
-- **Budgets:**
-  - per category or overall, per currency;
-  - weekly, monthly or yearly, with one month's own amount;
-  - progress on Home and in insights;
-  - alerts at 80% and 100%, once per period.
-- **Recurring expenses:**
-  - from any expense ("Repeat…"), personal or shared (rent with flatmates);
-  - weekly, monthly, yearly or every n; an end date; pause; skip the next one;
-  - made by the daily job with catch-up, each occurrence once;
-  - listed in Settings → Recurring, and on Home the day before.
-- **Insights** `/insights/$tab`:
-  - **overview:** this month against last, by category, top merchants, daily spend, a calendar heatmap;
-  - **budgets;**
-  - **trends:** 12 months by category, by tag, and shared spending by friend or group;
-  - **statement:** a date-range summary (totals, by category, every expense), printable with a print stylesheet, so "Save as PDF" is the browser's.
+**Done** (decision 0288; the guide's "Budgets", "Recurring expenses" and "Insights").
 
-  Charts use `dataviz`, each with a table for screen readers (`ChartFrame`).
-- **Tests:** budget periods and alerts, recurrence dates (month ends, leap days, catch-up), the insight sums; e2e: a budget alert and a recurring expense made by the cron.
+**What changed:**
+- **Tables** (migration `0055_kharcha_planning`, `schema/kharcha/plan.ts`): `kh_budget` (owner, a category or none, currency, week / month / year, amount, first day, version; one per category, currency and period), `kh_budget_month` (a monthly budget's own amount for a month), `kh_budget_alert` (budget, period, threshold: the claim that sends each alert once), `kh_recurring` (owner, group, template, unit and every, the day it counts from, the next occurrence and its day, `seq`, end, pause and its reason, the last made); `kh_expense` gains `recurring_id` and `recurring_n`, unique together. `mergePerson` and `mergeLists` move budgets (the stayer's wins on a clash) and templates (people, categories, methods, tags); an account going deletes its own.
+- **Pure core:** `budgets/period.ts` (periods from Sunday, the calendar's months and years, thresholds in integers, a month's own amount), `recurring/cadence.ts` (occurrence n counted from the first day: month ends and leap days; the first on or after a day; catch-up up to 60).
+- **Server:** `budgets/service.ts` (views from one read of the owner's spending per day, create, update at its version, a month's amount, delete, `sendBudgetAlerts`), `recurring/service.ts` ("Repeat", update, pause and resume, skip, delete, `makeDueRecurring`, pausing with the reason), `insights/service.ts` (overview, trends, statement); `addCheckedExpense` is `createExpense`'s checks and write, shared with the job; the daily job runs recurring expenses and budget alerts before the digests and emails their instant rows. Notifications gain `budget.alert` (target `b:<budget>`, `NotifyTarget`) and `recurring.made`; quotas gain `budgets` and `recurring` (30, a guest 10). Home adds budgets (progress and to-dos at 80% and over) and recurring expenses made tomorrow.
+- **Functions:** `budgets.ts` (5), `recurring.ts` (6), `insights.ts` (3), in the guard test, the access matrix and Storybook's mocks.
+- **Pages:** `/insights/$tab` (`_shell/insights.$tab.tsx`): the overview (the month against the one before, by category, top merchants, every day, a calendar), budgets (meters, earlier periods, the dialog with a month's own amount), trends (twelve months: totals, by category, by tag, shared by group and friend), a statement (any days, per currency, every expense, Print or save as PDF with `print:hidden` on the shell); Settings → Recurring; "Repeat" on the expense page and panel; Insights in the rail, the tabs and the palette; Home's budgets and two new to-dos.
+- **Guests:** the sample's latest rent repeats monthly and a monthly Food budget is set.
+- **Tests:** `tests/unit/kharcha-plan.test.ts` (13), `tests/server/kharcha-plan.test.ts` (12), 15 access-matrix rows, the merge test reaching both new owners; "Kharcha/Insights" stories (9); e2e: the daily job makes a guest's rent once and alerts a budget once, whose alert opens Insights; the review adds Insights' four tabs and Settings → Recurring; 128 `kharcha_*` messages in both languages.
+- **Bundle:** the entry is 301.3 kB against a budget raised to 305 (the owner's choice: 300.0 before; Insights' route). The Insights page adds 61.3 kB on top of the root, its charts lazy.
+
+**Deviations:**
+- Budget alerts come only from the daily job, not from each save of an expense (0288).
+- A recurring expense is its owner's alone: the others on a group's rent see what it makes, not it.
+- Resuming a paused one makes nothing missed while paused; "Repeat" never makes up past occurrences either.
+- Trends keep four lines and Other (the kit's five colours); the overview's categories eight and Other.
+- `scripts/strip-demo.ts`' shared `scroll-region.tsx` now names Kharcha too (it already used it).
+- The design pass was the e2e review and the stories in both projects, as Task 93's.
+
+**Gates:** typecheck, check, knip, `i18n:check`, the build and the bundle check, `build-storybook` (Kharcha's stories) green. Tests on what changed: the Kharcha server and unit files, the guard, route-SEO, route-guard, strip-marker and i18n tests (18 files, 423 tests); the Kharcha stories in both Storybook projects (51 each; People's Group Settings and Settle's Totals timed out once under parallel load in the dark/ne project and pass alone); e2e for Kharcha (the review and flows: 392 passed).
+
+**For the owner:**
+- run `pnpm db:migrate` on Neon (`0055_kharcha_planning`);
+- the entry budget is 305 kB now; Task 97 trims it.
 
 ### Task 95: Expenses moved in (planned)
 

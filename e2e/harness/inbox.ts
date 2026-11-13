@@ -317,6 +317,19 @@ export async function serveHarness(port: number, query: DemoQuery) {
 			}
 			// portfolio:end
 			// kharcha:start
+			if (route === "POST /e2e/kharcha-recurring-due") {
+				// Task 94: the newest recurring expense of an account, made due today (as if its last one
+				// was a month ago), so the daily job makes it. Nothing else moves the server's clock.
+				const { rows } = await query(
+					`update "kh_recurring" r set "starts_on" = (current_date - interval '1 month')::date, "next_n" = 1,
+					   "next_on" = current_date - 1, "paused_at" = null
+					 where r."id" = (select r2."id" from "kh_recurring" r2 join "kh_person" p on p."id" = r2."owner_id"
+					   join "user" u on u."id" = p."user_id" where u."id" = $1 order by r2."created_at" desc limit 1)
+					 returning r."id"`,
+					[url.searchParams.get("user")],
+				);
+				return send(response, rows[0] ? 200 : 404, rows[0] ?? { error: "not found" });
+			}
 			if (route === "GET /e2e/kharcha-expense") {
 				// The Kharcha demo account's newest expense of its own (scripts/lib/kharcha-seed.ts), for its page's review.
 				const { rows } = await query(

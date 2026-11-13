@@ -1,6 +1,6 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
-import { ArchiveRestoreIcon, PencilIcon, Trash2Icon } from "lucide-react";
+import { ArchiveRestoreIcon, PencilIcon, RepeatIcon, Trash2Icon } from "lucide-react";
 import { lazy, type ReactNode, Suspense, useState } from "react";
 import { toast } from "sonner";
 import { useConfirm } from "@/components/dialogs/confirm";
@@ -14,7 +14,7 @@ import { CategoryIcon } from "../kit/category-icon";
 import { FixBadge } from "../kit/fix-badge";
 import { Money } from "../kit/money";
 import { kharchaLinks } from "../links";
-import { kharchaMutations } from "../queries";
+import { kharchaKeys, kharchaMeQueryOptions, kharchaMutations, refreshKharcha } from "../queries";
 import { useKharchaActions } from "../shell/actions";
 import { CommentLine } from "../threads/comment-line";
 import { Composer } from "../threads/composer";
@@ -23,6 +23,7 @@ import { type ExpenseDetail, TRASH_DAYS } from "../types";
 import { historySentence } from "./history";
 
 const ReceiptViewer = lazy(() => import("./receipt-viewer"));
+const RepeatDialog = lazy(() => import("../recurring/repeat-dialog"));
 
 const day = (value: string) => formatDate(isoDateInstant(value), { dateStyle: "medium", timeZone: "UTC" });
 
@@ -39,6 +40,8 @@ export function ExpensePanel({ expense, userId }: { expense: ExpenseDetail; user
 	const trash = useMutation(kharchaMutations.trashExpense(queryClient, userId));
 	const duplicate = useMutation(kharchaMutations.markDuplicate(queryClient, userId));
 	const [viewing, setViewing] = useState<number | null>(null);
+	const [repeating, setRepeating] = useState(false);
+	const { data: me } = useQuery(kharchaMeQueryOptions(userId));
 	useMarkRead(userId, expense.talk);
 	const title = expense.title || expense.merchant || m.kharcha_untitled();
 	const shared = expense.people.length > 1;
@@ -222,6 +225,12 @@ export function ExpensePanel({ expense, userId }: { expense: ExpenseDetail; user
 						{m.kharcha_expense_edit()}
 					</Button>
 				) : null}
+				{expense.can.edit && !expense.recurring ? (
+					<Button variant="outline" onClick={() => setRepeating(true)} data-testid="kharcha-expense-repeat">
+						<RepeatIcon aria-hidden />
+						{m.kharcha_recurring_repeat()}
+					</Button>
+				) : null}
 				{expense.can.delete ? (
 					<Button variant="ghost" onClick={() => void remove()} disabled={trash.isPending}>
 						<Trash2Icon aria-hidden />
@@ -229,6 +238,33 @@ export function ExpensePanel({ expense, userId }: { expense: ExpenseDetail; user
 					</Button>
 				) : null}
 			</div>
+			{expense.recurring ? (
+				<p className="flex items-center gap-1.5 text-kh-muted text-sm" data-testid="kharcha-expense-repeats">
+					<RepeatIcon className="size-4" aria-hidden />
+					{m.kharcha_recurring_repeats()}
+					{expense.recurring.mine ? (
+						<Link
+							{...kharchaLinks.settings("recurring")}
+							className="font-medium text-kh-mark underline underline-offset-4"
+						>
+							{m.kharcha_recurring_manage()}
+						</Link>
+					) : null}
+				</p>
+			) : null}
+			{repeating ? (
+				<Suspense fallback={null}>
+					<RepeatDialog
+						from={{ expenseId: expense.id, spentOn: expense.spentOn }}
+						today={me?.today ?? expense.spentOn}
+						onSaved={(recurring) => {
+							queryClient.setQueryData(kharchaKeys.recurring(userId), recurring);
+							void refreshKharcha(queryClient, userId);
+						}}
+						onClose={() => setRepeating(false)}
+					/>
+				</Suspense>
+			) : null}
 
 			<section aria-labelledby={`${expense.id}-history`} className="flex flex-col gap-2">
 				<h2 id={`${expense.id}-history`} className="font-semibold text-sm">

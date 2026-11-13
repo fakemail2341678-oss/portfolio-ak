@@ -2,6 +2,7 @@ import "@tanstack/react-start/server-only";
 import { eq } from "drizzle-orm";
 import { expenseDebts, paymentDebt } from "@/features/kharcha/money/ledger";
 import { computeShares, itemizedExtras, type Paid, type Split } from "@/features/kharcha/money/split";
+import { occurrenceOn } from "@/features/kharcha/recurring/cadence";
 import { type ExpenseKind, GROUP_KIND_ICON } from "@/features/kharcha/types";
 import { addDays, todayInZone } from "@/lib/i18n/date-only";
 import { APP_TIME_ZONE } from "@/lib/i18n/intl";
@@ -9,6 +10,7 @@ import { m } from "@/paraglide/messages";
 import type { Locale } from "@/paraglide/runtime";
 import {
 	khActivity,
+	khBudget,
 	khCategory,
 	khComment,
 	khExpense,
@@ -23,6 +25,7 @@ import {
 	khPerson,
 	khProfile,
 	khReaction,
+	khRecurring,
 } from "@/server/db/schema";
 import type { Tx } from "@/server/db/types";
 import type { GuestData } from "@/server/guests/data";
@@ -459,6 +462,49 @@ export async function seedSample(tx: Tx, userId: string, locale: Locale): Promis
 		})
 		.returning({ id: khComment.id });
 	if (comment) await tx.insert(khReaction).values({ commentId: comment.id, personId: me.id, emoji: "👍" });
+	// Planning (Task 94): the latest rent repeats monthly, and a monthly budget on Food.
+	const rentTitle = m.kharcha_seed_flat_rent({}, t);
+	const rent = expenses
+		.filter((expense) => expense.row.title === rentTitle)
+		.sort((a, b) => b.row.spentOn.localeCompare(a.row.spentOn))[0];
+	if (rent) {
+		const monthly = { unit: "month" as const, every: 1 };
+		const [recurring] = await tx
+			.insert(khRecurring)
+			.values({
+				ownerId: me.id,
+				groupId: rent.row.groupId,
+				template: {
+					kind: rent.row.kind,
+					title: rent.row.title,
+					merchant: rent.row.merchant,
+					notes: "",
+					amountMinor: rent.row.amountMinor,
+					currency: CURRENCY,
+					payers: rent.payers,
+					split: rent.row.split,
+					categoryId: rent.category,
+					methodId: null,
+					tagIds: [],
+				},
+				...monthly,
+				startsOn: rent.row.spentOn,
+				nextN: 1,
+				nextOn: occurrenceOn(rent.row.spentOn, monthly, 1),
+			})
+			.returning({ id: khRecurring.id });
+		if (recurring) {
+			await tx.update(khExpense).set({ recurringId: recurring.id, recurringN: 0 }).where(eq(khExpense.id, rent.row.id));
+		}
+	}
+	await tx.insert(khBudget).values({
+		ownerId: me.id,
+		categoryId: categories.get("food") ?? null,
+		currency: CURRENCY,
+		period: "month",
+		amountMinor: 800_000,
+		startsOn: `${today.slice(0, 7)}-01`,
+	});
 	await bumpRevs(tx, [me.id]);
 }
 

@@ -293,3 +293,18 @@ html[data-section="kharcha"] ::selection {
 		transition-timing-function: var(--kh-ease);
 	}
 }
+
+/*
+ * Printing (Task 94): a statement saved as a PDF is the page alone. The shell hides itself
+ * (print:hidden on the rail, the bars, the tabs, the + and the guest banner); the page is on
+ * white with the light theme's ink whatever the screen's theme, and its sheets lose their frames.
+ */
+@media print {
+	html[data-section="kharcha"] {
+		color-scheme: light;
+	}
+	html[data-section="kharcha"] body {
+		background: white;
+		color: black;
+	}
+}

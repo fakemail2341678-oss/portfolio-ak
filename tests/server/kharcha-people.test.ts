@@ -1,6 +1,7 @@
 import { eq } from "drizzle-orm";
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from "vitest";
 import * as schema from "@/server/db/schema";
+import * as budgets from "@/server/kharcha/budgets/service";
 import * as talk from "@/server/kharcha/conversations/service";
 import * as expenses from "@/server/kharcha/expenses/service";
 import { forgetUser } from "@/server/kharcha/forget";
@@ -10,6 +11,7 @@ import * as lists from "@/server/kharcha/lists/service";
 import * as me from "@/server/kharcha/me/service";
 import * as payments from "@/server/kharcha/payments/service";
 import { befriend, ensurePerson, mergePerson } from "@/server/kharcha/people";
+import * as recurring from "@/server/kharcha/recurring/service";
 import { importSpend } from "@/server/kharcha/spend/import";
 import { saveSearch } from "@/server/kharcha/spend/saved";
 import { createTestDb } from "../utils/test-db";
@@ -220,6 +222,16 @@ describe("mergePerson", () => {
 				},
 			],
 		});
+		// Planning (Task 94): a budget on the guest's Food (Maya has one for the same) and their
+		// tagged expense repeating, its template holding their category, method and tag.
+		const budget = { currency: "NPR" as const, period: "month" as const, amountMinor: 50_000, startsOn: today };
+		await budgets.createBudget(as("guest"), { ...budget, categoryId: food.id });
+		await budgets.createBudget(as("guest"), { ...budget, categoryId: null, currency: "USD" });
+		await budgets.createBudget(as("maya"), {
+			...budget,
+			categoryId: mayaLists.categories.find((c) => c.key === "food")?.id ?? null,
+		});
+		await recurring.repeatExpense(as("guest"), { expenseId: tagged.id, unit: "month", every: 1, endsOn: null });
 		await expectLedgerConsistent(env.db);
 
 		const before = await referencesTo(guest);
@@ -253,6 +265,17 @@ describe("mergePerson", () => {
 			mayaFood?.id,
 		]);
 		expect(after.categories.at(-1)?.name).toBe("Momos");
+		// Budgets: the same category, currency and period is Maya's one; the rest moved.
+		const kept = await budgets.listBudgets(as("maya"));
+		expect(kept.map((each) => [each.category?.id ?? null, each.currency])).toEqual([
+			[mayaFood?.id, "NPR"],
+			[null, "USD"],
+		]);
+		// The recurring expense is Maya's, its template on her lists and her person.
+		const [repeats] = await recurring.listRecurring(as("maya"));
+		expect(repeats?.category?.id).toBe(mayaFood?.id);
+		const [row] = await env.db.select({ template: schema.khRecurring.template }).from(schema.khRecurring);
+		expect(JSON.stringify(row?.template)).not.toContain(guest);
 		expect(after.tags.map((each) => each.name)).toEqual(["trip"]);
 		expect(after.methods).toHaveLength(mayaLists.methods.length);
 		expect(after.rules).toHaveLength(1);

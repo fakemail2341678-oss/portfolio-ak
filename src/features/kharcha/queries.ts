@@ -1,4 +1,5 @@
 import { mutationOptions, type QueryClient, queryOptions } from "@tanstack/react-query";
+import { listKharchaBudgets } from "@/functions/kharcha/budgets";
 import {
 	createKharchaComment,
 	deleteKharchaComment,
@@ -37,6 +38,11 @@ import {
 	removeKharchaGroupMember,
 	updateKharchaGroup,
 } from "@/functions/kharcha/groups";
+import {
+	getKharchaInsightsOverview,
+	getKharchaInsightsTrends,
+	getKharchaStatement,
+} from "@/functions/kharcha/insights";
 import { acceptKharchaInvite, inviteKharchaFriend } from "@/functions/kharcha/invites";
 import { getKharchaInvite } from "@/functions/kharcha/join";
 import { getKharchaLists } from "@/functions/kharcha/lists";
@@ -55,6 +61,7 @@ import {
 	updateKharchaPayment,
 } from "@/functions/kharcha/payments";
 import { createKharchaDraft, deleteKharchaDraft, getKharchaUploadSettings } from "@/functions/kharcha/receipts";
+import { listKharchaRecurring } from "@/functions/kharcha/recurring";
 import { getKharchaSettleUp, remindKharchaFriend } from "@/functions/kharcha/settle";
 import {
 	bulkKharchaExpenses,
@@ -91,8 +98,8 @@ import type {
 	UpdateGroupInput,
 	UpdatePaymentInput,
 } from "./schema";
-import type { SpendChartInput, SpendListInput } from "./search";
-import type { KharchaMe, SavedSearch } from "./types";
+import type { InsightsInput, SpendChartInput, SpendListInput, StatementInput } from "./search";
+import type { BudgetView, KharchaMe, RecurringView, SavedSearch } from "./types";
 
 /**
  * Kharcha's queries (TanStack Query only, PLAN 14.5 "Client state"). Every key starts with
@@ -117,6 +124,11 @@ export const kharchaKeys = {
 	groupTotals: (userId: string, groupId: string) => [...kharchaKeys.user(userId), "group-totals", groupId] as const,
 	settleUp: (userId: string, input: SettleUpInput) => [...kharchaKeys.user(userId), "settle-up", input] as const,
 	payment: (userId: string, paymentId: string) => [...kharchaKeys.user(userId), "payment", paymentId] as const,
+	/** Task 94: budgets, recurring expenses and insights. */
+	budgets: (userId: string) => [...kharchaKeys.user(userId), "budgets"] as const,
+	recurring: (userId: string) => [...kharchaKeys.user(userId), "recurring"] as const,
+	insights: (userId: string, tab: "overview" | "trends" | "statement", input: InsightsInput | StatementInput) =>
+		[...kharchaKeys.user(userId), "insights", tab, input] as const,
 	/** Outside `user`: a visitor without a session reads it too. */
 	join: (token: string) => [...kharchaKeys.all, "join", token] as const,
 	/** Outside `user`: polling it mustn't refetch itself. */
@@ -234,7 +246,51 @@ const searchesChanged = (queryClient: QueryClient, userId: string) => (searches:
 	queryClient.setQueryData<KharchaMe>(kharchaKeys.me(userId), (me) => (me ? { ...me, searches } : me));
 };
 
+/** Insights' budgets and Home's progress (Task 94). */
+export const kharchaBudgetsQueryOptions = (userId: string) =>
+	queryOptions({ queryKey: kharchaKeys.budgets(userId), queryFn: () => listKharchaBudgets() });
+
+/** Settings → Recurring (Task 94). */
+export const kharchaRecurringQueryOptions = (userId: string) =>
+	queryOptions({ queryKey: kharchaKeys.recurring(userId), queryFn: () => listKharchaRecurring() });
+
+export const kharchaOverviewQueryOptions = (userId: string, input: InsightsInput) =>
+	queryOptions({
+		queryKey: kharchaKeys.insights(userId, "overview", input),
+		queryFn: () => getKharchaInsightsOverview({ data: input }),
+	});
+
+export const kharchaTrendsQueryOptions = (userId: string, input: InsightsInput) =>
+	queryOptions({
+		queryKey: kharchaKeys.insights(userId, "trends", input),
+		queryFn: () => getKharchaInsightsTrends({ data: input }),
+	});
+
+export const kharchaStatementQueryOptions = (userId: string, input: StatementInput) =>
+	queryOptions({
+		queryKey: kharchaKeys.insights(userId, "statement", input),
+		queryFn: () => getKharchaStatement({ data: input }),
+	});
+
 export const kharchaMutations = {
+	/** A change to the caller's budgets (Task 94): the answer is all of them; Home and Insights refetch. */
+	budgets: (queryClient: QueryClient, userId: string) =>
+		mutationOptions({
+			mutationFn: (run: () => Promise<BudgetView[]>) => run(),
+			onSuccess: (budgets) => {
+				queryClient.setQueryData(kharchaKeys.budgets(userId), budgets);
+				void refreshKharcha(queryClient, userId);
+			},
+		}),
+	/** A change to the caller's recurring expenses (Task 94), the same way. */
+	recurring: (queryClient: QueryClient, userId: string) =>
+		mutationOptions({
+			mutationFn: (run: () => Promise<RecurringView[]>) => run(),
+			onSuccess: (recurring) => {
+				queryClient.setQueryData(kharchaKeys.recurring(userId), recurring);
+				void refreshKharcha(queryClient, userId);
+			},
+		}),
 	bulk: (queryClient: QueryClient, userId: string) =>
 		mutationOptions({
 			mutationFn: (data: BulkInput) => bulkKharchaExpenses({ data }),

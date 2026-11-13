@@ -1,17 +1,20 @@
 import { beforeAll, beforeEach, describe, expect, it } from "vitest";
 import { notFound } from "@/server/db/crud";
+import * as budgets from "@/server/kharcha/budgets/service";
 import * as talk from "@/server/kharcha/conversations/service";
 import * as expenses from "@/server/kharcha/expenses/service";
 import * as friends from "@/server/kharcha/friends/service";
 import * as groups from "@/server/kharcha/groups/service";
 import * as totals from "@/server/kharcha/groups/totals";
 import * as home from "@/server/kharcha/home/service";
+import * as insights from "@/server/kharcha/insights/service";
 import * as invites from "@/server/kharcha/invites/service";
 import * as lists from "@/server/kharcha/lists/service";
 import * as me from "@/server/kharcha/me/service";
 import * as inbox from "@/server/kharcha/notify/inbox";
 import * as payments from "@/server/kharcha/payments/service";
 import * as receipts from "@/server/kharcha/receipts/service";
+import * as recurring from "@/server/kharcha/recurring/service";
 import * as settle from "@/server/kharcha/settle/service";
 import { bulkExpenses } from "@/server/kharcha/spend/bulk";
 import { importSpend } from "@/server/kharcha/spend/import";
@@ -78,6 +81,9 @@ type World = {
 	draft: string;
 	/** The owner's saved search (Task 93). */
 	search: string;
+	/** The owner's budget, and their personal expense repeating monthly (Task 94). */
+	budget: string;
+	recurring: string;
 };
 let world: World;
 
@@ -188,8 +194,23 @@ async function setUp(): Promise<World> {
 	const upload = await uploadReceipt(as("owner"), cloudinary);
 	const draft = (await receipts.createDraft(as("owner"), [await uploadReceipt(as("owner"), cloudinary)])).id;
 	const search = (await saved.saveSearch(as("owner"), { name: "Big", query: "amount>100" }))[0]?.id ?? "";
+	const budget =
+		(
+			await budgets.createBudget(as("owner"), {
+				categoryId: null,
+				currency: "NPR",
+				period: "month",
+				amountMinor: 100_000,
+				startsOn: today,
+			})
+		)[0]?.id ?? "";
+	const repeating =
+		(await recurring.repeatExpense(as("owner"), { expenseId: personal, unit: "month", every: 1, endsOn: null }))[0]
+			?.id ?? "";
 	return {
 		search,
+		budget,
+		recurring: repeating,
 		people: { owner, friend, member, former, spare, invitee },
 		inviteToken,
 		category,
@@ -707,6 +728,89 @@ const OPERATIONS: Operation[] = [
 					},
 				],
 			}),
+		expect: everyone(),
+	},
+	{
+		name: "listBudgets (the caller's own)",
+		run: (_w, by) => budgets.listBudgets(as(by)),
+		expect: everyone(),
+	},
+	{
+		name: "createBudget (the caller's own)",
+		run: (_w, by) =>
+			budgets.createBudget(as(by), {
+				categoryId: null,
+				currency: "NPR",
+				period: "week",
+				amountMinor: 5_000,
+				startsOn: today,
+			}),
+		expect: everyone(),
+	},
+	{
+		name: "updateBudget: the owner's",
+		run: (w, by) =>
+			budgets.updateBudget(as(by), { budgetId: w.budget, version: 1, amountMinor: 9_000, startsOn: today }),
+		expect: only({ owner: "ok" }),
+	},
+	{
+		name: "setBudgetMonth: the owner's",
+		run: (w, by) => budgets.setBudgetMonth(as(by), { budgetId: w.budget, month: "2026-12", amountMinor: 9_000 }),
+		expect: only({ owner: "ok" }),
+	},
+	{
+		name: "deleteBudget: the owner's",
+		run: (w, by) => budgets.deleteBudget(as(by), w.budget),
+		expect: only({ owner: "ok" }),
+	},
+	{
+		name: "listRecurring (the caller's own)",
+		run: (_w, by) => recurring.listRecurring(as(by)),
+		expect: everyone(),
+	},
+	{
+		name: "repeatExpense: shared",
+		run: (w, by) => recurring.repeatExpense(as(by), { expenseId: w.shared, unit: "month", every: 1, endsOn: null }),
+		expect: only({ owner: "ok", friend: "ok" }),
+	},
+	{
+		name: "repeatExpense: the group's old expense",
+		run: (w, by) => recurring.repeatExpense(as(by), { expenseId: w.oldExpense, unit: "week", every: 2, endsOn: null }),
+		expect: only({ owner: "ok", member: "ok", former: "FORBIDDEN" }),
+	},
+	{
+		name: "repeatExpense: the personal one, already repeating",
+		run: (w, by) => recurring.repeatExpense(as(by), { expenseId: w.personal, unit: "week", every: 1, endsOn: null }),
+		expect: only({ owner: "CONFLICT" }),
+	},
+	{
+		name: "updateRecurring: the owner's",
+		run: (w, by) =>
+			recurring.updateRecurring(as(by), { recurringId: w.recurring, version: 1, unit: "week", every: 1, endsOn: null }),
+		expect: only({ owner: "ok" }),
+	},
+	{
+		name: "pauseRecurring: the owner's",
+		run: (w, by) => recurring.pauseRecurring(as(by), { recurringId: w.recurring, paused: true }),
+		expect: only({ owner: "ok" }),
+	},
+	{
+		name: "skipRecurring: the owner's",
+		run: (w, by) => recurring.skipRecurring(as(by), w.recurring),
+		expect: only({ owner: "ok" }),
+	},
+	{
+		name: "deleteRecurring: the owner's",
+		run: (w, by) => recurring.deleteRecurring(as(by), w.recurring),
+		expect: only({ owner: "ok" }),
+	},
+	{
+		name: "insights (the caller's own): overview, trends, statement",
+		run: async (_w, by) => {
+			await insights.insightsOverview(as(by), {});
+			await insights.insightsTrends(as(by), {});
+			return insights.insightsStatement(as(by), {});
+		},
 		expect: everyone(),
 	},
 	{

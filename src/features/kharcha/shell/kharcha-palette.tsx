@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { useNavigate, useRouterState } from "@tanstack/react-router";
 import {
+	ChartPieIcon,
 	HouseIcon,
 	KeyboardIcon,
 	LanguagesIcon,
@@ -108,6 +109,14 @@ export function KharchaPalette({
 					>
 						<WalletIcon aria-hidden />
 						<span>{m.kharcha_nav_spend()}</span>
+					</CommandItem>
+					<CommandItem
+						value="go insights"
+						keywords={[m.kharcha_nav_insights(), m.kharcha_insights_budgets(), m.kharcha_insights_statement()]}
+						onSelect={() => go(() => navigate(kharchaLinks.insights("overview")))}
+					>
+						<ChartPieIcon aria-hidden />
+						<span>{m.kharcha_nav_insights()}</span>
 					</CommandItem>
 					<CommandItem
 						value="go people"

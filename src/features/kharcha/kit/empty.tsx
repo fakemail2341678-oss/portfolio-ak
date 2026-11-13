@@ -1,9 +1,19 @@
-import { BookOpenIcon, CheckCheckIcon, type LucideIcon, ReceiptIcon, SearchXIcon, UsersIcon } from "lucide-react";
+import {
+	BookOpenIcon,
+	ChartPieIcon,
+	CheckCheckIcon,
+	type LucideIcon,
+	ReceiptIcon,
+	RepeatIcon,
+	SearchXIcon,
+	TargetIcon,
+	UsersIcon,
+} from "lucide-react";
 import type { ReactNode } from "react";
 import { EmptyState } from "@/components/page/empty-state";
 import { m } from "@/paraglide/messages";
 
-export const KHARCHA_EMPTY = ["page", "people", "todo", "spend", "search"] as const;
+export const KHARCHA_EMPTY = ["page", "people", "todo", "spend", "search", "budgets", "recurring", "insights"] as const;
 export type KharchaEmptyKind = (typeof KHARCHA_EMPTY)[number];
 
 const EMPTY: Record<KharchaEmptyKind, { icon: LucideIcon; title: () => string; description: () => string }> = {
@@ -31,6 +41,21 @@ const EMPTY: Record<KharchaEmptyKind, { icon: LucideIcon; title: () => string; d
 		icon: SearchXIcon,
 		title: () => m.kharcha_empty_search_title(),
 		description: () => m.kharcha_empty_search_body(),
+	},
+	budgets: {
+		icon: TargetIcon,
+		title: () => m.kharcha_empty_budgets_title(),
+		description: () => m.kharcha_empty_budgets_body(),
+	},
+	recurring: {
+		icon: RepeatIcon,
+		title: () => m.kharcha_empty_recurring_title(),
+		description: () => m.kharcha_empty_recurring_body(),
+	},
+	insights: {
+		icon: ChartPieIcon,
+		title: () => m.kharcha_empty_insights_title(),
+		description: () => m.kharcha_empty_insights_body(),
 	},
 };
 

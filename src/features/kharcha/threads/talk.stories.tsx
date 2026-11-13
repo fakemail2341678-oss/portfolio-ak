@@ -92,7 +92,7 @@ export const EmailSettings: Story = {
 	args: { children: <SettingsView tab="notifications" /> },
 	play: async ({ canvasElement }) => {
 		const form = await within(canvasElement).findByTestId("kharcha-notify");
-		await expect(within(form).getAllByRole("combobox")).toHaveLength(8);
+		await expect(within(form).getAllByRole("combobox")).toHaveLength(10);
 		await expect(within(form).getByRole("combobox", { name: m.kharcha_notify_kind_payment() })).toBeInTheDocument();
 	},
 };

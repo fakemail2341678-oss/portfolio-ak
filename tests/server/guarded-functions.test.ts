@@ -695,6 +695,22 @@ const KHARCHA_FUNCTIONS: Record<string, ReadonlyArray<string>> = {
 		"deleteKharchaSearch",
 		"importKharchaSpend",
 	],
+	"kharcha/budgets.ts": [
+		"listKharchaBudgets",
+		"createKharchaBudget",
+		"updateKharchaBudget",
+		"setKharchaBudgetMonth",
+		"deleteKharchaBudget",
+	],
+	"kharcha/recurring.ts": [
+		"listKharchaRecurring",
+		"repeatKharchaExpense",
+		"updateKharchaRecurring",
+		"pauseKharchaRecurring",
+		"skipKharchaRecurring",
+		"deleteKharchaRecurring",
+	],
+	"kharcha/insights.ts": ["getKharchaInsightsOverview", "getKharchaInsightsTrends", "getKharchaStatement"],
 };
 // kharcha:end
 

@@ -155,6 +155,10 @@ const app = spawn(process.execPath, [".output/server/index.mjs"], {
 		LICHESS_APP_TOKEN: "lip_e2e_app",
 		CHAAL_TOKEN_KEY: E2E.chaalTokenKey,
 		// chaal:end
+		// kharcha:start
+		// The daily jobs' bearer (Task 94): Kharcha's flows run its job the way Vercel's cron does.
+		CRON_SECRET: E2E.cronSecret,
+		// kharcha:end
 	},
 });
 log(`server: ${E2E.baseURL}`);

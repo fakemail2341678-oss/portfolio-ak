@@ -587,6 +587,12 @@ export const REVIEWED_PAGES: ReadonlyArray<ReviewedPage> = [
 	},
 	{ route: "/app/kharcha/spend", as: "kharcha", path: "/app/kharcha/spend?view=chart&chart=donut", label: "donut" },
 	{ route: "/app/kharcha/import", as: "kharcha" },
+	// Task 94: Insights' four tabs, and Settings → Recurring.
+	{ route: "/app/kharcha/insights/$tab", as: "kharcha", path: "/app/kharcha/insights/overview", label: "overview" },
+	{ route: "/app/kharcha/insights/$tab", as: "kharcha", path: "/app/kharcha/insights/budgets", label: "budgets" },
+	{ route: "/app/kharcha/insights/$tab", as: "kharcha", path: "/app/kharcha/insights/trends", label: "trends" },
+	{ route: "/app/kharcha/insights/$tab", as: "kharcha", path: "/app/kharcha/insights/statement", label: "statement" },
+	{ route: "/app/kharcha/settings/$tab", as: "kharcha", path: "/app/kharcha/settings/recurring", label: "recurring" },
 	// kharcha:end
 	// @new-feature:reviewed-pages
 	// Errors
