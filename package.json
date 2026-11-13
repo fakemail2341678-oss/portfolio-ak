@@ -116,7 +116,7 @@
 		"@babel/core": "^7.29.7",
 		"@biomejs/biome": "2.4.5",
 		"@electric-sql/pglite": "^0.5.8",
-		"@inlang/cli": "3.4.4",
+		"@inlang/cli": "3.6.0",
 		"@inlang/paraglide-js": "^2.25.4",
 		"@inlang/plugin-m-function-matcher": "2.3.4",
 		"@inlang/plugin-message-format": "4.5.5",
