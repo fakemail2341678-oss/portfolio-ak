@@ -130,9 +130,6 @@ import { Route as AdminAdminTestCrudIndexRouteImport } from './routes/_admin/adm
 import { Route as AdminAdminTestCrudIdRouteImport } from './routes/_admin/admin/test-crud/$id'
 import { Route as AdminAdminTestCrudNewRouteImport } from './routes/_admin/admin/test-crud/new'
 import { Route as AdminAdminUsersIndexRouteImport } from './routes/_admin/admin/users/index'
-import { Route as AppsAppsExpensesIndexRouteImport } from './routes/_apps/apps/expenses/index'
-import { Route as AppsAppsExpensesCategoriesRouteImport } from './routes/_apps/apps/expenses/categories'
-import { Route as AppsAppsExpensesImportRouteImport } from './routes/_apps/apps/expenses/import'
 import { Route as AppsAppsFormsIndexRouteImport } from './routes/_apps/apps/forms/index'
 import { Route as AppsAppsHabitsIndexRouteImport } from './routes/_apps/apps/habits/index'
 import { Route as AppsAppsHabitsHabitIdRouteImport } from './routes/_apps/apps/habits/$habitId'
@@ -152,6 +149,7 @@ import { Route as KharchaAppKharchaIndexRouteImport } from './routes/_kharcha/ap
 import { Route as KharchaAppKharchaShellRouteRouteImport } from './routes/_kharcha/app/kharcha/_shell/route'
 import { Route as KharchaAppKharchaSignInRouteImport } from './routes/_kharcha/app/kharcha/sign-in'
 import { Route as KharchaAppKharchaSignUpRouteImport } from './routes/_kharcha/app/kharcha/sign-up'
+import { Route as KharchaAppsExpensesSplatRouteImport } from './routes/_kharcha/apps/expenses/$'
 import { Route as PardaAppPardaIndexRouteImport } from './routes/_parda/app/parda/index'
 import { Route as PardaAppPardaSplatRouteImport } from './routes/_parda/app/parda/$'
 import { Route as PardaAppPardaHubRouteImport } from './routes/_parda/app/parda/$hub'
@@ -891,22 +889,6 @@ const AdminAdminUsersIndexRoute = AdminAdminUsersIndexRouteImport.update({
   path: '/',
   getParentRoute: () => AdminAdminUsersRouteRoute,
 } as any)
-const AppsAppsExpensesIndexRoute = AppsAppsExpensesIndexRouteImport.update({
-  id: '/apps/expenses/',
-  path: '/apps/expenses/',
-  getParentRoute: () => AppsRoute,
-} as any)
-const AppsAppsExpensesCategoriesRoute =
-  AppsAppsExpensesCategoriesRouteImport.update({
-    id: '/apps/expenses/categories',
-    path: '/apps/expenses/categories',
-    getParentRoute: () => AppsRoute,
-  } as any)
-const AppsAppsExpensesImportRoute = AppsAppsExpensesImportRouteImport.update({
-  id: '/apps/expenses/import',
-  path: '/apps/expenses/import',
-  getParentRoute: () => AppsRoute,
-} as any)
 const AppsAppsFormsIndexRoute = AppsAppsFormsIndexRouteImport.update({
   id: '/apps/forms/',
   path: '/apps/forms/',
@@ -1003,6 +985,12 @@ const KharchaAppKharchaSignUpRoute = KharchaAppKharchaSignUpRouteImport.update({
   path: '/app/kharcha/sign-up',
   getParentRoute: () => KharchaRouteRoute,
 } as any)
+const KharchaAppsExpensesSplatRoute =
+  KharchaAppsExpensesSplatRouteImport.update({
+    id: '/apps/expenses/$',
+    path: '/apps/expenses/$',
+    getParentRoute: () => KharchaRouteRoute,
+  } as any)
 const PardaAppPardaIndexRoute = PardaAppPardaIndexRouteImport.update({
   id: '/app/parda/',
   path: '/app/parda/',
@@ -1774,8 +1762,6 @@ export interface FileRoutesByFullPath {
   '/admin/taskline/workflows': typeof AdminAdminTasklineWorkflowsRoute
   '/admin/test-crud/$id': typeof AdminAdminTestCrudIdRoute
   '/admin/test-crud/new': typeof AdminAdminTestCrudNewRoute
-  '/apps/expenses/categories': typeof AppsAppsExpensesCategoriesRoute
-  '/apps/expenses/import': typeof AppsAppsExpensesImportRoute
   '/apps/habits/$habitId': typeof AppsAppsHabitsHabitIdRoute
   '/apps/links/$linkId': typeof AppsAppsLinksLinkIdRoute
   '/apps/notes/$noteId': typeof AppsAppsNotesNoteIdRoute
@@ -1788,6 +1774,7 @@ export interface FileRoutesByFullPath {
   '/app/chaal/sign-up': typeof ChaalAppChaalSignUpRoute
   '/app/kharcha/sign-in': typeof KharchaAppKharchaSignInRoute
   '/app/kharcha/sign-up': typeof KharchaAppKharchaSignUpRoute
+  '/apps/expenses/$': typeof KharchaAppsExpensesSplatRoute
   '/app/parda/$': typeof PardaAppPardaSplatRoute
   '/app/parda/$hub': typeof PardaAppPardaHubRoute
   '/app/parda/about': typeof PardaAppPardaAboutRoute
@@ -1810,7 +1797,6 @@ export interface FileRoutesByFullPath {
   '/admin/taskline/': typeof AdminAdminTasklineIndexRoute
   '/admin/test-crud/': typeof AdminAdminTestCrudIndexRoute
   '/admin/users/': typeof AdminAdminUsersIndexRoute
-  '/apps/expenses/': typeof AppsAppsExpensesIndexRoute
   '/apps/forms/': typeof AppsAppsFormsIndexRoute
   '/apps/habits/': typeof AppsAppsHabitsIndexRoute
   '/apps/links/': typeof AppsAppsLinksIndexRoute
@@ -2004,8 +1990,6 @@ export interface FileRoutesByTo {
   '/admin/taskline/workflows': typeof AdminAdminTasklineWorkflowsRoute
   '/admin/test-crud/$id': typeof AdminAdminTestCrudIdRoute
   '/admin/test-crud/new': typeof AdminAdminTestCrudNewRoute
-  '/apps/expenses/categories': typeof AppsAppsExpensesCategoriesRoute
-  '/apps/expenses/import': typeof AppsAppsExpensesImportRoute
   '/apps/habits/$habitId': typeof AppsAppsHabitsHabitIdRoute
   '/apps/links/$linkId': typeof AppsAppsLinksLinkIdRoute
   '/apps/notes/$noteId': typeof AppsAppsNotesNoteIdRoute
@@ -2018,6 +2002,7 @@ export interface FileRoutesByTo {
   '/app/chaal/sign-up': typeof ChaalAppChaalSignUpRoute
   '/app/kharcha/sign-in': typeof KharchaAppKharchaSignInRoute
   '/app/kharcha/sign-up': typeof KharchaAppKharchaSignUpRoute
+  '/apps/expenses/$': typeof KharchaAppsExpensesSplatRoute
   '/app/parda/$': typeof PardaAppPardaSplatRoute
   '/app/parda/$hub': typeof PardaAppPardaHubRoute
   '/app/parda/about': typeof PardaAppPardaAboutRoute
@@ -2040,7 +2025,6 @@ export interface FileRoutesByTo {
   '/admin/taskline': typeof AdminAdminTasklineIndexRoute
   '/admin/test-crud': typeof AdminAdminTestCrudIndexRoute
   '/admin/users': typeof AdminAdminUsersIndexRoute
-  '/apps/expenses': typeof AppsAppsExpensesIndexRoute
   '/apps/forms': typeof AppsAppsFormsIndexRoute
   '/apps/habits': typeof AppsAppsHabitsIndexRoute
   '/apps/links': typeof AppsAppsLinksIndexRoute
@@ -2259,8 +2243,6 @@ export interface FileRoutesById {
   '/_admin/admin/taskline/workflows': typeof AdminAdminTasklineWorkflowsRoute
   '/_admin/admin/test-crud/$id': typeof AdminAdminTestCrudIdRoute
   '/_admin/admin/test-crud/new': typeof AdminAdminTestCrudNewRoute
-  '/_apps/apps/expenses/categories': typeof AppsAppsExpensesCategoriesRoute
-  '/_apps/apps/expenses/import': typeof AppsAppsExpensesImportRoute
   '/_apps/apps/habits/$habitId': typeof AppsAppsHabitsHabitIdRoute
   '/_apps/apps/links/$linkId': typeof AppsAppsLinksLinkIdRoute
   '/_apps/apps/notes/$noteId': typeof AppsAppsNotesNoteIdRoute
@@ -2273,6 +2255,7 @@ export interface FileRoutesById {
   '/_chaal/app/chaal/sign-up': typeof ChaalAppChaalSignUpRoute
   '/_kharcha/app/kharcha/sign-in': typeof KharchaAppKharchaSignInRoute
   '/_kharcha/app/kharcha/sign-up': typeof KharchaAppKharchaSignUpRoute
+  '/_kharcha/apps/expenses/$': typeof KharchaAppsExpensesSplatRoute
   '/_parda/app/parda/$': typeof PardaAppPardaSplatRoute
   '/_parda/app/parda/$hub': typeof PardaAppPardaHubRoute
   '/_parda/app/parda/about': typeof PardaAppPardaAboutRoute
@@ -2295,7 +2278,6 @@ export interface FileRoutesById {
   '/_admin/admin/taskline/': typeof AdminAdminTasklineIndexRoute
   '/_admin/admin/test-crud/': typeof AdminAdminTestCrudIndexRoute
   '/_admin/admin/users/': typeof AdminAdminUsersIndexRoute
-  '/_apps/apps/expenses/': typeof AppsAppsExpensesIndexRoute
   '/_apps/apps/forms/': typeof AppsAppsFormsIndexRoute
   '/_apps/apps/habits/': typeof AppsAppsHabitsIndexRoute
   '/_apps/apps/links/': typeof AppsAppsLinksIndexRoute
@@ -2511,8 +2493,6 @@ export interface FileRouteTypes {
     | '/admin/taskline/workflows'
     | '/admin/test-crud/$id'
     | '/admin/test-crud/new'
-    | '/apps/expenses/categories'
-    | '/apps/expenses/import'
     | '/apps/habits/$habitId'
     | '/apps/links/$linkId'
     | '/apps/notes/$noteId'
@@ -2525,6 +2505,7 @@ export interface FileRouteTypes {
     | '/app/chaal/sign-up'
     | '/app/kharcha/sign-in'
     | '/app/kharcha/sign-up'
+    | '/apps/expenses/$'
     | '/app/parda/$'
     | '/app/parda/$hub'
     | '/app/parda/about'
@@ -2547,7 +2528,6 @@ export interface FileRouteTypes {
     | '/admin/taskline/'
     | '/admin/test-crud/'
     | '/admin/users/'
-    | '/apps/expenses/'
     | '/apps/forms/'
     | '/apps/habits/'
     | '/apps/links/'
@@ -2741,8 +2721,6 @@ export interface FileRouteTypes {
     | '/admin/taskline/workflows'
     | '/admin/test-crud/$id'
     | '/admin/test-crud/new'
-    | '/apps/expenses/categories'
-    | '/apps/expenses/import'
     | '/apps/habits/$habitId'
     | '/apps/links/$linkId'
     | '/apps/notes/$noteId'
@@ -2755,6 +2733,7 @@ export interface FileRouteTypes {
     | '/app/chaal/sign-up'
     | '/app/kharcha/sign-in'
     | '/app/kharcha/sign-up'
+    | '/apps/expenses/$'
     | '/app/parda/$'
     | '/app/parda/$hub'
     | '/app/parda/about'
@@ -2777,7 +2756,6 @@ export interface FileRouteTypes {
     | '/admin/taskline'
     | '/admin/test-crud'
     | '/admin/users'
-    | '/apps/expenses'
     | '/apps/forms'
     | '/apps/habits'
     | '/apps/links'
@@ -2995,8 +2973,6 @@ export interface FileRouteTypes {
     | '/_admin/admin/taskline/workflows'
     | '/_admin/admin/test-crud/$id'
     | '/_admin/admin/test-crud/new'
-    | '/_apps/apps/expenses/categories'
-    | '/_apps/apps/expenses/import'
     | '/_apps/apps/habits/$habitId'
     | '/_apps/apps/links/$linkId'
     | '/_apps/apps/notes/$noteId'
@@ -3009,6 +2985,7 @@ export interface FileRouteTypes {
     | '/_chaal/app/chaal/sign-up'
     | '/_kharcha/app/kharcha/sign-in'
     | '/_kharcha/app/kharcha/sign-up'
+    | '/_kharcha/apps/expenses/$'
     | '/_parda/app/parda/$'
     | '/_parda/app/parda/$hub'
     | '/_parda/app/parda/about'
@@ -3031,7 +3008,6 @@ export interface FileRouteTypes {
     | '/_admin/admin/taskline/'
     | '/_admin/admin/test-crud/'
     | '/_admin/admin/users/'
-    | '/_apps/apps/expenses/'
     | '/_apps/apps/forms/'
     | '/_apps/apps/habits/'
     | '/_apps/apps/links/'
@@ -4010,27 +3986,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminAdminUsersIndexRouteImport
       parentRoute: typeof AdminAdminUsersRouteRoute
     }
-    '/_apps/apps/expenses/': {
-      id: '/_apps/apps/expenses/'
-      path: '/apps/expenses'
-      fullPath: '/apps/expenses/'
-      preLoaderRoute: typeof AppsAppsExpensesIndexRouteImport
-      parentRoute: typeof AppsRoute
-    }
-    '/_apps/apps/expenses/categories': {
-      id: '/_apps/apps/expenses/categories'
-      path: '/apps/expenses/categories'
-      fullPath: '/apps/expenses/categories'
-      preLoaderRoute: typeof AppsAppsExpensesCategoriesRouteImport
-      parentRoute: typeof AppsRoute
-    }
-    '/_apps/apps/expenses/import': {
-      id: '/_apps/apps/expenses/import'
-      path: '/apps/expenses/import'
-      fullPath: '/apps/expenses/import'
-      preLoaderRoute: typeof AppsAppsExpensesImportRouteImport
-      parentRoute: typeof AppsRoute
-    }
     '/_apps/apps/forms/': {
       id: '/_apps/apps/forms/'
       path: '/apps/forms'
@@ -4162,6 +4117,13 @@ declare module '@tanstack/react-router' {
       path: '/app/kharcha/sign-up'
       fullPath: '/app/kharcha/sign-up'
       preLoaderRoute: typeof KharchaAppKharchaSignUpRouteImport
+      parentRoute: typeof KharchaRouteRoute
+    }
+    '/_kharcha/apps/expenses/$': {
+      id: '/_kharcha/apps/expenses/$'
+      path: '/apps/expenses/$'
+      fullPath: '/apps/expenses/$'
+      preLoaderRoute: typeof KharchaAppsExpensesSplatRouteImport
       parentRoute: typeof KharchaRouteRoute
     }
     '/_parda/app/parda/': {
@@ -5069,6 +5031,7 @@ interface KharchaRouteRouteChildren {
   KharchaAppKharchaShellRouteRoute: typeof KharchaAppKharchaShellRouteRouteWithChildren
   KharchaAppKharchaSignInRoute: typeof KharchaAppKharchaSignInRoute
   KharchaAppKharchaSignUpRoute: typeof KharchaAppKharchaSignUpRoute
+  KharchaAppsExpensesSplatRoute: typeof KharchaAppsExpensesSplatRoute
   KharchaAppKharchaIndexRoute: typeof KharchaAppKharchaIndexRoute
   KharchaAppKharchaJoinTokenRoute: typeof KharchaAppKharchaJoinTokenRoute
 }
@@ -5078,6 +5041,7 @@ const KharchaRouteRouteChildren: KharchaRouteRouteChildren = {
     KharchaAppKharchaShellRouteRouteWithChildren,
   KharchaAppKharchaSignInRoute: KharchaAppKharchaSignInRoute,
   KharchaAppKharchaSignUpRoute: KharchaAppKharchaSignUpRoute,
+  KharchaAppsExpensesSplatRoute: KharchaAppsExpensesSplatRoute,
   KharchaAppKharchaIndexRoute: KharchaAppKharchaIndexRoute,
   KharchaAppKharchaJoinTokenRoute: KharchaAppKharchaJoinTokenRoute,
 }
@@ -5770,12 +5734,9 @@ const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
 
 interface AppsRouteChildren {
   AppsAppsIndexRoute: typeof AppsAppsIndexRoute
-  AppsAppsExpensesCategoriesRoute: typeof AppsAppsExpensesCategoriesRoute
-  AppsAppsExpensesImportRoute: typeof AppsAppsExpensesImportRoute
   AppsAppsHabitsHabitIdRoute: typeof AppsAppsHabitsHabitIdRoute
   AppsAppsLinksLinkIdRoute: typeof AppsAppsLinksLinkIdRoute
   AppsAppsNotesNoteIdRoute: typeof AppsAppsNotesNoteIdRoute
-  AppsAppsExpensesIndexRoute: typeof AppsAppsExpensesIndexRoute
   AppsAppsFormsIndexRoute: typeof AppsAppsFormsIndexRoute
   AppsAppsHabitsIndexRoute: typeof AppsAppsHabitsIndexRoute
   AppsAppsLinksIndexRoute: typeof AppsAppsLinksIndexRoute
@@ -5787,12 +5748,9 @@ interface AppsRouteChildren {
 
 const AppsRouteChildren: AppsRouteChildren = {
   AppsAppsIndexRoute: AppsAppsIndexRoute,
-  AppsAppsExpensesCategoriesRoute: AppsAppsExpensesCategoriesRoute,
-  AppsAppsExpensesImportRoute: AppsAppsExpensesImportRoute,
   AppsAppsHabitsHabitIdRoute: AppsAppsHabitsHabitIdRoute,
   AppsAppsLinksLinkIdRoute: AppsAppsLinksLinkIdRoute,
   AppsAppsNotesNoteIdRoute: AppsAppsNotesNoteIdRoute,
-  AppsAppsExpensesIndexRoute: AppsAppsExpensesIndexRoute,
   AppsAppsFormsIndexRoute: AppsAppsFormsIndexRoute,
   AppsAppsHabitsIndexRoute: AppsAppsHabitsIndexRoute,
   AppsAppsLinksIndexRoute: AppsAppsLinksIndexRoute,

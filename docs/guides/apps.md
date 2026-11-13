@@ -1,6 +1,6 @@
 # The showcase apps
 
-Small, complete apps under `/apps/<slug>` that visitors try without an account (decisions 0185–0189): Notes and Links (decisions 0190, 0191), Expenses and Habits (0192, 0193) and Forms (0195). Kanban, the first (0188), grew into Taskline and moved there in Part 5 Task 48 ([taskline.md](taskline.md), 0210); `/apps/kanban` redirects to it. The whole folder is the `apps` layer of `pnpm strip-demo`; guest sessions stay with the core.
+Small, complete apps under `/apps/<slug>` that visitors try without an account (decisions 0185–0189): Notes and Links (decisions 0190, 0191), Habits (0193) and Forms (0195). Kanban, the first (0188), grew into Taskline and moved there in Part 5 Task 48 ([taskline.md](taskline.md), 0210); `/apps/kanban` redirects to it. Expenses (0192) moved into Kharcha in Part 8 Task 95 ([kharcha.md](kharcha.md), 0289); `/apps/expenses` redirects to it. The whole folder is the `apps` layer of `pnpm strip-demo`; guest sessions stay with the core.
 
 ## How a visit goes
 
@@ -58,15 +58,6 @@ The `_apps` layout mounts `<DbScope>`, so DB is available to every app page and 
 - **Statistics and QR:** 30 days in Nepal time, top referrers, countries and devices; the QR code as SVG or PNG.
 - **Moderation:** `/admin/links` (`links:moderate`): block or delete, audited. A blocked link stays off whatever its owner does.
 - **Quotas:** 200 links per user, 30 creates an hour; slugs unique across everyone, never changed after creation.
-
-## Expenses (0192)
-
-- **Money is integers in minor units** (paisa, cents) in the database, on the wire and in sums; forms take major units and convert with `toMinor`. Totals, charts and budgets are per currency (NPR or USD), never converted.
-- **Dashboard:** `/apps/expenses?month=YYYY-MM&currency=…` (no month: the current one in Kathmandu): tiles, a donut by category in the categories' colours (`DonutChart`'s `colors`), six months of bars, budget progress and the month's expenses.
-- **CSV import** (`/apps/expenses/import`): `parseCsv` (`src/lib/csv.ts`), a column mapping guessed from the header, and a preview of every line through `previewImport`, checked by the schema the server checks again. Only valid rows are sent, at most 1,000, with an idempotency key claimed in the rows' transaction (`expense_import`): a repeat gets the first result. Missing categories are made, matched without case.
-- **CSV export:** every expense, with localized headers the import recognizes.
-- **Claim:** a guest's category joins an account's category of the same name (names are unique per owner, any case).
-- **Quotas:** 5,000 expenses, 30 categories, 10 imports an hour.
 
 ## Habits (0193)
 

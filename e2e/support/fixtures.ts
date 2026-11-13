@@ -226,12 +226,6 @@ export class Harness {
 		if (!row.id || !row.slug) throw new Error(`no review link for ${user}`);
 		return { id: row.id, slug: row.slug };
 	}
-	/** Gives a user a month of review expenses, budgets and categories (the harness makes them on first ask). */
-	async reviewExpenses(user: E2EUser): Promise<void> {
-		const email = E2E.users[user].email;
-		const response = await fetch(`${E2E.harnessURL}/e2e/expenses?email=${encodeURIComponent(email)}`);
-		if (!response.ok) throw new Error(`no review expenses for ${user}`);
-	}
 	/** A user's review habit, with a year of check-ins: its id (the harness makes it on first ask). */
 	async reviewHabit(user: E2EUser): Promise<{ id: string }> {
 		const email = E2E.users[user].email;

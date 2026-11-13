@@ -107,16 +107,14 @@ const SPECS: Record<Layer, LayerSpec> = {
 			"src/middleware/robots.ts",
 			"tests/unit/notes-list.test.ts",
 			"tests/unit/habit-streaks.test.ts",
-			"tests/unit/expenses-import.test.ts",
 			"tests/unit/forms-fields.test.ts",
 			"tests/unit/links-target.test.ts",
 			"tests/server/apps-notes.test.ts",
 			"tests/server/apps-links.test.ts",
-			"tests/server/apps-expenses.test.ts",
 			"tests/server/apps-habits.test.ts",
 			"tests/server/apps-forms.test.ts",
 			"e2e/flows/notes-links.spec.ts",
-			"e2e/flows/expenses-habits.spec.ts",
+			"e2e/flows/habits.spec.ts",
 			"e2e/flows/forms.spec.ts",
 			"tests/components/apps",
 			"e2e/flows/apps.spec.ts",
@@ -126,7 +124,6 @@ const SPECS: Record<Layer, LayerSpec> = {
 		crons: [],
 		knipEntries: [],
 		schema: [
-			"src/server/db/schema/apps/expenses.ts",
 			"src/server/db/schema/apps/forms.ts",
 			"src/server/db/schema/apps/habits.ts",
 			"src/server/db/schema/apps/links.ts",
@@ -396,6 +393,9 @@ const SPECS: Record<Layer, LayerSpec> = {
 			// Budgets, recurring expenses and insights (Task 94, decision 0288).
 			"tests/server/kharcha-plan.test.ts",
 			"tests/unit/kharcha-plan.test.ts",
+			// The Expenses app moved in (Task 95, decision 0289): its test and the portfolio's link.
+			"tests/server/kharcha-expenses-migration.test.ts",
+			"src/features/portfolio/components/case-study/kharcha-link.tsx",
 		],
 		packageScripts: ["db:seed-kharcha"],
 		crons: ["/api/cron/kharcha"],
@@ -407,7 +407,7 @@ const SPECS: Record<Layer, LayerSpec> = {
 
 /** Files more than one layer uses: removed only when every one of those layers goes. */
 const SHARED: ReadonlyArray<{ paths: string[]; layers: Layer[] }> = [
-	{ paths: ["src/components/forms/csv-source.tsx"], layers: ["apps", "taskline"] },
+	{ paths: ["src/components/forms/csv-source.tsx"], layers: ["taskline", "kharcha"] },
 	{ paths: ["src/server/db/quota.ts"], layers: ["apps", "taskline", "kharcha"] },
 	{ paths: [".impeccable/config.json"], layers: ["portfolio", "parda"] },
 	{ paths: ["src/components/data-display/scroll-region.tsx"], layers: ["taskline", "parda", "chaal", "kharcha"] },

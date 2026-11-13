@@ -3,8 +3,8 @@ import { isIsoDate } from "@/lib/i18n/date-only";
 /**
  * Recipe (docs/guides/recipes.md, "CSV export"; decision 0148): rows to CSV
  * (RFC 4180) and a browser download. Columns pick and label the values, so the
- * export matches what the table shows. `parseCsv` reads CSV back (Expenses' import,
- * decision 0192).
+ * export matches what the table shows. `parseCsv` reads CSV back (Taskline's and Kharcha's imports;
+ * Expenses' first, decision 0192).
  *
  * Cells that a spreadsheet would run as a formula (starting with = + - @, tab
  * or carriage return) are prefixed with an apostrophe (OWASP "CSV injection").

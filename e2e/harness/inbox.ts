@@ -84,48 +84,6 @@ async function reviewLink(query: DemoQuery, email: string | null) {
 /** Today in the app's time zone, in SQL. */
 const TODAY_SQL = `(now() at time zone 'Asia/Kathmandu')::date`;
 
-/**
- * A user's review expenses, made on first ask: three categories (one with a long name),
- * this month's and earlier months' spending in both currencies, and two budgets (one
- * over), so the dashboard's charts, budgets and list all have something to show.
- */
-async function reviewExpenses(query: DemoQuery, email: string | null) {
-	const owner = await ownerOf(query, email);
-	const { rows: found } = await query(
-		`select "id" from "expense_category" where "owner_id" = $1 and "name" = 'Review food'`,
-		[owner],
-	);
-	if (found[0]) return { ok: true };
-	const { rows: categories } = await query(
-		`insert into "expense_category" ("owner_id", "name", "color", "icon")
-		values ($1, 'Review food', 'orange', 'utensils'), ($1, 'Transport', 'blue', 'bus'),
-		($1, 'A category with a rather long name that has to wrap or truncate', 'violet', 'gift')
-		returning "id", "name"`,
-		[owner],
-	);
-	const [food, transport, long] = categories.map((row) => row.id);
-	await query(
-		`insert into "expense_transaction" ("owner_id", "category_id", "amount_minor", "currency", "occurred_on", "note")
-		select $1, (array[$2, $3, $4, null]::uuid[])[n % 4 + 1], 50000 + n * 1350, case when n % 9 = 0 then 'USD' else 'NPR' end,
-			date_trunc('month', ${TODAY_SQL})::date - ((n % 6) * 31 || ' days')::interval + ((n * 3) % 25 || ' days')::interval,
-			(array['Groceries', '', 'A note long enough to have to wrap or be cut on a phone screen'])[n % 3 + 1]
-		from generate_series(1, 30) as n`,
-		[owner, food, transport, long],
-	);
-	await query(
-		`insert into "expense_transaction" ("owner_id", "category_id", "amount_minor", "currency", "occurred_on", "note")
-		values ($1, $2, 120000, 'NPR', ${TODAY_SQL}, 'Momo')`,
-		[owner, food],
-	);
-	await query(
-		`insert into "expense_budget" ("owner_id", "category_id", "month", "currency", "amount_minor")
-		values ($1, $2, date_trunc('month', ${TODAY_SQL})::date, 'NPR', 100000),
-		($1, $3, date_trunc('month', ${TODAY_SQL})::date, 'NPR', 9000000)`,
-		[owner, food, transport],
-	);
-	return { ok: true };
-}
-
 /** A user's review habit, made on first ask: twice a day on weekdays, with ninety days of check-ins and gaps. */
 async function reviewHabit(query: DemoQuery, email: string | null) {
 	const owner = await ownerOf(query, email);
@@ -524,8 +482,6 @@ export async function serveHarness(port: number, query: DemoQuery) {
 			// apps:start
 			if (route === "GET /e2e/note") return send(response, 200, await reviewNote(query, url.searchParams.get("email")));
 			if (route === "GET /e2e/link") return send(response, 200, await reviewLink(query, url.searchParams.get("email")));
-			if (route === "GET /e2e/expenses")
-				return send(response, 200, await reviewExpenses(query, url.searchParams.get("email")));
 			if (route === "GET /e2e/habit")
 				return send(response, 200, await reviewHabit(query, url.searchParams.get("email")));
 			if (route === "GET /e2e/form") return send(response, 200, await reviewForm(query, url.searchParams.get("email")));

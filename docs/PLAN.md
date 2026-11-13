@@ -3747,7 +3747,7 @@ As 12.1, with these differences:
 | 92 | Conversations, notifications and email: comments, mentions, reactions, unread, digests, the daily job | high | Done |
 | 93 | Spend: the search language, filters, saved searches, views and charts, bulk actions, CSV import and export | xhigh | Done |
 | 94 | Budgets, recurring expenses and insights | high | Done |
-| 95 | Expenses moved in: migration, redirects, the old app removed | high | Planned |
+| 95 | Expenses moved in: migration, redirects, the old app removed | high | Done |
 | 96 | Admin: overview, settings, default categories, abuse controls | medium | Planned |
 | 97 | Wrap-up: full e2e, accessibility pass, template matrix, finish review | medium | Planned |
 
@@ -4350,7 +4350,7 @@ Kharcha's data, money core, access and server, tested on PGlite, with no UI; Exp
 - run `pnpm db:migrate` on Neon (`0055_kharcha_planning`);
 - the entry budget is 305 kB now; Task 97 trims it.
 
-### Task 95: Expenses moved in (planned)
+### Task 95: Expenses moved in (done, decision 0289)
 
 - **A custom migration** (`drizzle-kit generate --custom`). For each owner, guests included:
   - a person and a profile;

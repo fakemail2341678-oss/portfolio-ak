@@ -1,11 +1,4 @@
-import {
-	CalendarCheckIcon,
-	ClipboardListIcon,
-	Link2Icon,
-	type LucideIcon,
-	NotebookTextIcon,
-	WalletIcon,
-} from "lucide-react";
+import { CalendarCheckIcon, ClipboardListIcon, Link2Icon, type LucideIcon, NotebookTextIcon } from "lucide-react";
 import { m } from "@/paraglide/messages";
 
 /**
@@ -15,9 +8,9 @@ import { m } from "@/paraglide/messages";
  *
  * An app lives at /apps/<slug>: a landing there (indexable) that becomes the app once
  * the visitor has a session, its inner pages private. A portfolio project links to it
- * by naming the slug in its "App" field.
+ * by naming the slug in its "App" field. (Expenses moved into Kharcha, decision 0289.)
  */
-export const APP_SLUGS = ["notes", "links", "expenses", "habits", "forms"] as const;
+export const APP_SLUGS = ["notes", "links", "habits", "forms"] as const;
 export type AppSlug = (typeof APP_SLUGS)[number];
 
 export type AppEntry = {
@@ -48,18 +41,6 @@ export const APPS: ReadonlyArray<AppEntry> = [
 		description: m.links_description,
 		icon: Link2Icon,
 		rows: { links: m.links_usage_links, clicks: m.links_usage_clicks },
-	},
-	{
-		slug: "expenses",
-		name: m.expenses_name,
-		tagline: m.expenses_tagline,
-		description: m.expenses_description,
-		icon: WalletIcon,
-		rows: {
-			expenses: m.expenses_usage_expenses,
-			categories: m.expenses_usage_categories,
-			budgets: m.expenses_usage_budgets,
-		},
 	},
 	{
 		slug: "habits",

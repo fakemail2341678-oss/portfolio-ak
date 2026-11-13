@@ -37,6 +37,7 @@ import { gzipSync } from "node:zlib";
 // Task 94 (0288): 305, the owner's choice. Tasks 88 to 93 used that room (300.0 kB); Insights' route
 // with its address and the Recurring tab's loader took it to 301.3; Tasks 95 and 96 add the old
 // addresses and the admin's routes, and Task 97 trims.
+// Task 95 (0289): 300.5 kB, Expenses' three routes out and its old addresses' one redirect in.
 const ENTRY_BUDGET_KB = 305;
 const ROUTE_BUDGET_KB = 300;
 const FONT_BUDGET_KB = 150;

@@ -168,3 +168,17 @@ export function statementOf(search: Pick<InsightsSearch, "from" | "to">): Statem
 	}
 	return { ...(from ? { from } : {}), ...(to ? { to } : {}) };
 }
+
+/**
+ * The Expenses app's old addresses (Task 95, decision 0289): `/apps/expenses?month=2026-10&currency=USD`
+ * showed a month in a currency. Anything else in them is dropped.
+ */
+export const oldExpensesSearch = z.object({
+	month: z
+		.string()
+		.regex(/^\d{4}-(0[1-9]|1[0-2])$/)
+		.optional()
+		.catch(undefined),
+	currency: z.enum(["NPR", "USD"]).optional().catch(undefined),
+});
+export type OldExpensesSearch = z.infer<typeof oldExpensesSearch>;

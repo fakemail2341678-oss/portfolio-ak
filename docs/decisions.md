@@ -293,6 +293,7 @@ Record every non-obvious choice here: **What**, **Why**, **Alternatives consider
 - [0286](#0286-kharchas-conversations-thread-keys-read-marks-tasklines-notifications-and-one-email-a-day-to-people-without-an-account): Kharcha's conversations: thread keys, read marks, Taskline's notifications, and one email a day to people without an account
 - [0287](#0287-kharchas-spend-a-search-language-compiled-to-bound-sql-the-period-in-q-built-in-searches-in-code): Kharcha's Spend: a search language compiled to bound SQL, the period in `q`, built-in searches in code
 - [0288](#0288-kharchas-planning-budgets-on-the-owners-share-alerts-claimed-once-recurring-expenses-numbered-from-their-first-day): Kharcha's planning: budgets on the owner's share, alerts claimed once, recurring expenses numbered from their first day
+- [0289](#0289-the-expenses-app-moved-into-kharcha-by-migration-with-the-same-ids-and-its-addresses-redirect): The Expenses app moved into Kharcha by migration, with the same ids, and its addresses redirect
 </details>
 
 ---
@@ -4177,3 +4178,28 @@ Measured on the owner's Windows machine (Node 24.11, 12 threads, 11.7 GB), 2026-
 - **Stepping from the previous occurrence:** 31 January, then 28 February, then 28 March, for ever.
 - **A thread for budgets** (`b:` in `THREAD_KEY`): comments and read marks would then accept a budget; a separate target type keeps them out.
 - **Splitting route definitions out of the entry now:** the lasting fix (0279's alternative), left for the wrap-up.
+
+## 0289: The Expenses app moved into Kharcha by migration, with the same ids, and its addresses redirect
+
+*Part 8, Task 95 (docs/guides/kharcha.md, "The Expenses app, moved in").*
+
+**What:** Kanban's move into Taskline (0210), again.
+- **`0056_expenses_to_kharcha`** is one PL/pgSQL block (`drizzle-kit generate --custom`). For each Expenses owner, guests included:
+  - their person as `ensurePerson` makes it: a verified, non-guest address takes over a contact somebody made with it, else a new person with the address (when no one has it) and `colorFor(user id)`'s colour; and their profile;
+  - each category with its id. `slate` becomes `gray` and the `tag` icon, which Kharcha lacks, `receipt`. They are placed before what the person has (negative positions), so they come before the defaults Kharcha adds on the first visit. A name the person already has in Kharcha is that category instead (names are unique per person);
+  - each expense with its id: a personal expense (one payer and one share, the owner, a `full` split), the note as its title, its import key, and `expense.created` dated when it was made;
+  - per category and currency, the latest month's row becomes a monthly budget (with that row's id) from the first month; an earlier month of another amount becomes that month's own amount. A budget the person already has on that category and currency stays;
+  - their import keys and answers (`categoriesCreated` becomes `categories`), and `rev` + 1.
+- Portfolio projects pointing at `expenses` point at `kharcha`, and a case study gets Kharcha's own "Try the live app" link (`kharcha-link.tsx`, as Taskline's). `0057_drop_expenses` drops the four tables; the app's code, its 131 messages, tests, stories, registry entries, harness helper, review pages and guide section went with them.
+- **Redirects** (`src/routes/_kharcha/apps/expenses/$.tsx`, one splat; `oldExpensesLink`): `/apps/expenses` is a 301 to the landing, `?month=` (and `currency`) a 301 to Spend with `date:2026-10 currency:USD`, `/categories` to Settings → Categories, `/import` to Kharcha's import. A path Expenses never had gets a temporary redirect to the landing. They sit in the kharcha layer, so they outlive the apps layer.
+- **Profiles are not onboarded:** a moved user meets onboarding on the first visit, so they choose their home currency and what they came for, as anyone new to Kharcha does.
+- **Tests:** `tests/server/kharcha-expenses-migration.test.ts` runs the migration on fixture rows over the migrations before it, then the drop, then Kharcha's own services (Spend, an expense, budgets) on what moved. The e2e harness's fresh database stops before 0056, writes an Expenses user (`E2E.users.moved`), then runs the rest, so `e2e/flows/kharcha.spec.ts` signs in as a moved user.
+- **The entry:** 300.5 kB (Expenses' three routes out, the redirect in), under 0288's 305.
+
+**Why:** the same reasons as 0210. The same ids let an old link find its expense, a migration reaches every database once and in order before the drop, and quotas don't apply because nothing may be lost. A budget that applies "from its first month" with its own earlier amounts is the nearest Kharcha shape to Expenses' per-month rows. A month Expenses left without a budget now has the latest amount; that is the one change of meaning, and it is the plan's.
+
+**Alternatives considered:**
+- **Default categories' keys on matching names:** a moved "Food" could take the `food` key, so a friend's share defaults to it. The defaults' names live in `kh_settings` per language, and a migration has no language; the person's own names stay key-less, as any category they make does.
+- **Marking profiles onboarded:** that skips choosing a home currency, and Expenses never asked for one.
+- **Moving the data at first visit, in code:** the tables could never be dropped (0210's reason).
+

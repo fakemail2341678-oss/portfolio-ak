@@ -26,7 +26,6 @@ export type ReviewedPage = {
 		| { from: "note-id" } // @apps
 		| { from: "shared-note-token" } // @apps
 		| { from: "link-id" } // @apps
-		| { from: "expenses-data" } // @apps
 		| { from: "habit-data" } // @apps
 		| { from: "habit-id" } // @apps
 		| { from: "form-data" } // @apps
@@ -153,11 +152,6 @@ export const REVIEWED_PAGES: ReadonlyArray<ReviewedPage> = [
 	{ route: "/apps/links" },
 	{ route: "/apps/links", as: "member", label: "links" },
 	{ route: "/apps/links/$linkId", as: "member", params: { from: "link-id" } },
-	{ route: "/apps/expenses" },
-	// With a month of expenses, budgets and categories (the harness adds them on first ask).
-	{ route: "/apps/expenses", as: "member", label: "expenses", params: { from: "expenses-data" } },
-	{ route: "/apps/expenses/categories", as: "member", params: { from: "expenses-data" } },
-	{ route: "/apps/expenses/import", as: "member" },
 	{ route: "/apps/habits" },
 	{ route: "/apps/habits", as: "member", label: "habits", params: { from: "habit-data" } },
 	{ route: "/apps/habits/$habitId", as: "member", params: { from: "habit-id" } },
@@ -613,6 +607,7 @@ export const NOT_REVIEWED: Readonly<Record<string, string>> = {
 	"/app/taskline/$ws/p/$key/settings": "a redirect to the settings' first section", // @taskline
 	"/apps/kanban": "Kanban's old address, a redirect to Taskline (checked by e2e/flows/taskline.spec.ts)", // @taskline
 	"/apps/kanban/$boardId": "an old board's address, a redirect to its project (checked by e2e/flows/taskline.spec.ts)", // @taskline
+	"/apps/expenses/$": "the Expenses app's old addresses, redirects into Kharcha (checked by e2e/flows/kharcha.spec.ts)", // @kharcha
 	// @new-feature:not-reviewed
 };
 

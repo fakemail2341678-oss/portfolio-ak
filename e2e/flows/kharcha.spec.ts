@@ -368,4 +368,49 @@ test.describe("Kharcha", () => {
 		await expect(page).toHaveURL(/\/app\/kharcha$/);
 		await expect(page.getByTestId("kharcha-landing")).toBeVisible();
 	});
+
+	test("the Expenses app's addresses redirect, and a user it had finds their data (Task 95)", async ({
+		page,
+		harness,
+	}) => {
+		const location = async (path: string) => {
+			const response = await fetch(new URL(path, E2E.baseURL), { redirect: "manual" });
+			return { status: response.status, to: new URL(response.headers.get("location") ?? "", E2E.baseURL) };
+		};
+		const landing = await location("/apps/expenses");
+		expect([landing.status, landing.to.pathname]).toEqual([301, "/app/kharcha"]);
+		const month = await location("/apps/expenses?month=2026-03&currency=USD");
+		expect([month.status, month.to.pathname, month.to.searchParams.get("q")]).toEqual([
+			301,
+			"/app/kharcha/spend",
+			"date:2026-03 currency:USD",
+		]);
+		const categories = await location("/apps/expenses/categories");
+		expect([categories.status, categories.to.pathname]).toEqual([301, "/app/kharcha/settings/categories"]);
+		const csv = await location("/apps/expenses/import");
+		expect([csv.status, csv.to.pathname]).toEqual([301, "/app/kharcha/import"]);
+		expect((await location("/ne/apps/expenses")).to.pathname).toBe("/ne/app/kharcha");
+
+		// The harness's Expenses user (e2e/harness/database.ts), moved by the migration.
+		await harness.resetRateLimits();
+		await open(page, "/app/kharcha/sign-in");
+		await page.getByRole("textbox", { name: "Email" }).fill(E2E.users.moved.email);
+		await page.getByRole("textbox", { name: "Password" }).fill(E2E.password);
+		await page.getByRole("button", { name: "Log in" }).click();
+		await expect(page).toHaveURL(/\/app\/kharcha\/home$/);
+		await page.getByTestId("kharcha-onboarding").getByRole("button", { name: "Skip" }).click();
+
+		await open(page, "/apps/expenses?month=2026-03");
+		await expect(page).toHaveURL(/\/app\/kharcha\/spend\?q=date%3A2026-03$/);
+		const rows = page.getByTestId("kharcha-spend-row");
+		await expect(rows).toHaveCount(2);
+		await expect(rows.filter({ hasText: "Trek permit" })).toContainText("3,000.00");
+		await expect(rows.filter({ hasText: "Map" })).toContainText("25.00");
+
+		await open(page, "/apps/expenses/categories");
+		await expect(page).toHaveURL(/\/app\/kharcha\/settings\/categories$/);
+		await expect(page.getByTestId("kharcha-settings-item").filter({ hasText: "Trekking" })).toHaveCount(1);
+		await open(page, "/app/kharcha/insights/budgets");
+		await expect(page.getByTestId("kharcha-budget").filter({ hasText: "Trekking" })).toContainText("5,000");
+	});
 });

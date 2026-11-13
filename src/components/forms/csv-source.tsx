@@ -11,7 +11,7 @@ import { formatNumber } from "@/lib/i18n/intl";
 import { m } from "@/paraglide/messages";
 
 /**
- * The first step of a CSV import (Expenses' and Taskline's, decision 0192): a file
+ * The first step of a CSV import (Taskline's and Kharcha's; Expenses' first, decision 0192): a file
  * (at most 1 MB) or pasted text, parsed into rows of cells. A file that can't be read
  * says why (too big, a quote never closed, on which line); a table it read is
  * reported to `onLoad` with its name, and a failure clears it (`onLoad(null)`).

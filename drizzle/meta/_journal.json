@@ -393,6 +393,20 @@
 			"when": 1794567486702,
 			"tag": "0055_kharcha_planning",
 			"breakpoints": true
+		},
+		{
+			"idx": 56,
+			"version": "7",
+			"when": 1794578315045,
+			"tag": "0056_expenses_to_kharcha",
+			"breakpoints": true
+		},
+		{
+			"idx": 57,
+			"version": "7",
+			"when": 1794578475527,
+			"tag": "0057_drop_expenses",
+			"breakpoints": true
 		}
 	]
 }

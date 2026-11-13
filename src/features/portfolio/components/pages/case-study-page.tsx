@@ -6,6 +6,7 @@ import { projectQueryOptions } from "../../queries";
 import { CaseStudyBody } from "../case-study/case-study-body";
 import { CaseStudyHero } from "../case-study/case-study-hero";
 import { FactSheet } from "../case-study/fact-sheet";
+import { KharchaLink } from "../case-study/kharcha-link"; // @kharcha
 import { NextProject } from "../case-study/next-project";
 import { TasklineLink } from "../case-study/taskline-link"; // @taskline
 import { DraftNotice } from "../chrome/draft-notice";
@@ -41,6 +42,9 @@ export function CaseStudyPage() {
 					{/* taskline:start */}
 					{project.appSlug === "taskline" ? <TasklineLink /> : null}
 					{/* taskline:end */}
+					{/* kharcha:start */}
+					{project.appSlug === "kharcha" ? <KharchaLink /> : null}
+					{/* kharcha:end */}
 				</div>
 				<div className="col-span-4 flex flex-col gap-[clamp(3.5rem,7vw,6rem)] md:col-span-8 lg:col-span-7 lg:col-start-6">
 					{project.metrics.length > 0 ? (

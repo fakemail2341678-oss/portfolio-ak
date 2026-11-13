@@ -171,7 +171,6 @@ const INDEXABLE: ReadonlyArray<{
 	{ to: "/apps", label: "apps", context: {}, path: "/apps" },
 	{ to: "/apps/notes", label: "notes", context: { match: { search: {} } }, path: "/apps/notes" },
 	{ to: "/apps/links", label: "links", context: {}, path: "/apps/links" },
-	{ to: "/apps/expenses", label: "expenses", context: { match: { search: {} } }, path: "/apps/expenses" },
 	{ to: "/apps/habits", label: "habits", context: { match: { search: {} } }, path: "/apps/habits" },
 	{ to: "/apps/forms", label: "forms", context: {}, path: "/apps/forms" },
 	// apps:end
