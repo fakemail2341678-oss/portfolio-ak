@@ -220,7 +220,8 @@ function Side({ direction, amounts }: { direction: "owed" | "owe"; amounts: Read
 					currency={first.currency}
 					tone={direction}
 					size="lg"
-					className="kh-double self-start"
+					// The hero figure from a tablet up; a phone keeps both amounts side by side (Task 97).
+					className="kh-double self-start sm:text-kh-hero"
 				/>
 			) : (
 				<span className="text-kh-muted text-sm">{m.kharcha_home_nothing()}</span>

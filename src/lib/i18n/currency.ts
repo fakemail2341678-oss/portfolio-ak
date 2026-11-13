@@ -86,6 +86,7 @@ export const money = (code: string, { min = 0, max }: { min?: number; max?: numb
 	});
 };
 
+// kharcha:start (only Kharcha's pickers use it so far: Task 97's matrix)
 /** A currency for a picker: "NPR · Nepalese Rupee" / "NPR · नेपाली रूपैयाँ", the code alone where Intl has no name. */
 export const currencyLabel = (code: string, locale: Locale = getLocale()): string => {
 	try {
@@ -95,3 +96,4 @@ export const currencyLabel = (code: string, locale: Locale = getLocale()): strin
 		return code;
 	}
 };
+// kharcha:end

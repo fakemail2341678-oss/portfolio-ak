@@ -38,7 +38,9 @@ import { gzipSync } from "node:zlib";
 // with its address and the Recurring tab's loader took it to 301.3; Tasks 95 and 96 add the old
 // addresses and the admin's routes, and Task 97 trims.
 // Task 95 (0289): 300.5 kB, Expenses' three routes out and its old addresses' one redirect in.
-const ENTRY_BUDGET_KB = 305;
+// Task 97 (0291): back to 300. Task 96 left 301.2 kB; lazy imports no longer list the chunks the
+// entry already loads (vite/entry-preloads.ts), which took it to 296.9.
+const ENTRY_BUDGET_KB = 300;
 const ROUTE_BUDGET_KB = 300;
 const FONT_BUDGET_KB = 150;
 /** Code that must never be preloaded by every page, found by a string it always contains: its pages load it. */

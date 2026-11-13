@@ -450,3 +450,145 @@ test.describe("Kharcha's admin", () => {
 		await expect(page.getByTestId("kharcha-admin-senders")).toBeVisible();
 	});
 });
+
+/**
+ * Kharcha by keyboard only (Task 97, decision 0291): adding an expense, splitting a bill,
+ * settling up and searching Spend, each from a new guest, with Tab, the arrows, typing and
+ * Enter: every control reached without a mouse.
+ */
+test.describe("Kharcha by keyboard only (Task 97)", () => {
+	test.beforeEach(async ({ harness }) => {
+		await harness.resetRateLimits();
+	});
+
+	type Target = ReturnType<Page["locator"]>;
+	const focused = (target: Target) => target.evaluate((element) => element === document.activeElement);
+
+	/** Presses `key` (Tab, or an arrow in a menu) until `target` has focus: proof it can be reached without a mouse. */
+	const pressTo = async (page: Page, target: Target, key = "Tab", limit = 80) => {
+		for (let presses = 0; presses < limit; presses += 1) {
+			if (await focused(target)) return;
+			await page.keyboard.press(key);
+		}
+		throw new Error(`not reached with ${limit} presses of ${key}`);
+	};
+
+	/** Tabs to a field, then types into it. */
+	const typeInto = async (page: Page, field: Target, text: string) => {
+		await pressTo(page, field);
+		await page.keyboard.type(text);
+	};
+
+	/** A new guest on Home, past onboarding, with the keyboard. */
+	const tryAsGuest = async (page: Page) => {
+		await open(page, "/app/kharcha");
+		await pressTo(page, page.getByTestId("kharcha-try"));
+		await page.keyboard.press("Enter");
+		await expect(page).toHaveURL(/\/app\/kharcha\/home$/);
+		await page.waitForLoadState("networkidle");
+		await pressTo(page, page.getByTestId("kharcha-onboarding").getByRole("button", { name: "Skip" }));
+		await page.keyboard.press("Enter");
+		await expect(page.getByTestId("kharcha-onboarding")).toHaveCount(0);
+	};
+
+	/** Follows one of the rail's links. */
+	const railTo = async (page: Page, name: string) => {
+		await pressTo(page, page.getByTestId("kharcha-rail").getByRole("link", { name }));
+		await page.keyboard.press("Enter");
+	};
+
+	test("adds an expense from the + menu", async ({ page }) => {
+		await tryAsGuest(page);
+		await pressTo(page, page.getByTestId("kharcha-new"));
+		await page.keyboard.press("Enter");
+		await pressTo(page, page.getByTestId("kharcha-create-expense"), "ArrowDown", 12);
+		await page.keyboard.press("Enter");
+		const dialog = page.getByTestId("kharcha-expense-dialog");
+		await expect(dialog).toBeVisible();
+		await typeInto(page, dialog.getByRole("textbox", { name: "Amount" }), "450");
+		await typeInto(page, dialog.getByRole("textbox", { name: "Title" }), "Keyboard momo");
+		await pressTo(page, dialog.getByRole("button", { name: "Add expense" }));
+		await page.keyboard.press("Enter");
+		await expect(dialog).toBeHidden();
+		await railTo(page, "Spend");
+		await expect(page).toHaveURL(/\/app\/kharcha\/spend$/);
+		await expect(page.getByTestId("kharcha-spend-row").first()).toContainText("Keyboard momo");
+	});
+
+	test("splits a bill in the group by exact amounts", async ({ page }) => {
+		await tryAsGuest(page);
+		await railTo(page, "People");
+		await expect(page).toHaveURL(/\/app\/kharcha\/people$/);
+		await pressTo(page, page.getByTestId("kharcha-people-group").filter({ hasText: "Pokhara" }));
+		await page.keyboard.press("Enter");
+		await expect(page.getByTestId("kharcha-thread")).toBeVisible();
+		await pressTo(page, page.getByTestId("kharcha-group-add"));
+		await page.keyboard.press("Enter");
+		const dialog = page.getByTestId("kharcha-expense-dialog");
+		const editor = dialog.getByTestId("kharcha-split-editor");
+		await expect(editor).toBeVisible();
+		await typeInto(page, dialog.getByRole("textbox", { name: "Amount" }), "3000");
+		await typeInto(page, dialog.getByRole("textbox", { name: "Title" }), "Boat");
+		await pressTo(page, editor.getByRole("radio", { name: "Equally" }));
+		await page.keyboard.press("ArrowRight");
+		await expect(editor.getByRole("radio", { name: "Amounts" })).toBeChecked();
+		const amounts = editor.getByTestId("kharcha-split-exact");
+		await expect(amounts).toHaveCount(3);
+		for (const [index, value] of ["1000", "1500", "500"].entries()) {
+			await pressTo(page, amounts.nth(index));
+			await page.keyboard.press("Control+a");
+			await page.keyboard.type(value);
+		}
+		await expect(editor.getByTestId("kharcha-split-status")).toHaveAttribute("data-ok", "true");
+		await pressTo(page, dialog.getByRole("button", { name: "Add expense" }));
+		await page.keyboard.press("Enter");
+		await expect(dialog).toBeHidden();
+		await expect(page.getByTestId("kharcha-thread")).toContainText("Boat");
+	});
+
+	test("settles up from the group's balances", async ({ page }) => {
+		await tryAsGuest(page);
+		await railTo(page, "People");
+		await pressTo(page, page.getByTestId("kharcha-people-group").filter({ hasText: "Pokhara" }));
+		await page.keyboard.press("Enter");
+		await expect(page.getByTestId("kharcha-thread")).toBeVisible();
+		await pressTo(page, page.getByTestId("kharcha-group-tab-balances"));
+		await page.keyboard.press("Enter");
+		await expect(page).toHaveURL(/\?tab=balances$/);
+		await pressTo(page, page.getByTestId("kharcha-balance-settle").first());
+		await page.keyboard.press("Enter");
+		const dialog = page.getByTestId("kharcha-settle-dialog");
+		await expect(dialog.getByRole("radio", { checked: true })).toHaveCount(1);
+		await pressTo(page, dialog.getByRole("textbox", { name: "Amount" }));
+		await page.keyboard.press("Control+a");
+		await page.keyboard.type("100");
+		await expect(dialog).toContainText("A partial payment");
+		await pressTo(page, dialog.getByRole("button", { name: "Record payment" }));
+		await page.keyboard.press("Enter");
+		await expect(dialog).toBeHidden();
+		await expect(page.getByText("Payment recorded.")).toBeVisible();
+	});
+
+	test("searches Spend from the suggestions", async ({ page }) => {
+		await tryAsGuest(page);
+		await railTo(page, "Spend");
+		await expect(page).toHaveURL(/\/app\/kharcha\/spend$/);
+		await page.waitForLoadState("networkidle");
+		const box = page.getByTestId("kharcha-spend-q");
+		await pressTo(page, box);
+		await page.keyboard.type("cat");
+		await expect(page.getByTestId("kharcha-spend-suggestion").first()).toHaveText(/category:/);
+		await page.keyboard.press("Enter");
+		await page.keyboard.type("Groc");
+		await expect(page.getByTestId("kharcha-spend-suggestion").first()).toHaveText(/Groceries/);
+		await page.keyboard.press("Enter");
+		await expect(page).toHaveURL(/q=category%3AGroceries/);
+		// A chip removes its term from the keyboard too.
+		await pressTo(
+			page,
+			page.getByTestId("kharcha-spend-chips").getByRole("link", { name: "Remove category:Groceries" }),
+		);
+		await page.keyboard.press("Enter");
+		await expect(page).not.toHaveURL(/category%3AGroceries/);
+	});
+});

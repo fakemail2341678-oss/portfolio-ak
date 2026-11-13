@@ -148,6 +148,7 @@ export function CommentLine({
 				</div>
 				{editing ? (
 					<form
+						method="post"
 						className="flex flex-col gap-2"
 						onSubmit={(event) => {
 							event.preventDefault();

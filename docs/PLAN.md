@@ -3686,7 +3686,7 @@ The reviews with their fixes, the design record, the measurements and the templa
 
 ---
 
-## 14. Part 8: Kharcha, a personal expense tracker and bill splitter (Tasks 86–97, in progress)
+## 14. Part 8: Kharcha, a personal expense tracker and bill splitter (Tasks 86–97, done)
 
 Part 8 grows the Expenses showcase app into **Kharcha** (खर्च, "spending"), a personal expense tracker and bill splitter with its own URL, shell and brand. It is built as a layer the way Taskline is (0208).
 - **Track:** your own spending, with receipts, categories, tags, payment methods, budgets, recurring expenses, search and insights.
@@ -3749,7 +3749,7 @@ As 12.1, with these differences:
 | 94 | Budgets, recurring expenses and insights | high | Done |
 | 95 | Expenses moved in: migration, redirects, the old app removed | high | Done |
 | 96 | Admin: overview, settings, default categories, abuse controls | medium | Done |
-| 97 | Wrap-up: full e2e, accessibility pass, template matrix, finish review | medium | Planned |
+| 97 | Wrap-up: full e2e, accessibility pass, template matrix, finish review | medium | Done |
 
 - **Order is fixed.**
   - 86–89 make a working personal tracker.
@@ -4385,7 +4385,17 @@ Kharcha's data, money core, access and server, tested on PGlite, with no UI; Exp
 - **Gates** (the changed-files rule): typecheck, check, knip, `i18n:check`, build and the bundle check (entry 301.2 of 305 kB), `build-storybook`; Kharcha's server and unit tests with the guard, rbac, seed, strip-markers, message-usage and route-SEO tests; the Kharcha expense stories in en/light and ne/dark (14 of 14); e2e: `kharcha.spec.ts` 10 of 10, the review of `/admin/kharcha` 36 of 36 (it caught Intl's Nepali currency names differing between Node and Chrome: the checkboxes show codes, a pitfall in the guide).
 - **Left for the owner:** `pnpm db:migrate` against Neon (`0058_kharcha_admin`).
 
-### Task 97: Wrap-up (planned)
+### Task 97: Wrap-up (done, decisions 0291 and 0292)
+
+**Done:**
+- **The entry back under 300 kB** (296.5): lazy imports' preload lists leave out what the entry already loads (`vite/entry-preloads.ts`); the budget is 300 again.
+- **Full e2e:** 3,832 passed in ten shards, none flaky. **Keyboard only:** four new flows (an expense, a split, settling up, a search), all passing; NVDA is the owner's.
+- **Measurements (0292):** Lighthouse mobile Home 97, Spend 97–98, the landing 93–99 (median 96.5, Lantern's LCP flips on the same text paint); `EXPLAIN ANALYZE` on 10,000 expenses: Spend 22–28 ms, balances 12 ms, Home 45 ms once analyzed.
+- **Template matrix:** stripped, `--keep-kharcha` and all kept green after two fixes: the thread's forms had no `method`, and `currencyLabel` is marked Kharcha's.
+- **Reviews (0291):** security, no findings; the finish review's wrap-up fixes (Home's hero amounts, outline to-dos, no landing eyebrow); the design record rewritten.
+- **Left for the owner:** the redesigns in 0291 (the desktop thread with its list and third column, the expense panel's content, the split editor as its own step, the phone thread's header), the demo seed's categories, NVDA.
+
+**As planned:**
 
 - **Full e2e:** `pnpm test:e2e`.
 - **Accessibility:** adding an expense, splitting a bill, settling up and searching, by keyboard only and with NVDA.

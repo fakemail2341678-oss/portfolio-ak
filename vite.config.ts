@@ -10,6 +10,7 @@ import { defineConfig, loadEnv } from "vite";
 import { chaalEngine } from "./scripts/engine-copy.ts"; // @chaal
 import { STATIC_SECURITY_HEADERS } from "./src/lib/http/csp.ts";
 import { emailPreviewPlugin } from "./vite/email-preview-plugin.ts";
+import { entryPreloads } from "./vite/entry-preloads.ts";
 import { zodAlias } from "./vite/zod-alias.ts";
 
 /**
@@ -58,6 +59,7 @@ const validateEnv = async (command: "serve" | "build", mode: string) => {
 export default defineConfig(async ({ command, mode }) => {
 	// Vitest has its own config (vitest.config.ts); this guard covers `vite` commands only.
 	await validateEnv(command, mode);
+	const preloads = entryPreloads();
 
 	return {
 		resolve: { tsconfigPaths: true, alias: [zodAlias] },
@@ -80,6 +82,8 @@ export default defineConfig(async ({ command, mode }) => {
 			// from 'self' only. Small unicode-range subsets (under Vite's 4 kB limit) would
 			// otherwise be blocked. Other assets keep Vite's default (decision 0108).
 			assetsInlineLimit: (file: string) => (/\.woff2?$/.test(file) ? false : undefined),
+			// Lazy imports don't list the chunks every page has already loaded (decision 0291).
+			modulePreload: { resolveDependencies: preloads.resolveDependencies },
 		},
 		environments: {
 			client: {
@@ -114,6 +118,7 @@ export default defineConfig(async ({ command, mode }) => {
 			}),
 			// Dev server only (apply: "serve"): /dev/emails. Never part of a build.
 			emailPreviewPlugin(),
+			preloads.plugin,
 			// Chaal's engine: copied from the stockfish package into public/chaal/engine/ (decision 0263).
 			chaalEngine(), // @chaal
 			devtools(),

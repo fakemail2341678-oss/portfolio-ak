@@ -31,7 +31,6 @@ export function KharchaLanding() {
 				<section className="grid items-center gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,28rem)]">
 					<div className="flex flex-col gap-6">
 						<div className="flex flex-col gap-3">
-							<p className="font-medium text-kh-mark text-sm">{m.kharcha_landing_eyebrow()}</p>
 							<h1 className="kh-display max-w-2xl text-balance text-4xl leading-tight sm:text-5xl">
 								{m.kharcha_landing_heading()}
 							</h1>

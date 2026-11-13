@@ -295,6 +295,8 @@ Record every non-obvious choice here: **What**, **Why**, **Alternatives consider
 - [0288](#0288-kharchas-planning-budgets-on-the-owners-share-alerts-claimed-once-recurring-expenses-numbered-from-their-first-day): Kharcha's planning: budgets on the owner's share, alerts claimed once, recurring expenses numbered from their first day
 - [0289](#0289-the-expenses-app-moved-into-kharcha-by-migration-with-the-same-ids-and-its-addresses-redirect): The Expenses app moved into Kharcha by migration, with the same ids, and its addresses redirect
 - [0290](#0290-kharchas-admin-daily-counts-rolled-up-before-the-purges-one-settings-form-and-suspending-a-sender): Kharcha's admin: daily counts rolled up before the purges, one settings form, and suspending a sender
+- [0291](#0291-part-8-reviewed-lazy-imports-stop-naming-the-entrys-chunks-and-what-the-matrix-and-the-reviews-found): Part 8 reviewed: lazy imports stop naming the entry's chunks, and what the matrix and the reviews found
+- [0292](#0292-part-8-measured-task-97): Part 8 measured (Task 97)
 </details>
 
 ---
@@ -4226,3 +4228,59 @@ Measured on the owner's Windows machine (Node 24.11, 12 threads, 11.7 GB), 2026-
 - **A settings form per section** (limits, categories) saved apart: more versions to keep straight for no gain; the categories are a short list.
 - **Suspending by blocking the account:** too broad; the abuse is sending, and the person keeps their ledger.
 
+
+## 0291: Part 8 reviewed: lazy imports stop naming the entry's chunks, and what the matrix and the reviews found
+
+*Task 97.*
+
+- **The entry is back under 300 kB** (`ENTRY_BUDGET_KB` 305 → 300). Task 96 left 301.2 kB. A quarter of the entry chunk was Vite's preload bookkeeping: `__vite__mapDeps` named 1,107 files (13.7 kB gzip), and 414 lazy imports listed their dependencies by index (10.4 kB), most lists starting with React, the router, Query and Zod, which every page has loaded before a lazy import can run. `vite/entry-preloads.ts` records the client entry's static closure in a `generateBundle` hook ordered `pre` (before Vite's own import analysis rewrites the lists in its `generateBundle`) and `build.modulePreload.resolveDependencies` drops those files from every list: 11,144 of 23,042 entries. The entry fell to 296.9 kB (296.5 on the last build), and lazy pages lost 1–3 kB each. Nothing loads later: a dropped file is always loaded already.
+- **The template matrix** (CI's template job by hand, in scratch clones of the working tree with CI's env: every layer stripped, `--keep-kharcha` alone, and every layer kept) failed in two rows at first:
+  - **`--keep-kharcha`:** `tests/unit/form-method.test.ts` failed on Kharcha's thread composer and a comment's edit form, which had no `method` (a form submitted before hydration would put its fields in the URL). Both are `post` now. The main tree failed it too: the task gates since Task 92 ran only the changed files' tests.
+  - **All stripped:** knip reported `currencyLabel` (core `src/lib/i18n/currency.ts`) unused, since only Kharcha calls it. It sits between `kharcha:` markers.
+  - After the fixes: all stripped 87 files and 668 tests; `--keep-kharcha` typecheck, check, knip, the migration check and its tests (the form test rerun); every layer kept 208 files and 2,539 tests.
+- **The accessibility pass** is kept as e2e flows ("Kharcha by keyboard only"): adding an expense from the + menu, splitting a bill in the group by exact amounts, settling up from a group's balances and searching Spend from the suggestions, each from a new guest with Tab, the arrows, typing and Enter. All four passed on their first run; nothing was unreachable. **NVDA wasn't run:** a screen reader needs the owner at the machine.
+- **The security review** covered `3d02f10..HEAD` (Tasks 86–96) and the working tree, high-confidence exploitable findings only. The `/security-review` skill needs an `origin` remote this repository doesn't have, so it was done in the main session with the same brief. **No findings.** Found sound:
+  - every functions file guards each function (`requireKharchaUser` or `requirePermission`; the invite lookup is public and rate limited per visitor);
+  - Spend's compiler binds every value; its two `sql.raw` fragments are a comparison operator from a fixed map and a currency's digits from the code table;
+  - invites: a 24-byte token stored as its SHA-256, single use under `for update`, expiring, refused for the inviter, for a person someone else joined as, and for guests; joining on sign-in only with a verified, non-anonymous address, never while impersonating;
+  - the unsubscribe route: an HMAC of the person compared in constant time, GET only asks, the page escapes its text under its own CSP; the cron route's constant-time bearer (404 without `CRON_SECRET`);
+  - receipts: confirmed only inside the store's folder and scope, by their uploader; mentions only of people in the thread; the CSV export neutralizes formulas (core `src/lib/csv.ts`).
+- **The finish review** (the `impeccable-finish-reviewer` agent, against the contract, the comps and 68 screenshots of the production build): "redesign" for the thread view, the expense panel and the split editor; the rest wrap-up. It kept the red cloth rail and its yellow thread, the Laila titles, the square plates, and money in words with an arrow.
+  - **Fixed:**
+    - Home's owed and owe amounts are the hero figure from `sm` up (Laila, double-ruled; `lg` on a phone, where the two sit side by side).
+    - Home's to-dos (Settle up, a receipt's Fill in) are outline buttons: the red New stays the one primary on the page.
+    - The landing's red eyebrow above its heading is gone; its line ("in rupees or any currency") ends the description.
+  - **Not a fault:** the margin rule "rendering dark". Its computed colour is the red `--kh-margin` (1.5 px, drawn at 1 px), as the probe of the production build showed.
+  - **Left:** the currency select cuts "NPR · Nepalese Rupee" with an ellipsis in the expense dialog's narrow column (the list shows the names; `SelectField` can't render its value apart from the label). The demo seed's expenses have no category (the seed is plain SQL; categories are each person's own lists, made by `ensureLists` in their language).
+  - **Left for the owner** (redesigns, not wrap-up fixes), from `.impeccable/mocks/kharcha/frames/`:
+    - **The desktop thread:** a 300 px list of pages (each balance in words) between the rail and the page, the ruled page running to a composer inside it, and the expense as a third column instead of a modal sheet.
+    - **The expense panel's content:** the hero amount, PAID BY, the SPLIT rows (a plate, the name, the amount, "You owe Asha" in ochre) and the double-ruled Total.
+    - **The split editor as its own step:** rows with plates, right-aligned amounts and a % column, the hatched "left to assign" bar with "Give it to …", the double-ruled "Assigned X of Y" and key hints.
+    - **The phone thread's header:** back and the title in the red bar, the double-ruled balance with Remind and Settle up below it, fix badges under the title, and a payer line that wraps; the header balance is a small pill on both widths.
+  - **The design record** is `docs/design/kharcha.md` (the `impeccable-documenter` agent, from the shipped code), with these departures listed.
+
+**Why:** PLAN Task 97.
+
+**Alternatives considered:**
+- **`build.modulePreload: false`:** removes all the bookkeeping (about 24 kB), but every lazy page would then find its own imports one after another, a waterfall on each navigation.
+- **Splitting route definitions out of the entry** (0279's lasting fix): touches every layer's routes; the preload lists were the larger and safer cut.
+
+## 0292: Part 8 measured (Task 97)
+
+Measured on the owner's Windows machine (Node 24.11, 12 threads, 11.7 GB), 2026-11-13, on the e2e harness's production build.
+
+- **Lighthouse 13.6, mobile, simulated throttling,** behind a local HTTP/2 proxy with brotli (as Vercel serves pages; 0245). Home and Spend as the demo account (its session cookie as a header):
+  - Home: 97, 97, 97; Spend: 98, 97, 98. **The plan's ≥ 95 is met.** Accessibility and best practices 100; SEO 63 is their `noindex` (private pages, 0100). FCP and LCP 1.1 s, TBT 160–210 ms, CLS 0.
+  - The landing, eight runs: 99, 93, 99, 93, 93, 94, 99, 99 (median 96.5); accessibility, best practices and SEO 100, TBT 110–140 ms, CLS 0. Its LCP is the heading's text, observed at 345–367 ms in every run, with the same 148 requests started before it; Lantern simulates it at either 1.1 s or 3.0 s from run to run. **≥ 95 holds by the median, not in every run.**
+- **Every page's JavaScript:** 296.5 kB gzip of the 300 kB budget, from 301.2 after Task 96 (0291's trim). Kharcha's pages add on top (`node scripts/check-bundle.ts --routes=kharcha`):
+  - Home 192.4 kB, Settings 181.6, Spend 79.2, a group 61.1, Insights 59.4, a friend 58.4, an expense 51.5, the shell 50.6, the import 43.6, People 41.1, sign-in 34.8, the account 34.7, sign-up 34.3, an invite 29.3, the landing 26.9;
+  - the admin's settings 205.7 kB, senders 71.0, the overview 9.9.
+  - Not trimmed: Home and Settings carry the expense dialog and the list editors; both score 97 above.
+- **`EXPLAIN ANALYZE` on 10,000 expenses** (a temporary test on PGlite: one account with 5,000 of their own expenses and 5,000 in a four-person group, 1,000 days, `analyze` after the seed as autovacuum would have run; wall time per service call, then each statement's execution):
+  - Spend, all, newest first: 26.9 ms (the page 2.5 ms, the totals 2.6 ms, the duplicates 5.0 ms); a word and a month by amount: 21.8 ms; page 40: 27.6 ms; the chart by month: 14.3 ms.
+  - A group's balances: 12.0 ms; settling up (all of them): 39.3 ms; People: 38.8 ms; Home: 45.1 ms (its duplicates 8.3 ms, its recent activity the largest share).
+  - The plans scan `kh_expense` sequentially and hash-join it: right for one person who owns all 10,000, and none of these is close to a problem.
+  - **Before `analyze`,** with no statistics, the same duplicates query planned for 42 rows, nested its loops and took 20 s on Home and 160–240 ms on Spend. Production has autovacuum; PGlite doesn't (the guide's pitfall).
+- **`pnpm test:e2e`,** the full suite in ten shards (`--shard=n/10`, 2 workers; one run would outlast the 10-minute tool limit): 3,832 passed, none failed or flaky, in 72.3 min.
+- **The rest:** `pnpm test` (in the every-layer-kept matrix row, with the two scaffolded features) 208 files and 2,539 tests in 4.4 min; Storybook 77 files and 394 stories in each project (each project's first run after the config change failed to start its runner and passed when rerun: Vite re-optimized its dependencies); `build-storybook`, typecheck, check, knip and `i18n:check` green.
+- **Template matrix:** see 0291.

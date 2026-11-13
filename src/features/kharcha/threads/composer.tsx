@@ -177,6 +177,7 @@ export function Composer({
 	};
 	return (
 		<form
+			method="post"
 			className="flex items-end gap-2 rounded-lg border border-kh-hair bg-kh-page p-2 sm:p-3"
 			onSubmit={(event) => {
 				event.preventDefault();

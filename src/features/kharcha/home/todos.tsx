@@ -130,7 +130,12 @@ function SettleTodo({ todo }: { todo: Extract<HomeTodo, { kind: "settle" }> }) {
 					layout="inline"
 				/>
 			</div>
-			<Button size="sm" onClick={() => settleUp({ personId: todo.person.id })} data-testid="kharcha-todo-settle-up">
+			<Button
+				size="sm"
+				variant="outline"
+				onClick={() => settleUp({ personId: todo.person.id })}
+				data-testid="kharcha-todo-settle-up"
+			>
 				<HandCoinsIcon aria-hidden />
 				{m.kharcha_create_settle()}
 			</Button>
@@ -180,7 +185,12 @@ function DraftTodo({ draft }: { draft: ReceiptDraftView }) {
 				</p>
 			</div>
 			<div className="flex shrink-0 items-center gap-1">
-				<Button size="sm" onClick={() => addExpense({ draft })} data-testid="kharcha-todo-receipt-fill">
+				<Button
+					size="sm"
+					variant="outline"
+					onClick={() => addExpense({ draft })}
+					data-testid="kharcha-todo-receipt-fill"
+				>
 					{m.kharcha_todo_receipt_fill()}
 				</Button>
 				<Button size="icon" variant="ghost" onClick={() => void remove()} disabled={discard.isPending}>

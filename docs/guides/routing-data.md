@@ -53,6 +53,7 @@ The router splits `component`, `pendingComponent`, `errorComponent` and `notFoun
 - **Keep route options inline** in `createFileRoute("…")({ … })`. The splitter only moves inline properties: a component or skeleton returned by a helper or spread in stays in the entry chunk.
 - **Load rarely used libraries on demand** (`await import("…")`), as the sign-out button does with the auth client.
 - `node scripts/check-bundle.ts` (after `pnpm build`, and in CI) prints what every page loads and fails over budget.
+- **Lazy imports' preload lists leave out what the entry already loads** (`vite/entry-preloads.ts`, 0291): Vite named each list's files in the entry's `__vite__mapDeps`, and most began with React, the router and Query, which every page has loaded before any lazy import runs. Dropping them took 4.3 kB gzip off every page.
 
 ## Server functions
 
