@@ -571,6 +571,22 @@ export const REVIEWED_PAGES: ReadonlyArray<ReviewedPage> = [
 		params: { from: "kharcha-invite" },
 		label: "signed in",
 	},
+	// Task 93: Spend's search with chips (one term not understood), its table and chart, the import.
+	{
+		route: "/app/kharcha/spend",
+		as: "kharcha",
+		path: "/app/kharcha/spend?q=date%3Athis-year%20amount%3Eabc%20-type%3Arefund",
+		label: "search",
+	},
+	{ route: "/app/kharcha/spend", as: "kharcha", path: "/app/kharcha/spend?view=table", label: "table" },
+	{
+		route: "/app/kharcha/spend",
+		as: "kharcha",
+		path: "/app/kharcha/spend?view=chart&groupBy=month&chart=line",
+		label: "chart",
+	},
+	{ route: "/app/kharcha/spend", as: "kharcha", path: "/app/kharcha/spend?view=chart&chart=donut", label: "donut" },
+	{ route: "/app/kharcha/import", as: "kharcha" },
 	// kharcha:end
 	// @new-feature:reviewed-pages
 	// Errors

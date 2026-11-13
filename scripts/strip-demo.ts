@@ -389,6 +389,9 @@ const SPECS: Record<Layer, LayerSpec> = {
 			"src/server/routes/kharcha-unsubscribe.ts",
 			"tests/server/kharcha-talk.test.ts",
 			"tests/unit/kharcha-talk.test.ts",
+			// Spend's search, saved searches, bulk actions and CSV (Task 93, decision 0287).
+			"tests/server/kharcha-search.test.ts",
+			"tests/unit/kharcha-query.test.ts",
 		],
 		packageScripts: ["db:seed-kharcha"],
 		crons: ["/api/cron/kharcha"],

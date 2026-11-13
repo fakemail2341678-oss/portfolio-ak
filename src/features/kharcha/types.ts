@@ -132,6 +132,8 @@ export type KharchaMe = {
 	/** Bumped by every change that touches the caller: open pages poll it and refetch (PLAN 14.5 "Freshness"). */
 	rev: number;
 	isGuest: boolean;
+	/** The caller's saved searches, in their order (Task 93): Spend lists them after the built-in ones. */
+	searches: SavedSearch[];
 };
 
 /** What the caller owes and is owed in all, per currency. */
@@ -321,8 +323,52 @@ export type SpendRow = Pick<
 	| "fixes"
 > & { receipts: number };
 
-/** A page of Spend, and what the caller spent across every page of it, per currency (their share; refunds against it). */
-export type SpendPage = { items: SpendRow[]; total: number; page: number; pageCount: number; totals: Amount[] };
+/** One line of Spend (Task 93): the caller's share of an expense, or a payment they made or got (`type:payment`). */
+export type SpendItem = ({ source: "expense" } & SpendRow) | ({ source: "payment" } & ThreadPayment);
+
+/**
+ * A page of Spend, and what the caller spent across every page of it, per currency (their
+ * share; refunds against it; payments are not spending and aren't counted).
+ */
+export type SpendPage = { items: SpendItem[]; total: number; page: number; pageCount: number; totals: Amount[] };
+
+/** One bar, slice or point of Spend's chart: a category, a merchant, a day… with the caller's spending there. */
+export type SpendBucket = {
+	/** A list's id, a name, or the first day of a period (`2026-11-01`, `2026-11`, `2026`); "" is "none" (uncategorized, no tag…). */
+	key: string;
+	/** The name, when the key isn't one (a category's, a group's, a person's). */
+	label: string;
+	amountMinor: number;
+};
+
+/** Spend's chart (Task 93): per currency, the caller's spending summed by what it groups by. */
+export type SpendChart = { currencies: Array<{ currency: string; total: number; buckets: SpendBucket[] }> };
+
+/** One line of Spend's CSV (Task 93): the total and the caller's share, with their own names for things. */
+export type SpendExportRow = {
+	spentOn: IsoDate;
+	kind: ExpenseKind;
+	title: string;
+	merchant: string;
+	category: string;
+	tags: string[];
+	method: string;
+	currency: string;
+	amountMinor: number;
+	shareMinor: number;
+	group: string;
+	paidBy: string[];
+	notes: string;
+};
+
+/** A saved search (Task 93): a name for a query in the search language, the caller's own. */
+export type SavedSearch = { id: string; name: string; query: string };
+
+/** What a bulk action did: the rows it changed, and those it left (not the caller's to change, or already so). */
+export type BulkResult = { changed: number; skipped: number };
+
+/** What an import made; `replayed` when the key had been used for these rows already. */
+export type ImportResult = { inserted: number; categories: number; tags: number; methods: number; replayed: boolean };
 
 /** A receipt uploaded before its details (Home's to-do). */
 export type ReceiptDraftView = { id: string; createdAt: string; receipts: ImageAsset[] };
@@ -594,3 +640,6 @@ export type ActivityValue = string | number | boolean | null;
  * alone), a title for the rest. Never a person's id: who it was done to is the row's subject.
  */
 export type ActivityData = { field?: string; from?: ActivityValue; to?: ActivityValue; title?: string };
+
+/** Spend's chart: the bucket the smaller ones of a list are summed into. */
+export const SPEND_OTHER_BUCKET = "*other";

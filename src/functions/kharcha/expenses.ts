@@ -46,7 +46,7 @@ export const markKharchaDuplicate = createServerFn({ method: "POST" })
 	.validator(zodInput(markDuplicateInput))
 	.handler(({ data, context }): Promise<ExpenseView> => expenses.setNotDuplicate(context, data.expenseId, data.ok));
 
-/** A page of Spend (Task 89): the caller's expenses, this month by default, newest first. */
+/** A page of Spend (Tasks 89 and 93): the caller's expenses matching a query in the search language. */
 export const listKharchaSpend = createServerFn({ method: "GET" })
 	.middleware([requireKharchaUser, withKharchaServices])
 	.validator(zodInput(spendListInput))

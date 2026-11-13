@@ -39,8 +39,11 @@ const base = {
 	currency: "NPR" as const,
 	spentOn: today,
 };
+/** A page of Spend; November by default, as the Task 89 default was (Task 93: the period is in `q`). */
 const spendOf = (id: string, input: Partial<Parameters<typeof spend.listSpend>[1]> = {}) =>
-	spend.listSpend(as(id), { q: "", category: [], sort: "-date", page: 1, pageSize: 25, month: "2026-11", ...input });
+	spend.listSpend(as(id), { sort: "-date", page: 1, pageSize: 25, ...input, q: input.q ?? "date:2026-11" });
+const rowsOf = (page: Awaited<ReturnType<typeof spend.listSpend>>) =>
+	page.items.flatMap((item) => (item.source === "expense" ? [item] : []));
 
 describe("Kharcha: lists", () => {
 	it("are made from the defaults once, in the language of the first visit, and are the caller's own", async () => {
@@ -338,19 +341,22 @@ describe("Kharcha: Spend", () => {
 		await expenses.deleteExpense(as("maya"), trashed.id);
 
 		const page = await spendOf("maya");
-		expect(page.items.map((row) => [row.title, row.myShareMinor])).toEqual([
+		expect(rowsOf(page).map((row) => [row.title, row.myShareMinor])).toEqual([
 			["Return", 2_000],
 			["Rice", 10_000],
 			["Dinner", 4_500],
 		]);
 		expect(page.totals).toEqual([{ currency: "NPR", amountMinor: 12_500 }]);
-		expect(page.items.find((row) => row.title === "Dinner")?.fixes).toEqual(["uncategorized"]);
+		expect(rowsOf(page).find((row) => row.title === "Dinner")?.fixes).toEqual(["uncategorized"]);
 
-		expect((await spendOf("maya", { month: "all" })).total).toBe(4);
-		expect((await spendOf("maya", { category: ["none"] })).items.map((row) => row.title)).toEqual(["Return", "Dinner"]);
-		expect((await spendOf("maya", { q: "rice" })).items.map((row) => row.title)).toEqual(["Rice"]);
-		expect((await spendOf("maya", { sort: "-amount" })).items[0]?.title).toBe("Rice");
+		expect((await spendOf("maya", { q: "" })).total).toBe(4);
+		expect(rowsOf(await spendOf("maya", { q: "date:2026-11 is:uncategorized" })).map((row) => row.title)).toEqual([
+			"Return",
+			"Dinner",
+		]);
+		expect(rowsOf(await spendOf("maya", { q: "date:2026-11 rice" })).map((row) => row.title)).toEqual(["Rice"]);
+		expect(rowsOf(await spendOf("maya", { sort: "-amount" }))[0]?.title).toBe("Rice");
 		// Asha sees her share of the dinner, nothing of Maya's own.
-		expect((await spendOf("asha")).items.map((row) => [row.title, row.myShareMinor])).toEqual([["Dinner", 4_500]]);
+		expect(rowsOf(await spendOf("asha")).map((row) => [row.title, row.myShareMinor])).toEqual([["Dinner", 4_500]]);
 	});
 });

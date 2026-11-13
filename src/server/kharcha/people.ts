@@ -344,6 +344,14 @@ export async function mergePerson(tx: Tx, fromId: string, toId: string): Promise
 
 	// Their own lists (Task 89): the same category, tag or method becomes one; the rest moves.
 	await mergeLists(tx, fromId, toId);
+	// Saved searches and imports (Task 93): they move, after the other's own.
+	await tx.execute(sql`
+		update kh_saved_search
+		set owner_id = ${toId},
+			position = position + (select coalesce(max(position), -1) + 1 from kh_saved_search where owner_id = ${toId})
+		where owner_id = ${fromId}
+	`);
+	await tx.execute(sql`update kh_import set owner_id = ${toId} where owner_id = ${fromId}`);
 
 	// Invites (Task 90): one of the two sent the other invited nobody; the rest move.
 	await tx.execute(sql`

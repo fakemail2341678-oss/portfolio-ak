@@ -21,7 +21,9 @@ import type {
 	PeoplePage,
 	ReceiptDraftView,
 	SettleUp,
+	SpendChart,
 	SpendPage,
+	SpendRow,
 } from "../../src/features/kharcha/types";
 import type { Session } from "../../src/lib/session";
 
@@ -63,6 +65,10 @@ export const sampleKharchaMe: KharchaMe = {
 	receiptsMax: 10,
 	rev: 1,
 	isGuest: false,
+	searches: [
+		{ id: "s-trip-food", name: "Trip food", query: 'group:"Pokhara trip" category:food' },
+		{ id: "s-big", name: "Over 1,000", query: "amount>1000" },
+	],
 };
 
 /** Sessions for the shell and Home stories: an account, and a guest trying it. */
@@ -393,8 +399,8 @@ const spendRow = (
 	amountMinor: number,
 	spentOn: string,
 	category: ExpenseView["category"],
-	extra: Partial<SpendPage["items"][number]> = {},
-): SpendPage["items"][number] => ({
+	extra: Partial<SpendRow> = {},
+): SpendRow => ({
 	id,
 	groupId: null,
 	kind: "expense",
@@ -414,39 +420,58 @@ const spendRow = (
 });
 
 export const sampleKharchaSpend: SpendPage = {
-	items: [
-		spendRow("e-groceries", "Weekly groceries", 248_050, "2026-11-10", sampleKharchaDetail.category, {
-			receipts: 1,
-			fixes: ["duplicate"],
-		}),
-		spendRow("e-groceries-2", "Bhatbhateni Store", 248_050, "2026-11-10", null, {
-			fixes: ["uncategorized", "duplicate"],
-		}),
-		spendRow("e-ride", "Pathao", 18_500, "2026-11-09", {
-			id: "c-transport",
-			name: "Transport",
-			icon: "bus",
-			color: "blue",
-		}),
-		spendRow("e-coffee", "Himalayan Java", 42_000, "2026-11-08", {
-			id: "c-food",
-			name: "Food and drink",
-			icon: "utensils",
-			color: "orange",
-		}),
-		spendRow(
-			"e-refund",
-			"Daraz return",
-			120_000,
-			"2026-11-05",
-			{ id: "c-shopping", name: "Shopping", icon: "shopping-bag", color: "pink" },
-			{ kind: "refund" },
-		),
-	],
+	items: (
+		[
+			spendRow("e-groceries", "Weekly groceries", 248_050, "2026-11-10", sampleKharchaDetail.category, {
+				receipts: 1,
+				fixes: ["duplicate"],
+			}),
+			spendRow("e-groceries-2", "Bhatbhateni Store", 248_050, "2026-11-10", null, {
+				fixes: ["uncategorized", "duplicate"],
+			}),
+			spendRow("e-ride", "Pathao", 18_500, "2026-11-09", {
+				id: "c-transport",
+				name: "Transport",
+				icon: "bus",
+				color: "blue",
+			}),
+			spendRow("e-coffee", "Himalayan Java", 42_000, "2026-11-08", {
+				id: "c-food",
+				name: "Food and drink",
+				icon: "utensils",
+				color: "orange",
+			}),
+			spendRow(
+				"e-refund",
+				"Daraz return",
+				120_000,
+				"2026-11-05",
+				{ id: "c-shopping", name: "Shopping", icon: "shopping-bag", color: "pink" },
+				{ kind: "refund" },
+			),
+		] satisfies SpendRow[]
+	).map((row) => ({ source: "expense" as const, ...row })),
 	total: 5,
 	page: 1,
 	pageCount: 1,
 	totals: [{ currency: "NPR", amountMinor: 437_100 }],
+};
+
+/** Spend's chart of the same month by category (Task 93). */
+export const sampleKharchaSpendChart: SpendChart = {
+	currencies: [
+		{
+			currency: "NPR",
+			total: 436_600,
+			buckets: [
+				{ key: "c-groceries", label: "Groceries", amountMinor: 248_050 },
+				{ key: "", label: "", amountMinor: 248_050 },
+				{ key: "c-food", label: "Food and drink", amountMinor: 42_000 },
+				{ key: "c-transport", label: "Transport", amountMinor: 18_500 },
+				{ key: "c-shopping", label: "Shopping", amountMinor: -120_000 },
+			],
+		},
+	],
 };
 
 export const sampleKharchaDraft: ReceiptDraftView = {

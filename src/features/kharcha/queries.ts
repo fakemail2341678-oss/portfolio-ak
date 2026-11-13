@@ -56,14 +56,26 @@ import {
 } from "@/functions/kharcha/payments";
 import { createKharchaDraft, deleteKharchaDraft, getKharchaUploadSettings } from "@/functions/kharcha/receipts";
 import { getKharchaSettleUp, remindKharchaFriend } from "@/functions/kharcha/settle";
+import {
+	bulkKharchaExpenses,
+	deleteKharchaSearch,
+	exportKharchaSpend,
+	getKharchaSpendChart,
+	importKharchaSpend,
+	renameKharchaSearch,
+	reorderKharchaSearches,
+	saveKharchaSearch,
+} from "@/functions/kharcha/spend";
 import { getKharchaFriendThread, getKharchaGroupThread, listKharchaPeople } from "@/functions/kharcha/threads";
 import type {
 	AddFriendInput,
+	BulkInput,
 	CreateCommentInput,
 	CreateExpenseInput,
 	CreateGroupInput,
 	CreatePaymentInput,
 	FriendEmailInput,
+	ImportInput,
 	InviteInput,
 	NewGroupMemberInput,
 	NotifySettingsInput,
@@ -72,13 +84,15 @@ import type {
 	ProfileInput,
 	ReactInput,
 	SettleUpInput,
+	SpendExportInput,
 	UpdateCommentInput,
 	UpdateExpenseInput,
 	UpdateFriendInput,
 	UpdateGroupInput,
 	UpdatePaymentInput,
 } from "./schema";
-import type { SpendListInput } from "./search";
+import type { SpendChartInput, SpendListInput } from "./search";
+import type { KharchaMe, SavedSearch } from "./types";
 
 /**
  * Kharcha's queries (TanStack Query only, PLAN 14.5 "Client state"). Every key starts with
@@ -91,6 +105,7 @@ export const kharchaKeys = {
 	me: (userId: string) => [...kharchaKeys.user(userId), "me"] as const,
 	home: (userId: string) => [...kharchaKeys.user(userId), "home"] as const,
 	spend: (userId: string, input: SpendListInput) => [...kharchaKeys.user(userId), "spend", input] as const,
+	spendChart: (userId: string, input: SpendChartInput) => [...kharchaKeys.user(userId), "spend-chart", input] as const,
 	expense: (userId: string, expenseId: string) => [...kharchaKeys.user(userId), "expense", expenseId] as const,
 	lists: (userId: string) => [...kharchaKeys.user(userId), "lists"] as const,
 	merchants: (userId: string) => [...kharchaKeys.user(userId), "merchants"] as const,
@@ -116,6 +131,16 @@ export const kharchaHomeQueryOptions = (userId: string) =>
 
 export const kharchaSpendQueryOptions = (userId: string, input: SpendListInput) =>
 	queryOptions({ queryKey: kharchaKeys.spend(userId, input), queryFn: () => listKharchaSpend({ data: input }) });
+
+/** Spend's chart (Task 93): the search summed by what it groups by, per currency. */
+export const kharchaSpendChartQueryOptions = (userId: string, input: SpendChartInput) =>
+	queryOptions({
+		queryKey: kharchaKeys.spendChart(userId, input),
+		queryFn: () => getKharchaSpendChart({ data: input }),
+	});
+
+/** The search, or the rows chosen, as CSV lines (Task 93): the page makes the file. */
+export const exportKharcha = (data: SpendExportInput) => exportKharchaSpend({ data });
 
 export const kharchaExpenseQueryOptions = (userId: string, expenseId: string) =>
 	queryOptions({
@@ -204,7 +229,42 @@ export const kharchaRevQueryOptions = (userId: string) =>
 export const refreshKharcha = (queryClient: QueryClient, userId: string) =>
 	queryClient.invalidateQueries({ queryKey: kharchaKeys.user(userId) });
 
+/** A saved search's change answers with all of them: the caller's `me` (the rail's list) takes it. */
+const searchesChanged = (queryClient: QueryClient, userId: string) => (searches: SavedSearch[]) => {
+	queryClient.setQueryData<KharchaMe>(kharchaKeys.me(userId), (me) => (me ? { ...me, searches } : me));
+};
+
 export const kharchaMutations = {
+	bulk: (queryClient: QueryClient, userId: string) =>
+		mutationOptions({
+			mutationFn: (data: BulkInput) => bulkKharchaExpenses({ data }),
+			onSuccess: () => refreshKharcha(queryClient, userId),
+		}),
+	saveSearch: (queryClient: QueryClient, userId: string) =>
+		mutationOptions({
+			mutationFn: (data: { name: string; query: string }) => saveKharchaSearch({ data }),
+			onSuccess: searchesChanged(queryClient, userId),
+		}),
+	renameSearch: (queryClient: QueryClient, userId: string) =>
+		mutationOptions({
+			mutationFn: (data: { id: string; name: string }) => renameKharchaSearch({ data }),
+			onSuccess: searchesChanged(queryClient, userId),
+		}),
+	reorderSearches: (queryClient: QueryClient, userId: string) =>
+		mutationOptions({
+			mutationFn: (ids: string[]) => reorderKharchaSearches({ data: { ids } }),
+			onSuccess: searchesChanged(queryClient, userId),
+		}),
+	deleteSearch: (queryClient: QueryClient, userId: string) =>
+		mutationOptions({
+			mutationFn: (id: string) => deleteKharchaSearch({ data: { id } }),
+			onSuccess: searchesChanged(queryClient, userId),
+		}),
+	importSpend: (queryClient: QueryClient, userId: string) =>
+		mutationOptions({
+			mutationFn: (data: ImportInput) => importKharchaSpend({ data }),
+			onSuccess: () => refreshKharcha(queryClient, userId),
+		}),
 	onboard: (queryClient: QueryClient, userId: string) =>
 		mutationOptions({
 			mutationFn: (data: OnboardingInput) => completeKharchaOnboarding({ data }),

@@ -560,28 +560,7 @@ async function setDeleted(
 		const me = await resolveMe(tx, user);
 		const access = await resolveExpense(tx, me, expenseId, now);
 		assertSourceCan(access, deleted ? "delete" : "restore");
-		const [expense] = await tx
-			.update(khExpense)
-			.set({ deletedAt: deleted ? now : null })
-			.where(and(eq(khExpense.id, expenseId), deleted ? isNull(khExpense.deletedAt) : isNotNull(khExpense.deletedAt)))
-			.returning();
-		if (!expense) {
-			throw deleted
-				? ruleError("FORBIDDEN", "Kharcha: in the trash", m.kharcha_error_in_trash())
-				: ruleError("FORBIDDEN", "Kharcha: not in the trash", m.kharcha_error_not_in_trash());
-		}
-		await writeLedger(tx, { expense });
-		if (expense.groupId) await assertFormerSettled(tx, expense.groupId);
-		const people = repo.partsPeople(await repo.partsOf(tx, expense.id));
-		await recordActivity(tx, me.personId, scopeOf(expense, people), {
-			kind: deleted ? "expense.deleted" : "expense.restored",
-			expenseId: expense.id,
-			data: { title: expense.title || expense.merchant },
-		});
-		await bumpRevs(tx, await touched(tx, expense.groupId, [me.personId, ...people]));
-		const { instant } = deleted
-			? await notifyExpense(tx, me, "expense.deleted", expense, people, access.group?.group.name ?? null)
-			: { instant: [] };
+		const { expense, instant } = await trashInTx(tx, me, access, deleted, now);
 		const editable = access.can.delete || access.can.restore;
 		const view = await expenseView(
 			tx,
@@ -597,6 +576,43 @@ async function setDeleted(
 	});
 	deliverAfter(deliver, instant);
 	return view;
+}
+
+/**
+ * The trash's change inside a transaction, once access allows it (`setDeleted`, and Spend's
+ * bulk delete, Task 93): the row, its ledger, the history, the `rev`s and who is told.
+ */
+export async function trashInTx(
+	tx: Tx,
+	me: Me,
+	access: Awaited<ReturnType<typeof resolveExpense>>,
+	deleted: boolean,
+	now: Date,
+) {
+	const expenseId = access.expense.id;
+	const [expense] = await tx
+		.update(khExpense)
+		.set({ deletedAt: deleted ? now : null })
+		.where(and(eq(khExpense.id, expenseId), deleted ? isNull(khExpense.deletedAt) : isNotNull(khExpense.deletedAt)))
+		.returning();
+	if (!expense) {
+		throw deleted
+			? ruleError("FORBIDDEN", "Kharcha: in the trash", m.kharcha_error_in_trash())
+			: ruleError("FORBIDDEN", "Kharcha: not in the trash", m.kharcha_error_not_in_trash());
+	}
+	await writeLedger(tx, { expense });
+	if (expense.groupId) await assertFormerSettled(tx, expense.groupId);
+	const people = repo.partsPeople(await repo.partsOf(tx, expense.id));
+	await recordActivity(tx, me.personId, scopeOf(expense, people), {
+		kind: deleted ? "expense.deleted" : "expense.restored",
+		expenseId: expense.id,
+		data: { title: expense.title || expense.merchant },
+	});
+	await bumpRevs(tx, await touched(tx, expense.groupId, [me.personId, ...people]));
+	const { instant } = deleted
+		? await notifyExpense(tx, me, "expense.deleted", expense, people, access.group?.group.name ?? null)
+		: { instant: [] };
+	return { expense, instant };
 }
 
 export const deleteExpense = (services: KharchaServices, expenseId: string, now?: Date) =>

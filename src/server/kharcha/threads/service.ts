@@ -12,7 +12,6 @@ import {
 	type PeoplePage,
 	THREAD_LIMIT,
 	type ThreadItem,
-	type ThreadPayment,
 } from "@/features/kharcha/types";
 import { type IsoDate, todayInZone } from "@/lib/i18n/date-only";
 import {
@@ -34,9 +33,8 @@ import { commentsOf, resolveThread, talkOf, threadStates } from "../conversation
 import { friendsOf, oneFriend } from "../friends/service";
 import { groupView, listGroups } from "../groups/service";
 import { byCurrency } from "../ledger";
-import { loadPeople } from "../people";
 import { payNoteOf, remindState } from "../settle/service";
-import { spendRows } from "../spend/service";
+import { paymentCards, spendRows } from "../spend/service";
 
 /**
  * Kharcha's people page and threads (docs/guides/kharcha.md "People and threads", Task 90;
@@ -98,39 +96,6 @@ export async function listPeople(services: KharchaServices, input: PeopleInput):
 async function timeZoneOf(db: Db | Tx, me: Me): Promise<string> {
 	const [profile] = await db.select({ zone: khProfile.timeZone }).from(khProfile).where(eq(khProfile.userId, me.id));
 	return profile?.zone ?? "Asia/Kathmandu";
-}
-
-async function paymentCards(db: Db | Tx, me: Me, ids: ReadonlyArray<string>): Promise<Map<string, ThreadPayment>> {
-	const result = new Map<string, ThreadPayment>();
-	if (ids.length === 0) return result;
-	const rows = await db
-		.select()
-		.from(khPayment)
-		.where(inArray(khPayment.id, [...ids]));
-	const people = await loadPeople(
-		db,
-		me.personId,
-		rows.flatMap((row) => [row.fromPerson, row.toPerson]),
-	);
-	for (const row of rows) {
-		result.set(row.id, {
-			id: row.id,
-			groupId: row.groupId,
-			fromId: row.fromPerson,
-			toId: row.toPerson,
-			amountMinor: row.amountMinor,
-			currency: row.currency,
-			paid:
-				row.paidCurrency && row.paidAmountMinor !== null && row.rate !== null
-					? { currency: row.paidCurrency, amountMinor: row.paidAmountMinor, rate: row.rate }
-					: null,
-			method: row.method,
-			note: row.note,
-			paidOn: row.paidOn,
-			people: people.filter((person) => person.id === row.fromPerson || person.id === row.toPerson),
-		});
-	}
-	return result;
 }
 
 /**

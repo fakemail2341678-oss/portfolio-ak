@@ -291,6 +291,7 @@ Record every non-obvious choice here: **What**, **Why**, **Alternatives consider
 - [0284](#0284-kharchas-invites-joining-threads-and-split-editor-hashed-single-use-links-a-merge-on-joining-threads-from-history): Kharcha's invites, joining, threads and split editor: hashed single-use links, a merge on joining, threads from history
 - [0285](#0285-kharchas-settling-up-choices-from-the-ledger-a-rate-checked-in-integers-reminders-as-history): Kharcha's settling up: choices from the ledger, a rate checked in integers, reminders as history
 - [0286](#0286-kharchas-conversations-thread-keys-read-marks-tasklines-notifications-and-one-email-a-day-to-people-without-an-account): Kharcha's conversations: thread keys, read marks, Taskline's notifications, and one email a day to people without an account
+- [0287](#0287-kharchas-spend-a-search-language-compiled-to-bound-sql-the-period-in-q-built-in-searches-in-code): Kharcha's Spend: a search language compiled to bound SQL, the period in `q`, built-in searches in code
 </details>
 
 ---
@@ -4132,3 +4133,27 @@ Measured on the owner's Windows machine (Node 24.11, 12 threads, 11.7 GB), 2026-
 - **A `kh_email_optout` table:** the person is already one row per address.
 
 **Numbers:** the entry is 299.8 kB of 300 (299.5 before: no route file; the settings tab and the bell's link).
+
+## 0287: Kharcha's Spend: a search language compiled to bound SQL, the period in `q`, built-in searches in code
+
+**What:** Task 93 turns Spend into a search. `q` holds a query in a small language (`src/features/kharcha/spend/query/`): words and quoted phrases (the title, merchant and notes, a `simple` tsvector on `kh_expense`), and fields with an operator (`type: category: tag: merchant: merchant= amount> amount< amount= currency: date: date> group: with: paid-by: method: has:receipt is:shared|personal|unsettled|duplicate|uncategorized`); `-` negates, commas mean OR, quotes group words. A tokenizer and parser that never fail, a printer that is their inverse (unit-tested both ways, with seeded random queries), and `termProblem`, shared by the bar and the server.
+- **The compiler** (`src/server/kharcha/spend/compile.ts`) is a switch over the field names, so the allow-list is the code: each field gives a condition for the caller's share of an expense and one for a payment, every value is a bound parameter, and the only raw SQL is a comparison operator from a fixed map and the currency digits from the code table. A term with a problem is left out, and the bar marks and names it, rather than failing the page.
+- **Names are matched, not ids:** `category:food`, `with:asha` compare in any case against the caller's own lists and people (a person by their name, its first word, or the caller's nickname for them), so a saved search keeps working after a rename of nothing it doesn't name, and the language reads the same in a link.
+- **Amounts are the expense's** (what the bill said), in the currency's major units (`amount>500`), compared as numeric over `10^digits`; sorting and totals stay on the caller's share, as Task 89 had them.
+- **`is:duplicate`** is the fix badge's own rule (`duplicatesOf`, whose merchant likeness runs in JavaScript): the caller's candidate ids are found first, only when the query asks, and passed in as parameters. **`is:unsettled`** is an expense whose ledger rows involve the caller and someone they still have a balance with in that currency, everything between the two counted. Weeks start on Sunday, as Nepal's do.
+- **Payments** are listed only when a `type:` term names them (Spend is spending); fields that mean nothing for a payment (category, tag, receipts…) never match one. The page of both is a `UNION ALL` ordered by day, then when it was written; totals count expense shares only.
+- **The period is in `q`** (`date:2026-11`, `date:this-month`): Spend without a query lists everything, and the header steps months when the query names one. The plan's URL contract (`q`, `view`, `groupBy`) has no `month`, and a saved search must be able to name a period. "This month" is the first built-in search.
+- **Field names are English in both languages:** they are the language's syntax, typed and shared in links; values are the caller's own words in any script.
+- **The bar both ways:** chips are the parsed terms (each a link that drops it); the controls (type, category, date) show what the query says of their field and, when changed, rewrite it in `q` (`foldControls`, with the previous query to tell a changed control from a stale one). `FilterBar` gained `transform` for that; without JavaScript the form's controls arrive as `?category=` and the page folds them the same way.
+- **Saved searches** (`kh_saved_search`: owner, name, query, position) are each person's own, 30 at most, answered whole after each change and carried on `me`; the built-in four (This month, Uncategorized, Unsettled, Receipts) are constants, not rows, so they can't be renamed or lost. They are Spend's own nav (a column beside the results on a laptop, a row on a phone), since the rail is a column of icons 64 px wide.
+- **Bulk actions** work on the caller's own part (category, tags, method on their payer row) or send to the trash through the trash's own change (`trashInTx`); a row the caller can't see, isn't on, or that is already so is skipped and counted, while a category or method that isn't theirs refuses the whole action.
+- **The import** is Expenses' pipeline (0192) moved and extended: merchant, tags, method and type columns (a negative amount with no type is a refund), the export's headers known in every language, the caller's default lists made first, names matched in any case and the rest made, 1,000 rows inserted in batches (personal: no ledger rows, one history line each), once per key (`kh_import`, `kh_expense.import_key`).
+
+**Why:** the plan's Search ("a bar with chips and a typed language", 14.5) needs one grammar for the box, the chips, the links and the saved searches, and the server must never take SQL from it. Compiling a tree through a switch makes every field's SQL reviewable in one file and injection a matter of types; matching names keeps queries portable between people, links and languages.
+
+**Alternatives considered:**
+- **Filters as separate URL params** (Task 89's `month`, `category`): a saved search would be a bag of params, the text box another language beside them, and chips would have two sources.
+- **`websearch_to_tsquery`** for the words: it reads its own operators (`-`, `or`, quotes) from text that the language has already parsed; prefix words (`lake:*`) from letters, marks and digits only are simpler and safe.
+- **Ids in queries** (`category:<uuid>`): exact, but unreadable in a link and wrong after a merge of lists; names in any case match what people type.
+- **`is:duplicate` as SQL alone:** Postgres' character classes don't see Devanagari marks the way `merchantKey` does, so the badge and the search would disagree.
+- **Built-in searches as rows made on first use:** renameable and deletable, but a migration for each new one and nothing gained.

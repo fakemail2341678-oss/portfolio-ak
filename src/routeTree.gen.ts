@@ -216,6 +216,7 @@ import { Route as ChaalAppChaalWatchIndexRouteImport } from './routes/_chaal/app
 import { Route as ChaalAppChaalWatchChannelRouteImport } from './routes/_chaal/app/chaal/watch/$channel'
 import { Route as KharchaAppKharchaShellAccountRouteImport } from './routes/_kharcha/app/kharcha/_shell/account'
 import { Route as KharchaAppKharchaShellHomeRouteImport } from './routes/_kharcha/app/kharcha/_shell/home'
+import { Route as KharchaAppKharchaShellImportRouteImport } from './routes/_kharcha/app/kharcha/_shell/import'
 import { Route as KharchaAppKharchaShellPeopleRouteImport } from './routes/_kharcha/app/kharcha/_shell/people'
 import { Route as KharchaAppKharchaShellSpendRouteImport } from './routes/_kharcha/app/kharcha/_shell/spend'
 import { Route as KharchaAppKharchaJoinTokenRouteImport } from './routes/_kharcha/app/kharcha/join.$token'
@@ -1362,6 +1363,12 @@ const KharchaAppKharchaShellHomeRoute =
     path: '/home',
     getParentRoute: () => KharchaAppKharchaShellRouteRoute,
   } as any)
+const KharchaAppKharchaShellImportRoute =
+  KharchaAppKharchaShellImportRouteImport.update({
+    id: '/import',
+    path: '/import',
+    getParentRoute: () => KharchaAppKharchaShellRouteRoute,
+  } as any)
 const KharchaAppKharchaShellPeopleRoute =
   KharchaAppKharchaShellPeopleRouteImport.update({
     id: '/people',
@@ -1835,6 +1842,7 @@ export interface FileRoutesByFullPath {
   '/app/chaal/watch/$channel': typeof ChaalAppChaalWatchChannelRoute
   '/app/kharcha/account': typeof KharchaAppKharchaShellAccountRoute
   '/app/kharcha/home': typeof KharchaAppKharchaShellHomeRoute
+  '/app/kharcha/import': typeof KharchaAppKharchaShellImportRoute
   '/app/kharcha/people': typeof KharchaAppKharchaShellPeopleRoute
   '/app/kharcha/spend': typeof KharchaAppKharchaShellSpendRoute
   '/app/kharcha/join/$token': typeof KharchaAppKharchaJoinTokenRoute
@@ -2059,6 +2067,7 @@ export interface FileRoutesByTo {
   '/app/chaal/watch/$channel': typeof ChaalAppChaalWatchChannelRoute
   '/app/kharcha/account': typeof KharchaAppKharchaShellAccountRoute
   '/app/kharcha/home': typeof KharchaAppKharchaShellHomeRoute
+  '/app/kharcha/import': typeof KharchaAppKharchaShellImportRoute
   '/app/kharcha/people': typeof KharchaAppKharchaShellPeopleRoute
   '/app/kharcha/spend': typeof KharchaAppKharchaShellSpendRoute
   '/app/kharcha/join/$token': typeof KharchaAppKharchaJoinTokenRoute
@@ -2316,6 +2325,7 @@ export interface FileRoutesById {
   '/_chaal/app/chaal/watch/$channel': typeof ChaalAppChaalWatchChannelRoute
   '/_kharcha/app/kharcha/_shell/account': typeof KharchaAppKharchaShellAccountRoute
   '/_kharcha/app/kharcha/_shell/home': typeof KharchaAppKharchaShellHomeRoute
+  '/_kharcha/app/kharcha/_shell/import': typeof KharchaAppKharchaShellImportRoute
   '/_kharcha/app/kharcha/_shell/people': typeof KharchaAppKharchaShellPeopleRoute
   '/_kharcha/app/kharcha/_shell/spend': typeof KharchaAppKharchaShellSpendRoute
   '/_kharcha/app/kharcha/join/$token': typeof KharchaAppKharchaJoinTokenRoute
@@ -2566,6 +2576,7 @@ export interface FileRouteTypes {
     | '/app/chaal/watch/$channel'
     | '/app/kharcha/account'
     | '/app/kharcha/home'
+    | '/app/kharcha/import'
     | '/app/kharcha/people'
     | '/app/kharcha/spend'
     | '/app/kharcha/join/$token'
@@ -2790,6 +2801,7 @@ export interface FileRouteTypes {
     | '/app/chaal/watch/$channel'
     | '/app/kharcha/account'
     | '/app/kharcha/home'
+    | '/app/kharcha/import'
     | '/app/kharcha/people'
     | '/app/kharcha/spend'
     | '/app/kharcha/join/$token'
@@ -3046,6 +3058,7 @@ export interface FileRouteTypes {
     | '/_chaal/app/chaal/watch/$channel'
     | '/_kharcha/app/kharcha/_shell/account'
     | '/_kharcha/app/kharcha/_shell/home'
+    | '/_kharcha/app/kharcha/_shell/import'
     | '/_kharcha/app/kharcha/_shell/people'
     | '/_kharcha/app/kharcha/_shell/spend'
     | '/_kharcha/app/kharcha/join/$token'
@@ -4586,6 +4599,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof KharchaAppKharchaShellHomeRouteImport
       parentRoute: typeof KharchaAppKharchaShellRouteRoute
     }
+    '/_kharcha/app/kharcha/_shell/import': {
+      id: '/_kharcha/app/kharcha/_shell/import'
+      path: '/import'
+      fullPath: '/app/kharcha/import'
+      preLoaderRoute: typeof KharchaAppKharchaShellImportRouteImport
+      parentRoute: typeof KharchaAppKharchaShellRouteRoute
+    }
     '/_kharcha/app/kharcha/_shell/people': {
       id: '/_kharcha/app/kharcha/_shell/people'
       path: '/people'
@@ -4993,6 +5013,7 @@ const ChaalRouteRouteWithChildren = ChaalRouteRoute._addFileChildren(
 interface KharchaAppKharchaShellRouteRouteChildren {
   KharchaAppKharchaShellAccountRoute: typeof KharchaAppKharchaShellAccountRoute
   KharchaAppKharchaShellHomeRoute: typeof KharchaAppKharchaShellHomeRoute
+  KharchaAppKharchaShellImportRoute: typeof KharchaAppKharchaShellImportRoute
   KharchaAppKharchaShellPeopleRoute: typeof KharchaAppKharchaShellPeopleRoute
   KharchaAppKharchaShellSpendRoute: typeof KharchaAppKharchaShellSpendRoute
   KharchaAppKharchaShellEExpenseIdRoute: typeof KharchaAppKharchaShellEExpenseIdRoute
@@ -5005,6 +5026,7 @@ const KharchaAppKharchaShellRouteRouteChildren: KharchaAppKharchaShellRouteRoute
   {
     KharchaAppKharchaShellAccountRoute: KharchaAppKharchaShellAccountRoute,
     KharchaAppKharchaShellHomeRoute: KharchaAppKharchaShellHomeRoute,
+    KharchaAppKharchaShellImportRoute: KharchaAppKharchaShellImportRoute,
     KharchaAppKharchaShellPeopleRoute: KharchaAppKharchaShellPeopleRoute,
     KharchaAppKharchaShellSpendRoute: KharchaAppKharchaShellSpendRoute,
     KharchaAppKharchaShellEExpenseIdRoute:

@@ -237,6 +237,51 @@ test.describe("Kharcha", () => {
 		await signOut();
 	});
 
+	test("a guest searches Spend from the suggestions, saves the search and finds it again (Task 93)", async ({
+		page,
+		harness,
+	}) => {
+		await harness.resetRateLimits();
+		await open(page, "/app/kharcha");
+		await page.getByTestId("kharcha-try").click();
+		await expect(page).toHaveURL(/\/app\/kharcha\/home$/);
+		await page.getByTestId("kharcha-onboarding").getByRole("button", { name: "Skip" }).click();
+		await open(page, "/app/kharcha/spend");
+
+		// The search box suggests the field, then the guest's own category; taking it searches.
+		const box = page.getByTestId("kharcha-spend-q");
+		await box.click();
+		await box.pressSequentially("cat");
+		await expect(page.getByTestId("kharcha-spend-suggestion").first()).toHaveText(/category:/);
+		await page.keyboard.press("Enter");
+		await expect(box).toHaveValue("category:");
+		await box.pressSequentially("Groc");
+		await expect(page.getByTestId("kharcha-spend-suggestion").first()).toHaveText(/Groceries/);
+		await page.keyboard.press("Enter");
+		await expect(page).toHaveURL(/q=category%3AGroceries/);
+		const chips = page.getByTestId("kharcha-spend-chips");
+		await expect(chips.getByRole("link", { name: "Remove category:Groceries" })).toBeVisible();
+
+		// Saved under a name, it joins the saved searches and names the page.
+		await page.getByTestId("kharcha-spend-save").click();
+		const dialog = page.getByTestId("kharcha-save-search-dialog");
+		await dialog.getByRole("textbox", { name: "Name" }).fill("Groceries only");
+		await dialog.getByRole("button", { name: "Save" }).click();
+		const saved = page.getByTestId("kharcha-saved-column");
+		await expect(saved.getByRole("link", { name: "Groceries only" })).toHaveAttribute("aria-current", "page");
+		await expect(page.getByRole("heading", { level: 1 })).toHaveText("Groceries only");
+
+		// A built-in one, then back to it: the search comes back whole, after a reload too.
+		await saved.getByRole("link", { name: "This month" }).click();
+		await expect(page).toHaveURL(/q=date%3Athis-month/);
+		await expect(page.getByRole("heading", { level: 1 })).toHaveText("This month");
+		await saved.getByRole("link", { name: "Groceries only" }).click();
+		await expect(page).toHaveURL(/q=category%3AGroceries/);
+		await page.reload({ waitUntil: "networkidle" });
+		await expect(page.getByRole("heading", { level: 1 })).toHaveText("Groceries only");
+		await expect(box).toHaveValue("category:Groceries");
+	});
+
 	test("a demo account signs in on Kharcha's page, uses the palette and signs out", async ({
 		page,
 		harness,

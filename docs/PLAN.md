@@ -3745,7 +3745,7 @@ As 12.1, with these differences:
 | 90 | Friends, groups and splitting: people, invites and joining, groups, the split editor, threads, freshness | xhigh | Done |
 | 91 | Balances and settling up: balances everywhere, settle up, simplify, remind | high | Done |
 | 92 | Conversations, notifications and email: comments, mentions, reactions, unread, digests, the daily job | high | Done |
-| 93 | Spend: the search language, filters, saved searches, views and charts, bulk actions, CSV import and export | xhigh | Planned |
+| 93 | Spend: the search language, filters, saved searches, views and charts, bulk actions, CSV import and export | xhigh | Done |
 | 94 | Budgets, recurring expenses and insights | high | Planned |
 | 95 | Expenses moved in: migration, redirects, the old app removed | high | Planned |
 | 96 | Admin: overview, settings, default categories, abuse controls | medium | Planned |
@@ -4294,42 +4294,33 @@ Kharcha's data, money core, access and server, tested on PGlite, with no UI; Exp
 - `CRON_SECRET` must be set in Vercel for `/api/cron/kharcha` (it is, if the other jobs run);
 - the entry budget has 0.2 kB left: Tasks 93 and 94 add routes (`/import`, `/insights/$tab`), so it needs a decision before them.
 
-### Task 93: Spend: search, views and bulk actions (planned)
+### Task 93: Spend: search, views and bulk actions (done)
 
-- **The search language** (`spend/query/`): tokenizer, parser, AST and printer, unit-tested both ways.
-  - **Fields:**
-    - `type:` (expense, refund, payment), `category:`, `tag:`;
-    - `merchant:` (contains) and `merchant=` (exact);
-    - `amount>`, `<` and `=` (in the currency's major units), `currency:`;
-    - `date:` (today, this-week, last-month, this-year, `YYYY-MM`, or a range with `date>`);
-    - `group:`, `with:` (a person), `paid-by:`, `method:`;
-    - `has:receipt`;
-    - `is:shared`, `is:personal`, `is:unsettled`, `is:duplicate`, `is:uncategorized`.
-  - **Operators:** `-` negates, quotes group words, commas mean OR.
-  - **Other words** search title, merchant and notes (the `simple` tsvector).
-- **The compiler:** the AST becomes Drizzle SQL with parameters only, and every field comes from an allow-list.
-- **The bar:**
-  - chips and `FilterBar`, both ways: a chip writes `q`;
-  - suggestions while typing (fields and your values: categories, tags, friends, groups);
-  - a plain form without JS.
-- **Views:**
-  - a list grouped by day;
-  - a table (`DataTable`, with a column chooser);
-  - charts (bar, donut, line), grouped by category, merchant, tag, method, group, friend, day, week, month or year.
+**Done** (decision 0287; the guide's "Spend's search").
 
-  Totals are per currency.
-- **Saved searches** (`kh_saved_search`):
-  - shown in the nav; rename, reorder from the keyboard, delete;
-  - built-in ones: This month, Uncategorized, Unsettled, Receipts.
-- **Bulk actions:** categorize, tag, set the method, delete to the trash, export the selection.
-- **CSV:**
-  - export: your share and the total, with localized headers the import reads back;
-  - `/import`, Expenses' pipeline moved and extended (`kh_import`):
-    - merchant, tags and method columns;
-    - a mapping preview;
-    - an idempotency key;
-    - 1,000 rows.
-- **Tests:** the parser and printer, the compiler against injection and every field, bulk actions, import and export; e2e: a saved search.
+**What changed:**
+- **Tables** (migration `0054_kharcha_spend`): `kh_saved_search` (owner, name, query, position), `kh_import` (key, owner, fingerprint, result); `kh_expense` gains `import_key` and a stored `simple` tsvector over the title, merchant and notes, with a GIN index.
+- **The search language** (`src/features/kharcha/spend/query/`): the fields and their words (`ast.ts`), a parser that never fails and its printer (`parse.ts`, `print.ts`), the checks shared by the bar and the server (`check.ts`: amounts, currencies, dates, `termProblem`), the bar's edits (`edit.ts`) and the suggestions (`suggest.ts`).
+- **Server:** `spend/compile.ts` (a switch over the fields: the caller's share of an expense and a payment, bound parameters only), `spend/service.ts` (`listSpend` with payments through `UNION ALL` when `type:payment` asks, `spendChart`, `exportSpend`; `paymentCards` moved here from the threads), `bulk.ts`, `saved.ts`, `import.ts`; `trashInTx` from the expense service for the bulk delete; `duplicatesOf` can look among all of the caller's; `me.searches`; `mergePerson` moves saved searches and imports.
+- **Functions:** `src/functions/kharcha/spend.ts` (eight, in the guard test and the access matrix).
+- **Pages:** Spend rewritten (the bar with chips, the search box's suggestions, the type, category and date controls writing `q`, the order; the list, the table with bulk actions and the chart; saved searches as Spend's own nav; Save search, Export, Import and the saved searches' dialog), `/import` (`_shell/import.tsx`); `FilterBar` gains `transform`.
+- **Tests:** `tests/unit/kharcha-query.test.ts` (63: the parser and printer both ways with seeded random queries, the checks, the edits, suggestions, the CSV's mapping and preview), `tests/server/kharcha-search.test.ts` (13: every field, injection, payments, unsettled, the chart's groupings, the export, bulk actions, saved searches, the import), nine access-matrix rows (the world gains a saved search), the merge test reaching the two new references; e2e: a guest's saved search; the review adds Spend's search, table, chart and donut, and `/import`; "Kharcha/Spend" stories (9).
+- **Bundle:** the entry is 300.0 kB of 300 (299.8 before: the import's route file and Spend's wider URL contract).
+
+**Deviations:**
+- The period is in `q` (`date:this-month`), not a `month` param: Spend without a query lists everything, "This month" is the first built-in search, and the header steps months when the query names one (0287).
+- Saved searches are Spend's own nav (a column beside the results, a row on a phone), not the rail's: the rail is 64 px of icons.
+- The built-in searches are constants, not rows: they can't be renamed, reordered or deleted.
+- `amount` compares the expense's amount (the bill), in major units; the order and the totals stay on the caller's share.
+- Bulk actions are in the table view only (its selection); the list keeps its cards.
+- Payments in Spend never count as spending, and the chart and the CSV hold expenses and refunds only.
+- The design pass was the e2e review and the stories in both projects, as Task 92's.
+
+**Gates:** typecheck, check, knip, `i18n:check`, the build and the bundle check, `build-storybook` (Kharcha's stories) green. Tests on what changed: the Kharcha server and unit files, the guard, route-guard, route-SEO and strip-marker tests (16 files, 384 tests); the Kharcha stories in both Storybook projects (42 each; People's Group Settings timed out once under parallel load in each and passes alone); e2e for Kharcha (the review and flows: 331 passed).
+
+**For the owner:**
+- run `pnpm db:migrate` on Neon (`0054_kharcha_spend`);
+- the entry budget is now full (300.0 of 300 kB) and Task 94 adds `/insights/$tab`: it needs your decision first (raise it mid-part and trim at Task 97 as 0279 did, or split route definitions out of the entry now).
 
 ### Task 94: Budgets, recurring expenses and insights (planned)
 

@@ -3,6 +3,7 @@ import {
 	bigint,
 	boolean,
 	check,
+	customType,
 	date,
 	index,
 	integer,
@@ -18,6 +19,8 @@ import type { ExpenseKind } from "@/features/kharcha/types";
 import { khGroup } from "./group";
 import { khCategory, khMethod, khTag } from "./lists";
 import { khPerson } from "./person";
+
+const tsvector = customType<{ data: string }>({ dataType: () => "tsvector" });
 
 /**
  * Kharcha's expenses (docs/guides/kharcha.md, decision 0278). An expense is an amount in
@@ -50,6 +53,10 @@ export const khExpense = pgTable(
 		version: integer().notNull().default(1),
 		/** The trash: restorable for 30 days, its ledger rows gone until then. */
 		deletedAt: timestamp({ withTimezone: true }),
+		/** The CSV import that made it, if one did (its idempotency key, Task 93). */
+		importKey: uuid(),
+		/** Spend's words (Task 93): the title, merchant and notes, `simple` (no stemming, any script). */
+		search: tsvector().generatedAlwaysAs(sql`to_tsvector('simple', title || ' ' || merchant || ' ' || notes)`),
 		createdAt: timestamp({ withTimezone: true }).defaultNow().notNull(),
 		updatedAt: timestamp({ withTimezone: true })
 			.defaultNow()
@@ -57,6 +64,7 @@ export const khExpense = pgTable(
 			.notNull(),
 	},
 	(table) => [
+		index("kh_expense_search_idx").using("gin", table.search),
 		index("kh_expense_group_idx").on(table.groupId, table.spentOn),
 		index("kh_expense_created_by_idx").on(table.createdBy),
 		index("kh_expense_trash_idx").on(table.deletedAt).where(sql`${table.deletedAt} is not null`),

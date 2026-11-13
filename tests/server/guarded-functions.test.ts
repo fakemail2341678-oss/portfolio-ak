@@ -685,6 +685,16 @@ const KHARCHA_FUNCTIONS: Record<string, ReadonlyArray<string>> = {
 		"updateKharchaNotifySettings",
 		"setKharchaFocus",
 	],
+	"kharcha/spend.ts": [
+		"getKharchaSpendChart",
+		"exportKharchaSpend",
+		"bulkKharchaExpenses",
+		"saveKharchaSearch",
+		"renameKharchaSearch",
+		"reorderKharchaSearches",
+		"deleteKharchaSearch",
+		"importKharchaSpend",
+	],
 };
 // kharcha:end
 

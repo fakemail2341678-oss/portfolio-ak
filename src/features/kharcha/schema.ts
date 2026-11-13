@@ -278,6 +278,64 @@ export const receiptIdInput = z.strictObject({ id });
 /** A receipt to fill in later: the caller's uploads. */
 export const createDraftInput = z.strictObject({ receiptIds: z.array(id).min(1).max(RECEIPTS_MAX) });
 
+// Spend (Task 93): bulk actions, saved searches, export and import.
+
+/** Rows one bulk action or one exported selection takes: a page of the table at most. */
+export const BULK_MAX = 100;
+export const SAVED_SEARCH_NAME_MAX = 40;
+/** Rows one CSV import takes. */
+export const IMPORT_ROWS_MAX = 1_000;
+
+export const bulkInput = z.strictObject({
+	ids: z.array(id).min(1).max(BULK_MAX),
+	action: z.discriminatedUnion("kind", [
+		/** The caller's own category on their part; null: none. */
+		z.strictObject({ kind: z.literal("category"), categoryId: id.nullable() }),
+		/** Tags added to the caller's part (those it has stay). */
+		z.strictObject({ kind: z.literal("tags"), tagIds: z.array(id).min(1).max(TAGS_MAX) }),
+		/** The caller's own method, where they paid; null: none. */
+		z.strictObject({ kind: z.literal("method"), methodId: id.nullable() }),
+		/** To the trash, where the caller may delete. */
+		z.strictObject({ kind: z.literal("delete") }),
+	]),
+});
+export type BulkInput = z.infer<typeof bulkInput>;
+
+/** A CSV of the search (`q`), or of the rows chosen (`ids`). */
+export const spendExportInput = z.strictObject({
+	q: z.string().trim().max(300).default(""),
+	ids: z.array(id).min(1).max(BULK_MAX).optional(),
+});
+export type SpendExportInput = z.infer<typeof spendExportInput>;
+
+export const savedSearchInput = z.strictObject({
+	name: required({ max: SAVED_SEARCH_NAME_MAX }),
+	query: required({ max: 300 }),
+});
+export const renameSearchInput = z.strictObject({ id, name: required({ max: SAVED_SEARCH_NAME_MAX }) });
+
+/** One row of a CSV import, read by the import page (spend/import.ts) and checked again here. */
+export const importRowSchema = z.strictObject({
+	spentOn: isoDate(),
+	kind: z.enum(EXPENSE_KINDS),
+	amountMinor: minor,
+	currency,
+	title: optionalText({ max: TITLE_MAX }),
+	merchant: optionalText({ max: MERCHANT_MAX }),
+	notes: optionalText({ max: NOTES_MAX }),
+	category: optionalText({ max: CATEGORY_NAME_MAX }),
+	tags: z.array(required({ max: TAG_NAME_MAX })).max(TAGS_MAX),
+	method: optionalText({ max: METHOD_MAX }),
+});
+export type ImportRow = z.infer<typeof importRowSchema>;
+
+/** The rows, once per idempotency key (made with each preview on the page). */
+export const importInput = z.strictObject({
+	key: id,
+	rows: z.array(importRowSchema).min(1).max(IMPORT_ROWS_MAX),
+});
+export type ImportInput = z.infer<typeof importInput>;
+
 export type CreateCategoryInput = z.infer<typeof createCategoryInput>;
 export type UpdateCategoryInput = z.infer<typeof updateCategoryInput>;
 export type UpdateMethodInput = z.infer<typeof updateMethodInput>;

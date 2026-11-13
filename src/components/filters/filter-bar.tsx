@@ -44,12 +44,16 @@ function syncControls(form: HTMLFormElement, values: SearchValues) {
  *
  * Controls are uncontrolled (defaultValue from the URL) and re-synced when the
  * URL changes, so focus and typing are never interrupted.
+ *
+ * `transform` rewrites the next search before it is applied (with JavaScript): Kharcha's
+ * Spend folds its controls into one `q` in its search language.
  */
 export function FilterBar({
 	values,
 	preserve = [],
 	label = m.filters_label(),
 	submitLabel = m.filters_apply(),
+	transform,
 	className,
 	children,
 }: {
@@ -60,6 +64,8 @@ export function FilterBar({
 	/** Accessible name of the search landmark. */
 	label?: string;
 	submitLabel?: string;
+	/** The next search from the current one and the form's values (each control, "" when empty). */
+	transform?: (next: Record<string, unknown>, previous: SearchValues) => Record<string, unknown>;
 	className?: string;
 	children: ReactNode;
 }) {
@@ -73,7 +79,10 @@ export function FilterBar({
 		const patch = formSearchPatch(form, { exclude: preserve });
 		void navigate({
 			to: ".",
-			search: (prev: SearchValues) => ({ ...prev, ...patch, page: undefined }),
+			search: (prev: SearchValues) => {
+				const next = { ...prev, ...patch, page: undefined };
+				return transform ? transform(next, prev) : next;
+			},
 			replace,
 		});
 	};

@@ -10,6 +10,8 @@ import * as lists from "@/server/kharcha/lists/service";
 import * as me from "@/server/kharcha/me/service";
 import * as payments from "@/server/kharcha/payments/service";
 import { befriend, ensurePerson, mergePerson } from "@/server/kharcha/people";
+import { importSpend } from "@/server/kharcha/spend/import";
+import { saveSearch } from "@/server/kharcha/spend/saved";
 import { createTestDb } from "../utils/test-db";
 import { caller, expectLedgerConsistent, insertUsers } from "./kharcha-helpers";
 
@@ -199,6 +201,25 @@ describe("mergePerson", () => {
 		// Conversations (Task 92): a comment to Maya (her notification names the guest), its reaction, the read mark.
 		const note = await talk.createComment(as("guest"), { thread: `f:${maya}`, body: "Hi from my phone", mentions: [] });
 		await talk.react(as("guest"), { commentId: note.id, emoji: "👍", on: true });
+		// Spend (Task 93): a saved search and an import.
+		await saveSearch(as("guest"), { name: "Momo", query: "merchant:momo" });
+		await importSpend(as("guest"), {
+			key: crypto.randomUUID(),
+			rows: [
+				{
+					spentOn: today,
+					kind: "expense",
+					amountMinor: 500,
+					currency: "NPR",
+					title: "Tea",
+					merchant: "",
+					notes: "",
+					category: "",
+					tags: [],
+					method: "",
+				},
+			],
+		});
 		await expectLedgerConsistent(env.db);
 
 		const before = await referencesTo(guest);

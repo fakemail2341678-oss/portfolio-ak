@@ -14,6 +14,8 @@ export const kharchaLinks = {
 	updates: () => linkOptions({ to: "/app/kharcha/home", hash: "updates" }),
 	account: () => linkOptions({ to: "/app/kharcha/account" }),
 	spend: () => linkOptions({ to: "/app/kharcha/spend" }),
+	/** A CSV into Spend (Task 93). */
+	import: () => linkOptions({ to: "/app/kharcha/import" }),
 	/** The expense page; over Spend it opens as a panel (a masked route, `spendExpense`). */
 	expense: (expenseId: string) => linkOptions({ to: "/app/kharcha/e/$expenseId", params: { expenseId } }),
 	settings: (tab: SettingsTab) => linkOptions({ to: "/app/kharcha/settings/$tab", params: { tab } }),

@@ -14,6 +14,7 @@ import { personDto } from "../people";
 import { bumpRevs, revOf } from "../rev";
 import { assertCurrencyOffered } from "../rules";
 import { getSettings, quotasFor } from "../settings";
+import { searchesOf } from "../spend/saved";
 
 /** The caller's own reads (docs/guides/kharcha.md "The caller"): who they are in Kharcha, their `rev` and their totals. */
 
@@ -39,6 +40,7 @@ export async function getMe({ db, user }: KharchaServices): Promise<KharchaMe> {
 		receiptsMax: quotasFor(settings, user).receipts,
 		rev: profile.rev,
 		isGuest: user.isGuest,
+		searches: await searchesOf(db, me.personId),
 	};
 }
 

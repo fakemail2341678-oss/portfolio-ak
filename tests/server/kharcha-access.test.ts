@@ -1,4 +1,5 @@
 import { beforeAll, beforeEach, describe, expect, it } from "vitest";
+import { notFound } from "@/server/db/crud";
 import * as talk from "@/server/kharcha/conversations/service";
 import * as expenses from "@/server/kharcha/expenses/service";
 import * as friends from "@/server/kharcha/friends/service";
@@ -12,6 +13,9 @@ import * as inbox from "@/server/kharcha/notify/inbox";
 import * as payments from "@/server/kharcha/payments/service";
 import * as receipts from "@/server/kharcha/receipts/service";
 import * as settle from "@/server/kharcha/settle/service";
+import { bulkExpenses } from "@/server/kharcha/spend/bulk";
+import { importSpend } from "@/server/kharcha/spend/import";
+import * as saved from "@/server/kharcha/spend/saved";
 import * as spend from "@/server/kharcha/spend/service";
 import * as threads from "@/server/kharcha/threads/service";
 import { createFakeCloudinary } from "../utils/fake-cloudinary";
@@ -72,6 +76,8 @@ type World = {
 	rule: string;
 	upload: string;
 	draft: string;
+	/** The owner's saved search (Task 93). */
+	search: string;
 };
 let world: World;
 
@@ -181,7 +187,9 @@ async function setUp(): Promise<World> {
 		).rules[0]?.id ?? "";
 	const upload = await uploadReceipt(as("owner"), cloudinary);
 	const draft = (await receipts.createDraft(as("owner"), [await uploadReceipt(as("owner"), cloudinary)])).id;
+	const search = (await saved.saveSearch(as("owner"), { name: "Big", query: "amount>100" }))[0]?.id ?? "";
 	return {
+		search,
 		people: { owner, friend, member, former, spare, invitee },
 		inviteToken,
 		category,
@@ -205,6 +213,11 @@ async function setUp(): Promise<World> {
 
 type Expected = Partial<Record<Caller, string>>;
 type Operation = { name: string; run: (w: World, by: Caller) => Promise<unknown>; expect: Expected };
+
+/** A bulk action that changed nothing, as the matrix reads it: NOT_FOUND. */
+const changed = async (result: Promise<{ changed: number }>) => {
+	if ((await result).changed === 0) throw notFound("Expense");
+};
 
 /** Everyone not named gets NOT_FOUND. */
 const only = (expected: Expected): Expected => expected;
@@ -376,7 +389,7 @@ const OPERATIONS: Operation[] = [
 	{ name: "getMerchants", run: (_w, by) => lists.getMerchants(as(by)), expect: everyone() },
 	{
 		name: "listSpend",
-		run: (_w, by) => spend.listSpend(as(by), { q: "", category: [], sort: "-date", page: 1, pageSize: 25 }),
+		run: (_w, by) => spend.listSpend(as(by), { q: "", sort: "-date", page: 1, pageSize: 25 }),
 		expect: everyone(),
 	},
 	{
@@ -634,6 +647,66 @@ const OPERATIONS: Operation[] = [
 	{
 		name: "setFocus (the caller's own)",
 		run: (_w, by) => inbox.setFocus(as(by), true),
+		expect: everyone(),
+	},
+	// Task 93: Spend's chart, CSV, bulk actions, saved searches and import.
+	{ name: "spendChart", run: (_w, by) => spend.spendChart(as(by), { q: "", groupBy: "category" }), expect: everyone() },
+	{ name: "exportSpend", run: (_w, by) => spend.exportSpend(as(by), { q: "" }), expect: everyone() },
+	{
+		// A row the caller isn't on is skipped, not refused: none changed reads as NOT_FOUND here.
+		name: "bulkExpenses: a category on the shared expense",
+		run: async (w, by) => {
+			const made = await lists.createCategory(as(by), { name: "Bulk", icon: "gift", color: "pink" });
+			const categoryId = made.categories.find((each) => each.name === "Bulk")?.id ?? null;
+			return changed(bulkExpenses(as(by), { ids: [w.shared], action: { kind: "category", categoryId } }));
+		},
+		expect: only({ owner: "ok", friend: "ok" }),
+	},
+	{
+		name: "bulkExpenses: the personal expense to the trash",
+		run: (w, by) => changed(bulkExpenses(as(by), { ids: [w.personal], action: { kind: "delete" } })),
+		expect: only({ owner: "ok" }),
+	},
+	{
+		name: "saveSearch",
+		run: (_w, by) => saved.saveSearch(as(by), { name: "Food", query: "category:food" }),
+		expect: everyone(),
+	},
+	{
+		name: "renameSearch: the owner's",
+		run: (w, by) => saved.renameSearch(as(by), { id: w.search, name: "Renamed" }),
+		expect: only({ owner: "ok" }),
+	},
+	{
+		name: "reorderSearches: the owner's",
+		run: (w, by) => saved.reorderSearches(as(by), [w.search]),
+		expect: only({ owner: "ok" }),
+	},
+	{
+		name: "deleteSearch: the owner's",
+		run: (w, by) => saved.deleteSearch(as(by), w.search),
+		expect: only({ owner: "ok" }),
+	},
+	{
+		name: "importSpend (the caller's own)",
+		run: (_w, by) =>
+			importSpend(as(by), {
+				key: crypto.randomUUID(),
+				rows: [
+					{
+						spentOn: today,
+						kind: "expense",
+						amountMinor: 100,
+						currency: "NPR",
+						title: "Tea",
+						merchant: "",
+						notes: "",
+						category: "Snacks",
+						tags: ["x"],
+						method: "Cash",
+					},
+				],
+			}),
 		expect: everyone(),
 	},
 	{

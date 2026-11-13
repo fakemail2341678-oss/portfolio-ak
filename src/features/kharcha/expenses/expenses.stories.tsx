@@ -13,6 +13,7 @@ import {
 } from "../../../../.storybook/mocks/kharcha";
 import { withKharcha } from "../../../../.storybook/mocks/kharcha-section";
 import { KharchaHome } from "../home/kharcha-home";
+import type { SpendSearch } from "../search";
 import { SettingsView } from "../settings/settings-page";
 import { KharchaShell } from "../shell/kharcha-shell";
 import { SpendView } from "../spend/spend-page";
@@ -42,7 +43,7 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 const userId = sampleKharchaSession.user.id;
-const spendSearch = { q: "", category: [], sort: "-date" as const, page: 1 };
+const spendSearch: SpendSearch = { q: "", view: "list", groupBy: "category", chart: "bar", sort: "-date", page: 1 };
 
 /**
  * Add expense: amount (Devanagari digits read too), currency and date, the merchant with
@@ -145,7 +146,7 @@ export const HomeTodos: Story = {
 			...sampleKharchaHome,
 			todos: [
 				{ kind: "receipt", draft: sampleKharchaDraft },
-				...(first
+				...(first?.source === "expense"
 					? [
 							{
 								kind: "duplicate" as const,

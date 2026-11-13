@@ -230,14 +230,15 @@ export async function minesOf(
  * Possible duplicates among the caller's expenses (Task 89, "helpers without AI"): another
  * of theirs outside the trash of the same kind, amount and currency, within a day, with a
  * similar merchant. Saying "not a duplicate" on either one (`duplicate_ok`) settles the pair.
+ * `expenseIds` null looks among all of them (Spend's `is:duplicate`, Task 93).
  */
 export async function duplicatesOf(
 	db: Db | Tx,
 	personId: string,
-	expenseIds: ReadonlyArray<string>,
+	expenseIds: ReadonlyArray<string> | null,
 ): Promise<Map<string, DuplicateRef[]>> {
 	const result = new Map<string, DuplicateRef[]>();
-	if (expenseIds.length === 0) return result;
+	if (expenseIds !== null && expenseIds.length === 0) return result;
 	const other = alias(khExpense, "kh_dup_other");
 	const otherShare = alias(khExpenseShare, "kh_dup_other_share");
 	const rows = await db
@@ -269,7 +270,7 @@ export async function duplicatesOf(
 			and(
 				eq(khExpenseShare.personId, personId),
 				eq(khExpenseShare.duplicateOk, false),
-				inArray(khExpenseShare.expenseId, [...expenseIds]),
+				expenseIds === null ? undefined : inArray(khExpenseShare.expenseId, [...expenseIds]),
 				isNull(khExpense.deletedAt),
 			),
 		)

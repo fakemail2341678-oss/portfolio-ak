@@ -379,6 +379,13 @@
 			"when": 1794544934542,
 			"tag": "0053_kharcha_conversations",
 			"breakpoints": true
+		},
+		{
+			"idx": 54,
+			"version": "7",
+			"when": 1794548988621,
+			"tag": "0054_kharcha_spend",
+			"breakpoints": true
 		}
 	]
 }
