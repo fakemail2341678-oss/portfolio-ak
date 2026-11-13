@@ -48,6 +48,7 @@ import { Route as AdminAdminIndexRouteImport } from './routes/_admin/admin/index
 import { Route as AdminAdminAppsRouteImport } from './routes/_admin/admin/apps'
 import { Route as AdminAdminAuditRouteRouteImport } from './routes/_admin/admin/audit/route'
 import { Route as AdminAdminChaalRouteRouteImport } from './routes/_admin/admin/chaal/route'
+import { Route as AdminAdminKharchaRouteRouteImport } from './routes/_admin/admin/kharcha/route'
 import { Route as AdminAdminLinksRouteImport } from './routes/_admin/admin/links'
 import { Route as AdminAdminMediaRouteImport } from './routes/_admin/admin/media'
 import { Route as AdminAdminPardaRouteRouteImport } from './routes/_admin/admin/parda/route'
@@ -94,6 +95,9 @@ import { Route as AdminAdminChaalCurationRouteImport } from './routes/_admin/adm
 import { Route as AdminAdminChaalHealthRouteImport } from './routes/_admin/admin/chaal/health'
 import { Route as AdminAdminChaalLabRouteImport } from './routes/_admin/admin/chaal/lab'
 import { Route as AdminAdminChaalSettingsRouteImport } from './routes/_admin/admin/chaal/settings'
+import { Route as AdminAdminKharchaIndexRouteImport } from './routes/_admin/admin/kharcha/index'
+import { Route as AdminAdminKharchaSendersRouteImport } from './routes/_admin/admin/kharcha/senders'
+import { Route as AdminAdminKharchaSettingsRouteImport } from './routes/_admin/admin/kharcha/settings'
 import { Route as AdminAdminPardaIndexRouteImport } from './routes/_admin/admin/parda/index'
 import { Route as AdminAdminPardaBillboardRouteRouteImport } from './routes/_admin/admin/parda/billboard/route'
 import { Route as AdminAdminPardaCollectionsRouteRouteImport } from './routes/_admin/admin/parda/collections/route'
@@ -451,6 +455,11 @@ const AdminAdminChaalRouteRoute = AdminAdminChaalRouteRouteImport.update({
   path: '/chaal',
   getParentRoute: () => AdminAdminRouteRoute,
 } as any)
+const AdminAdminKharchaRouteRoute = AdminAdminKharchaRouteRouteImport.update({
+  id: '/kharcha',
+  path: '/kharcha',
+  getParentRoute: () => AdminAdminRouteRoute,
+} as any)
 const AdminAdminLinksRoute = AdminAdminLinksRouteImport.update({
   id: '/links',
   path: '/links',
@@ -683,6 +692,23 @@ const AdminAdminChaalSettingsRoute = AdminAdminChaalSettingsRouteImport.update({
   path: '/settings',
   getParentRoute: () => AdminAdminChaalRouteRoute,
 } as any)
+const AdminAdminKharchaIndexRoute = AdminAdminKharchaIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AdminAdminKharchaRouteRoute,
+} as any)
+const AdminAdminKharchaSendersRoute =
+  AdminAdminKharchaSendersRouteImport.update({
+    id: '/senders',
+    path: '/senders',
+    getParentRoute: () => AdminAdminKharchaRouteRoute,
+  } as any)
+const AdminAdminKharchaSettingsRoute =
+  AdminAdminKharchaSettingsRouteImport.update({
+    id: '/settings',
+    path: '/settings',
+    getParentRoute: () => AdminAdminKharchaRouteRoute,
+  } as any)
 const AdminAdminPardaIndexRoute = AdminAdminPardaIndexRouteImport.update({
   id: '/',
   path: '/',
@@ -1683,6 +1709,7 @@ export interface FileRoutesByFullPath {
   '/dev/': typeof DevIndexRoute
   '/admin/audit': typeof AdminAdminAuditRouteRouteWithChildren
   '/admin/chaal': typeof AdminAdminChaalRouteRouteWithChildren
+  '/admin/kharcha': typeof AdminAdminKharchaRouteRouteWithChildren
   '/admin/parda': typeof AdminAdminPardaRouteRouteWithChildren
   '/admin/roles': typeof AdminAdminRolesRouteRouteWithChildren
   '/admin/taskline': typeof AdminAdminTasklineRouteRouteWithChildren
@@ -1739,6 +1766,8 @@ export interface FileRoutesByFullPath {
   '/admin/chaal/health': typeof AdminAdminChaalHealthRoute
   '/admin/chaal/lab': typeof AdminAdminChaalLabRoute
   '/admin/chaal/settings': typeof AdminAdminChaalSettingsRoute
+  '/admin/kharcha/senders': typeof AdminAdminKharchaSendersRoute
+  '/admin/kharcha/settings': typeof AdminAdminKharchaSettingsRoute
   '/admin/parda/layout': typeof AdminAdminPardaLayoutRoute
   '/admin/parda/player-lab': typeof AdminAdminPardaPlayerLabRoute
   '/admin/parda/reports': typeof AdminAdminPardaReportsRoute
@@ -1792,6 +1821,7 @@ export interface FileRoutesByFullPath {
   '/dev/examples/masking/$id': typeof DevExamplesMaskingIdRoute
   '/admin/audit/': typeof AdminAdminAuditIndexRoute
   '/admin/chaal/': typeof AdminAdminChaalIndexRoute
+  '/admin/kharcha/': typeof AdminAdminKharchaIndexRoute
   '/admin/parda/': typeof AdminAdminPardaIndexRoute
   '/admin/roles/': typeof AdminAdminRolesIndexRoute
   '/admin/taskline/': typeof AdminAdminTasklineIndexRoute
@@ -1967,6 +1997,8 @@ export interface FileRoutesByTo {
   '/admin/chaal/health': typeof AdminAdminChaalHealthRoute
   '/admin/chaal/lab': typeof AdminAdminChaalLabRoute
   '/admin/chaal/settings': typeof AdminAdminChaalSettingsRoute
+  '/admin/kharcha/senders': typeof AdminAdminKharchaSendersRoute
+  '/admin/kharcha/settings': typeof AdminAdminKharchaSettingsRoute
   '/admin/parda/layout': typeof AdminAdminPardaLayoutRoute
   '/admin/parda/player-lab': typeof AdminAdminPardaPlayerLabRoute
   '/admin/parda/reports': typeof AdminAdminPardaReportsRoute
@@ -2020,6 +2052,7 @@ export interface FileRoutesByTo {
   '/dev/examples/masking/$id': typeof DevExamplesMaskingIdRoute
   '/admin/audit': typeof AdminAdminAuditIndexRoute
   '/admin/chaal': typeof AdminAdminChaalIndexRoute
+  '/admin/kharcha': typeof AdminAdminKharchaIndexRoute
   '/admin/parda': typeof AdminAdminPardaIndexRoute
   '/admin/roles': typeof AdminAdminRolesIndexRoute
   '/admin/taskline': typeof AdminAdminTasklineIndexRoute
@@ -2164,6 +2197,7 @@ export interface FileRoutesById {
   '/dev/': typeof DevIndexRoute
   '/_admin/admin/audit': typeof AdminAdminAuditRouteRouteWithChildren
   '/_admin/admin/chaal': typeof AdminAdminChaalRouteRouteWithChildren
+  '/_admin/admin/kharcha': typeof AdminAdminKharchaRouteRouteWithChildren
   '/_admin/admin/parda': typeof AdminAdminPardaRouteRouteWithChildren
   '/_admin/admin/roles': typeof AdminAdminRolesRouteRouteWithChildren
   '/_admin/admin/taskline': typeof AdminAdminTasklineRouteRouteWithChildren
@@ -2220,6 +2254,8 @@ export interface FileRoutesById {
   '/_admin/admin/chaal/health': typeof AdminAdminChaalHealthRoute
   '/_admin/admin/chaal/lab': typeof AdminAdminChaalLabRoute
   '/_admin/admin/chaal/settings': typeof AdminAdminChaalSettingsRoute
+  '/_admin/admin/kharcha/senders': typeof AdminAdminKharchaSendersRoute
+  '/_admin/admin/kharcha/settings': typeof AdminAdminKharchaSettingsRoute
   '/_admin/admin/parda/layout': typeof AdminAdminPardaLayoutRoute
   '/_admin/admin/parda/player-lab': typeof AdminAdminPardaPlayerLabRoute
   '/_admin/admin/parda/reports': typeof AdminAdminPardaReportsRoute
@@ -2273,6 +2309,7 @@ export interface FileRoutesById {
   '/dev/examples/masking/$id': typeof DevExamplesMaskingIdRoute
   '/_admin/admin/audit/': typeof AdminAdminAuditIndexRoute
   '/_admin/admin/chaal/': typeof AdminAdminChaalIndexRoute
+  '/_admin/admin/kharcha/': typeof AdminAdminKharchaIndexRoute
   '/_admin/admin/parda/': typeof AdminAdminPardaIndexRoute
   '/_admin/admin/roles/': typeof AdminAdminRolesIndexRoute
   '/_admin/admin/taskline/': typeof AdminAdminTasklineIndexRoute
@@ -2414,6 +2451,7 @@ export interface FileRouteTypes {
     | '/dev/'
     | '/admin/audit'
     | '/admin/chaal'
+    | '/admin/kharcha'
     | '/admin/parda'
     | '/admin/roles'
     | '/admin/taskline'
@@ -2470,6 +2508,8 @@ export interface FileRouteTypes {
     | '/admin/chaal/health'
     | '/admin/chaal/lab'
     | '/admin/chaal/settings'
+    | '/admin/kharcha/senders'
+    | '/admin/kharcha/settings'
     | '/admin/parda/layout'
     | '/admin/parda/player-lab'
     | '/admin/parda/reports'
@@ -2523,6 +2563,7 @@ export interface FileRouteTypes {
     | '/dev/examples/masking/$id'
     | '/admin/audit/'
     | '/admin/chaal/'
+    | '/admin/kharcha/'
     | '/admin/parda/'
     | '/admin/roles/'
     | '/admin/taskline/'
@@ -2698,6 +2739,8 @@ export interface FileRouteTypes {
     | '/admin/chaal/health'
     | '/admin/chaal/lab'
     | '/admin/chaal/settings'
+    | '/admin/kharcha/senders'
+    | '/admin/kharcha/settings'
     | '/admin/parda/layout'
     | '/admin/parda/player-lab'
     | '/admin/parda/reports'
@@ -2751,6 +2794,7 @@ export interface FileRouteTypes {
     | '/dev/examples/masking/$id'
     | '/admin/audit'
     | '/admin/chaal'
+    | '/admin/kharcha'
     | '/admin/parda'
     | '/admin/roles'
     | '/admin/taskline'
@@ -2894,6 +2938,7 @@ export interface FileRouteTypes {
     | '/dev/'
     | '/_admin/admin/audit'
     | '/_admin/admin/chaal'
+    | '/_admin/admin/kharcha'
     | '/_admin/admin/parda'
     | '/_admin/admin/roles'
     | '/_admin/admin/taskline'
@@ -2950,6 +2995,8 @@ export interface FileRouteTypes {
     | '/_admin/admin/chaal/health'
     | '/_admin/admin/chaal/lab'
     | '/_admin/admin/chaal/settings'
+    | '/_admin/admin/kharcha/senders'
+    | '/_admin/admin/kharcha/settings'
     | '/_admin/admin/parda/layout'
     | '/_admin/admin/parda/player-lab'
     | '/_admin/admin/parda/reports'
@@ -3003,6 +3050,7 @@ export interface FileRouteTypes {
     | '/dev/examples/masking/$id'
     | '/_admin/admin/audit/'
     | '/_admin/admin/chaal/'
+    | '/_admin/admin/kharcha/'
     | '/_admin/admin/parda/'
     | '/_admin/admin/roles/'
     | '/_admin/admin/taskline/'
@@ -3412,6 +3460,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminAdminChaalRouteRouteImport
       parentRoute: typeof AdminAdminRouteRoute
     }
+    '/_admin/admin/kharcha': {
+      id: '/_admin/admin/kharcha'
+      path: '/kharcha'
+      fullPath: '/admin/kharcha'
+      preLoaderRoute: typeof AdminAdminKharchaRouteRouteImport
+      parentRoute: typeof AdminAdminRouteRoute
+    }
     '/_admin/admin/links': {
       id: '/_admin/admin/links'
       path: '/links'
@@ -3733,6 +3788,27 @@ declare module '@tanstack/react-router' {
       fullPath: '/admin/chaal/settings'
       preLoaderRoute: typeof AdminAdminChaalSettingsRouteImport
       parentRoute: typeof AdminAdminChaalRouteRoute
+    }
+    '/_admin/admin/kharcha/': {
+      id: '/_admin/admin/kharcha/'
+      path: '/'
+      fullPath: '/admin/kharcha/'
+      preLoaderRoute: typeof AdminAdminKharchaIndexRouteImport
+      parentRoute: typeof AdminAdminKharchaRouteRoute
+    }
+    '/_admin/admin/kharcha/senders': {
+      id: '/_admin/admin/kharcha/senders'
+      path: '/senders'
+      fullPath: '/admin/kharcha/senders'
+      preLoaderRoute: typeof AdminAdminKharchaSendersRouteImport
+      parentRoute: typeof AdminAdminKharchaRouteRoute
+    }
+    '/_admin/admin/kharcha/settings': {
+      id: '/_admin/admin/kharcha/settings'
+      path: '/settings'
+      fullPath: '/admin/kharcha/settings'
+      preLoaderRoute: typeof AdminAdminKharchaSettingsRouteImport
+      parentRoute: typeof AdminAdminKharchaRouteRoute
     }
     '/_admin/admin/parda/': {
       id: '/_admin/admin/parda/'
@@ -5392,6 +5468,24 @@ const AdminAdminChaalRouteRouteChildren: AdminAdminChaalRouteRouteChildren = {
 const AdminAdminChaalRouteRouteWithChildren =
   AdminAdminChaalRouteRoute._addFileChildren(AdminAdminChaalRouteRouteChildren)
 
+interface AdminAdminKharchaRouteRouteChildren {
+  AdminAdminKharchaSendersRoute: typeof AdminAdminKharchaSendersRoute
+  AdminAdminKharchaSettingsRoute: typeof AdminAdminKharchaSettingsRoute
+  AdminAdminKharchaIndexRoute: typeof AdminAdminKharchaIndexRoute
+}
+
+const AdminAdminKharchaRouteRouteChildren: AdminAdminKharchaRouteRouteChildren =
+  {
+    AdminAdminKharchaSendersRoute: AdminAdminKharchaSendersRoute,
+    AdminAdminKharchaSettingsRoute: AdminAdminKharchaSettingsRoute,
+    AdminAdminKharchaIndexRoute: AdminAdminKharchaIndexRoute,
+  }
+
+const AdminAdminKharchaRouteRouteWithChildren =
+  AdminAdminKharchaRouteRoute._addFileChildren(
+    AdminAdminKharchaRouteRouteChildren,
+  )
+
 interface AdminAdminPardaBillboardRouteRouteChildren {
   AdminAdminPardaBillboardIdRoute: typeof AdminAdminPardaBillboardIdRoute
   AdminAdminPardaBillboardNewRoute: typeof AdminAdminPardaBillboardNewRoute
@@ -5673,6 +5767,7 @@ const AdminAdminPortfolioProjectsRouteRouteWithChildren =
 interface AdminAdminRouteRouteChildren {
   AdminAdminAuditRouteRoute: typeof AdminAdminAuditRouteRouteWithChildren
   AdminAdminChaalRouteRoute: typeof AdminAdminChaalRouteRouteWithChildren
+  AdminAdminKharchaRouteRoute: typeof AdminAdminKharchaRouteRouteWithChildren
   AdminAdminPardaRouteRoute: typeof AdminAdminPardaRouteRouteWithChildren
   AdminAdminRolesRouteRoute: typeof AdminAdminRolesRouteRouteWithChildren
   AdminAdminTasklineRouteRoute: typeof AdminAdminTasklineRouteRouteWithChildren
@@ -5696,6 +5791,7 @@ interface AdminAdminRouteRouteChildren {
 const AdminAdminRouteRouteChildren: AdminAdminRouteRouteChildren = {
   AdminAdminAuditRouteRoute: AdminAdminAuditRouteRouteWithChildren,
   AdminAdminChaalRouteRoute: AdminAdminChaalRouteRouteWithChildren,
+  AdminAdminKharchaRouteRoute: AdminAdminKharchaRouteRouteWithChildren,
   AdminAdminPardaRouteRoute: AdminAdminPardaRouteRouteWithChildren,
   AdminAdminRolesRouteRoute: AdminAdminRolesRouteRouteWithChildren,
   AdminAdminTasklineRouteRoute: AdminAdminTasklineRouteRouteWithChildren,

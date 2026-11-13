@@ -294,6 +294,7 @@ Record every non-obvious choice here: **What**, **Why**, **Alternatives consider
 - [0287](#0287-kharchas-spend-a-search-language-compiled-to-bound-sql-the-period-in-q-built-in-searches-in-code): Kharcha's Spend: a search language compiled to bound SQL, the period in `q`, built-in searches in code
 - [0288](#0288-kharchas-planning-budgets-on-the-owners-share-alerts-claimed-once-recurring-expenses-numbered-from-their-first-day): Kharcha's planning: budgets on the owner's share, alerts claimed once, recurring expenses numbered from their first day
 - [0289](#0289-the-expenses-app-moved-into-kharcha-by-migration-with-the-same-ids-and-its-addresses-redirect): The Expenses app moved into Kharcha by migration, with the same ids, and its addresses redirect
+- [0290](#0290-kharchas-admin-daily-counts-rolled-up-before-the-purges-one-settings-form-and-suspending-a-sender): Kharcha's admin: daily counts rolled up before the purges, one settings form, and suspending a sender
 </details>
 
 ---
@@ -4202,4 +4203,26 @@ Measured on the owner's Windows machine (Node 24.11, 12 threads, 11.7 GB), 2026-
 - **Default categories' keys on matching names:** a moved "Food" could take the `food` key, so a friend's share defaults to it. The defaults' names live in `kh_settings` per language, and a migration has no language; the person's own names stay key-less, as any category they make does.
 - **Marking profiles onboarded:** that skips choosing a home currency, and Expenses never asked for one.
 - **Moving the data at first visit, in code:** the tables could never be dropped (0210's reason).
+
+## 0290: Kharcha's admin: daily counts rolled up before the purges, one settings form, and suspending a sender
+
+*Part 8, Task 96 (docs/guides/kharcha.md, "The admin").*
+
+**What:**
+- **`kh_daily_stat`** (migration `0058_kharcha_admin`): one row per UTC day of counts: accounts that started Kharcha, guests who tried it, accounts active (distinct actors in `kh_activity`, guests apart), expenses, groups, payments and receipts made, invites made and invites taken. `rollupDaily` (`src/server/kharcha/admin/daily.ts`) recounts every day since the last stored one (that day again) up to now, at most 90 days back on the first run, and is the daily job's first step (`stats`), before the trash, expired invites and guests are purged.
+- **The overview** (`/admin/kharcha`, `kharcha:read`): the stored days and today counted live, filled to 30 days; people with data (accounts whose person shares in an expense or is in a payment) and active over 7 and 30 days counted from `kh_activity` itself, so a person is counted once however many days they came. Four stat cards for people, four for the month, and four charts (expenses and payments, active accounts and guests, groups and receipts, invites sent and accepted), from the kit (0186: nothing on the page reads an amount, a title or a name; the test checks the answer for them).
+- **Settings** (`/admin/kharcha/settings`, read with `kharcha:read`, saved with `kharcha:configure`): one form over the whole `kh_settings.settings`, saved with the row's `version` (a stale save is a CONFLICT, "reload"). Limits for people and for guests, receipts (per expense, drafts waiting, and a new `uploadsPerHour` that the receipts' rate limit now reads), the currencies offered, the invite and reminder switches, a new `digestHour`, and the default categories (key, en/ne name, icon and colour as selects, order by dragging or the keyboard; keys unique, at least one). The audit row is flat (`quotas.groups`, `invites`, the categories' keys), with a change to a category's name or look recorded as changed but not copied.
+- **Senders** (`/admin/kharcha/senders`): the 20 accounts with the most invites made in 30 days (counts for 24 hours and 30 days, and how many were taken; never whom they invited), plus everyone suspended. Suspend sets `kh_profile.invites_blocked_at`, which the invite and reminder services already refused on (Tasks 90 and 91); "Let them send" clears it. Both are audited (`kharcha.sender.suspend`, `kharcha.sender.restore`, target the user), and a repeat changes and audits nothing.
+
+**Why:**
+- **Before the purges, from the rows:** Kharcha has no event log of its own for the admin; its rows are the record, and some go (the trash after 30 days, guests after 7, invites a month past their date). Counting them each morning, before they go, keeps the days; recounting the last stored day finishes a day the previous run saw half of. Active people come from `kh_activity` because every write records one there.
+- **One form, whole settings:** the settings are one JSON object with defaults in code; saving all of it from one version is the simplest thing that can't lose a concurrent change, and new keys need no migration.
+- **`digestHour` is kept, as Taskline's is (0214):** the daily job runs once a day (all Vercel's free plan allows), so its schedule is when the digest goes; the setting says which hour is meant, for when the job runs more often.
+- **Names on the senders' page:** suspending needs someone to apply to, and the admin already sees accounts on `/admin/users`. What 0186 keeps out is the data: whom they invited, what they spent.
+- **Selects for icons and colours:** Kharcha's swatch and icon pickers draw with its section's tokens, which the admin's pages don't have.
+
+**Alternatives considered:**
+- **Counting from `audit_event` or a new activity log:** the people's writes aren't audited (0186), and a second log of every write would double the writes for a page few open.
+- **A settings form per section** (limits, categories) saved apart: more versions to keep straight for no gain; the categories are a short list.
+- **Suspending by blocking the account:** too broad; the abuse is sending, and the person keeps their ledger.
 

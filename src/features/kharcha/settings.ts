@@ -71,13 +71,14 @@ const quotas = (defaults: KharchaQuotas) =>
 		.default(defaults);
 
 /** A built-in category as the admin offers it (Task 96 edits them): its key, its name in each language, its look. */
-const defaultCategory = z.object({
+export const defaultCategory = z.object({
 	key: z.string().regex(/^[a-z][a-z0-9-]{0,29}$/),
 	name: z.object({ en: z.string().min(1).max(40), ne: z.string().min(1).max(40) }),
 	icon: z.enum(CATEGORY_ICONS),
 	color: z.enum(KHARCHA_COLORS),
 });
 export type DefaultCategory = z.infer<typeof defaultCategory>;
+export const DEFAULT_CATEGORY_LIMIT = 50;
 
 /**
  * The categories everyone starts with (PLAN 14.5 `kh_settings`), in this order: made with a
@@ -116,7 +117,14 @@ export const kharchaSettings = z.object({
 	invites: z.boolean().default(true),
 	reminders: z.boolean().default(true),
 	/** The built-in categories (Task 96 edits them); each person's are made from these on first use. */
-	categories: z.array(defaultCategory).max(50).default(DEFAULT_CATEGORIES),
+	categories: z.array(defaultCategory).max(DEFAULT_CATEGORY_LIMIT).default(DEFAULT_CATEGORIES),
+	/** Receipt uploads a person may start in an hour (PLAN 14.5 "Rate limits"); receipts per expense and drafts are quotas. */
+	uploadsPerHour: z.number().int().min(1).max(1000).default(60),
+	/**
+	 * The hour (Kathmandu) the digest is meant for. The daily job runs once a day, so its
+	 * schedule in vercel.json is the hour; this is kept with it, as Taskline's is (0290).
+	 */
+	digestHour: z.number().int().min(0).max(23).default(7),
 });
 
 export type KharchaSettings = z.infer<typeof kharchaSettings>;

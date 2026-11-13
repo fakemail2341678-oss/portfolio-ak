@@ -120,6 +120,8 @@ export const AUDIT_ACTION_LABELS: Record<AuditAction, () => string> = {
 	"chaal.announcement": m.audit_action_chaal_announcement,
 	// chaal:end
 	"kharcha.settings.update": m.audit_action_kharcha_settings_update, // @kharcha
+	"kharcha.sender.suspend": m.audit_action_kharcha_sender_suspend, // @kharcha
+	"kharcha.sender.restore": m.audit_action_kharcha_sender_restore, // @kharcha
 	// @new-feature:audit-action-labels
 };
 

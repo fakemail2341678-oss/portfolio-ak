@@ -3748,7 +3748,7 @@ As 12.1, with these differences:
 | 93 | Spend: the search language, filters, saved searches, views and charts, bulk actions, CSV import and export | xhigh | Done |
 | 94 | Budgets, recurring expenses and insights | high | Done |
 | 95 | Expenses moved in: migration, redirects, the old app removed | high | Done |
-| 96 | Admin: overview, settings, default categories, abuse controls | medium | Planned |
+| 96 | Admin: overview, settings, default categories, abuse controls | medium | Done |
 | 97 | Wrap-up: full e2e, accessibility pass, template matrix, finish review | medium | Planned |
 
 - **Order is fixed.**
@@ -4375,20 +4375,15 @@ Kharcha's data, money core, access and server, tested on PGlite, with no UI; Exp
 - **Tests;** e2e: the redirects, and a migrated user's data in Kharcha.
 - **Left for the owner:** `pnpm db:migrate` against Neon.
 
-### Task 96: Admin (planned)
+### Task 96: Admin (done, decision 0290)
 
-- **Overview** `/admin/kharcha` (`kharcha:read`), with `dataviz` charts built on `kh_daily_stat` from the daily job. Counts only, never anyone's amounts or names (0186):
-  - people with data, and active people at 7 and 30 days;
-  - expenses, groups, payments and receipts per day;
-  - invites sent and accepted;
-  - guests trying it.
-- **Settings** `/admin/kharcha/settings` (`kharcha:configure`; `kh_settings` with `version`):
-  - quotas and offered currencies;
-  - default categories (en/ne names, icon, colour, order);
-  - the invite and reminder switches;
-  - receipt limits and the digest hour.
-- **Abuse:** invites per sender (the top senders, as counts), and suspending a sender's invites and reminders (audited).
-- **Tests;** review pages.
+- **Overview** `/admin/kharcha` (`kharcha:read`): counts only (0186). People with data, active at 7 and 30 days (from `kh_activity`), guests trying it; the last 30 days' expenses (with receipts), payments, groups and invites (with those taken); four charts a day from the kit. `kh_daily_stat` (migration `0058_kharcha_admin`) is filled by `rollupDaily`, the daily job's first step (`stats`), before its purges; today is counted live.
+- **Settings** `/admin/kharcha/settings` (saved with `kharcha:configure`, from `kh_settings.version`, audited flat): limits for people and guests; receipts (per expense, drafts, and `uploadsPerHour`, which the receipts' rate limit now reads); offered currencies; the invite and reminder switches; `digestHour` (kept as Taskline's: the job's schedule is the hour); the default categories (unique keys, at least one).
+- **Abuse** `/admin/kharcha/senders`: the 20 accounts with the most invites in 30 days (24 hours, 30 days, taken; never whom), and everyone suspended; Suspend and "Let them send" set and clear `kh_profile.invites_blocked_at`, audited (`kharcha.sender.suspend`, `kharcha.sender.restore`).
+- **Tests:** `tests/server/kharcha-admin.test.ts` (5) and the guard test's three files; the e2e flow "Kharcha's admin" and the three pages in the review.
+- **Deviations (0290):** no Storybook stories for the three admin pages (the plan asks for tests and review pages); icons and colours are selects on the admin's form, since Kharcha's pickers need its section's tokens.
+- **Gates** (the changed-files rule): typecheck, check, knip, `i18n:check`, build and the bundle check (entry 301.2 of 305 kB), `build-storybook`; Kharcha's server and unit tests with the guard, rbac, seed, strip-markers, message-usage and route-SEO tests; the Kharcha expense stories in en/light and ne/dark (14 of 14); e2e: `kharcha.spec.ts` 10 of 10, the review of `/admin/kharcha` 36 of 36 (it caught Intl's Nepali currency names differing between Node and Chrome: the checkboxes show codes, a pitfall in the guide).
+- **Left for the owner:** `pnpm db:migrate` against Neon (`0058_kharcha_admin`).
 
 ### Task 97: Wrap-up (planned)
 

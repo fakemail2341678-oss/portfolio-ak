@@ -23,10 +23,12 @@ import {
 	Link2Icon, // @apps
 	ListChecksIcon, // @taskline
 	type LucideIcon,
+	MailWarningIcon, // @kharcha
 	NotebookPenIcon, // @portfolio
 	PaletteIcon,
 	PlugIcon, // @chaal
 	QuoteIcon, // @portfolio
+	ReceiptTextIcon, // @kharcha
 	RowsIcon, // @parda
 	ScrollTextIcon,
 	ServerIcon, // @parda
@@ -34,6 +36,7 @@ import {
 	SettingsIcon, // @taskline
 	ShieldCheckIcon,
 	SlidersHorizontalIcon, // @parda
+	SlidersVerticalIcon, // @kharcha
 	SquareKanbanIcon, // @taskline
 	StarIcon, // @chaal
 	TablePropertiesIcon, // @taskline
@@ -46,6 +49,7 @@ import {
 	ZapIcon, // @taskline
 } from "lucide-react";
 import { CHAAL_NAME } from "@/features/chaal/brand"; // @chaal
+import { KHARCHA_NAME } from "@/features/kharcha/brand"; // @kharcha
 import { PARDA_NAME } from "@/features/parda/brand"; // @parda
 import type { Permission } from "@/features/rbac/permissions";
 import { TASKLINE_NAME } from "@/features/taskline/brand"; // @taskline
@@ -63,6 +67,7 @@ export const ADMIN_GROUPS = [
 	"taskline", // @taskline
 	"parda", // @parda
 	"chaal", // @chaal
+	"kharcha", // @kharcha
 	"access",
 	"system",
 ] as const;
@@ -75,6 +80,7 @@ export const ADMIN_GROUP_LABELS: Record<AdminGroup, () => string> = {
 	taskline: () => TASKLINE_NAME, // @taskline
 	parda: () => PARDA_NAME, // @parda
 	chaal: () => CHAAL_NAME, // @chaal
+	kharcha: () => KHARCHA_NAME, // @kharcha
 	access: m.admin_group_access,
 	system: m.admin_group_system,
 };
@@ -457,6 +463,36 @@ export const ADMIN_SECTIONS: ReadonlyArray<AdminSection> = [
 		keywords: m.admin_keywords_chaal_lab,
 	},
 	// chaal:end
+	// kharcha:start
+	{
+		// Only on this exact path: the other Kharcha sections are under it.
+		...linkOptions({ to: "/admin/kharcha", activeOptions: { exact: true } }),
+		label: m.admin_nav_kharcha_overview,
+		description: m.kharcha_admin_overview_description,
+		icon: ReceiptTextIcon,
+		permission: "kharcha:read",
+		group: "kharcha",
+		keywords: m.admin_keywords_kharcha_overview,
+	},
+	{
+		...linkOptions({ to: "/admin/kharcha/settings" }),
+		label: m.admin_nav_kharcha_settings,
+		description: m.kharcha_admin_settings_description,
+		icon: SlidersVerticalIcon,
+		permission: "kharcha:read",
+		group: "kharcha",
+		keywords: m.admin_keywords_kharcha_settings,
+	},
+	{
+		...linkOptions({ to: "/admin/kharcha/senders" }),
+		label: m.admin_nav_kharcha_senders,
+		description: m.kharcha_admin_senders_description,
+		icon: MailWarningIcon,
+		permission: "kharcha:read",
+		group: "kharcha",
+		keywords: m.admin_keywords_kharcha_senders,
+	},
+	// kharcha:end
 	{
 		...linkOptions({ to: "/admin/users" }),
 		label: m.admin_nav_users,

@@ -8,7 +8,7 @@
  */
 import type { Page } from "@playwright/test";
 import { E2E } from "../harness/config.ts";
-import { expect, RESOURCE_STATUS, test } from "../support/fixtures.ts";
+import { expect, RESOURCE_STATUS, signedIn, test } from "../support/fixtures.ts";
 
 /** Opens a page and waits until it's hydrated (no requests in flight). */
 const open = (page: Page, path: string) => page.goto(path, { waitUntil: "networkidle" });
@@ -412,5 +412,41 @@ test.describe("Kharcha", () => {
 		await expect(page.getByTestId("kharcha-settings-item").filter({ hasText: "Trekking" })).toHaveCount(1);
 		await open(page, "/app/kharcha/insights/budgets");
 		await expect(page.getByTestId("kharcha-budget").filter({ hasText: "Trekking" })).toContainText("5,000");
+	});
+});
+
+/**
+ * Kharcha's admin (Task 96, decision 0290): the overview's counts and charts, a setting
+ * saved from the version it opened at (and put back, as other flows share the server), and
+ * the senders' list.
+ */
+test.describe("Kharcha's admin", () => {
+	test.use(signedIn("admin"));
+
+	test("the overview shows counts, a limit saves, and the senders' list opens", async ({ page }) => {
+		await open(page, "/admin/kharcha");
+		const overview = page.getByTestId("kharcha-admin-overview");
+		await expect(overview.getByRole("heading", { name: "Expenses and payments a day" })).toBeVisible();
+		await expect(overview.getByText("People with data")).toBeVisible();
+
+		const setGuestTags = async (value: string) => {
+			await open(page, "/admin/kharcha/settings");
+			const field = page.getByTestId("kharcha-settings-form").getByLabel("Tags, for a guest", { exact: true });
+			await field.fill(value);
+			const saved = page.waitForResponse(
+				(response) => response.url().includes("/_serverFn/") && response.request().method() === "POST",
+			);
+			await page.getByRole("button", { name: "Save changes" }).click();
+			expect((await saved).ok()).toBe(true);
+			await page.reload({ waitUntil: "networkidle" });
+			await expect(
+				page.getByTestId("kharcha-settings-form").getByLabel("Tags, for a guest", { exact: true }),
+			).toHaveValue(value);
+		};
+		await setGuestTags("31");
+		await setGuestTags("30");
+
+		await open(page, "/admin/kharcha/senders");
+		await expect(page.getByTestId("kharcha-admin-senders")).toBeVisible();
 	});
 });

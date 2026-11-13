@@ -587,6 +587,10 @@ export const REVIEWED_PAGES: ReadonlyArray<ReviewedPage> = [
 	{ route: "/app/kharcha/insights/$tab", as: "kharcha", path: "/app/kharcha/insights/trends", label: "trends" },
 	{ route: "/app/kharcha/insights/$tab", as: "kharcha", path: "/app/kharcha/insights/statement", label: "statement" },
 	{ route: "/app/kharcha/settings/$tab", as: "kharcha", path: "/app/kharcha/settings/recurring", label: "recurring" },
+	// Task 96: the admin's overview, settings and senders.
+	{ route: "/admin/kharcha", as: "admin" },
+	{ route: "/admin/kharcha/settings", as: "admin" },
+	{ route: "/admin/kharcha/senders", as: "admin" },
 	// kharcha:end
 	// @new-feature:reviewed-pages
 	// Errors

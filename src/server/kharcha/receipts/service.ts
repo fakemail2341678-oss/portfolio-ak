@@ -29,14 +29,18 @@ export const RECEIPT_SCOPE = "kharcha";
 /** Where receipts are attached (`attachment.entity_type`). */
 export const EXPENSE_RECEIPTS = "kh_expense";
 export const DRAFT_RECEIPTS = "kh_receipt_draft";
-/** Uploads per person per hour (PLAN 14.5 "Rate limits"). */
-export const UPLOAD_RATE = { max: 60, windowSeconds: 60 * 60 };
+/** Uploads per person per hour (PLAN 14.5 "Rate limits"): `kh_settings.uploadsPerHour`, 60 unless the admin changed it. */
+const UPLOAD_WINDOW_SECONDS = 60 * 60;
 
 const uploader = (user: KharchaServices["user"]) => ({ id: user.id, permissions: [] });
 const noAlt = { en: "", ne: "" };
 
 export async function signReceiptUpload({ db, user, imageStore }: KharchaServices): Promise<UploadTicket> {
-	await enforceRateLimit(db, `kharcha-upload:${user.id}`, UPLOAD_RATE);
+	const { uploadsPerHour } = await getSettings(db);
+	await enforceRateLimit(db, `kharcha-upload:${user.id}`, {
+		max: uploadsPerHour,
+		windowSeconds: UPLOAD_WINDOW_SECONDS,
+	});
 	return signUpload(imageStore ?? null, RECEIPT_SCOPE, uploader(user));
 }
 

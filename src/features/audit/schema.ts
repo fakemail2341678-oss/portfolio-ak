@@ -127,6 +127,8 @@ export const AUDIT_ACTIONS = [
 	"chaal.announcement",
 	// chaal:end
 	"kharcha.settings.update", // @kharcha
+	"kharcha.sender.suspend", // @kharcha
+	"kharcha.sender.restore", // @kharcha
 	// @new-feature:audit-actions
 ] as const;
 export type AuditAction = (typeof AUDIT_ACTIONS)[number];

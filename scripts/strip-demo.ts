@@ -396,6 +396,10 @@ const SPECS: Record<Layer, LayerSpec> = {
 			// The Expenses app moved in (Task 95, decision 0289): its test and the portfolio's link.
 			"tests/server/kharcha-expenses-migration.test.ts",
 			"src/features/portfolio/components/case-study/kharcha-link.tsx",
+			// The admin's overview, settings and senders (Task 96, decision 0290).
+			"src/functions/kharcha-admin",
+			"src/routes/_admin/admin/kharcha",
+			"tests/server/kharcha-admin.test.ts",
 		],
 		packageScripts: ["db:seed-kharcha"],
 		crons: ["/api/cron/kharcha"],

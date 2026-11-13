@@ -268,6 +268,17 @@ const GUARDED_FUNCTIONS: Record<string, ReadonlyArray<[name: string, permission:
 		["saveChaalAnnouncement", "chaal:curate"],
 	],
 	// chaal:end
+	// kharcha:start
+	"kharcha-admin/overview.ts": [["getKharchaOverview", "kharcha:read"]],
+	"kharcha-admin/settings.ts": [
+		["getKharchaAdminSettings", "kharcha:read"],
+		["updateKharchaSettings", "kharcha:configure"],
+	],
+	"kharcha-admin/senders.ts": [
+		["listKharchaSenders", "kharcha:read"],
+		["suspendKharchaSender", "kharcha:configure"],
+	],
+	// kharcha:end
 	// @new-feature:guarded-functions
 };
 

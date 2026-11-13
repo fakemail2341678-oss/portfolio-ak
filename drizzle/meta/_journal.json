@@ -407,6 +407,13 @@
 			"when": 1794578475527,
 			"tag": "0057_drop_expenses",
 			"breakpoints": true
+		},
+		{
+			"idx": 58,
+			"version": "7",
+			"when": 1794581012230,
+			"tag": "0058_kharcha_admin",
+			"breakpoints": true
 		}
 	]
 }

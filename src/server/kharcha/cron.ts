@@ -6,6 +6,7 @@ import { khExpense, khInvite, khPayment } from "@/server/db/schema";
 import type { Db } from "@/server/db/types";
 import type { EmailProvider } from "@/server/email/types";
 import { errorFields, log } from "@/server/log";
+import { rollupDaily } from "./admin/daily";
 import { sendBudgetAlerts } from "./budgets/service";
 import { deliverInstant, sendDigests } from "./notify/deliver";
 import { pruneRead } from "./notify/inbox";
@@ -27,7 +28,8 @@ import { makeDueRecurring } from "./recurring/service";
  *    refused when used; this only clears them away).
  * 6. Pruning read notifications older than 90 days.
  *
- * The admin's daily counts (Task 96) join it.
+ * 0. The admin's daily counts (Task 96, decision 0290), first: the purges below take rows
+ *    the day's counts still need.
  */
 
 const DAY_MS = 24 * 60 * 60 * 1000;
@@ -35,7 +37,7 @@ const INVITE_GRACE_DAYS = 30;
 
 export type CronStep = { ok: boolean; [detail: string]: unknown };
 export type KharchaCronResult = Record<
-	"recurring" | "budgets" | "digests" | "trash" | "invites" | "notifications",
+	"stats" | "recurring" | "budgets" | "digests" | "trash" | "invites" | "notifications",
 	CronStep
 >;
 
@@ -88,6 +90,7 @@ export async function runKharchaCron(
 		if (ids.length > 0) await deliverInstant(db, ids, { ...(provider ? { provider } : {}), now });
 	};
 	return {
+		stats: await step("stats", async () => ({ days: await rollupDaily(db, now) })),
 		recurring: await step("recurring", async () => {
 			const { instant, ...run } = await makeDueRecurring(db, now);
 			await instantly(instant);
