@@ -6,7 +6,7 @@ import { CATEGORY_ICONS, KHARCHA_COLORS } from "./types";
  * Kharcha's settings (`kh_settings.settings`, one row), with their defaults in code: the
  * row holds only what the admin changed, so a new setting needs no migration and `{}` is
  * the default. Read them with `kharchaSettings.parse()`. The admin edits them on
- * /admin/kharcha/settings (Task 96); a later task adds its own keys here.
+ * /admin/kharcha/settings (Task 96); a new setting adds its key here.
  */
 
 /** Limits per person (PLAN 14.5 "Quotas"), counted under `lockQuota`. */

@@ -404,7 +404,7 @@ const SPECS: Record<Layer, LayerSpec> = {
 		packageScripts: ["db:seed-kharcha"],
 		crons: ["/api/cron/kharcha"],
 		// Its functions arrive before their pages (Tasks 89 to 91 call the rest); the entry goes when every one has a caller.
-		knipEntries: ["src/functions/kharcha/*.ts"],
+		knipEntries: [],
 		schema: [],
 	},
 };

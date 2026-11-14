@@ -113,7 +113,7 @@ function TitleContent({ data }: { data: Extract<TitlePageData, { configured: tru
  * A title's page (PLAN Task 63, decision 0235), in the plan's order: the hero and its
  * actions, the overview, a series' episodes, the cast and key crew, the details, where
  * to watch legally, videos and the gallery, the franchise, more like this and similar,
- * reviews and links. Progress and marks are Task 64's; My List, ♥ and Like arrive with Task 67.
+ * reviews and links. Progress and marks are Task 64's; My List, ♥ and Like are Task 67's.
  */
 export function PardaTitlePage() {
 	// The loader has already turned anything else into a 404.

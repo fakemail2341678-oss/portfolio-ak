@@ -1,9 +1,9 @@
 import { formOptions } from "@tanstack/react-form";
-import { useMutation, useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
-import { toast } from "sonner";
+import { useSuspenseQuery } from "@tanstack/react-query";
 import { z } from "zod";
+import { useCrudForm } from "@/components/crud/use-crud-form";
 import { FormDialog } from "@/components/dialogs/form-dialog";
-import { formValidators, handleSaveError, useAppForm } from "@/components/forms";
+import { formValidators, useAppForm } from "@/components/forms";
 import { RelationField } from "@/components/forms/fields/async-combobox-field";
 import { formatNumber } from "@/lib/i18n/intl";
 import { optionalText } from "@/lib/validation";
@@ -22,30 +22,20 @@ import { type AdminMemberItem, CAPACITY_HOURS_MAX, TITLE_MAX } from "../schema";
 
 const roleOptions = () => TEAM_ROLES.map((role) => ({ value: role, label: TEAM_ROLE_LABELS[role]() }));
 
-function useRefresh() {
-	const queryClient = useQueryClient();
-	return () => Promise.all(ALL_TASKLINE_ADMIN.map((queryKey) => queryClient.invalidateQueries({ queryKey })));
-}
-
 export function AddMembersDialog({ onClose }: { onClose: () => void }) {
-	const refresh = useRefresh();
-	const add = useMutation(tasklineAdminMutations.addMembers());
+	const crud = useCrudForm({
+		toInput: (values: { userIds: string[]; role: TeamRole }) => values,
+		create: tasklineAdminMutations.addMembers(),
+		invalidate: ALL_TASKLINE_ADMIN,
+		onSaved: onClose,
+		messages: { created: (_input, { added }) => m.taskline_admin_toast_added({ count: formatNumber(added) }) },
+	});
 	const form = useAppForm({
 		...formOptions({
 			defaultValues: { userIds: [] as string[], role: "member" as TeamRole },
 			validators: formValidators(z.object({ userIds: z.array(z.string()).min(1), role: z.enum(TEAM_ROLES) })),
 		}),
-		onSubmit: async ({ value, formApi }) => {
-			try {
-				const { added } = await add.mutateAsync(value);
-				formApi.reset(value);
-				onClose();
-				toast.success(m.taskline_admin_toast_added({ count: formatNumber(added) }));
-				await refresh();
-			} catch (error) {
-				handleSaveError(formApi, error);
-			}
-		},
+		...crud.formProps,
 	});
 	return (
 		<form.AppForm>
@@ -82,8 +72,16 @@ export function InviteDialog({
 	projects: ReadonlyArray<{ id: string; key: string; name: string }>;
 	onClose: () => void;
 }) {
-	const refresh = useRefresh();
-	const invite = useMutation(tasklineAdminMutations.invite());
+	const crud = useCrudForm({
+		toInput: (values: { email: string; role: TeamRole; projectId: string }) => ({
+			...values,
+			projectId: values.projectId || null,
+		}),
+		create: tasklineAdminMutations.invite(),
+		invalidate: ALL_TASKLINE_ADMIN,
+		onSaved: onClose,
+		messages: { created: (_input, sent) => m.taskline_admin_toast_invited({ email: sent.email }) },
+	});
 	const form = useAppForm({
 		...formOptions({
 			defaultValues: { email: "", role: "member" as TeamRole, projectId: "" },
@@ -95,17 +93,7 @@ export function InviteDialog({
 				}),
 			),
 		}),
-		onSubmit: async ({ value, formApi }) => {
-			try {
-				const sent = await invite.mutateAsync({ ...value, projectId: value.projectId || null });
-				formApi.reset(value);
-				onClose();
-				toast.success(m.taskline_admin_toast_invited({ email: sent.email }));
-				await refresh();
-			} catch (error) {
-				handleSaveError(formApi, error);
-			}
-		},
+		...crud.formProps,
 	});
 	return (
 		<form.AppForm>
@@ -146,29 +134,24 @@ const editSchema = z.object({
 });
 
 export function EditMemberDialog({ member, onClose }: { member: AdminMemberItem; onClose: () => void }) {
-	const refresh = useRefresh();
-	const update = useMutation(tasklineAdminMutations.updateMember());
+	const crud = useCrudForm({
+		toInput: (values: { role: TeamRole; title: string; hours: number }) => ({
+			id: member.id,
+			role: values.role,
+			title: values.title.trim(),
+			capacityMinutesWeek: Math.round(values.hours * 60),
+		}),
+		create: tasklineAdminMutations.updateMember(),
+		invalidate: ALL_TASKLINE_ADMIN,
+		onSaved: onClose,
+		messages: { created: () => m.crud_toast_saved() },
+	});
 	const form = useAppForm({
 		...formOptions({
 			defaultValues: { role: member.role, title: member.title, hours: capacityHours(member.capacityMinutesWeek) },
 			validators: formValidators(editSchema),
 		}),
-		onSubmit: async ({ value, formApi }) => {
-			try {
-				await update.mutateAsync({
-					id: member.id,
-					role: value.role,
-					title: value.title.trim(),
-					capacityMinutesWeek: Math.round(value.hours * 60),
-				});
-				formApi.reset(value);
-				onClose();
-				toast.success(m.crud_toast_saved());
-				await refresh();
-			} catch (error) {
-				handleSaveError(formApi, error);
-			}
-		},
+		...crud.formProps,
 	});
 	return (
 		<form.AppForm>
@@ -198,26 +181,24 @@ export function EditMemberDialog({ member, onClose }: { member: AdminMemberItem;
 }
 
 export function DeactivateMemberDialog({ member, onClose }: { member: AdminMemberItem; onClose: () => void }) {
-	const refresh = useRefresh();
 	const { data: members } = useSuspenseQuery(memberOptionsQueryOptions());
-	const deactivate = useMutation(tasklineAdminMutations.deactivateMember());
+	const crud = useCrudForm({
+		toInput: (values: { reassignTo: string }) => ({ id: member.id, reassignTo: values.reassignTo || null }),
+		create: tasklineAdminMutations.deactivateMember(),
+		invalidate: ALL_TASKLINE_ADMIN,
+		onSaved: onClose,
+		messages: {
+			created: (_input, { reassigned }) =>
+				m.taskline_admin_toast_deactivated({ name: member.name, count: formatNumber(reassigned) }),
+		},
+	});
 	const others = members.filter((each) => each.id !== member.id);
 	const form = useAppForm({
 		...formOptions({
 			defaultValues: { reassignTo: "" },
 			validators: formValidators(z.object({ reassignTo: z.string() })),
 		}),
-		onSubmit: async ({ value, formApi }) => {
-			try {
-				const { reassigned } = await deactivate.mutateAsync({ id: member.id, reassignTo: value.reassignTo || null });
-				formApi.reset(value);
-				onClose();
-				toast.success(m.taskline_admin_toast_deactivated({ name: member.name, count: formatNumber(reassigned) }));
-				await refresh();
-			} catch (error) {
-				handleSaveError(formApi, error);
-			}
-		},
+		...crud.formProps,
 	});
 	return (
 		<form.AppForm>

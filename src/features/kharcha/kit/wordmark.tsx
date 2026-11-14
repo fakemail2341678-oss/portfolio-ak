@@ -44,7 +44,7 @@ export function KharchaWordmark({
 
 /**
  * The mark: ख on red bookcloth, edged with the yellow binding thread, as on the rail and
- * the app's icon (Task 88 draws the icon files from it).
+ * the app's icon (Task 88 drew the icon files from it).
  */
 export function KharchaMark({ className }: { className?: string }) {
 	return (

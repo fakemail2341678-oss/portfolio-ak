@@ -9,8 +9,7 @@
 		"src/server/email/preview.ts",
 		"src/lib/zod.ts",
 		"vite.config.ts",
-		".storybook/mocks/**/*.ts",
-		"src/functions/kharcha/*.ts"
+		".storybook/mocks/**/*.ts"
 	],
 	"project": [
 		"src/**/*.{ts,tsx,css}",

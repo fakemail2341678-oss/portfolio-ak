@@ -3,6 +3,7 @@ import { getRouteApi } from "@tanstack/react-router";
 import { PencilIcon, Trash2Icon, UploadIcon } from "lucide-react";
 import { lazy, Suspense, useRef, useState } from "react";
 import { toast } from "sonner";
+import { useCrudCollection, useLiveRows } from "@/components/crud/use-crud-collection";
 import { useCrudMutation } from "@/components/crud/use-crud-mutation";
 import { useConfirm } from "@/components/dialogs/confirm";
 import { ActiveFilters, ClearFiltersButton } from "@/components/filters/active-filters";
@@ -17,9 +18,11 @@ import { uploadRule } from "@/features/attachments/constants";
 import { UploadError, uploadImage } from "@/features/attachments/upload";
 import { useCan } from "@/features/rbac/can";
 import { useListPage } from "@/hooks/use-list-page";
+import { deleteRows } from "@/lib/crud/collection";
 import { formatBytes, formatNumber } from "@/lib/i18n/intl";
 import { localizedValue } from "@/lib/i18n/localized";
 import { m } from "@/paraglide/messages";
+import { mediaRows } from "../collection";
 import { MediaFilterControls, mediaFilters } from "../filters";
 import { mediaKeys, mediaListQueryOptions, mediaMutations } from "../queries";
 import type { MediaItemDto } from "../schema";
@@ -48,9 +51,13 @@ export function MediaLibrary() {
 	const [editing, setEditing] = useState<MediaItemDto | null>(null);
 	const [uploads, setUploads] = useState<Upload[]>([]);
 	const inputRef = useRef<HTMLInputElement>(null);
-	const remove = useCrudMutation(mediaMutations.delete(), { invalidate: [mediaKeys.all] });
+	const collection = useCrudCollection(mediaRows);
+	const remove = useCrudMutation(mediaMutations.delete(), {
+		invalidate: [mediaKeys.all],
+		optimistic: (ids) => deleteRows(collection, ids),
+	});
 	const { chips, clearAll } = mediaFilters.applied(search);
-	const items = list.page?.items ?? [];
+	const items = useLiveRows(collection, list.page?.items) ?? [];
 
 	const upload = (files: ReadonlyArray<File>) => {
 		for (const file of files) {

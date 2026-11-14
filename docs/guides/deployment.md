@@ -23,10 +23,11 @@ pnpm db:seed-kharcha --password "…"    # Kharcha's three demo accounts sharing
 
 ## Scheduled jobs
 
-`vercel.json` runs two jobs daily (Hobby plans allow daily crons only). Vercel Cron sends `Authorization: Bearer $CRON_SECRET`; without `CRON_SECRET` the routes answer 404.
+`vercel.json` runs these jobs daily (Hobby plans allow daily crons only). Vercel Cron sends `Authorization: Bearer $CRON_SECRET`; without `CRON_SECRET` the routes answer 404.
 
 - `/api/cron/attachments` (03:17 UTC) deletes removed images and day-old unlinked uploads from Cloudinary.
 - `/api/cron/guests` (03:41 UTC) deletes guest sessions older than 7 days, with their app data and uploads (decision 0186).
+- `/api/cron/taskline` (01:15 UTC: 07:00 in Kathmandu) sends Taskline's due and overdue notices and digests, runs the automations' time triggers, catches repeating tasks up, purges its trash past retention and expires invitations (decision 0214; [taskline.md](taskline.md)). <!-- @taskline -->
 - `/api/cron/chaal` (02:45 UTC) deletes Chaal's activity rows older than 90 days (decision 0266). <!-- @chaal -->
 - `/api/cron/kharcha` (01:30 UTC: 07:15 in Kathmandu) emails Kharcha's digests, purges its trash past 30 days, clears invites a month past their date and prunes read notifications older than 90 days (decision 0286). <!-- @kharcha -->
 - `/api/cron/parda` (02:30 UTC) refreshes Parda's title snapshot and its US certificates, rolls up the sources' plays and probe runs into the day's scores, checks followed series for new episodes (at most 1,500, under 35 TMDB requests a second: under a minute) and emails the new-episode digest through Resend (decisions 0229, 0238, 0240 and 0241). <!-- @parda -->

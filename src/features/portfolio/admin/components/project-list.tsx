@@ -4,13 +4,16 @@ import { lazy, Suspense, useState } from "react";
 import { toast } from "sonner";
 import { CrudListPage } from "@/components/crud/crud-list-page";
 import { NewButton } from "@/components/crud/new-button";
-import { patchRow, useCrudMutation, withoutRows } from "@/components/crud/use-crud-mutation";
+import { useCrudCollection } from "@/components/crud/use-crud-collection";
+import { useCrudMutation } from "@/components/crud/use-crud-mutation";
 import type { RowAction } from "@/components/data-table";
 import { Button } from "@/components/ui/button";
 import { useCan } from "@/features/rbac/can";
 import { useListPage } from "@/hooks/use-list-page";
+import { deleteRows, updateRows } from "@/lib/crud/collection";
 import { m } from "@/paraglide/messages";
-import { type PortfolioStatus, PROJECTS_TABLE_ID, type ProjectListItem } from "../../schema";
+import { PROJECTS_TABLE_ID, type ProjectListItem } from "../../schema";
+import { projectRows } from "../collection";
 import { projectColumns } from "../columns";
 import { ProjectFilterControls, projectFilters } from "../filters";
 import { projectKeys } from "../keys";
@@ -35,7 +38,8 @@ export function NewProjectButton() {
 
 /**
  * /admin/portfolio/projects (docs/guides/crud.md): publish and delete show at
- * once on every cached page; "Reorder" sets the order the public pages use.
+ * once on every page (the list's TanStack DB collection); "Reorder" sets the
+ * order the public pages use.
  */
 export function ProjectList() {
 	const search = route.useSearch();
@@ -43,19 +47,17 @@ export function ProjectList() {
 	const canWrite = useCan("portfolio:write");
 	const [reordering, setReordering] = useState(false);
 
+	const collection = useCrudCollection(projectRows);
 	const remove = useCrudMutation(projectMutations.delete(), {
 		invalidate: [projectKeys.all],
-		optimistic: { queryKey: projectKeys.lists(), update: withoutRows<ProjectListItem> },
+		optimistic: (ids) => deleteRows(collection, ids),
 	});
 	const setStatus = useCrudMutation(projectMutations.setStatus(), {
 		invalidate: [projectKeys.all],
-		optimistic: {
-			queryKey: projectKeys.lists(),
-			update: patchRow((row: ProjectListItem, { status }: { id: string; status: PortfolioStatus }) => ({
-				...row,
-				status,
-			})),
-		},
+		optimistic: ({ id, status }) =>
+			updateRows(collection, [id], (row) => {
+				row.status = status;
+			}),
 	});
 	const publish = (row: ProjectListItem) => {
 		const status = row.status === "published" ? "draft" : "published";
@@ -117,6 +119,7 @@ export function ProjectList() {
 			actions={actions}
 			tableId={PROJECTS_TABLE_ID}
 			list={list}
+			collection={collection}
 			columns={projectColumns}
 			getRowLabel={(row) => row.title}
 			search={search}

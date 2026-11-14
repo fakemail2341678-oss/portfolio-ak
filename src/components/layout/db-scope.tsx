@@ -5,7 +5,8 @@ import type { ReactNode } from "react";
 import { dbClientFor } from "@/lib/tanstack-db";
 
 /**
- * TanStack DB for the pages below it (decision 0189): the showcase apps' layout and
+ * TanStack DB for the pages below it (decision 0189): the admin's layout (every admin
+ * list writes through a collection, 0294), the showcase apps' and Taskline's layouts and
  * the optimistic-update example mount it. It provides the request's DbClient (one per
  * QueryClient) and, on the server, cleans it up when the page has rendered. Because
  * only these pages import it, DB's runtime is in their chunks, not in every page's.

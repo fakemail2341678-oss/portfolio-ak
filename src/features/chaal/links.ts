@@ -16,8 +16,7 @@ import type { TvChannel } from "./watch/limits";
 
 /**
  * Where Chaal lives (PLAN 13.2): its base path is here and nowhere else, so a rename is
- * one edit (with a move of src/routes/_chaal/app/chaal). Task 71 has the connect routes and
- * the admin's lab; its pages start with Task 73.
+ * one edit (with a move of src/routes/_chaal/app/chaal).
  */
 export const CHAAL_BASE = "/app/chaal";
 

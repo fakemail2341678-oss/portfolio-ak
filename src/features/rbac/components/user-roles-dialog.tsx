@@ -43,7 +43,7 @@ export function UserRolesDialog({
 		invalidate: RBAC_REFRESH,
 		reload: userKeys.lists(),
 		onSaved: onClose,
-		messages: { saved: m.users_toast_roles_saved },
+		messages: { saved: () => m.users_toast_roles_saved() },
 	});
 	const form = useAppForm({ ...userRolesFormOptions(user), ...crud.formProps });
 	const self = user.id === actor.id;

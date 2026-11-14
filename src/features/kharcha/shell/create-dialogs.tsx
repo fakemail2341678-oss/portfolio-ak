@@ -32,7 +32,7 @@ import type { CreateAction } from "./actions";
 /**
  * The + menu's dialogs (loaded with the first one opened). Each saves through its server
  * function, which refuses with a reason in words (a guest adding an address, a quota), and
- * then the caller's pages refetch. Task 90 adds invites, members and the pages they open.
+ * then the caller's pages refetch. Invites, members and the pages they open are Task 90's.
  */
 export default function CreateDialog({
 	action,

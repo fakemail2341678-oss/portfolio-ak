@@ -33,8 +33,7 @@
  * and `POST /e2e/lichess/arena` (Task 78), `GET /e2e/lichess/puzzle-solutions?account=` (Task 80),
  * watch's `POST /e2e/lichess/watch-move`, `/watch-end` and `/round-push` and `GET
  * /e2e/lichess/watch-streams` (Task 82), `GET /e2e/lichess/community?account=` (Task 83), and
- * `DELETE /e2e/lichess`. Later tasks add the
- * rest (PLAN 13.5, "Fixtures").
+ * `DELETE /e2e/lichess` (PLAN 13.5, "Fixtures").
  */
 import { createHash, randomBytes } from "node:crypto";
 import { existsSync, readFileSync } from "node:fs";

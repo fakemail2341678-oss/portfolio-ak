@@ -22,6 +22,7 @@ import {
 	type TestimonialItem,
 	testimonialInputSchema,
 } from "../../schema";
+import { sectionRows } from "../collection";
 import { experienceSection, processSection, skillSection, testimonialSection } from "../queries";
 import { OrderedSection, type SectionSheetProps } from "./ordered-section";
 
@@ -116,6 +117,7 @@ export function ExperiencePage() {
 			title={m.portfolio_admin_experience_title()}
 			description={m.portfolio_admin_experience_description()}
 			queries={experienceSection}
+			rows={sectionRows.experience}
 			label={(item) => item.company}
 			detail={(item) => `${localizedValue(item.role)} · ${item.start} – ${item.end || m.portfolio_about_present()}`}
 			addLabel={m.portfolio_admin_experience_new()}
@@ -186,6 +188,7 @@ export function SkillsPage() {
 			title={m.portfolio_admin_skills_title()}
 			description={m.portfolio_admin_skills_description()}
 			queries={skillSection}
+			rows={sectionRows.skills}
 			label={(item) => localizedValue(item.title)}
 			detail={(item) => item.skills.join(", ")}
 			addLabel={m.portfolio_admin_skills_new()}
@@ -269,6 +272,7 @@ export function ProcessPage() {
 			title={m.portfolio_admin_process_title()}
 			description={m.portfolio_admin_process_description()}
 			queries={processSection}
+			rows={sectionRows.process}
 			label={(item) => localizedValue(item.title)}
 			detail={(item) => localizedValue(item.body)}
 			addLabel={m.portfolio_admin_process_new()}
@@ -343,6 +347,7 @@ export function TestimonialsPage() {
 			title={m.portfolio_admin_testimonials_title()}
 			description={m.portfolio_admin_testimonials_description()}
 			queries={testimonialSection}
+			rows={sectionRows.testimonials}
 			label={(item) => `${item.name}, ${item.company}`}
 			detail={(item) => localizedValue(item.quote)}
 			badge={(item) =>

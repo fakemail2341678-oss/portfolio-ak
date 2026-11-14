@@ -59,8 +59,8 @@ export const reactionLabel = (emoji: Reaction): string =>
 	})[emoji]();
 
 /**
- * What someone hears about (PLAN 14.5 "Notifications and email"): Task 94 adds a budget at
- * 80% or 100% and a recurring expense made.
+ * What someone hears about (PLAN 14.5 "Notifications and email"), with Task 94's two: a
+ * budget at 80% or 100% and a recurring expense made.
  */
 export const NOTIFY_KINDS = [
 	"group.added",

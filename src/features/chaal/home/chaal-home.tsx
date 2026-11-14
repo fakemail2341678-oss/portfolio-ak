@@ -23,7 +23,7 @@ const HERO = {
 
 const focusRing = "outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50";
 
-/** An entry into Chaal: a ruled tile with an icon, a title and a line. They grow with the pages (Analysis from Task 75, Play from 76). */
+/** An entry into Chaal: a ruled tile with an icon, a title and a line. */
 function Entry({
 	link,
 	icon: Icon,

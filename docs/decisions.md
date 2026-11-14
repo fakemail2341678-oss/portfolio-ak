@@ -297,6 +297,8 @@ Record every non-obvious choice here: **What**, **Why**, **Alternatives consider
 - [0290](#0290-kharchas-admin-daily-counts-rolled-up-before-the-purges-one-settings-form-and-suspending-a-sender): Kharcha's admin: daily counts rolled up before the purges, one settings form, and suspending a sender
 - [0291](#0291-part-8-reviewed-lazy-imports-stop-naming-the-entrys-chunks-and-what-the-matrix-and-the-reviews-found): Part 8 reviewed: lazy imports stop naming the entry's chunks, and what the matrix and the reviews found
 - [0292](#0292-part-8-measured-task-97): Part 8 measured (Task 97)
+- [0293](#0293-after-the-plan-the-temporary-knip-entry-gone-with-the-two-functions-it-hid): After the plan: the temporary knip entry gone, with the two functions it hid
+- [0294](#0294-admin-lists-write-through-tanstack-db-one-collection-per-list-fed-by-the-query-cache): Admin lists write through TanStack DB: one collection per list, fed by the Query cache
 </details>
 
 ---
@@ -954,7 +956,7 @@ Record every non-obvious choice here: **What**, **Why**, **Alternatives consider
 
 ## 0064: When to use TanStack DB, Query or Store, and the rest
 
-*The "edit with instant feedback" row is superseded by 0174: admin CRUD uses Query mutations; TanStack DB is for client-first apps.*
+*The "edit with instant feedback" row is superseded by 0174 (admin CRUD uses Query mutations; TanStack DB is for client-first apps), and 0174 in turn by 0294 (admin lists write through TanStack DB again, one collection per list).*
 
 | State | Tool | Example in this app |
 | --- | --- | --- |
@@ -2209,7 +2211,7 @@ Record every non-obvious choice here: **What**, **Why**, **Alternatives consider
 
 ## 0174: Admin CRUD writes use Query mutations; TanStack DB is for client-first apps
 
-*Supersedes 0068 and 0064's "edit with instant feedback" row.*
+*Supersedes 0068 and 0064's "edit with instant feedback" row. Superseded by 0294: the optimistic half moved to TanStack DB, with one collection per list instead of the one per page this entry removed.*
 
 - **What:** admin writes go through `useCrudMutation` (Query's `useMutation` over the feature's `mutationOptions`): optimistic updates patch every cached page of the list (`queryClient.getQueriesData({ queryKey: keys.lists() })`) and roll back from the snapshot; after the write, the feature's keys are invalidated. Test CRUD's per-page TanStack DB collections and their LRU (`features/test-crud/collection.ts`) are gone. TanStack DB stays for `/dev/examples/optimistic` and the apps (Kanban, Habits, Notes; Task 41), where live queries over client state and optimistic transactions are the point.
 - **Why:** an admin list is a server-paginated, server-sorted window: the collection held one page, needed a descriptor per search (and a cap on how many), and every feature would have repeated it. Query's cache already holds every page, so one helper patches them all and rolls back. The permission matrix's hand-written `onMutate` became the same helper.
@@ -4284,3 +4286,36 @@ Measured on the owner's Windows machine (Node 24.11, 12 threads, 11.7 GB), 2026-
 - **`pnpm test:e2e`,** the full suite in ten shards (`--shard=n/10`, 2 workers; one run would outlast the 10-minute tool limit): 3,832 passed, none failed or flaky, in 72.3 min.
 - **The rest:** `pnpm test` (in the every-layer-kept matrix row, with the two scaffolded features) 208 files and 2,539 tests in 4.4 min; Storybook 77 files and 394 stories in each project (each project's first run after the config change failed to start its runner and passed when rerun: Vite re-optimized its dependencies); `build-storybook`, typecheck, check, knip and `i18n:check` green.
 - **Template matrix:** see 0291.
+
+## 0293: After the plan: the temporary knip entry gone, with the two functions it hid
+
+A cleanup once every Part was done (2026-11-14).
+
+- **What:**
+  - `knip.json` no longer lists `src/functions/kharcha/*.ts` as entries (Task 86 added it while Kharcha's pages didn't exist yet; `SPECS.kharcha.knipEntries` in `scripts/strip-demo.ts` is empty with it). Knip then named two server functions no page calls, `getKharchaFriend` and `getKharchaBalances`: both are gone, with their Storybook stand-ins and their names in the guard test. Their services (`friends.getFriend`, `me.getBalances`) stay: the access matrix and the ledger's tests read through them.
+  - `README.md` ended with a UTF-16 line (`# portfolio-ak`, appended by a PowerShell `echo >>`), whose NUL bytes made git and grep treat the file as binary: cut. It now names the layers, the local setup, every guide and every script, with the layers' strip markers.
+  - **`pnpm build` prints no warnings again** (it printed 57). 42 were Rolldown's `INEFFECTIVE_DYNAMIC_IMPORT`, one per module a loader imports with `await import(…)` while its page imports it statically: that is 0194 and 0197's rule, made to keep a feature's server-function stubs out of every page's route options, and the bundle budget measures it. The check is off for the client (`checks.ineffectiveDynamicImport`) and the code is in the Nitro handler's ignore list (0005), where there are no chunks to move. 14 were `"use client"` in our own shadcn files (`src/components/ui`), which 0005 leaves visible so they get fixed: the directive, which means nothing here, is gone from them. One was the client build's plugin timings note (the React Compiler and Tailwind, on every build): off too.
+  - Comments that promised "a later task" say what the code does now; `conventions.md`'s map has the four products; `deployment.md` lists all six daily jobs.
+- **Why:** an entry in `knip.json` hides dead exports for good, and a server function nothing calls is still an endpoint anyone can call. The records (PLAN.md, the earlier decisions, `docs/history`) keep their old paths and wording: they say what was true then (0163).
+- **Kept on purpose:** `.cta.json` (0003), the pictures' `.webp.json` origin notes in `public/himal` (the portfolio guide), `docs/history/screens` (the sign-off records PLAN.md points at).
+
+## 0294: Admin lists write through TanStack DB: one collection per list, fed by the Query cache
+
+*Supersedes 0174. The owner's instruction (2026-11-14): every CRUD on one convention, optimistic updates through TanStack DB, the generator with it.*
+
+- **What:**
+  - **One collection per list** (`crudCollection(name, keys.lists())`, `src/lib/crud/collection.ts`): a TanStack DB collection whose sync reads the Query cache. It holds the rows of every cached query under the list's key (every page and search; a row's newest copy wins, by `dataUpdatedAt`) and follows the cache through `queryCache.subscribe`. A feature declares it in `features/<name>/collection.ts`, one line per list.
+  - **Reads stay Query's:** the loader, `useListPage`, the page's totals and order are unchanged, so the first paint is the server's and the URL is still the state. `CrudListPage` takes `collection` and shows each of the page's rows as the collection has it (`useLiveRows`: `useLiveQuery` over the collection, the Query rows until it is ready, which are the same rows, so hydration matches).
+  - **Writes are DB transactions:** `useCrudMutation`'s `optimistic` is now `(variables) => void`, a change to the collection (`deleteRows`, `updateRows` with a draft). The hook runs it in `dbClient.createTransaction`, calls the server, invalidates, and only then lets the transaction end, so the server's rows replace the optimistic ones with no flick back; a refusal rejects the transaction and DB rolls the rows back. `patchRow`, `withoutRows` and `onRows` (patching `getQueriesData`) are gone.
+  - **Where DB loads:** the admin layout (`src/routes/_admin.tsx`) mounts `<DbScope>`, as the apps' and Taskline's layouts do (0189); Storybook's providers mount it for every story. Public pages still load none of it.
+  - **Every list that changes rows is on it** (30 writes in 23 components): Test CRUD; roles, the permission matrix and users (ban); the portfolio's projects, posts, messages and its four ordered sections (a move changes `sortOrder`, which the section sorts by); the media library; links moderation; Taskline's projects, members, invitations, time entries and templates; Parda's sources, takedowns, reports, billboards and collections; Chaal's blocks and connections; Kharcha's senders. Eight of those writes were not optimistic before (ban, reactivate, revoke an invitation or a connection, delete a time entry, a template or a file, suspend).
+  - **The generator:** `scripts/templates/feature` has `collection.ts.tpl`, and the list template uses `useCrudCollection`, `deleteRows` and `collection={collection}`.
+  - **Forms, found by the same audit:** seven admin dialogs saved with a hand-written `useMutation` + `handleSaveError` + invalidation (Chaal's block and featured dialogs, Taskline's delete-project and four member dialogs). They use `useCrudForm` now; its `messages` also get the server's answer (how many were added, who was invited), and Chaal's featured dialog reads its item from the list by id, so a stale save can reload (`crudFormKey`).
+- **Why:** the owner wants one write path for every CRUD and TanStack DB's optimistic transactions as that path. What 0174 objected to was the shape, not the library: a collection per page and search, a descriptor and a cap for each, repeated by every feature. A collection that follows the whole Query cache needs none of that: one descriptor per list, no LRU, and a deleted row leaves every page because every page's rows are in it.
+- **Choices:**
+  - **The server call is not the transaction's `mutationFn`.** A transaction with no mutations (the row is on no cached page) completes without calling it, and the write would never reach the server. The hook calls the server itself and gives the transaction a promise that settles with the write.
+  - **The collection is not a `queryCollectionOptions` one:** that binds one query key and owns its fetching, which is 0174's one-per-page again. A custom `sync` over `queryCache.findAll` reads what the loaders already fetched and fetches nothing itself.
+  - **`queryCache.subscribe` tells its listeners synchronously,** so the refetch a write awaited is in the collection before the transaction ends. An observer-based sync would be a tick late and the rows would flick.
+  - **Not converted, on purpose:** pages that are not row lists keep their layout and their non-optimistic `useCrudMutation` writes: Taskline's workflows, fields and automations editors (shared with the app's settings), Chaal's curation (it keeps a draft order and saves it), Parda's layout and the three reorder dialogs (a dialog saves on submit), every settings form. Read-only lists (the audit log, Taskline's activity) pass no collection.
+- **Numbers:** the entry (every page) is unchanged at 297.1 kB gzip, and `NOT_IN_ENTRY` still passes: no public page loads DB. The admin's routes now carry DB's runtime (about 100 kB gzip, 0189's 100.6; one chunk, loaded once by the admin layout), which `check-bundle` counts on each of them: the heaviest, the portfolio's project list, is 355.4 kB on top of the root and Test CRUD's list 339.5, so the route budget went from 300 to 360 kB. Storybook's preview chunk (a dev tool) is 2.4 MB with DB in the stories' providers, and its warning limit went from 2000 to 2600 kB. New tests: `tests/unit/crud-collection.test.ts` (every cached page, following the cache, the newest copy, an optimistic change kept, a refusal rolled back, one set of rows per DbClient).
+- **Alternatives considered:** keeping Query-cache patching and only renaming it (not what was asked, and two optimistic mechanisms would stay in the repo); DB's on-demand sync with predicate push-down (the list contract's `q`, filters, totals and page counts don't map to it, and the URL would stop being the state); one `queryCollectionOptions` per page (0174's reason to leave); turning the non-table pages into tables (the ordered sections would lose drag-reordering, the editors their shape; left for the owner to decide page by page).

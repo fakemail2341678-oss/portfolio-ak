@@ -2,14 +2,17 @@ import { useSuspenseQuery } from "@tanstack/react-query";
 import { PlusIcon } from "lucide-react";
 import { lazy, Suspense, useState } from "react";
 import { CrudListPage } from "@/components/crud/crud-list-page";
+import { useCrudCollection } from "@/components/crud/use-crud-collection";
 import { crudFormKey } from "@/components/crud/use-crud-form";
 import { useCrudMutation } from "@/components/crud/use-crud-mutation";
 import type { RowAction } from "@/components/data-table";
 import { Button } from "@/components/ui/button";
+import { deleteRows } from "@/lib/crud/collection";
 import { m } from "@/paraglide/messages";
 import { Can } from "../can";
+import { roleRows } from "../collection";
 import { roleColumns } from "../columns";
-import { RBAC_REFRESH, roleKeys } from "../keys";
+import { RBAC_REFRESH } from "../keys";
 import { roleLabel } from "../labels";
 import { roleMutations, rolesQueryOptions } from "../queries";
 import type { RoleSummary } from "../schema";
@@ -24,12 +27,10 @@ export function RolesList() {
 	const { data: roles } = useSuspenseQuery(rolesQueryOptions());
 	/** The dialog: a new role (no id) or renaming one. */
 	const [editing, setEditing] = useState<{ id?: string } | null>(null);
+	const collection = useCrudCollection(roleRows);
 	const remove = useCrudMutation(roleMutations.delete(), {
 		invalidate: RBAC_REFRESH,
-		optimistic: {
-			queryKey: roleKeys.lists(),
-			update: (cached: RoleSummary[], id: string) => cached.filter((role) => role.id !== id),
-		},
+		optimistic: (id) => deleteRows(collection, [id]),
 	});
 	// The dialog shows the role as it is in the list, so a reloaded newer version re-keys it.
 	const role = editing?.id ? roles.find((each) => each.id === editing.id) : undefined;
@@ -60,6 +61,7 @@ export function RolesList() {
 			}
 			tableId={ROLES_TABLE_ID}
 			list={{ rows: roles }}
+			collection={collection}
 			columns={roleColumns}
 			getRowLabel={roleLabel}
 			rowActions={rowActions}

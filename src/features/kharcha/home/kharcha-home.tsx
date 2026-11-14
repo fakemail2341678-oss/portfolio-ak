@@ -25,7 +25,7 @@ import { TodoList } from "./todos";
 import { Updates } from "./updates";
 
 /**
- * Home (PLAN 14.5 "UX"): a to-do list first (each later task adds its kinds), then what the
+ * Home (PLAN 14.5 "UX"): a to-do list first (`HomeTodo`'s kinds), then what the
  * caller is owed and owes per currency, this month's spending against last month's, and
  * the updates (notifications, Task 92) and recent activity. "Split with people" puts the balances first, "track my spending" the
  * month; on a laptop the to-dos hold the left column. Onboarding sits above it all until done.

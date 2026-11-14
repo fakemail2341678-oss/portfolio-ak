@@ -101,7 +101,7 @@ The admin kit (Task 37, decision 0168): everything an admin page needs, so a fea
 
 **Dialogs** (`components/dialogs/`): `useConfirm()` returns `confirm(options) => Promise<boolean>`; the shells mount its `ConfirmProvider` (`AdminShell`, the `/dev` layout; Storybook's providers too), so pages keep no confirm state. `FormDialog` and `FormSheet` hold a form ([forms.md](forms.md)). `QueryDialog` loads one record (a masked `?edit=`/`?view=`): placeholders, then the record or the error.
 
-**CRUD** (`components/crud/`, [crud.md](crud.md)): `CrudListPage` and `CrudListPending` (an admin list assembled), `useCrudMutation` (writes, optimistic on every cached page), `useCrudForm` + `CrudForm` (create and edit forms), `NewButton`, `RecordLink`.
+**CRUD** (`components/crud/`, [crud.md](crud.md)): `CrudListPage` and `CrudListPending` (an admin list assembled), `useCrudCollection` and `useLiveRows` (a list's TanStack DB collection and its rows), `useCrudMutation` (writes, optimistic through that collection on every cached page), `useCrudForm` + `CrudForm` (create and edit forms), `NewButton`, `RecordLink`.
 
 **Table** (`components/data-table/`, decision 0169): `DataTable` on TanStack Table v9 with its toolbar (saved views, CSV export, Columns), `RowAction`s with permissions and a context menu, a sticky header on long pages and a pinned first column on phones ([tables-filters.md](tables-filters.md)).
 

@@ -1,17 +1,20 @@
 import { getRouteApi } from "@tanstack/react-router";
 import { toast } from "sonner";
 import { CrudListPage } from "@/components/crud/crud-list-page";
-import { onRows, useCrudMutation, withoutRows } from "@/components/crud/use-crud-mutation";
+import { useCrudCollection } from "@/components/crud/use-crud-collection";
+import { useCrudMutation } from "@/components/crud/use-crud-mutation";
 import type { RowAction } from "@/components/data-table";
 import { useConfirm } from "@/components/dialogs/confirm";
 import { useListPage } from "@/hooks/use-list-page";
+import { deleteRows, updateRows } from "@/lib/crud/collection";
 import { m } from "@/paraglide/messages";
 import { shortUrl } from "../../format";
+import { linkModerationRows } from "../collection";
 import { linkModerationColumns } from "../columns";
 import { LinkModerationFilterControls, linkModerationFilters } from "../filters";
 import { linkModerationKeys } from "../keys";
 import { linkModerationMutations, linkModerationQueryOptions } from "../queries";
-import type { BlockLinksInput, LinkModerationItem } from "../schema";
+import type { LinkModerationItem } from "../schema";
 import { LINK_MODERATION_TABLE_ID } from "../search";
 
 const route = getRouteApi("/_admin/admin/links");
@@ -26,22 +29,18 @@ export function LinksModeration() {
 	const list = useListPage({ tableId: LINK_MODERATION_TABLE_ID, search, query: linkModerationQueryOptions });
 	const confirm = useConfirm();
 
+	const collection = useCrudCollection(linkModerationRows);
 	const block = useCrudMutation(linkModerationMutations.block(), {
 		invalidate: [linkModerationKeys.all],
-		optimistic: {
-			queryKey: linkModerationKeys.lists(),
-			update: onRows((rows: LinkModerationItem[], input: BlockLinksInput) =>
-				rows.map((row) =>
-					input.ids.includes(row.id)
-						? { ...row, blocked: input.blocked, state: input.blocked ? "blocked" : row.state }
-						: row,
-				),
-			),
-		},
+		optimistic: ({ ids, blocked }) =>
+			updateRows(collection, ids, (row) => {
+				row.blocked = blocked;
+				if (blocked) row.state = "blocked";
+			}),
 	});
 	const remove = useCrudMutation(linkModerationMutations.delete(), {
 		invalidate: [linkModerationKeys.all],
-		optimistic: { queryKey: linkModerationKeys.lists(), update: withoutRows<LinkModerationItem> },
+		optimistic: (ids) => deleteRows(collection, ids),
 	});
 
 	const setBlocked = async (row: LinkModerationItem, blocked: boolean) => {
@@ -84,6 +83,7 @@ export function LinksModeration() {
 			description={m.links_moderation_description()}
 			tableId={LINK_MODERATION_TABLE_ID}
 			list={list}
+			collection={collection}
 			columns={linkModerationColumns}
 			getRowLabel={(row) => shortUrl(row.slug)}
 			search={search}

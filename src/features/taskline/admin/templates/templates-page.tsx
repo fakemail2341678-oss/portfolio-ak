@@ -2,16 +2,19 @@ import { useSuspenseQuery } from "@tanstack/react-query";
 import { CopyIcon, DownloadIcon, FileUpIcon, LayoutTemplateIcon, PencilIcon, PlusIcon, Trash2Icon } from "lucide-react";
 import { lazy, Suspense, useState } from "react";
 import { toast } from "sonner";
+import { useCrudCollection, useLiveRows } from "@/components/crud/use-crud-collection";
 import { useCrudMutation } from "@/components/crud/use-crud-mutation";
 import { useConfirm } from "@/components/dialogs/confirm";
 import { EmptyState } from "@/components/page/empty-state";
 import { Page, PageHeader } from "@/components/page/page";
 import { Button } from "@/components/ui/button";
+import { deleteRows } from "@/lib/crud/collection";
 import { downloadJson } from "@/lib/csv";
 import { formatNumber } from "@/lib/i18n/intl";
 import { m } from "@/paraglide/messages";
 import { type TemplateFile, templateCounts } from "../../template-definition";
 import type { TemplateCounts } from "../../types";
+import { adminTemplateRows } from "../collection";
 import { ALL_TASKLINE_ADMIN } from "../keys";
 import { adminTemplatesQueryOptions, tasklineAdminMutations } from "../queries";
 import type { AdminTemplate } from "../schema";
@@ -47,7 +50,13 @@ function exportFile({ name, description, definition }: AdminTemplate) {
  */
 export function TasklineTemplatesPage() {
 	const { data } = useSuspenseQuery(adminTemplatesQueryOptions());
-	const remove = useCrudMutation(tasklineAdminMutations.deleteTemplate(), { invalidate: ALL_TASKLINE_ADMIN });
+	const collection = useCrudCollection(adminTemplateRows);
+	// The team's templates as the collection has them: a deleted one leaves at once.
+	const templates = useLiveRows(collection, data.templates);
+	const remove = useCrudMutation(tasklineAdminMutations.deleteTemplate(), {
+		invalidate: ALL_TASKLINE_ADMIN,
+		optimistic: ({ id }) => deleteRows(collection, [id]),
+	});
 	const confirm = useConfirm();
 	const [dialog, setDialog] = useState<TemplateDialogStart | null>(null);
 
@@ -145,11 +154,11 @@ export function TasklineTemplatesPage() {
 				<h2 id="templates-team" className="text-heading">
 					{m.taskline_template_team()}
 				</h2>
-				{data.templates.length === 0 ? (
+				{templates.length === 0 ? (
 					<EmptyState icon={LayoutTemplateIcon} description={m.taskline_template_team_empty()} />
 				) : (
 					<ul className="flex flex-col gap-2" data-testid="team-templates">
-						{data.templates.map(row)}
+						{templates.map(row)}
 					</ul>
 				)}
 			</section>

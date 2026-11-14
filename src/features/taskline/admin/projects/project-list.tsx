@@ -3,12 +3,15 @@ import { getRouteApi, Link } from "@tanstack/react-router";
 import { toast } from "sonner";
 import { CrudListPage } from "@/components/crud/crud-list-page";
 import { NewButton } from "@/components/crud/new-button";
-import { onRows, useCrudMutation } from "@/components/crud/use-crud-mutation";
+import { useCrudCollection } from "@/components/crud/use-crud-collection";
+import { useCrudMutation } from "@/components/crud/use-crud-mutation";
 import type { RowAction } from "@/components/data-table";
 import { useListPage } from "@/hooks/use-list-page";
+import { updateRows } from "@/lib/crud/collection";
 import { m } from "@/paraglide/messages";
 import { tasklineLinks } from "../../links";
-import { ALL_TASKLINE_ADMIN, adminProjectKeys } from "../keys";
+import { adminProjectRows } from "../collection";
+import { ALL_TASKLINE_ADMIN } from "../keys";
 import { adminProjectListQueryOptions, memberOptionsQueryOptions, tasklineAdminMutations } from "../queries";
 import type { AdminProjectItem } from "../schema";
 import { TL_ADMIN_PROJECTS_TABLE_ID } from "../search";
@@ -34,18 +37,14 @@ export function AdminProjectList() {
 	const search = route.useSearch();
 	const list = useListPage({ tableId: TL_ADMIN_PROJECTS_TABLE_ID, search, query: adminProjectListQueryOptions });
 	const { data: members } = useSuspenseQuery(memberOptionsQueryOptions());
+	const collection = useCrudCollection(adminProjectRows);
 	const archive = useCrudMutation(tasklineAdminMutations.setProjectArchived(), {
 		invalidate: ALL_TASKLINE_ADMIN,
-		optimistic: {
-			queryKey: adminProjectKeys.lists(),
-			update: onRows((rows: AdminProjectItem[], input: { id: string; archived: boolean }) =>
-				rows.map((row) =>
-					row.id === input.id
-						? { ...row, archived: input.archived, status: input.archived ? ("archived" as const) : ("active" as const) }
-						: row,
-				),
-			),
-		},
+		optimistic: ({ id, archived }) =>
+			updateRows(collection, [id], (row) => {
+				row.archived = archived;
+				row.status = archived ? "archived" : "active";
+			}),
 	});
 
 	const rowActions = (row: AdminProjectItem): RowAction[] => [
@@ -76,6 +75,7 @@ export function AdminProjectList() {
 			actions={<NewProjectButton />}
 			tableId={TL_ADMIN_PROJECTS_TABLE_ID}
 			list={list}
+			collection={collection}
 			columns={adminProjectColumns}
 			getRowLabel={(row) => `${row.key} ${row.name}`}
 			search={search}

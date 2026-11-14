@@ -2,6 +2,7 @@ import { useSuspenseQuery } from "@tanstack/react-query";
 import { PencilIcon, PlusIcon, Trash2Icon } from "lucide-react";
 import { type ReactNode, useState } from "react";
 import { toast } from "sonner";
+import { useCrudCollection, useLiveRows } from "@/components/crud/use-crud-collection";
 import { crudFormKey } from "@/components/crud/use-crud-form";
 import { useCrudMutation } from "@/components/crud/use-crud-mutation";
 import { useConfirm } from "@/components/dialogs/confirm";
@@ -10,7 +11,9 @@ import { EmptyState } from "@/components/page/empty-state";
 import { Page, PageHeader } from "@/components/page/page";
 import { Button } from "@/components/ui/button";
 import { useCan } from "@/features/rbac/can";
+import { type CrudCollectionOptions, deleteRows, updateRows } from "@/lib/crud/collection";
 import { m } from "@/paraglide/messages";
+import type { SectionRow } from "../collection";
 import type { SectionQueries } from "../queries";
 
 /** What a section's sheet gets: the entry to edit (none: a new one) and how to close. */
@@ -22,10 +25,11 @@ export type SectionSheetProps<TItem> = { item?: TItem; onClose: () => void };
  * (or Space, arrows, Space; Alt + ↑/↓ on a handle), each edited in a sheet. A
  * move saves at once and shows at once (rolled back if the server refuses).
  */
-export function OrderedSection<TInput, TItem extends { id: string; updatedAt: string }>({
+export function OrderedSection<TInput, TItem extends SectionRow>({
 	title,
 	description,
 	queries,
+	rows,
 	label,
 	detail,
 	badge,
@@ -37,6 +41,8 @@ export function OrderedSection<TInput, TItem extends { id: string; updatedAt: st
 	title: string;
 	description: string;
 	queries: SectionQueries<TInput, TItem>;
+	/** The section's collection (../collection.ts): a move or a delete changes it at once. */
+	rows: CrudCollectionOptions<TItem>;
 	/** The entry's name: its row's heading, its handle's label and the delete confirm. */
 	label: (item: TItem) => string;
 	/** A second line (a period, a summary). */
@@ -48,7 +54,10 @@ export function OrderedSection<TInput, TItem extends { id: string; updatedAt: st
 	Sheet: (props: SectionSheetProps<TItem>) => ReactNode;
 	"data-testid"?: string;
 }) {
-	const { data: items } = useSuspenseQuery(queries.list());
+	const { data: read } = useSuspenseQuery(queries.list());
+	const collection = useCrudCollection(rows);
+	// The entries as the collection has them, in its order: a move shows before the server answers.
+	const items = [...useLiveRows(collection, read)].sort((a, b) => a.sortOrder - b.sortOrder);
 	const canWrite = useCan("portfolio:write");
 	const confirm = useConfirm();
 	// The entry being edited, by id: read from the cache, so a reloaded newer version remounts the sheet (crudFormKey).
@@ -57,17 +66,17 @@ export function OrderedSection<TInput, TItem extends { id: string; updatedAt: st
 
 	const reorder = useCrudMutation(queries.reorder(), {
 		invalidate: [queries.keys.all],
-		optimistic: {
-			queryKey: queries.keys.all,
-			update: (cached: TItem[], ids: string[]) => ids.flatMap((id) => cached.filter((item) => item.id === id)),
+		optimistic: (ids) => {
+			for (const [index, id] of ids.entries()) {
+				updateRows(collection, [id], (row) => {
+					row.sortOrder = index;
+				});
+			}
 		},
 	});
 	const remove = useCrudMutation(queries.delete(), {
 		invalidate: [queries.keys.all],
-		optimistic: {
-			queryKey: queries.keys.all,
-			update: (cached: TItem[], ids: string[]) => cached.filter((item) => !ids.includes(item.id)),
-		},
+		optimistic: (ids) => deleteRows(collection, ids),
 	});
 
 	const askDelete = async (item: TItem) => {

@@ -1,14 +1,17 @@
 import { getRouteApi } from "@tanstack/react-router";
 import { useState } from "react";
 import { CrudListPage, CrudListPending } from "@/components/crud/crud-list-page";
-import { useCrudMutation, withoutRows } from "@/components/crud/use-crud-mutation";
+import { useCrudCollection } from "@/components/crud/use-crud-collection";
+import { useCrudMutation } from "@/components/crud/use-crud-mutation";
 import type { DataTableColumn } from "@/components/data-table";
 import { SearchFilter, SelectFilter } from "@/components/filters/filters";
 import { useListPage } from "@/hooks/use-list-page";
+import { deleteRows } from "@/lib/crud/collection";
 import { choiceChip, defineFilters, textChip } from "@/lib/crud/filters";
 import { formatDateTime } from "@/lib/i18n/intl";
 import { m } from "@/paraglide/messages";
 import { chaalKeys } from "../../keys";
+import { chaalBlockRows } from "../collection";
 import { BlockButton, BlockDialogSlot, type BlockOpen, ConnectionTabs } from "../connections/connection-list";
 import { BLOCK_KIND_FILTER_LABELS, BLOCK_KIND_LABELS } from "../labels";
 import { chaalAdminMutations, chaalBlocksQueryOptions } from "../queries";
@@ -90,9 +93,10 @@ export function ChaalBlocksPage() {
 	const search = route.useSearch();
 	const list = useListPage({ tableId: CHAAL_BLOCKS_TABLE_ID, search, query: chaalBlocksQueryOptions });
 	const [blocking, setBlocking] = useState<BlockOpen>(null);
+	const collection = useCrudCollection(chaalBlockRows);
 	const unblock = useCrudMutation(chaalAdminMutations.unblock(), {
 		invalidate: [chaalKeys.adminBlocks(), chaalKeys.adminConnections()],
-		optimistic: { queryKey: chaalKeys.adminBlocks(), update: withoutRows<ChaalAdminBlock> },
+		optimistic: (ids) => deleteRows(collection, ids),
 	});
 
 	return (
@@ -103,6 +107,7 @@ export function ChaalBlocksPage() {
 			tabs={<ConnectionTabs />}
 			tableId={CHAAL_BLOCKS_TABLE_ID}
 			list={list}
+			collection={collection}
 			columns={columns}
 			getRowLabel={label}
 			search={search}

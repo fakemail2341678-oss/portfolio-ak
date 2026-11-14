@@ -4,13 +4,16 @@ import type { ReactNode } from "react";
 import { CrudListPage, CrudListPending } from "@/components/crud/crud-list-page";
 import { NewButton } from "@/components/crud/new-button";
 import { RecordLink } from "@/components/crud/record-link";
+import { useCrudCollection } from "@/components/crud/use-crud-collection";
 import { useCrudMutation } from "@/components/crud/use-crud-mutation";
 import { StatusBadge } from "@/components/data-display/status-badge";
 import type { DataTableColumn, RowAction } from "@/components/data-table";
+import { deleteRows } from "@/lib/crud/collection";
 import { formatDateTime, formatNumber } from "@/lib/i18n/intl";
 import { localizedValue } from "@/lib/i18n/localized";
 import { m } from "@/paraglide/messages";
 import { pardaLinks } from "../../links";
+import { pardaCollectionRows } from "../collection";
 import { pardaAdminKeys } from "../keys";
 import { pardaAdminMutations, pardaCollectionsQueryOptions } from "../queries";
 import type { AdminCollection } from "../schema";
@@ -88,12 +91,10 @@ export function PardaCollectionsPending() {
  */
 export function PardaCollectionsPage() {
 	const { data: rows } = useSuspenseQuery(pardaCollectionsQueryOptions());
+	const collection = useCrudCollection(pardaCollectionRows);
 	const remove = useCrudMutation(pardaAdminMutations.deleteCollections(), {
 		invalidate: [pardaAdminKeys.all],
-		optimistic: {
-			queryKey: pardaAdminKeys.collections(),
-			update: (list: AdminCollection[], ids: string[]) => list.filter((row) => !ids.includes(row.id)),
-		},
+		optimistic: (ids) => deleteRows(collection, ids),
 	});
 	const rowActions = (row: AdminCollection): RowAction[] => [
 		{
@@ -123,6 +124,7 @@ export function PardaCollectionsPage() {
 			actions={<NewCollectionButton />}
 			tableId={COLLECTIONS_TABLE_ID}
 			list={{ rows }}
+			collection={collection}
 			columns={columns}
 			getRowLabel={name}
 			rowActions={rowActions}

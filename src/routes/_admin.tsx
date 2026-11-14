@@ -1,5 +1,6 @@
 import { createFileRoute, Outlet, redirect } from "@tanstack/react-router";
 import { AdminShell } from "@/components/admin-shell/admin-shell";
+import { DbScope } from "@/components/layout/db-scope";
 import { canEnterAdmin } from "@/features/rbac/permissions";
 import { ensureAdminAccess } from "@/functions/auth";
 import { isAppError } from "@/lib/errors";
@@ -41,10 +42,13 @@ export const Route = createFileRoute("/_admin")({
 	},
 	// Private: every admin page inherits this (child heads set only the title).
 	head: () => ({ meta: [NOINDEX], links: fontPreloads(getLocale()) }),
-	// The shell is in this route's chunk (inline component), not in every page's JavaScript.
+	// The shell is in this route's chunk (inline component), not in every page's JavaScript; so is
+	// TanStack DB, which every admin list writes through (`DbScope`, decisions 0189 and 0294).
 	component: () => (
-		<AdminShell>
-			<Outlet />
-		</AdminShell>
+		<DbScope>
+			<AdminShell>
+				<Outlet />
+			</AdminShell>
+		</DbScope>
 	),
 });

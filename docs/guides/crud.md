@@ -1,6 +1,6 @@
 # CRUD: building a feature
 
-The one way to build an admin section (decision 0173). Test CRUD, users, roles, the permission matrix and the audit log follow it, and `pnpm new:feature` generates it. Start there:
+The one way to build an admin section (decision 0173; writes through TanStack DB, 0294). Test CRUD, users, roles, the permission matrix and the audit log follow it, and `pnpm new:feature` generates it. Start there:
 
 ```bash
 pnpm new:feature projects --title "Projects" --title-ne "परियोजनाहरू"   # an admin section
@@ -21,6 +21,7 @@ src/features/<name>/             search.ts      the URL contract (route files im
                                  schema.ts      inputs (strict), DTO schemas, form values
                                  keys.ts        Query keys (createCrudKeys)
                                  queries.ts     queryOptions (reads) + mutationOptions (writes)
+                                 collection.ts  the list's rows as a TanStack DB collection (crudCollection)
                                  columns.tsx    DataTable columns     filters.tsx  controls + chip specs
                                  labels.ts      enum labels           commands.ts  palette actions
                                  components/    <name>-list, <name>-form, <name>-detail, <name>-pending
@@ -29,7 +30,7 @@ src/server/<name>/               repository.ts (Drizzle over an injected Db) + s
 src/routes/_admin/admin/<name>/  route.tsx, index.tsx, new.tsx, $id.tsx: literal createFileRoute objects
 ```
 
-The shared pieces: `src/lib/crud/` (keys, schema, filters, route helpers), `src/components/crud/` (`CrudListPage`, `useCrudMutation`, `useCrudForm`/`CrudForm`, `NewButton`, `RecordLink`), `src/server/db/crud.ts` (repository helpers), `src/middleware/services.ts` and `src/server/services.ts` (what a handler hands to its service). They are React-free where they can be: route helpers in `src/lib/crud/route.ts` (routes only, it needs the Start runtime), components in `src/components/crud/`.
+The shared pieces: `src/lib/crud/` (keys, schema, filters, route helpers, `crudCollection` with `deleteRows`/`updateRows`), `src/components/crud/` (`CrudListPage`, `useCrudCollection`/`useLiveRows`, `useCrudMutation`, `useCrudForm`/`CrudForm`, `NewButton`, `RecordLink`), `src/server/db/crud.ts` (repository helpers), `src/middleware/services.ts` and `src/server/services.ts` (what a handler hands to its service). They are React-free where they can be: route helpers in `src/lib/crud/route.ts` (routes only, it needs the Start runtime), components in `src/components/crud/`.
 
 ## URL contract (`search.ts`)
 
@@ -101,7 +102,7 @@ loader: async ({ context, params }) => ({ title: (await loadDetailOr404(context.
 <CrudListPage
 	title={m.projects_title()} description={m.projects_description()} actions={<NewProjectButton />}
 	tableId={PROJECTS_TABLE_ID} list={useListPage({ tableId, search, query: projectListQueryOptions })}
-	columns={projectColumns} getRowLabel={(row) => row.title} search={search}
+	collection={collection} columns={projectColumns} getRowLabel={(row) => row.title} search={search}
 	filters={{ controls: <ProjectFilterControls search={search} />, ...projectFilters.applied(search) }}
 	rowActions={(row) => [{ id: "edit", label: m.crud_edit(), permission: "projects:update", render: … }]}
 	remove={{ permission: "projects:delete", run: (ids) => remove.mutateAsync(ids) }}
@@ -109,7 +110,7 @@ loader: async ({ context, params }) => ({ title: (await loadDetailOr404(context.
 />
 ```
 
-- **It renders:** the header, `FilterBar` and the chips, the DataTable, `Pagination`, the empty state (nothing yet, or nothing matching with "Clear filters"), and for `remove` a Delete row action and "Delete selected", each confirmed (`useConfirm`) and toasted with the shared messages. A short list read whole passes `list={{ rows }}` (roles).
+- **It renders:** the header, `FilterBar` and the chips, the DataTable, `Pagination`, the empty state (nothing yet, or nothing matching with "Clear filters"), and for `remove` a Delete row action and "Delete selected", each confirmed (`useConfirm`) and toasted with the shared messages. A short list read whole passes `list={{ rows }}` (roles). With `collection` (every list that writes passes it), each row shows as the collection has it now: an optimistic change, a deleted row gone.
 - **Filters:** `defineFilters<ProjectSearch>([textChip("q", m.crud_search), choiceChip("status", label, text), eachChip, rangeChip, flagChip])`. Each spec makes the chip of one applied filter; their keys are what "Clear all" resets.
 - **Columns:** a constant (a factory only when they depend on something: the users list marks the signed-in user). The name column is a `RecordLink` (a link for users who may edit, text for the rest).
 - **"New":** `NewButton` (`to`, `permission`); the pending component reuses it.
@@ -117,14 +118,25 @@ loader: async ({ context, params }) => ({ title: (await loadDetailOr404(context.
 ## Writes
 
 ```ts
+// features/projects/collection.ts: one line per list
+export const projectRows = crudCollection<ProjectListItem>("projects", projectKeys.lists());
+
+// the list component
+const collection = useCrudCollection(projectRows);
 const remove = useCrudMutation(projectMutations.delete(), {
 	invalidate: [projectKeys.all],
-	optimistic: { queryKey: projectKeys.lists(), update: withoutRows<ProjectListItem> },
+	optimistic: (ids) => deleteRows(collection, ids),
+});
+const setStatus = useCrudMutation(projectMutations.setStatus(), {
+	invalidate: [projectKeys.all],
+	optimistic: ({ id, status }) => updateRows(collection, [id], (row) => { row.status = status; }),
 });
 ```
 
-- **`mutationOptions` live in `queries.ts`** (a key and the server function). `useCrudMutation` adds the rest: with `optimistic`, it cancels the lists' reads, patches **every cached page** (`patchRow`, `withoutRows`, `onRows`) and restores the snapshot on failure; afterwards it invalidates `invalidate`; a failure is the shared "nothing was changed" toast, a stale CONFLICT offers a reload.
-- **Query mutations for admin CRUD; TanStack DB for client-first apps** (Taskline's board, Habits, Notes), where live queries and optimistic transactions pay off (decision 0174).
+- **Every write that changes a list's rows is optimistic, through TanStack DB** (decision 0294). The list's collection (`crudCollection(name, keys.lists())`) holds the rows of **every cached page** and follows the Query cache, so there is one per list, whatever the page or the search. `optimistic` changes it (`deleteRows`, `updateRows` with an Immer-style draft, or the collection's own `update`/`delete`) inside a DB transaction that lasts as long as the write: the rows change at once on every page, and DB puts them back if the server refuses.
+- **`mutationOptions` live in `queries.ts`** (a key and the server function). `useCrudMutation` adds the rest: the transaction around `optimistic`; afterwards it invalidates `invalidate` and ends the transaction only once the lists are read again (no flick back to the old rows); a failure is the shared "nothing was changed" toast, a stale CONFLICT offers a reload. A write that changes no row (resend an invitation, an export) leaves `optimistic` out.
+- **Reads stay Query's:** the loader, the page, its totals and its order. `CrudListPage` shows each of the page's rows as the collection has it (`useLiveRows`); a page that draws its own list calls `useLiveRows(collection, rows)` itself (the media grid, the permission matrix, the portfolio's ordered sections, which sort by the `sortOrder` a move changes).
+- **Where the collection may be imported:** components only, below `<DbScope>` (the admin layout mounts it; Storybook's providers too). Never a route file or `queries.ts`: TanStack DB would land in every page's JavaScript (0189), and `scripts/check-bundle.ts` fails.
 
 ## Forms
 
@@ -140,7 +152,7 @@ return <CrudForm form={form} crud={crud}>…fields, StickyFormBar…</CrudForm>;
 ```
 
 - **`formOptions` per feature** (default values from the record, `formValidators(schema)`); `withForm` sections share it (Test CRUD's details section).
-- **`useCrudForm`** saves through the mutations (an edit sends `id` and `updatedAt`), puts server field errors on their fields, turns a stale CONFLICT into `StaleVersionAlert`, toasts, calls `onSaved`, then refreshes `invalidate`.
+- **`useCrudForm`** saves through the mutations (an edit sends `id` and `updatedAt`), puts server field errors on their fields, turns a stale CONFLICT into `StaleVersionAlert`, toasts (`messages` get the input and the server's answer), calls `onSaved`, then refreshes `invalidate`. Every admin form and dialog saves through it, an action dialog too (invite, deactivate, a typed confirm): its one mutation is `create`, with no `item`. No hand-written `useMutation` + `handleSaveError` in the admin.
 - **Reload, one way:** "Reload" refetches the record's query (`reload`); the record's new version changes `crudFormKey(item)`, which remounts the form with fresh defaults. A dialog reads its record from the list's cache by id for the same reason (roles, users).
 - **Page or dialog:** `CrudForm` (guard, `<form>`, stale alert, error summary) on a page; `FormDialog` with `stale={crud.stale}` in a dialog.
 - **As you type:** `slugValidators` (follows its source field) and `availabilityValidators` (an email that's taken) run debounced server checks; the save still checks.
@@ -158,8 +170,9 @@ A PGlite service test per feature (create, list, a stale edit, delete, the audit
 
 - **Strict inputs, forgiving URLs:** never `z.strictObject` for `validateSearch` (links carry utm tags); a list input is strict, so remove UI-only params (`edit`) before using the search as the input.
 - **`requirePermission` first:** `withServices` goes after it, so a refused call builds nothing; the guard test's regex allows exactly that.
-- **Optimistic updates patch every cached page** (`queryKey: keys.lists()`), or another page shows a deleted row.
+- **The collection is built over `keys.lists()`,** the prefix of every page: built over one page's key, another page shows a deleted row. A list whose answer is neither a page nor an array gives `crudCollection` a third argument that reads its rows (Taskline's templates).
+- **`optimistic` changes drafts, it doesn't return rows:** `updateRows(collection, ids, (row) => { row.status = status; })`. A row that isn't on any cached page is skipped, and the server is called all the same.
 - **A route `loader` is a function of the route context** (`(route) => listLoader(route, …)`): passing the helper's result directly loses the loader deps' inferred type.
 - **Uniqueness is the constraint's job:** a unique index (`role_name_lower_unique`, a slug's `…_slug_unique`) and `uniqueViolation`; the typing-time check is a courtesy.
 - **Better Auth's `timestamp` columns have no time zone:** `sameVersion` compares them in UTC, which is how Drizzle writes and reads them.
-- **Admin writes are Query mutations** (`useCrudMutation`, 0174): optimistic updates patch every cached list page (`keys.lists()`). TanStack DB is for client-first apps; don't add collections to admin lists.
+- **Admin lists write through TanStack DB, read through Query** (0294, which supersedes 0174): don't patch the Query cache by hand (`setQueryData`) for an optimistic change, and don't build a collection per page. The showcase apps and Taskline's board keep their own query collections (`queryCollectionOptions`, state.md).

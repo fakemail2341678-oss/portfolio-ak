@@ -1,13 +1,16 @@
 import { getRouteApi } from "@tanstack/react-router";
 import { CrudListPage, CrudListPending } from "@/components/crud/crud-list-page";
 import { NewButton } from "@/components/crud/new-button";
-import { useCrudMutation, withoutRows } from "@/components/crud/use-crud-mutation";
+import { useCrudCollection } from "@/components/crud/use-crud-collection";
+import { useCrudMutation } from "@/components/crud/use-crud-mutation";
 import type { DataTableColumn } from "@/components/data-table";
 import { SearchFilter, SelectFilter } from "@/components/filters/filters";
 import { useListPage } from "@/hooks/use-list-page";
+import { deleteRows } from "@/lib/crud/collection";
 import { choiceChip, defineFilters, textChip } from "@/lib/crud/filters";
 import { formatDateTime } from "@/lib/i18n/intl";
 import { m } from "@/paraglide/messages";
+import { pardaTakedownRows } from "../collection";
 import { pardaAdminKeys } from "../keys";
 import { MEDIA_LABELS } from "../labels";
 import { pardaAdminMutations, pardaTakedownsQueryOptions } from "../queries";
@@ -89,9 +92,10 @@ export function PardaTakedownsPending() {
 export function PardaTakedownsPage() {
 	const search = route.useSearch();
 	const list = useListPage({ tableId: PARDA_TAKEDOWNS_TABLE_ID, search, query: pardaTakedownsQueryOptions });
+	const collection = useCrudCollection(pardaTakedownRows);
 	const unblock = useCrudMutation(pardaAdminMutations.unblockTitles(), {
 		invalidate: [pardaAdminKeys.takedowns()],
-		optimistic: { queryKey: pardaAdminKeys.takedowns(), update: withoutRows<AdminTakedown> },
+		optimistic: (ids) => deleteRows(collection, ids),
 	});
 
 	return (
@@ -101,6 +105,7 @@ export function PardaTakedownsPage() {
 			actions={<BlockTitleButton />}
 			tableId={PARDA_TAKEDOWNS_TABLE_ID}
 			list={list}
+			collection={collection}
 			columns={columns}
 			getRowLabel={titleText}
 			search={search}

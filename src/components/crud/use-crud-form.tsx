@@ -46,7 +46,11 @@ export function useCrudForm<TValues, TInput, TItem extends Versioned, TCreated, 
 	item?: TItem | undefined;
 	/** Form values -> the server input (the same schema the server validates with). */
 	toInput: (values: TValues) => TInput;
-	/** The feature's mutationOptions (queries.ts). An edit sends the input plus the item's id and version. */
+	/**
+	 * The feature's mutationOptions (queries.ts). An edit sends the input plus the item's id and
+	 * version; a dialog whose one action isn't a versioned edit (invite, deactivate, a typed
+	 * confirm) passes it as `create`, with no `item`.
+	 */
 	create?: UseMutationOptions<TCreated, Error, TInput>;
 	update?: UseMutationOptions<TUpdated, Error, TInput & Versioned>;
 	/** Refreshed after a save: usually the feature's `keys.all`. */
@@ -55,8 +59,11 @@ export function useCrudForm<TValues, TInput, TItem extends Versioned, TCreated, 
 	reload?: QueryKey | undefined;
 	/** After the save and its toast: go back to the list, close the dialog. */
 	onSaved?: (saved: TCreated | TUpdated) => unknown;
-	/** The success toasts (default "Created." / "Changes saved."), given what was sent. */
-	messages?: { created?: (input: TInput) => string; saved?: (input: TInput) => string };
+	/** The success toasts (default "Created." / "Changes saved."), given what was sent and what the server answered. */
+	messages?: {
+		created?: (input: TInput, saved: TCreated) => string;
+		saved?: (input: TInput, saved: TUpdated) => string;
+	};
 }) {
 	const queryClient = useQueryClient();
 	const saved = useRef(false);
@@ -67,12 +74,19 @@ export function useCrudForm<TValues, TInput, TItem extends Versioned, TCreated, 
 	const onSubmit = async ({ value, formApi }: { value: TValues; formApi: AnyFormApi }) => {
 		try {
 			const input = toInput(value);
-			const result = item
-				? await updating.mutateAsync({ ...input, id: item.id, updatedAt: item.updatedAt })
-				: await creating.mutateAsync(input);
+			let result: TCreated | TUpdated;
+			let message: string;
+			if (item) {
+				const updated = await updating.mutateAsync({ ...input, id: item.id, updatedAt: item.updatedAt });
+				message = messages?.saved?.(input, updated) ?? m.crud_toast_saved();
+				result = updated;
+			} else {
+				const created = await creating.mutateAsync(input);
+				message = messages?.created?.(input, created) ?? m.crud_toast_created();
+				result = created;
+			}
 			saved.current = true;
-			const message = item ? messages?.saved : messages?.created;
-			toast.success(message ? message(input) : item ? m.crud_toast_saved() : m.crud_toast_created());
+			toast.success(message);
 			// First leave (the edit page's own query is then inactive and isn't refetched), then refresh.
 			await onSaved?.(result);
 			await Promise.all(invalidate.map((queryKey) => queryClient.invalidateQueries({ queryKey })));

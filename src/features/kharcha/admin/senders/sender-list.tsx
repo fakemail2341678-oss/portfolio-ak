@@ -1,12 +1,15 @@
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { CrudListPage } from "@/components/crud/crud-list-page";
+import { useCrudCollection } from "@/components/crud/use-crud-collection";
 import { useCrudMutation } from "@/components/crud/use-crud-mutation";
 import { StatusBadge } from "@/components/data-display/status-badge";
 import type { DataTableColumn } from "@/components/data-table";
 import { useConfirm } from "@/components/dialogs/confirm";
+import { updateRows } from "@/lib/crud/collection";
 import { formatDateTime, formatNumber } from "@/lib/i18n/intl";
 import { m } from "@/paraglide/messages";
+import { kharchaSenderRows } from "../collection";
 import { kharchaAdminKeys, kharchaAdminMutations, kharchaSendersQueryOptions } from "../queries";
 import type { KharchaSender } from "../schema";
 
@@ -59,13 +62,21 @@ const columns: ReadonlyArray<DataTableColumn<KharchaSender>> = [
 export function KharchaSenderList() {
 	const { data: senders } = useSuspenseQuery(kharchaSendersQueryOptions());
 	const confirm = useConfirm();
-	const suspend = useCrudMutation(kharchaAdminMutations.suspend(), { invalidate: [kharchaAdminKeys.senders()] });
+	const collection = useCrudCollection(kharchaSenderRows);
+	const suspend = useCrudMutation(kharchaAdminMutations.suspend(), {
+		invalidate: [kharchaAdminKeys.senders()],
+		optimistic: ({ userId, suspend: suspended }) =>
+			updateRows(collection, [userId], (row) => {
+				row.suspendedAt = suspended ? new Date().toISOString() : null;
+			}),
+	});
 	return (
 		<CrudListPage
 			title={m.kharcha_admin_senders_title()}
 			description={m.kharcha_admin_senders_description()}
 			tableId="admin-kharcha-senders"
 			list={{ rows: senders }}
+			collection={collection}
 			columns={columns}
 			getRowLabel={(row) => row.email}
 			rowActions={(row) => [

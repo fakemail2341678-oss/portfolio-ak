@@ -5,7 +5,7 @@
  * gone", in the shapes Lichess sends. The rival's side is played by the tests through
  * `/e2e/lichess/*` controls. Everything lives in memory until `DELETE /e2e/lichess`.
  *
- * Task 78 adds seeks (a clock's held open with keepalives and cancelled when it closes, a
+ * Task 78 added seeks (a clock's held open with keepalives and cancelled when it closes, a
  * correspondence one answered with its id; the rival accepts one through
  * `POST /e2e/lichess/seek-accept`), `GET /api/account/playing`, and arena games
  * (`POST /e2e/lichess/arena`) with berserk.

@@ -3,6 +3,7 @@ import { BanIcon } from "lucide-react";
 import { lazy, Suspense, useState } from "react";
 import { toast } from "sonner";
 import { CrudListPage, CrudListPending } from "@/components/crud/crud-list-page";
+import { useCrudCollection } from "@/components/crud/use-crud-collection";
 import { useCrudMutation } from "@/components/crud/use-crud-mutation";
 import { StatusOf } from "@/components/data-display/status-badge";
 import type { DataTableColumn, RowAction } from "@/components/data-table";
@@ -13,10 +14,12 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Can } from "@/features/rbac/can";
 import { useListPage } from "@/hooks/use-list-page";
+import { updateRows } from "@/lib/crud/collection";
 import { choiceChip, defineFilters, textChip } from "@/lib/crud/filters";
 import { formatDateTime, formatNumber } from "@/lib/i18n/intl";
 import { m } from "@/paraglide/messages";
 import { chaalKeys } from "../../keys";
+import { chaalConnectionRows } from "../collection";
 import { CONNECTION_STATE, CONNECTION_STATE_FILTER_LABELS, CONNECTION_WHO_LABELS } from "../labels";
 import { chaalAdminMutations, chaalConnectionsQueryOptions } from "../queries";
 import type { ChaalAdminConnection } from "../schema";
@@ -179,8 +182,13 @@ export function ChaalConnectionsPage() {
 	const [blocking, setBlocking] = useState<BlockOpen>(null);
 	const confirm = useConfirm();
 	const list = useListPage({ tableId: CHAAL_CONNECTIONS_TABLE_ID, search, query: chaalConnectionsQueryOptions });
+	const collection = useCrudCollection(chaalConnectionRows);
 	const revoke = useCrudMutation(chaalAdminMutations.revokeConnections(), {
 		invalidate: [chaalKeys.adminConnections()],
+		optimistic: (ids) =>
+			updateRows(collection, ids, (row) => {
+				row.state = "revoked";
+			}),
 	});
 
 	const askRevoke = async (rows: ReadonlyArray<ChaalAdminConnection>, done?: () => void) => {
@@ -236,6 +244,7 @@ export function ChaalConnectionsPage() {
 			tabs={<ConnectionTabs />}
 			tableId={CHAAL_CONNECTIONS_TABLE_ID}
 			list={list}
+			collection={collection}
 			columns={columns}
 			getRowLabel={(row) => row.username}
 			search={search}

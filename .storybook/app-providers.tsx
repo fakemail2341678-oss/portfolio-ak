@@ -8,6 +8,7 @@ import {
 } from "@tanstack/react-router";
 import { createContext, type ReactNode, useContext, useState } from "react";
 import { ConfirmProvider } from "../src/components/dialogs/confirm";
+import { DbScope } from "../src/components/layout/db-scope";
 import { sessionQueryOptions } from "../src/features/auth/queries";
 import { parseSearch, stringifySearch } from "../src/lib/list/url";
 import type { Session } from "../src/lib/session";
@@ -27,9 +28,13 @@ export type AppParameters = {
 
 const StoryContext = createContext<ReactNode>(null);
 
-/** The story inside the router, with the confirm dialog the shells provide (useConfirm). */
+/** The story inside the router, with what the shells provide: the confirm dialog (useConfirm) and TanStack DB. */
 function StoryOutlet() {
-	return <ConfirmProvider>{useContext(StoryContext)}</ConfirmProvider>;
+	return (
+		<DbScope>
+			<ConfirmProvider>{useContext(StoryContext)}</ConfirmProvider>
+		</DbScope>
+	);
 }
 
 function createStoryRouter({ session = null, preferences, route = "/" }: AppParameters, theme: Preferences["theme"]) {

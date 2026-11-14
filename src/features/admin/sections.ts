@@ -59,7 +59,7 @@ import type { FileRouteTypes } from "@/routeTree.gen";
 /** Every admin page without a path param: what a section can link to. */
 export type AdminPath = Exclude<Extract<FileRouteTypes["to"], `/admin/${string}`>, `${string}$${string}`>;
 
-/** Sidebar groups, in order. The portfolio and the apps fill theirs in later tasks. */
+/** Sidebar groups, in order. */
 export const ADMIN_GROUPS = [
 	"overview",
 	"portfolio",

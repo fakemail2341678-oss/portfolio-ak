@@ -5,8 +5,8 @@ Pick the tool by what the state is (decision 0064). Examples: `/dev/examples/loa
 | State | Tool | Example |
 | --- | --- | --- |
 | Server data you read | **TanStack Query**: `queryOptions` in `features/<name>/queries.ts`, `ensureQuery` in loaders, `useSuspenseQuery` in components | `/dev/stack`, the session (`sessionQueryOptions`) |
-| Server data you edit in the admin | **Query mutations** through `useCrudMutation` (crud.md): optimistic on every cached page, rolled back on refusal | Test CRUD's publish and delete, the permission matrix |
-| Client-first app state with live queries | **TanStack DB** collections (decision 0174) | `/dev/examples/optimistic`; the apps (Habits, Notes) and Taskline's board |
+| Server data you edit in the admin | Query reads; writes through `useCrudMutation` (crud.md), optimistic in the list's **TanStack DB** collection (`crudCollection`, 0294): on every cached page at once, rolled back on refusal | Test CRUD's publish and delete, the permission matrix |
+| Client-first app state with live queries | **TanStack DB** query collections (decision 0189) | `/dev/examples/optimistic`; the apps (Habits, Notes) and Taskline's board |
 | UI preferences that persist | **TanStack Store** (`src/lib/stores`), saved in cookies | Theme, admin sidebar, table page size and hidden columns, analytics consent |
 | Values being typed | **TanStack Form** ([forms.md](forms.md)) | Every form |
 | Shareable view state | **URL search params** ([search-filters-masking.md](search-filters-masking.md)) | Filters, sort, page, an open dialog (`?edit=…`) |
@@ -26,7 +26,7 @@ Rules of thumb:
 
 ## DB (client-first apps)
 
-Admin CRUD doesn't use it (0174): its lists are server pages, and `useCrudMutation` patches them in the Query cache. DB is for state the client owns and queries live (the apps). The pattern:
+Two uses. **Admin lists** (0294): the list stays a server page read by Query, and its rows are also a collection that follows the Query cache (`crudCollection`, `src/lib/crud/collection.ts`), which `useCrudMutation` changes optimistically; crud.md has the pattern. **Client-first apps** (Habits, Notes, Taskline's board): state the client owns and queries live, in query collections. Their pattern:
 
 ```ts
 export const thingsCollection = (input) => collectionOptions(id, (client) =>
@@ -40,7 +40,7 @@ export const thingsCollection = (input) => collectionOptions(id, (client) =>
 	}));
 ```
 
-- **Where it's available (0189):** only below `<DbScope>` (`src/components/layout/db-scope.tsx`): the `_apps` layout and `/dev/examples/optimistic` mount it. The router doesn't, so DB's runtime isn't in other pages' JavaScript; `scripts/check-bundle.ts` fails if it ever is. A route file must not import a collection module (route options are in every page, 0151): keep what a loader needs in `queries.ts`.
+- **Where it's available (0189):** only below `<DbScope>` (`src/components/layout/db-scope.tsx`): the admin's layout (`src/routes/_admin.tsx`), the `_apps` and Taskline layouts and `/dev/examples/optimistic` mount it. The router doesn't, so DB's runtime isn't in other pages' JavaScript; `scripts/check-bundle.ts` fails if it ever is. A route file must not import a collection module (route options are in every page, 0151): keep what a loader needs in `queries.ts`.
 - **In the component:**
   - `const collection = useDbClient().collection(thingsCollection(input))`;
   - `useLiveSuspenseQuery((q) => q.from({ row: collection }))`: it renders on the server from the Query cache the loader filled, and the browser builds the same rows from the dehydrated cache (Taskline's board: `src/features/taskline/board/board-page.tsx`). The older pattern, `useLiveQuery` with the Query rows until the collection is ready, is in `src/routes/dev/examples/optimistic.tsx`;

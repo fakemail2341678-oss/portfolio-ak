@@ -41,7 +41,11 @@ import { gzipSync } from "node:zlib";
 // Task 97 (0291): back to 300. Task 96 left 301.2 kB; lazy imports no longer list the chunks the
 // entry already loads (vite/entry-preloads.ts), which took it to 296.9.
 const ENTRY_BUDGET_KB = 300;
-const ROUTE_BUDGET_KB = 300;
+// After the plan (0294): 360 for a route, from 300. Every admin list writes through TanStack DB now,
+// so the admin's routes carry its runtime (about 100 kB gzip, one chunk the admin layout loads once):
+// the heaviest, the portfolio's project list, went to 355.4 kB. The entry is untouched (297.1 kB), and
+// NOT_IN_ENTRY still keeps DB out of every other page.
+const ROUTE_BUDGET_KB = 360;
 const FONT_BUDGET_KB = 150;
 /** Code that must never be preloaded by every page, found by a string it always contains: its pages load it. */
 const NOT_IN_ENTRY: ReadonlyArray<{ name: string; contains: string }> = [

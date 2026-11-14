@@ -4,16 +4,19 @@ import { ArrowDownUpIcon, PlusIcon } from "lucide-react";
 import { lazy, Suspense, useState } from "react";
 import { CrudListPage, CrudListPending } from "@/components/crud/crud-list-page";
 import { RecordLink } from "@/components/crud/record-link";
+import { useCrudCollection } from "@/components/crud/use-crud-collection";
 import { useCrudMutation } from "@/components/crud/use-crud-mutation";
 import { StatusOf } from "@/components/data-display/status-badge";
 import type { DataTableColumn, RowAction } from "@/components/data-table";
 import { Button } from "@/components/ui/button";
 import { useCan } from "@/features/rbac/can";
+import { deleteRows } from "@/lib/crud/collection";
 import { isoDateInstant } from "@/lib/i18n/date-only";
 import { formatDate, formatNumber } from "@/lib/i18n/intl";
 import { localizedValue } from "@/lib/i18n/localized";
 import { m } from "@/paraglide/messages";
 import type { PardaPage } from "../../search";
+import { pardaBillboardRows } from "../collection";
 import { pardaAdminKeys } from "../keys";
 import { MEDIA_LABELS, SLOT_STATES } from "../labels";
 import { pardaAdminMutations, pardaBillboardsQueryOptions } from "../queries";
@@ -112,12 +115,10 @@ export function PardaBillboardPage() {
 	const rows = data.filter((row) => row.page === page);
 	const canCurate = useCan("parda:curate");
 	const [reordering, setReordering] = useState(false);
+	const collection = useCrudCollection(pardaBillboardRows);
 	const remove = useCrudMutation(pardaAdminMutations.deleteBillboards(), {
 		invalidate: [pardaAdminKeys.all],
-		optimistic: {
-			queryKey: pardaAdminKeys.billboards(),
-			update: (list: AdminBillboard[], ids: string[]) => list.filter((row) => !ids.includes(row.id)),
-		},
+		optimistic: (ids) => deleteRows(collection, ids),
 	});
 	const rowActions = (row: AdminBillboard): RowAction[] => [
 		{
@@ -155,6 +156,7 @@ export function PardaBillboardPage() {
 			}
 			tableId={BILLBOARD_TABLE_ID}
 			list={{ rows }}
+			collection={collection}
 			columns={columns}
 			getRowLabel={titleText}
 			rowActions={rowActions}

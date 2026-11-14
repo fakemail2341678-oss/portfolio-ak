@@ -6,15 +6,18 @@ import { toast } from "sonner";
 import { CrudListPage, CrudListPending } from "@/components/crud/crud-list-page";
 import { NewButton } from "@/components/crud/new-button";
 import { RecordLink } from "@/components/crud/record-link";
+import { useCrudCollection } from "@/components/crud/use-crud-collection";
 import { useCrudMutation } from "@/components/crud/use-crud-mutation";
 import { StatusBadge } from "@/components/data-display/status-badge";
 import type { DataTableColumn, RowAction } from "@/components/data-table";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useCan } from "@/features/rbac/can";
+import { deleteRows, updateRows } from "@/lib/crud/collection";
 import { formatDateTime, formatNumber } from "@/lib/i18n/intl";
 import { localizedValue } from "@/lib/i18n/localized";
 import { m } from "@/paraglide/messages";
+import { pardaSourceRows } from "../collection";
 import { pardaAdminKeys } from "../keys";
 import { ADAPTER_LABELS, SANDBOX_LABELS } from "../labels";
 import { pardaAdminMutations, pardaSourcesQueryOptions } from "../queries";
@@ -253,18 +256,19 @@ export function PardaSourcesPage() {
 	const { data: rows } = useSuspenseQuery(pardaSourcesQueryOptions());
 	const canConfigure = useCan("parda:configure");
 	const [reordering, setReordering] = useState(false);
-	const optimistic = { queryKey: pardaAdminKeys.sources() };
+	const collection = useCrudCollection(pardaSourceRows);
 
 	const remove = useCrudMutation(pardaAdminMutations.deleteSources(), {
 		invalidate: [pardaAdminKeys.all],
-		optimistic: { ...optimistic, update: withoutRowsOf },
+		optimistic: (ids) => deleteRows(collection, ids),
 	});
 	const setState = useCrudMutation(pardaAdminMutations.setSourceState(), {
 		invalidate: [pardaAdminKeys.all],
-		optimistic: {
-			...optimistic,
-			update: patchList((row, state: { id: string; enabled?: boolean; pinned?: boolean }) => ({ ...row, ...state })),
-		},
+		optimistic: ({ id, enabled, pinned }) =>
+			updateRows(collection, [id], (row) => {
+				if (enabled !== undefined) row.enabled = enabled;
+				if (pinned !== undefined) row.pinned = pinned;
+			}),
 	});
 	const change = (row: AdminSource, state: { enabled?: boolean; pinned?: boolean }, done: () => string) =>
 		setState.mutate({ id: row.id, ...state }, { onSuccess: () => toast.success(done()) });
@@ -340,6 +344,7 @@ export function PardaSourcesPage() {
 			}
 			tableId={SOURCES_TABLE_ID}
 			list={{ rows }}
+			collection={collection}
 			columns={columns}
 			getRowLabel={name}
 			rowActions={rowActions}
@@ -360,10 +365,3 @@ export function PardaSourcesPage() {
 		</CrudListPage>
 	);
 }
-
-/** The sources' query holds the whole list, not pages: these patch it as a list. */
-const withoutRowsOf = (rows: AdminSource[], ids: string[]) => rows.filter((row) => !ids.includes(row.id));
-const patchList =
-	<V extends { id: string }>(patch: (row: AdminSource, variables: V) => AdminSource) =>
-	(rows: AdminSource[], variables: V) =>
-		rows.map((row) => (row.id === variables.id ? patch(row, variables) : row));

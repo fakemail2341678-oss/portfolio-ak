@@ -17,9 +17,11 @@ import { Page, PageHeader } from "@/components/page/page";
 import { Button } from "@/components/ui/button";
 import { useCan } from "@/features/rbac/can";
 import type { Permission } from "@/features/rbac/permissions";
+import type { CrudCollection } from "@/lib/crud/collection";
 import { formatNumber } from "@/lib/i18n/intl";
 import type { Paged } from "@/lib/list/paging";
 import { m } from "@/paraglide/messages";
+import { useLiveRows } from "./use-crud-collection";
 
 /** A paginated list (what useListPage returns), or a short list read whole (`rows`, e.g. roles). */
 export type CrudList<Row> =
@@ -50,6 +52,11 @@ type Props<Row extends { id: string }> = {
 	/** The table's preferences key (hidden columns, page size, saved views). */
 	tableId: string;
 	list: CrudList<Row>;
+	/**
+	 * The list's TanStack DB collection (useCrudCollection): its rows show optimistic
+	 * writes at once. Every list that writes passes it; a read-only list (the audit log) doesn't.
+	 */
+	collection?: CrudCollection<Row>;
 	columns: ReadonlyArray<DataTableColumn<Row>>;
 	getRowLabel: (row: Row) => string;
 	/** The list's search from the URL: the sort, and the filter form's values. */
@@ -77,7 +84,30 @@ type Props<Row extends { id: string }> = {
  * the empty state (nothing yet, or nothing matching) and deleting with a
  * confirm. A feature supplies its columns, filters, actions and texts.
  */
-export function CrudListPage<Row extends { id: string }>({
+export function CrudListPage<Row extends { id: string }>(props: Props<Row>) {
+	const { list, collection } = props;
+	const rows = "rows" in list ? list.rows : list.page?.items;
+	return collection ? (
+		<LiveListView {...props} collection={collection} rows={rows} />
+	) : (
+		<ListView {...props} rows={rows} />
+	);
+}
+
+/** The list with each row as its collection has it now (an optimistic change, a row deleted). */
+function LiveListView<Row extends { id: string }>({
+	collection,
+	rows,
+	...props
+}: ViewProps<Row> & { collection: CrudCollection<Row> }) {
+	return <ListView {...props} rows={useLiveRows(collection, rows)} />;
+}
+
+type ViewProps<Row extends { id: string }> = Omit<Props<Row>, "collection"> & {
+	rows: ReadonlyArray<Row> | undefined;
+};
+
+function ListView<Row extends { id: string }>({
 	title,
 	description,
 	actions,
@@ -97,13 +127,13 @@ export function CrudListPage<Row extends { id: string }>({
 	savedViews,
 	children,
 	"data-testid": testId,
-}: Props<Row>) {
+	rows,
+}: ViewProps<Row>) {
 	const confirm = useConfirm();
 	const canDelete = useCan(...(remove ? [remove.permission] : []));
 	const canBulk = useCan(...(bulkActions ? [bulkActions.permission] : []));
 	const deletes = Boolean(remove && canDelete && remove.bulk !== false);
 	const more = Boolean(bulkActions && canBulk);
-	const rows = "rows" in list ? list.rows : list.page?.items;
 	const pagination = "rows" in list ? null : list.pagination;
 
 	const askDelete = async (selected: ReadonlyArray<Row>, done?: () => void) => {

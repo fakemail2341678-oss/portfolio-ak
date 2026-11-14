@@ -2,6 +2,7 @@ import { getRouteApi } from "@tanstack/react-router";
 import { lazy, Suspense, useState } from "react";
 import { toast } from "sonner";
 import { CrudListPage } from "@/components/crud/crud-list-page";
+import { useCrudCollection } from "@/components/crud/use-crud-collection";
 import { crudFormKey } from "@/components/crud/use-crud-form";
 import { useCrudMutation } from "@/components/crud/use-crud-mutation";
 import type { RowAction } from "@/components/data-table";
@@ -9,9 +10,11 @@ import { type ConfirmOptions, useConfirm } from "@/components/dialogs/confirm";
 import { Button } from "@/components/ui/button";
 import { useListPage } from "@/hooks/use-list-page";
 import { useListQuery } from "@/hooks/use-list-query";
+import { updateRows } from "@/lib/crud/collection";
 import { m } from "@/paraglide/messages";
 import { localizeHref } from "@/paraglide/runtime";
 import { Can, useActor } from "../can";
+import { userRows } from "../collection";
 import { userColumns } from "../columns";
 import { UserFilterControls, userFilters } from "../filters";
 import { RBAC_REFRESH } from "../keys";
@@ -43,7 +46,14 @@ export function UsersList() {
 	const [editing, setEditing] = useState<string | null>(null);
 	const [inviting, setInviting] = useState(false);
 	const confirm = useConfirm();
-	const ban = useCrudMutation(userMutations.ban(), { invalidate: RBAC_REFRESH });
+	const collection = useCrudCollection(userRows);
+	const ban = useCrudMutation(userMutations.ban(), {
+		invalidate: RBAC_REFRESH,
+		optimistic: ({ userId, banned }) =>
+			updateRows(collection, [userId], (row) => {
+				row.banned = banned;
+			}),
+	});
 	const revoke = useCrudMutation(userMutations.revokeSessions(), { invalidate: RBAC_REFRESH });
 	// A new session (as the user): the app loads again from the server, on their account page
 	// (the home page is the portfolio, which doesn't read the session, so it shows no banner).
@@ -132,6 +142,7 @@ export function UsersList() {
 			}
 			tableId={USERS_TABLE_ID}
 			list={list}
+			collection={collection}
 			columns={userColumns(actor?.id)}
 			getRowLabel={(row) => row.name}
 			search={search}

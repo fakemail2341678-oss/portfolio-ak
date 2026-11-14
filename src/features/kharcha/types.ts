@@ -162,7 +162,7 @@ export type HomeActivity = {
 /**
  * One of Home's to-dos (PLAN 14.5 "UX"): a receipt that needs its details, a possible
  * duplicate to look at, or a friend the caller owes (Task 91: what they owe them in all,
- * per currency). Later tasks add budgets and recurring expenses.
+ * per currency), a budget to look at or a recurring expense about to be made.
  */
 export type HomeTodo =
 	| { kind: "receipt"; draft: ReceiptDraftView }
@@ -173,8 +173,8 @@ export type HomeTodo =
 	| { kind: "recurring"; recurring: RecurringView };
 
 /**
- * Home (PLAN 14.5 "UX"): the caller's to-dos (each later task adds its kinds: debts to
- * settle, budgets, recurring), their totals, this month's spending against last month's
+ * Home (PLAN 14.5 "UX"): the caller's to-dos (receipts, duplicates, debts to settle,
+ * budgets, recurring), their totals, this month's spending against last month's
  * (their share, per currency), and recent activity.
  */
 export type KharchaHome = {

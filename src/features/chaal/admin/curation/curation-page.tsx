@@ -4,6 +4,7 @@ import { getRouteApi, linkOptions } from "@tanstack/react-router";
 import { PencilIcon, PlusIcon, Trash2Icon } from "lucide-react";
 import { type ReactNode, useState } from "react";
 import { toast } from "sonner";
+import { crudFormKey } from "@/components/crud/use-crud-form";
 import { useCrudMutation } from "@/components/crud/use-crud-mutation";
 import { StatusOf } from "@/components/data-display/status-badge";
 import { useConfirm } from "@/components/dialogs/confirm";
@@ -76,7 +77,9 @@ function FeaturedList({ section, items }: { section: ChaalFeaturedSection; items
 	const canCurate = useCan("chaal:curate");
 	const confirm = useConfirm();
 	const [order, setOrder] = useState<ReadonlyArray<ChaalAdminFeatured> | null>(null);
-	const [editing, setEditing] = useState<ChaalAdminFeatured | "new" | null>(null);
+	// The item being edited, by id: read from the list, so a reloaded newer version remounts the dialog (crudFormKey).
+	const [editing, setEditing] = useState<{ id?: string } | null>(null);
+	const editingItem = editing?.id ? items.find((item) => item.id === editing.id) : undefined;
 	const shown = order ?? items;
 	const reorder = useCrudMutation(chaalAdminMutations.reorderFeatured(), { invalidate: [chaalKeys.adminCuration()] });
 	const remove = useCrudMutation(chaalAdminMutations.deleteFeatured(), { invalidate: [chaalKeys.adminCuration()] });
@@ -106,7 +109,7 @@ function FeaturedList({ section, items }: { section: ChaalFeaturedSection; items
 					variant="ghost"
 					size="icon"
 					aria-label={m.ch_admin_featured_edit({ title: localizedValue(item.title) })}
-					onClick={() => setEditing(item)}
+					onClick={() => setEditing({ id: item.id })}
 				>
 					<PencilIcon aria-hidden />
 				</Button>
@@ -125,7 +128,7 @@ function FeaturedList({ section, items }: { section: ChaalFeaturedSection; items
 			<div className="flex flex-wrap items-center justify-between gap-3">
 				<p className="max-w-prose text-muted-foreground text-sm">{m.ch_admin_featured_hint()}</p>
 				{canCurate ? (
-					<Button onClick={() => setEditing("new")} data-testid="chaal-featured-add">
+					<Button onClick={() => setEditing({})} data-testid="chaal-featured-add">
 						<PlusIcon aria-hidden />
 						{m.ch_admin_featured_add()}
 					</Button>
@@ -166,8 +169,9 @@ function FeaturedList({ section, items }: { section: ChaalFeaturedSection; items
 			)}
 			{editing ? (
 				<FeaturedDialog
+					key={crudFormKey(editingItem)}
 					section={section}
-					item={editing === "new" ? undefined : editing}
+					item={editingItem}
 					onClose={() => setEditing(null)}
 				/>
 			) : null}

@@ -1,10 +1,9 @@
 import { formOptions } from "@tanstack/react-form";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "@tanstack/react-router";
-import { toast } from "sonner";
 import { z } from "zod";
+import { useCrudForm } from "@/components/crud/use-crud-form";
 import { FormDialog } from "@/components/dialogs/form-dialog";
-import { formValidators, handleSaveError, useAppForm } from "@/components/forms";
+import { formValidators, useAppForm } from "@/components/forms";
 import { formatNumber } from "@/lib/i18n/intl";
 import { m } from "@/paraglide/messages";
 import { ALL_TASKLINE_ADMIN } from "../keys";
@@ -23,9 +22,17 @@ export default function DeleteProjectDialog({
 	project: Pick<AdminProjectDetail, "id" | "key" | "name" | "counts">;
 	onClose: () => void;
 }) {
-	const queryClient = useQueryClient();
 	const navigate = useNavigate();
-	const remove = useMutation(tasklineAdminMutations.deleteProject());
+	const crud = useCrudForm({
+		toInput: (values: { confirmKey: string }) => ({ id: project.id, confirmKey: values.confirmKey }),
+		create: tasklineAdminMutations.deleteProject(),
+		invalidate: ALL_TASKLINE_ADMIN,
+		onSaved: async () => {
+			onClose();
+			await navigate({ to: "/admin/taskline/projects" });
+		},
+		messages: { created: () => m.taskline_admin_toast_deleted({ key: project.key }) },
+	});
 	const form = useAppForm({
 		...formOptions({
 			defaultValues: { confirmKey: "" },
@@ -37,18 +44,7 @@ export default function DeleteProjectDialog({
 				}),
 			),
 		}),
-		onSubmit: async ({ value, formApi }) => {
-			try {
-				await remove.mutateAsync({ id: project.id, confirmKey: value.confirmKey });
-				formApi.reset(value);
-				onClose();
-				toast.success(m.taskline_admin_toast_deleted({ key: project.key }));
-				await navigate({ to: "/admin/taskline/projects" });
-				await Promise.all(ALL_TASKLINE_ADMIN.map((queryKey) => queryClient.invalidateQueries({ queryKey })));
-			} catch (error) {
-				handleSaveError(formApi, error);
-			}
-		},
+		...crud.formProps,
 	});
 	return (
 		<form.AppForm>

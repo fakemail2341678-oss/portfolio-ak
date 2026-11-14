@@ -2,17 +2,20 @@ import { useSuspenseQuery } from "@tanstack/react-query";
 import { getRouteApi } from "@tanstack/react-router";
 import { toast } from "sonner";
 import { CrudListPage, CrudListPending } from "@/components/crud/crud-list-page";
-import { onRows, useCrudMutation } from "@/components/crud/use-crud-mutation";
+import { useCrudCollection } from "@/components/crud/use-crud-collection";
+import { useCrudMutation } from "@/components/crud/use-crud-mutation";
 import { StatusOf } from "@/components/data-display/status-badge";
 import type { DataTableColumn, RowAction } from "@/components/data-table";
 import { SearchFilter, SelectFilter } from "@/components/filters/filters";
 import { Button } from "@/components/ui/button";
 import { useListPage } from "@/hooks/use-list-page";
+import { updateRows } from "@/lib/crud/collection";
 import { choiceChip, defineFilters, textChip } from "@/lib/crud/filters";
 import { formatDateTime, formatNumber } from "@/lib/i18n/intl";
 import { localizedValue } from "@/lib/i18n/localized";
 import { m } from "@/paraglide/messages";
 import type { PardaReportStatus } from "../../player/playback";
+import { pardaReportRows } from "../collection";
 import { pardaAdminKeys } from "../keys";
 import { REPORT_KIND_FILTER_LABELS, REPORT_KIND_LABELS, REPORT_STATUS, REPORT_STATUS_FILTER_LABELS } from "../labels";
 import { pardaAdminMutations, pardaReportsQueryOptions, pardaSourcesQueryOptions } from "../queries";
@@ -116,14 +119,13 @@ export function PardaReportsPage() {
 		const source = sources.find((each) => each.id === id);
 		return source ? localizedValue(source.name) : m.pd_admin_source_deleted();
 	};
+	const collection = useCrudCollection(pardaReportRows);
 	const setStatus = useCrudMutation(pardaAdminMutations.setReportStatus(), {
 		invalidate: [pardaAdminKeys.reports(), pardaAdminKeys.sources()],
-		optimistic: {
-			queryKey: pardaAdminKeys.reports(),
-			update: onRows((rows: AdminReport[], { ids, status }: { ids: string[]; status: PardaReportStatus }) =>
-				rows.map((row) => (ids.includes(row.id) ? { ...row, status } : row)),
-			),
-		},
+		optimistic: ({ ids, status }) =>
+			updateRows(collection, ids, (row) => {
+				row.status = status;
+			}),
 	});
 	const change = (ids: string[], status: PardaReportStatus, done?: () => void) =>
 		setStatus.mutate(
@@ -166,6 +168,7 @@ export function PardaReportsPage() {
 			description={m.pd_admin_reports_description()}
 			tableId={PARDA_REPORTS_TABLE_ID}
 			list={list}
+			collection={collection}
 			columns={columns}
 			getRowLabel={(row) => `${REPORT_KIND_LABELS[row.kind]()}: ${titleText(row)}`}
 			search={search}

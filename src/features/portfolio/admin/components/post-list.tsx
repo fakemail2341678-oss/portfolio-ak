@@ -2,12 +2,15 @@ import { getRouteApi, Link } from "@tanstack/react-router";
 import { toast } from "sonner";
 import { CrudListPage, CrudListPending } from "@/components/crud/crud-list-page";
 import { NewButton } from "@/components/crud/new-button";
-import { patchRow, useCrudMutation, withoutRows } from "@/components/crud/use-crud-mutation";
+import { useCrudCollection } from "@/components/crud/use-crud-collection";
+import { useCrudMutation } from "@/components/crud/use-crud-mutation";
 import type { RowAction } from "@/components/data-table";
 import { useListPage } from "@/hooks/use-list-page";
+import { deleteRows, updateRows } from "@/lib/crud/collection";
 import { localizedValue } from "@/lib/i18n/localized";
 import { m } from "@/paraglide/messages";
-import { POSTS_TABLE_ID, type PortfolioStatus, type PostListItem } from "../../schema";
+import { POSTS_TABLE_ID, type PostListItem } from "../../schema";
+import { postRows } from "../collection";
 import { postColumns } from "../columns";
 import { PostFilterControls, postFilters } from "../filters";
 import { postKeys } from "../keys";
@@ -42,19 +45,17 @@ export function PostList() {
 	const search = route.useSearch();
 	const list = useListPage({ tableId: POSTS_TABLE_ID, search, query: postListQueryOptions });
 
+	const collection = useCrudCollection(postRows);
 	const remove = useCrudMutation(postMutations.delete(), {
 		invalidate: [postKeys.all],
-		optimistic: { queryKey: postKeys.lists(), update: withoutRows<PostListItem> },
+		optimistic: (ids) => deleteRows(collection, ids),
 	});
 	const setStatus = useCrudMutation(postMutations.setStatus(), {
 		invalidate: [postKeys.all],
-		optimistic: {
-			queryKey: postKeys.lists(),
-			update: patchRow((row: PostListItem, { status }: { id: string; status: PortfolioStatus }) => ({
-				...row,
-				status,
-			})),
-		},
+		optimistic: ({ id, status }) =>
+			updateRows(collection, [id], (row) => {
+				row.status = status;
+			}),
 	});
 	const publish = (row: PostListItem) => {
 		const status = row.status === "published" ? "draft" : "published";
@@ -104,6 +105,7 @@ export function PostList() {
 			actions={<NewPostButton />}
 			tableId={POSTS_TABLE_ID}
 			list={list}
+			collection={collection}
 			columns={postColumns}
 			getRowLabel={(row) => localizedValue(row.title)}
 			search={search}

@@ -1,28 +1,25 @@
 import { Fragment } from "react";
+import { useCrudCollection, useLiveRows } from "@/components/crud/use-crud-collection";
 import { useCrudMutation } from "@/components/crud/use-crud-mutation";
 import { Checkbox } from "@/components/ui/checkbox";
 import { ADMIN_GROUP_LABELS, ADMIN_GROUPS, ADMIN_SECTIONS, type AdminGroup } from "@/features/admin/sections";
+import { updateRows } from "@/lib/crud/collection";
 import { cn } from "@/lib/utils";
 import { m } from "@/paraglide/messages";
-import { RBAC_REFRESH, roleKeys } from "../keys";
+import { roleRows } from "../collection";
+import { RBAC_REFRESH } from "../keys";
 import { PERMISSION_LABELS, RESOURCE_LABELS, roleLabel } from "../labels";
 import { type Permission, permissionsOf, RESOURCES, type Resource } from "../permissions";
 import { roleMutations } from "../queries";
 import type { RolePermissionsUpdate, RoleSummary } from "../schema";
 import { type Actor, canGrant } from "../types";
 
-/** Applies a grant/revoke to the cached roles (the optimistic update). */
-const applyChange = (roles: RoleSummary[], change: RolePermissionsUpdate): RoleSummary[] =>
-	roles.map((role) =>
-		role.id !== change.roleId
-			? role
-			: {
-					...role,
-					permissions: [...new Set([...role.permissions, ...change.grant])].filter(
-						(permission) => !change.revoke.includes(permission),
-					),
-				},
+/** Applies a grant/revoke to a role, before the server answers (the optimistic update). */
+const applyChange = (role: RoleSummary, change: RolePermissionsUpdate) => {
+	role.permissions = [...new Set([...role.permissions, ...change.grant])].filter(
+		(permission) => !change.revoke.includes(permission),
 	);
+};
 
 /** A resource's sidebar group: that of the first section its permissions open, "system" when none does (uploads). */
 const groupOf = (resource: Resource): AdminGroup =>
@@ -43,7 +40,7 @@ const GROUPS = ADMIN_GROUPS.map((group) => ({
  * not change (permissions they don't hold) are disabled.
  */
 export function PermissionMatrix({
-	roles,
+	roles: read,
 	actor,
 	canEdit,
 }: {
@@ -51,9 +48,12 @@ export function PermissionMatrix({
 	actor: Pick<Actor, "isAdmin" | "permissions">;
 	canEdit: boolean;
 }) {
+	// The roles as their collection has them: a box flips as soon as it is ticked.
+	const collection = useCrudCollection(roleRows);
+	const roles = useLiveRows(collection, read);
 	const mutation = useCrudMutation(roleMutations.permissions(), {
 		invalidate: RBAC_REFRESH,
-		optimistic: { queryKey: roleKeys.lists(), update: applyChange },
+		optimistic: (change) => updateRows(collection, [change.roleId], (role) => applyChange(role, change)),
 	});
 
 	const editable = (role: RoleSummary, permission: Permission) =>

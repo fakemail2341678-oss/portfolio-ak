@@ -1,8 +1,7 @@
 import { formOptions, useStore } from "@tanstack/react-form";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { toast } from "sonner";
+import { useCrudForm } from "@/components/crud/use-crud-form";
 import { FormDialog } from "@/components/dialogs/form-dialog";
-import { formValidators, handleSaveError, useAppForm } from "@/components/forms";
+import { formValidators, useAppForm } from "@/components/forms";
 import { LocalizedField } from "@/components/forms/fields/localized-fields";
 import { m } from "@/paraglide/messages";
 import { type ChaalFeaturedSection, SECTION_KINDS } from "../../home/curation";
@@ -30,9 +29,16 @@ export function FeaturedDialog({
 	item?: ChaalAdminFeatured | undefined;
 	onClose: () => void;
 }) {
-	const queryClient = useQueryClient();
-	const create = useMutation(chaalAdminMutations.createFeatured());
-	const update = useMutation(chaalAdminMutations.updateFeatured());
+	const crud = useCrudForm({
+		item,
+		toInput: (values: ChaalFeaturedFormValues) => chaalFeaturedInput.parse(values),
+		create: chaalAdminMutations.createFeatured(),
+		update: chaalAdminMutations.updateFeatured(),
+		invalidate: [chaalKeys.adminCuration()],
+		reload: chaalKeys.adminCuration(),
+		onSaved: onClose,
+		messages: { created: () => m.ch_admin_featured_created(), saved: () => m.ch_admin_featured_saved() },
+	});
 	const kinds = SECTION_KINDS[section];
 	const form = useAppForm({
 		...formOptions({
@@ -45,19 +51,7 @@ export function FeaturedDialog({
 			} as ChaalFeaturedFormValues,
 			validators: formValidators(chaalFeaturedInput),
 		}),
-		onSubmit: async ({ value, formApi }) => {
-			try {
-				const input = chaalFeaturedInput.parse(value);
-				if (item) await update.mutateAsync({ ...input, id: item.id, updatedAt: item.updatedAt });
-				else await create.mutateAsync(input);
-				formApi.reset(value);
-				onClose();
-				toast.success(item ? m.ch_admin_featured_saved() : m.ch_admin_featured_created());
-				await queryClient.invalidateQueries({ queryKey: chaalKeys.adminCuration() });
-			} catch (error) {
-				handleSaveError(formApi, error);
-			}
-		},
+		...crud.formProps,
 	});
 	const kind = useStore(form.store, (state) => state.values.kind);
 	return (
@@ -68,6 +62,7 @@ export function FeaturedDialog({
 				submitLabel={item ? m.crud_save() : m.ch_admin_featured_submit()}
 				pendingLabel={m.crud_saving()}
 				onClose={onClose}
+				stale={crud.stale}
 				data-testid="chaal-featured-dialog"
 			>
 				{kinds.length > 1 ? (

@@ -37,9 +37,10 @@ const config: StorybookConfig = {
 		...config,
 		build: {
 			...config.build,
-			// The preview iframe bundles Storybook's runtime with every component (~1.5 MB).
+			// The preview iframe bundles Storybook's runtime with every component (2.4 MB with
+			// TanStack DB, which the stories' providers mount as the admin layout does, 0294).
 			// It is a dev tool, never served to users, so the app's 500 kB budget doesn't apply.
-			chunkSizeWarningLimit: 2000,
+			chunkSizeWarningLimit: 2600,
 		},
 	}),
 };

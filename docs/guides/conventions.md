@@ -13,6 +13,9 @@ src/
     _site/                The portfolio at / <!-- @portfolio -->
     _apps/ f/ l/          The showcase apps at /apps; a published form; a short link <!-- @apps -->
     _taskline/            Taskline at /app/taskline <!-- @taskline -->
+    _parda/               Parda at /app/parda <!-- @parda -->
+    _chaal/               Chaal at /app/chaal <!-- @chaal -->
+    _kharcha/             Kharcha at /app/kharcha <!-- @kharcha -->
   components/             Generic UI, no feature knowledge.
     crud/                 CrudListPage, useCrudMutation, useCrudForm + CrudForm, NewButton, RecordLink (crud.md)
     ui/                   shadcn primitives (Button, Table, Dialog…). Generated; adjust sparingly.
@@ -29,12 +32,15 @@ src/
     auth-shell/           The sign-in pages' split screen (AuthShell)
     app-header/           The compact header of signed-in pages outside the admin (AppHeader)
     brand/                BrandMark, BrandName, ContourArt
-    data-display/         StatCard, StatusBadge
     layout/               Site header/footer (/dev), theme, language switcher, consent banner, skip link
     errors/               Error, not-found and pending pages
   features/rbac/          Permission catalog + labels, useCan/<Can>/assertRoutePermission, users and roles UI
   features/admin/         Admin sections and groups, commands (the palette's actions), dashboard, appearance page
   features/dev/examples/  The /dev/examples pages' registry, page frame, schema and in-memory data (development only)
+  features/taskline/      A product of its own, with src/server/taskline and src/functions/taskline (taskline.md) <!-- @taskline -->
+  features/parda/         A product of its own, with src/server/parda and src/functions/parda (parda.md) <!-- @parda -->
+  features/chaal/         A product of its own, with src/server/chaal and src/functions/chaal (chaal.md) <!-- @chaal -->
+  features/kharcha/       A product of its own, with src/server/kharcha and src/functions/kharcha (kharcha.md) <!-- @kharcha -->
   features/<name>/        Everything specific to one feature, shared by client and server (the CRUD standard, crud.md):
     search.ts             The URL contract (listSchema: search, list input, defaults, filter keys). Route files import this
     schema.ts             Strict input schemas, DTO schemas (isoDateTime), form values; never imported by route options (0151)

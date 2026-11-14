@@ -1,8 +1,7 @@
 import { formOptions, useStore } from "@tanstack/react-form";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { toast } from "sonner";
+import { useCrudForm } from "@/components/crud/use-crud-form";
 import { FormDialog } from "@/components/dialogs/form-dialog";
-import { formValidators, handleSaveError, useAppForm } from "@/components/forms";
+import { formValidators, useAppForm } from "@/components/forms";
 import { m } from "@/paraglide/messages";
 import { chaalKeys } from "../../keys";
 import { BLOCK_KIND_LABELS } from "../labels";
@@ -16,27 +15,19 @@ import { BLOCK_KINDS, type ChaalBlockFormValues, chaalBlockInput } from "../sche
  * demand: no route of its own, which keeps the entry chunk inside its budget.
  */
 export function BlockDialog({ lichess, onClose }: { lichess?: string | undefined; onClose: () => void }) {
-	const queryClient = useQueryClient();
-	const block = useMutation(chaalAdminMutations.block());
+	const crud = useCrudForm({
+		toInput: (values: ChaalBlockFormValues) => chaalBlockInput.parse(values),
+		create: chaalAdminMutations.block(),
+		invalidate: [chaalKeys.adminBlocks(), chaalKeys.adminConnections()],
+		onSaved: onClose,
+		messages: { created: () => m.ch_admin_block_created() },
+	});
 	const form = useAppForm({
 		...formOptions({
 			defaultValues: { kind: "lichess", target: lichess ?? "", reason: "" } as ChaalBlockFormValues,
 			validators: formValidators(chaalBlockInput),
 		}),
-		onSubmit: async ({ value, formApi }) => {
-			try {
-				await block.mutateAsync(chaalBlockInput.parse(value));
-				formApi.reset(value);
-				onClose();
-				toast.success(m.ch_admin_block_created());
-				await Promise.all([
-					queryClient.invalidateQueries({ queryKey: chaalKeys.adminBlocks() }),
-					queryClient.invalidateQueries({ queryKey: chaalKeys.adminConnections() }),
-				]);
-			} catch (error) {
-				handleSaveError(formApi, error);
-			}
-		},
+		...crud.formProps,
 	});
 	const kind = useStore(form.store, (state) => state.values.kind);
 	return (

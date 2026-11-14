@@ -4,13 +4,16 @@ import { MailPlusIcon, UserPlusIcon } from "lucide-react";
 import { lazy, Suspense, useState } from "react";
 import { toast } from "sonner";
 import { CrudListPage } from "@/components/crud/crud-list-page";
+import { useCrudCollection } from "@/components/crud/use-crud-collection";
 import { useCrudMutation } from "@/components/crud/use-crud-mutation";
 import type { RowAction } from "@/components/data-table";
 import { PageTab, PageTabs } from "@/components/page/page-tabs";
 import { Button } from "@/components/ui/button";
 import { Can } from "@/features/rbac/can";
 import { useListPage } from "@/hooks/use-list-page";
+import { updateRows } from "@/lib/crud/collection";
 import { m } from "@/paraglide/messages";
+import { adminMemberRows } from "../collection";
 import { ALL_TASKLINE_ADMIN } from "../keys";
 import { activityOptionsQueryOptions, adminMemberListQueryOptions, tasklineAdminMutations } from "../queries";
 import type { AdminMemberItem } from "../schema";
@@ -84,7 +87,14 @@ export function AdminMemberList() {
 	const search = route.useSearch();
 	const list = useListPage({ tableId: TL_ADMIN_MEMBERS_TABLE_ID, search, query: adminMemberListQueryOptions });
 	const [open, setOpen] = useState<Open>(null);
-	const reactivate = useCrudMutation(tasklineAdminMutations.reactivateMember(), { invalidate: ALL_TASKLINE_ADMIN });
+	const collection = useCrudCollection(adminMemberRows);
+	const reactivate = useCrudMutation(tasklineAdminMutations.reactivateMember(), {
+		invalidate: ALL_TASKLINE_ADMIN,
+		optimistic: ({ id }) =>
+			updateRows(collection, [id], (row) => {
+				row.deactivated = false;
+			}),
+	});
 
 	const rowActions = (row: AdminMemberItem): RowAction[] => [
 		{
@@ -124,6 +134,7 @@ export function AdminMemberList() {
 			tabs={<MemberTabs />}
 			tableId={TL_ADMIN_MEMBERS_TABLE_ID}
 			list={list}
+			collection={collection}
 			columns={adminMemberColumns}
 			getRowLabel={(row) => row.name}
 			search={search}

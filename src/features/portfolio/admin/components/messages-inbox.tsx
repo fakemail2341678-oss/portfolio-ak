@@ -3,7 +3,8 @@ import { ArchiveIcon, ReplyIcon } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 import { CrudListPage, CrudListPending } from "@/components/crud/crud-list-page";
-import { onRows, useCrudMutation, withoutRows } from "@/components/crud/use-crud-mutation";
+import { useCrudCollection } from "@/components/crud/use-crud-collection";
+import { useCrudMutation } from "@/components/crud/use-crud-mutation";
 import type { RowAction } from "@/components/data-table";
 import { Button } from "@/components/ui/button";
 import {
@@ -16,9 +17,11 @@ import {
 } from "@/components/ui/dialog";
 import { useCan } from "@/features/rbac/can";
 import { useListPage } from "@/hooks/use-list-page";
+import { deleteRows, updateRows } from "@/lib/crud/collection";
 import { formatDateTime } from "@/lib/i18n/intl";
 import { m } from "@/paraglide/messages";
 import { type ContactMessageItem, MESSAGES_TABLE_ID, type MessageStateInput } from "../../schema";
+import { messageRows } from "../collection";
 import { messageColumns } from "../columns";
 import { MessageFilterControls, messageFilters } from "../filters";
 import { messageKeys } from "../keys";
@@ -33,16 +36,20 @@ const replyHref = (message: ContactMessageItem) =>
 const now = () => new Date().toISOString();
 
 /** The change a state makes to a row, before the server answers. */
-const applyState = (row: ContactMessageItem, set: MessageStateInput["set"]): ContactMessageItem => {
+const applyState = (row: ContactMessageItem, set: MessageStateInput["set"]) => {
 	switch (set) {
 		case "read":
-			return { ...row, readAt: row.readAt ?? now() };
+			row.readAt ??= now();
+			break;
 		case "unread":
-			return { ...row, readAt: null };
+			row.readAt = null;
+			break;
 		case "archived":
-			return { ...row, archivedAt: row.archivedAt ?? now() };
+			row.archivedAt ??= now();
+			break;
 		case "inbox":
-			return { ...row, archivedAt: null };
+			row.archivedAt = null;
+			break;
 	}
 };
 
@@ -67,18 +74,14 @@ export function MessagesInbox() {
 	const canManage = useCan("messages:manage");
 	const [open, setOpen] = useState<ContactMessageItem | null>(null);
 
+	const collection = useCrudCollection(messageRows);
 	const setState = useCrudMutation(messageMutations.setState(), {
 		invalidate: [messageKeys.all],
-		optimistic: {
-			queryKey: messageKeys.lists(),
-			update: onRows((rows: ContactMessageItem[], input: MessageStateInput) =>
-				rows.map((row) => (input.ids.includes(row.id) ? applyState(row, input.set) : row)),
-			),
-		},
+		optimistic: ({ ids, set }) => updateRows(collection, ids, (row) => applyState(row, set)),
 	});
 	const remove = useCrudMutation(messageMutations.delete(), {
 		invalidate: [messageKeys.all],
-		optimistic: { queryKey: messageKeys.lists(), update: withoutRows<ContactMessageItem> },
+		optimistic: (ids) => deleteRows(collection, ids),
 	});
 
 	const change = (row: ContactMessageItem, set: MessageStateInput["set"], toastText?: string) =>
@@ -121,6 +124,7 @@ export function MessagesInbox() {
 			description={m.messages_description()}
 			tableId={MESSAGES_TABLE_ID}
 			list={list}
+			collection={collection}
 			columns={messageColumns}
 			getRowLabel={(row) => row.name}
 			search={search}

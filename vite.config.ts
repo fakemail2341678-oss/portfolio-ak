@@ -28,7 +28,16 @@ const ENGINE_HEADERS = {
 } as const;
 // chaal:end
 
-const NITRO_IGNORED_CODES = new Set(["EVAL", "CIRCULAR_DEPENDENCY", "THIS_IS_UNDEFINED", "EMPTY_BUNDLE"]);
+// The first four are Nitro's own list (decision 0005). The last is our loaders' `await import(…)`
+// of a module the page imports statically (decisions 0194, 0197): it is about the client's chunks,
+// and the server's bundle has none to move (decision 0293).
+const NITRO_IGNORED_CODES = new Set([
+	"EVAL",
+	"CIRCULAR_DEPENDENCY",
+	"THIS_IS_UNDEFINED",
+	"EMPTY_BUNDLE",
+	"INEFFECTIVE_DYNAMIC_IMPORT",
+]);
 
 const isDependencyUseClientWarning = (code: string | undefined, message: string) =>
 	code === "MODULE_LEVEL_DIRECTIVE" && message.includes('"use client"') && message.includes("node_modules");
@@ -89,6 +98,12 @@ export default defineConfig(async ({ command, mode }) => {
 			client: {
 				build: {
 					rolldownOptions: {
+						// A loader imports its feature's queries.ts with `await import(…)` to keep it out of
+						// the route's options, which every page loads, and the page's own chunk imports it
+						// statically (decisions 0194, 0197). Rolldown calls that import "ineffective" once
+						// per module; the bundle budget measures what it is for (decision 0293). The timings
+						// note names the React Compiler and Tailwind on every build: nothing to act on.
+						checks: { ineffectiveDynamicImport: false, pluginTimings: false },
 						output: {
 							// React changes rarely; a separate chunk stays cached across deploys and keeps
 							// the entry chunk under Vite's 500 kB warning. See docs/decisions.md.

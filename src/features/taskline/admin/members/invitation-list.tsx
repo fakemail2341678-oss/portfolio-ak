@@ -2,12 +2,15 @@ import { useSuspenseQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { toast } from "sonner";
 import { CrudListPage } from "@/components/crud/crud-list-page";
+import { useCrudCollection } from "@/components/crud/use-crud-collection";
 import { useCrudMutation } from "@/components/crud/use-crud-mutation";
 import { StatusBadge } from "@/components/data-display/status-badge";
 import type { DataTableColumn } from "@/components/data-table";
 import { useConfirm } from "@/components/dialogs/confirm";
+import { deleteRows } from "@/lib/crud/collection";
 import { formatDate } from "@/lib/i18n/intl";
 import { m } from "@/paraglide/messages";
+import { adminInvitationRows } from "../collection";
 import { ALL_TASKLINE_ADMIN } from "../keys";
 import { TEAM_ROLE_LABELS } from "../labels";
 import { invitationsQueryOptions, tasklineAdminMutations } from "../queries";
@@ -57,7 +60,11 @@ export function AdminInvitationList() {
 	const [open, setOpen] = useState<Parameters<typeof MemberDialogs>[0]["open"]>(null);
 	const confirm = useConfirm();
 	const resend = useCrudMutation(tasklineAdminMutations.resendInvitation(), { invalidate: ALL_TASKLINE_ADMIN });
-	const revoke = useCrudMutation(tasklineAdminMutations.revokeInvitation(), { invalidate: ALL_TASKLINE_ADMIN });
+	const collection = useCrudCollection(adminInvitationRows);
+	const revoke = useCrudMutation(tasklineAdminMutations.revokeInvitation(), {
+		invalidate: ALL_TASKLINE_ADMIN,
+		optimistic: ({ id }) => deleteRows(collection, [id]),
+	});
 	return (
 		<CrudListPage
 			title={m.taskline_admin_invitations_title()}
@@ -66,6 +73,7 @@ export function AdminInvitationList() {
 			tabs={<MemberTabs />}
 			tableId="admin-taskline-invitations"
 			list={{ rows: invitations }}
+			collection={collection}
 			columns={columns}
 			getRowLabel={(row) => row.email}
 			rowActions={(row) => [

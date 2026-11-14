@@ -1,17 +1,20 @@
 import { getRouteApi, Link } from "@tanstack/react-router";
 import { toast } from "sonner";
 import { CrudListPage } from "@/components/crud/crud-list-page";
-import { patchRow, useCrudMutation, withoutRows } from "@/components/crud/use-crud-mutation";
+import { useCrudCollection } from "@/components/crud/use-crud-collection";
+import { useCrudMutation } from "@/components/crud/use-crud-mutation";
 import type { RowAction } from "@/components/data-table";
 import { useCan } from "@/features/rbac/can";
 import { useListPage } from "@/hooks/use-list-page";
 import { useListQuery } from "@/hooks/use-list-query";
+import { deleteRows, updateRows } from "@/lib/crud/collection";
 import { m } from "@/paraglide/messages";
+import { testCrudRows } from "../collection";
 import { testCrudColumns } from "../columns";
 import { TestCrudFilterControls, testCrudFilters } from "../filters";
 import { testCrudKeys } from "../keys";
 import { testCrudListQueryOptions, testCrudMutations, testCrudTagsQueryOptions } from "../queries";
-import { TEST_CRUD_TABLE_ID, type TestCrudListItem, type TestCrudStatus } from "../schema";
+import { TEST_CRUD_TABLE_ID, type TestCrudListItem } from "../schema";
 import { TestCrudEditDialog } from "./edit-dialog";
 import { EditItemLink } from "./masked-links";
 import { NewTestCrudButton } from "./test-crud-pending";
@@ -20,8 +23,9 @@ const route = getRouteApi("/_admin/admin/test-crud/");
 
 /**
  * /admin/test-crud: the reference list (docs/guides/crud.md). Publishing and
- * deleting show at once on every cached page and roll back if the server
- * refuses (useCrudMutation); `?edit=` opens the masked edit dialog.
+ * deleting change the list's TanStack DB collection, so they show at once on
+ * every page and roll back if the server refuses (useCrudMutation); `?edit=`
+ * opens the masked edit dialog.
  */
 export function TestCrudList() {
 	// `edit` only opens the dialog; the rest is the list's input.
@@ -30,19 +34,17 @@ export function TestCrudList() {
 	const { data: tags = [] } = useListQuery(testCrudTagsQueryOptions());
 	const canEdit = useCan("test-crud:update");
 
+	const collection = useCrudCollection(testCrudRows);
 	const remove = useCrudMutation(testCrudMutations.delete(), {
 		invalidate: [testCrudKeys.all],
-		optimistic: { queryKey: testCrudKeys.lists(), update: withoutRows<TestCrudListItem> },
+		optimistic: (ids) => deleteRows(collection, ids),
 	});
 	const setStatus = useCrudMutation(testCrudMutations.setStatus(), {
 		invalidate: [testCrudKeys.all],
-		optimistic: {
-			queryKey: testCrudKeys.lists(),
-			update: patchRow((row: TestCrudListItem, { status }: { id: string; status: TestCrudStatus }) => ({
-				...row,
-				status,
-			})),
-		},
+		optimistic: ({ id, status }) =>
+			updateRows(collection, [id], (row) => {
+				row.status = status;
+			}),
 	});
 	const publish = (row: TestCrudListItem) => {
 		const status = row.status === "published" ? "draft" : "published";
@@ -88,6 +90,7 @@ export function TestCrudList() {
 			actions={<NewTestCrudButton />}
 			tableId={TEST_CRUD_TABLE_ID}
 			list={list}
+			collection={collection}
 			columns={testCrudColumns}
 			getRowLabel={(row) => row.title}
 			search={search}

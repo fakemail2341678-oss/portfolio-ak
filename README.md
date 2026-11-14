@@ -4,6 +4,15 @@ A bilingual (English + Nepali), server-rendered portfolio app built on TanStack 
 
 Public pages render fully on the server (and without JavaScript), every string, email, validation message, meta tag and formatted value exists in both languages, and an admin area manages content. **Test CRUD** is the reference feature to copy for new ones.
 
+What it holds, each a removable layer (`pnpm strip-demo`, [docs/guides/new-project.md](docs/guides/new-project.md)): <!-- @strip-demo -->
+
+- **The portfolio** at `/`: work, journal, about and contact, with its admin ([guide](docs/guides/portfolio.md)). <!-- @portfolio -->
+- **The showcase apps** under `/apps` (Notes, Links, Habits and Forms), open to visitors through guest sessions ([guide](docs/guides/apps.md)). <!-- @apps -->
+- **Taskline** at `/app/taskline`: project management with boards, sprints, time and automations ([guide](docs/guides/taskline.md)). <!-- @taskline -->
+- **Parda** at `/app/parda`: a movie and series catalogue on TMDB with a library, profiles and watch parties; its player is a placeholder until a provider is connected ([guide](docs/guides/parda.md)). <!-- @parda -->
+- **Chaal** at `/app/chaal`: chess on the Lichess API, with play, puzzles, analysis, watching and community ([guide](docs/guides/chaal.md)). <!-- @chaal -->
+- **Kharcha** at `/app/kharcha`: an expense tracker and bill splitter with groups, budgets, recurring expenses and insights ([guide](docs/guides/kharcha.md)). <!-- @kharcha -->
+
 The plan, phases and Definition of Done are in [docs/PLAN.md](docs/PLAN.md). Every non-obvious choice is recorded in [docs/decisions.md](docs/decisions.md). Start with [CLAUDE.md](CLAUDE.md) (stack, commands, golden rules, solved pitfalls), then the [guides](#guides). With `pnpm dev`, `/dev/examples` has one working page per module.
 
 ## Requirements
@@ -13,6 +22,10 @@ The plan, phases and Definition of Done are in [docs/PLAN.md](docs/PLAN.md). Eve
 - On Windows, clone to a short path of about 90 characters or fewer, such as `C:\dev\portfolio`. pnpm's nested `node_modules/.pnpm` paths add about 170 characters. Past about 260 in total, Node misreads ES modules, and tests and builds fail with `ERR_REQUIRE_CYCLE_MODULE`.
 
 ## Getting started
+
+The quick way needs no outside service: `pnpm install`, then `pnpm setup:local` (it writes `.env` with a generated secret, compiles the messages and creates a local PGlite database with an admin and demo data) and `pnpm dev:local`. `pnpm diagnose` checks the setup and prints the fix when something doesn't start.
+
+With a Neon database (or any Postgres):
 
 ```bash
 pnpm install
@@ -49,7 +62,10 @@ Everything is validated at startup with T3 Env (`src/server/env.ts` and `src/lib
 | `ADMIN_EMAIL`, `ADMIN_PASSWORD`, `ADMIN_NAME` | no | Defaults for `pnpm db:seed-admin`. |
 | `DEMO_PASSWORD` | no | Default password for `pnpm db:seed-demo`'s users. |
 | `VITE_SENTRY_DSN` | no | Turns Sentry on (browser + server). |
+| `VITE_SENTRY_DEV_TRACING` | no | Development only: `true` sends a trace for every request and navigation (off by default, it slows `pnpm dev`). |
 | `VITE_POSTHOG_KEY`, `VITE_POSTHOG_HOST` | no | Turn PostHog on (opt-in, behind the consent banner). |
+| `POSTHOG_SECRET_KEY` | no | Evaluates PostHog feature flags on the server instead of asking PostHog on each render. |
+| `VITE_DEV_ROUTES` | no | For the e2e harness only: `true` keeps the `/dev` pages in a production build. The build and the server refuse it in production. |
 | `SENTRY_AUTH_TOKEN`, `SENTRY_ORG`, `SENTRY_PROJECT` | no | Upload source maps to Sentry during `pnpm build` (all three or none). |
 | `CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY`, `CLOUDINARY_API_SECRET` | no | Image uploads (all three or none; server-only). Without them items have no images. See [docs/guides/attachments.md](docs/guides/attachments.md). |
 | `CLOUDINARY_FOLDER` | no | public_id prefix for uploads (default `portfolio`). |
@@ -66,7 +82,8 @@ Everything is validated at startup with T3 Env (`src/server/env.ts` and `src/lib
 
 ```
 src/
-  routes/        file routes: _site (the portfolio at /), dev (demo and references, dev builds only), _public, _auth (sign-in), _authed (account), _admin
+  routes/        file routes: _site (the portfolio at /), dev (demo and references, dev builds only), _public, _auth (sign-in), _authed (account), _admin,
+                 _apps (/apps), _taskline, _parda, _chaal, _kharcha (/app/<name>), f (a published form), l (a short link), api
   features/      feature code shared by client and server: schemas, queries, collections, components
   functions/     server functions: permission middleware + Zod validator + one call into src/server
   server/        SERVER-ONLY: env, db (Drizzle), auth, email, rbac, attachments, seo, repositories/services, Nitro routes
@@ -84,6 +101,7 @@ A request goes through the server entry (Sentry, locale), request middleware (he
 | [Architecture](docs/guides/architecture.md) | Layers and a request end to end |
 | [CRUD](docs/guides/crud.md) | The one way to build a feature: its files, list page, writes, forms, server helpers, the generator |
 | [Conventions](docs/guides/conventions.md) | File map, building blocks, list-page recipe, live examples |
+| [Design system](docs/guides/design-system.md) | Tokens, presets, shells, the component kit, theming |
 | [Routing, data, server functions](docs/guides/routing-data.md) | Loaders, SSR without refetching, streaming, server functions, errors |
 | [Search params, filters, masking](docs/guides/search-filters-masking.md) | The URL list contract, filters, route masking, path params |
 | [Tables and filters](docs/guides/tables-filters.md) | DataTable, FilterBar, chips, Pagination, bulk actions |
@@ -97,6 +115,14 @@ A request goes through the server entry (Sentry, locale), request middleware (he
 | [Observability](docs/guides/observability.md) | Logs, Sentry, PostHog, feature flags |
 | [Security](docs/guides/security.md) | Headers, CSP, CSRF, authorization, sanitizing |
 | [Deployment](docs/guides/deployment.md) | Vercel + Neon, migrations, cron |
+| [Recipes](docs/guides/recipes.md) | Optional features: jobs, caching, rate limits, contact form, CSV, orgs, billing |
+| [New project](docs/guides/new-project.md) | `pnpm strip-demo`, renaming, first admin, your first feature |
+| [Portfolio](docs/guides/portfolio.md) | The portfolio at `/`: content, admin, media, the "Himal" design system <!-- @portfolio --> |
+| [Apps](docs/guides/apps.md) | The showcase apps at `/apps`: guest sessions, ownership, adding an app <!-- @apps --> |
+| [Taskline](docs/guides/taskline.md) | Taskline at `/app/taskline`: its shell, views, access matrix, services, admin <!-- @taskline --> |
+| [Parda](docs/guides/parda.md) | Parda at `/app/parda`: the catalogue, sources, the player, the library, parties, the admin <!-- @parda --> |
+| [Chaal](docs/guides/chaal.md) | Chaal at `/app/chaal`: the board kit, play, puzzles, watch, community, the Lichess client <!-- @chaal --> |
+| [Kharcha](docs/guides/kharcha.md) | Kharcha at `/app/kharcha`: money, splits and the ledger, Spend, budgets, people and threads, the admin <!-- @kharcha --> |
 
 ## Security
 
@@ -110,7 +136,10 @@ Create a Neon database, set the variables above in Vercel (including `VITE_SITE_
 
 | Script | What it does |
 | --- | --- |
+| `pnpm setup:local` | Fresh clone to runnable: `.env`, a generated secret, compiled messages and a local database. |
+| `pnpm diagnose` | Check Node, `.env`, the database (latency, migrations) and ports, and print the fixes. |
 | `pnpm dev` | Start the Vite dev server with SSR. |
+| `pnpm dev:local` | The dev server on a local PGlite database in `.data/pglite`, kept between runs. |
 | `pnpm dev:offline` | The dev server with no outside services: in-memory PGlite (migrated and seeded), console email, Sentry/PostHog/Cloudinary/Turnstile/Google off ([recipes](docs/guides/recipes.md#offline-development)). |
 | `pnpm build` | Production build (client, SSR and Nitro server output in `.output/`). |
 | `pnpm start` | Run the production build with Node, loading `.env` if present. |
@@ -130,8 +159,18 @@ Create a Neon database, set the variables above in Vercel (including `VITE_SITE_
 | `pnpm db:seed-admin` | Create the first admin user (flags or `ADMIN_*` env vars). |
 | `pnpm db:seed-taskline` | Taskline's demo team: five accounts, every admin as a member, three projects and 60 tasks (`pnpm dev:local` runs it on a fresh database). Safe to rerun. <!-- @taskline --> |
 | `pnpm db:seed-demo` | Development data: editor and viewer roles, three users holding them (one with no role), 30 Test CRUD items. Safe to rerun. |
+| `pnpm db:seed-portfolio` | The portfolio's demo content, written only when there is no profile yet. <!-- @portfolio --> |
+| `pnpm db:seed-kharcha` | Kharcha's three demo accounts, who share a group, a few expenses and a payment (`pnpm dev:local` runs it on a fresh database). Safe to rerun. <!-- @kharcha --> |
+| `pnpm tmdb:record` | Re-record Parda's TMDB fixtures in `tests/fixtures/tmdb/` from the real API (`TMDB_READ_TOKEN`). <!-- @parda --> |
+| `pnpm parda:probe` | Run Parda's source probe. <!-- @parda --> |
+| `pnpm lichess:record` | Re-record Chaal's Lichess fixtures in `tests/fixtures/lichess/` from the real API. <!-- @chaal --> |
+| `pnpm engine:copy` | Copy Stockfish into `public/chaal/engine/` (Vite runs it before dev and build). <!-- @chaal --> |
+| `pnpm chaal:sounds` | Make Chaal's sound files in `public/chaal/sounds/`. <!-- @chaal --> |
+| `pnpm i18n:translate` | Machine-translate Nepali for messages that have none (review the diff). |
+| `pnpm i18n:check` | Report missing or empty translations, variables and plural forms. |
+| `pnpm auth:schema` | Regenerate `src/server/db/schema/auth.ts` after changing Better Auth plugins. |
 | `pnpm new:feature <name> [--public] [--localized]` | Generate a feature in the CRUD standard (table, migration, permissions, functions, routes, messages, tests, stories; public pages, text in both languages); see [docs/guides/crud.md](docs/guides/crud.md). Needs a committed tree. |
-| `pnpm strip-demo` | Remove the portfolio (and later the apps) for a neutral landing page; `--keep-portfolio`, `--keep-apps`, `--keep-taskline`; it deletes itself once nothing is left. <!-- @portfolio --> |
+| `pnpm strip-demo` | Remove the removable layers (the portfolio, the apps, Taskline, Parda, Chaal, Kharcha) for a neutral landing page; keep one with `--keep-<layer>`; it deletes itself once nothing is left. <!-- @strip-demo --> |
 | `pnpm storybook` | Storybook dev server on http://localhost:6006. |
 | `pnpm build-storybook` | Static Storybook in `storybook-static/`. |
 
@@ -175,7 +214,7 @@ Every admin section is built one way: [docs/guides/crud.md](docs/guides/crud.md)
 | URL contract and schemas | `src/features/test-crud/search.ts`, `schema.ts` | `listSchema` (search params, the list's input, defaults), one strict Zod schema for the form and the server, DTO schemas |
 | Data access | `src/server/test-crud/repository.ts`, `service.ts` | `listPage`, `updateVersioned`, `uniqueViolation`, audited changes (`withAudit`), tested on PGlite (`tests/server/test-crud-*.test.ts`) |
 | Server functions | `src/functions/test-crud.ts` | `requirePermission("test-crud:<action>")` then `withServices` on every function, `.validator(zodInput(schema))`, one service call; images as attachment ids |
-| Keys and queries | `src/features/test-crud/keys.ts`, `queries.ts` | Loader `ensureQuery` for SSR; `mutationOptions` run by `useCrudMutation` (publish and delete show at once on every cached page and roll back) and `useCrudForm` |
+| Keys and queries | `src/features/test-crud/keys.ts`, `queries.ts` | Loader `ensureQuery` for SSR; `mutationOptions` run by `useCrudMutation` (publish and delete show at once on every cached page, through the list's TanStack DB collection in `collection.ts`, and roll back) and `useCrudForm` |
 | UI | `src/routes/_admin/admin/test-crud/*`, `src/features/test-crud/components/*`, `columns.tsx`, `filters.tsx` | `CrudListPage` with Test CRUD's columns, filters (status, tags, price, dates, image) and chip specs, URL sorting and paging, bulk delete, a "Quick edit" dialog via route masking (`QueryDialog`), a form split with `withForm`, toasts and the unsaved-changes guard |
 | Public pages (a dev reference) | `src/routes/dev/test-crud/*`, `src/functions/test-crud-public.ts` | SSR card grid and detail page that work without JavaScript, a masked "Quick view" dialog, published items only, localized 404 for drafts and invalid slugs. They live under `/dev` (dev builds only), so their heads are private; a real public page uses `seo()`/`listSeo()` instead |
 
@@ -225,10 +264,8 @@ pnpm db:seed-admin --email you@example.com --password "at-least-12-chars" --name
 pnpm dlx shadcn@latest add <component>
 ```
 
-The shadcn CLI (4.21.0) currently writes `import { cn } from "cn"`. Replace it with `import { cn } from "@/lib/utils"` after adding a component. `pnpm typecheck` fails until you do. Never install the `cn` npm package to make it pass: it's an unrelated library (decision 0118).
+The shadcn CLI (4.21.0) currently writes `import { cn } from "cn"`. Replace it with `import { cn } from "@/lib/utils"` after adding a component. `pnpm typecheck` fails until you do. Never install the `cn` npm package to make it pass: it's an unrelated library (decision 0118). Delete the `"use client"` line the CLI puts on some components: it means nothing here, and the server build warns about each one (decision 0293).
 
 ## License
 
 MIT. See [LICENSE](LICENSE).
-#   p o r t f o l i o - a k  
- 

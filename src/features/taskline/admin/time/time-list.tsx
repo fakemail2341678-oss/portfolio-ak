@@ -3,6 +3,7 @@ import { getRouteApi } from "@tanstack/react-router";
 import { DownloadIcon, LockIcon } from "lucide-react";
 import { lazy, Suspense, useState } from "react";
 import { CrudListPage } from "@/components/crud/crud-list-page";
+import { useCrudCollection } from "@/components/crud/use-crud-collection";
 import { useCrudMutation } from "@/components/crud/use-crud-mutation";
 import { StatusBadge } from "@/components/data-display/status-badge";
 import type { DataTableColumn, RowAction } from "@/components/data-table";
@@ -11,6 +12,7 @@ import { PageTab, PageTabs } from "@/components/page/page-tabs";
 import { Button } from "@/components/ui/button";
 import { Can } from "@/features/rbac/can";
 import { useListPage } from "@/hooks/use-list-page";
+import { deleteRows } from "@/lib/crud/collection";
 import { choiceChip, defineFilters, rangeChip } from "@/lib/crud/filters";
 import { downloadCsv } from "@/lib/csv";
 import { isoDateInstant } from "@/lib/i18n/date-only";
@@ -18,6 +20,7 @@ import { formatDate } from "@/lib/i18n/intl";
 import { m } from "@/paraglide/messages";
 import { formatDuration } from "../../time/duration";
 import type { TimeEntry } from "../../types";
+import { adminTimeRows } from "../collection";
 import { ALL_TASKLINE_ADMIN } from "../keys";
 import { adminTimeListQueryOptions, tasklineAdminMutations, timeOptionsQueryOptions } from "../queries";
 import type { AdminTimeOptions } from "../schema";
@@ -168,7 +171,11 @@ export function AdminTimeList() {
 	const { data: options } = useSuspenseQuery(timeOptionsQueryOptions());
 	const [editing, setEditing] = useState<TimeEntry | null>(null);
 	const [locking, setLocking] = useState(false);
-	const remove = useCrudMutation(tasklineAdminMutations.deleteTimeEntry(), { invalidate: ALL_TASKLINE_ADMIN });
+	const collection = useCrudCollection(adminTimeRows);
+	const remove = useCrudMutation(tasklineAdminMutations.deleteTimeEntry(), {
+		invalidate: ALL_TASKLINE_ADMIN,
+		optimistic: ({ id }) => deleteRows(collection, [id]),
+	});
 	const exporter = useCrudMutation(tasklineAdminMutations.exportTime(), { invalidate: [] });
 	const page = list.page;
 	const totals = page
@@ -220,6 +227,7 @@ export function AdminTimeList() {
 			tabs={<TimeTabs />}
 			tableId={TL_ADMIN_TIME_TABLE_ID}
 			list={list}
+			collection={collection}
 			columns={columns}
 			getRowLabel={(row) => `${row.memberName} · ${dayText(row.onDay)} · ${formatDuration(row.minutes)}`}
 			search={search}
