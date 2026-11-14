@@ -4420,3 +4420,474 @@ Kharcha's data, money core, access and server, tested on PGlite, with no UI; Exp
 - chat rooms and direct messages beyond the friend and group threads;
 - offline-first sync, and native apps;
 - the Bikram Sambat calendar (a later option).
+
+---
+
+## 15. Part 9: one standard everywhere, a new portfolio, and the reviews (Tasks 98–127, planned)
+
+Part 9 adds no product. It makes what exists **uniform, fast and easy to learn**, redesigns the portfolio for its real owner, and ends with reviews of the whole app. The owner's request (2026-11-14), in short:
+- **Uniform:** one folder structure, one naming scheme and one way to do each thing (read, write, list, validate, handle an error, bind a shortcut), in every layer, so learning one feature teaches them all.
+- **Good to work in:** fast gates, a Learn page that tells a developer everything, docs that make every AI session follow the conventions, generators, maintained packages in place of hand-written code (TanStack Pacer and TanStack Hotkeys by name).
+- **Good to use:** snappy pages, optimistic writes, keyboard shortcuts everywhere, full-width app and admin pages, proper error, not-found and other generic pages, and a UX pass on every product.
+- **Server side best in class:** requests, errors, auth, logging, migrations and seeds, each done one way.
+- **The portfolio redesigned wholly**, for Amrit Kuikel, showing Taskline, Parda, Chaal and Kharcha.
+- **Proved:** every gate green, coverage with floors, a security review and a code review of the whole app.
+
+Like sections 10–14, **each task can be done in a fresh session that has read nothing else** but CLAUDE.md, section 10.1 and this section. Where a task says "check", check the code, because it moves.
+
+### 15.1 How to run a Part 9 task
+
+As 10.1 (with 14.1's differences), and:
+- **Read:** CLAUDE.md, 10.1, then 15.1–15.7 and the task's own section, not the other tasks. Once Task 98 is done, read `docs/history/part9-audit.md` for the parts the task names: its numbers replace 15.4's.
+- **Effort:** before starting, ask the owner to confirm the session's effort against 15.3's column, and wait.
+- **Plugins:** 15.3 names what each task needs. Turn them on at the start and off at the end (`enabledPlugins` in the user settings file; a restart applies it), and say so in the report. Turn context-mode off for a phase that uses agents. Use subagents only when the owner's prompt for the task allows them.
+- **Gates:** by the changed-files rule (0280) until Task 127, which runs every suite in full. Workers stay capped (`--maxWorkers=4`, e2e `--workers=2`) until Task 99 puts the caps in the configs. From Task 99 on, use `pnpm gates`.
+- **Ratchets (from Task 100):** the standard's tests carry lists of known deviations. A task that fixes one removes it from the list in the same commit. Nothing is added to a list without a decision.
+- **Refactors keep behaviour.** Before moving or rewriting code that has no test, write the test.
+- **Too big for one session?** Split the task in 15.3 (as 65a and 69a were) before starting it. Never drop a part silently.
+- **Commit:** `feat: Part 9 Task N, <name>`, one commit on `main`, not pushed.
+- **"Done" summary:** mark the task in 15.3 and replace its section with a summary (what changed, numbers before and after, deviations, left for the owner).
+- **Decisions:** numbered from the next free one when the task is written (0295 at the time of planning), nothing reserved.
+
+### 15.2 Owner's choices (2026-11-14)
+
+| Topic | Choice |
+| --- | --- |
+| Goal | A template that can be called best in class, with each claim backed by a test or a number in Task 127's scorecard |
+| Uniformity | One standard (15.5), written down, enforced by tests, applied to every layer. Where two ways exist today, one goes |
+| Packages | A maintained package replaces hand-written code where it is equal or better. **TanStack Pacer** for debouncing, throttling, rate limiting, queuing and batching; **TanStack Hotkeys** for every shortcut. Each replacement is shown in `/dev/examples` and on the Learn page |
+| Optimistic writes | Everywhere it is safe. The owner asked for it "if you agree". The plan agrees, with the rules and the three exceptions of 15.6. The server stays the authority |
+| Portfolio | Redesigned wholly; the owner does not like "Himal". It is **Amrit Kuikel's** portfolio and shows Taskline, Parda, Chaal and Kharcha. The owner picks the direction from comps (Task 120) |
+| Portfolio content | Only true facts about a real person. The owner supplies the bio, links, photo and CV. Whatever is missing stays a marked placeholder or the section is hidden. No invented employers, numbers or testimonials (confirmed by the owner) |
+| The apps list | `/apps` lists Taskline and Kharcha as apps, beside Notes, Links, Habits and Forms. Parda and Chaal are listed too, the products keep their `/app/<name>` addresses, and the old `/apps/kanban` and `/apps/expenses` redirect routes are removed ("no need to do routing like now"; this reading confirmed by the owner) |
+| Layout | Pages of the apps and the admin use the full width of their content area. No centred column with empty space on both sides |
+| Learn page | `/dev/learn`, dev only like the rest of `/dev` (confirmed by the owner), generated from the source so it cannot go stale |
+| SSR | Every page is server-rendered with its data. The first load asks the server for nothing more |
+| Old plan | Sections 1–10 (before Taskline) are revisited: every item there is brought to today's standard (Task 98 lists the gaps, 15.3's tasks fix them) |
+| Tests | Faster suites, coverage with floors per area, and new kinds of tests where they find bugs |
+| Reviews | A security review and a code review of the whole app, asked for by the owner |
+| Plugins | Claude turns plugins on and off and installs new ones as tasks need them |
+| Git | As Part 5 |
+
+### 15.3 Status
+
+| Task | Name | Effort | Plugins | Status |
+| --- | --- | --- | --- | --- |
+| 98 | Baseline and audit: every gate timed, coverage, every deviation counted, package verdicts, the old plan's gaps | xhigh | context7, playwright | Planned |
+| 99 | Fast gates: find why the suites are slow, fix it, `pnpm gates` | high | context7 | Planned |
+| 100 | The standard: rules written, enforced by tests, AI rules, the generator | xhigh | context7, claude-code-setup | Planned |
+| 101 | Structure and names everywhere: one codemod, no behaviour change | high | typescript-lsp, serena | Planned |
+| 102 | Packages: upgrades, Pacer, Hotkeys, replacements | high | context7 | Planned |
+| 103 | Server core: requests, errors, auth, logs | xhigh | context7 | Planned |
+| 104 | Data core: repositories, migrations, seeds | high | context7 | Planned |
+| 105 | Writes: the optimistic engine | xhigh | context7 | Planned |
+| 106 | Reads: loaders, SSR, lists, generic pages | xhigh | context7, playwright | Planned |
+| 107 | The kit: full-width layout, page anatomy, keyboard | high | ui-ux-pro-max, impeccable, playwright | Planned |
+| 108 | Shared patterns of the products move to the core | xhigh | typescript-lsp, serena | Planned |
+| 109 | The Learn page and the examples | high | ui-ux-pro-max, context7 | Planned |
+| 110 | Core features and the admin to the standard | xhigh | typescript-lsp | Planned |
+| 111 | The showcase apps and the apps gallery | high | ui-ux-pro-max, impeccable, playwright | Planned |
+| 112 | Taskline to the standard | xhigh | typescript-lsp | Planned |
+| 113 | Taskline's UX pass | high | ui-ux-pro-max, impeccable, playwright | Planned |
+| 114 | Kharcha to the standard | xhigh | typescript-lsp | Planned |
+| 115 | Kharcha's UX pass, with 0291's redesigns | high | ui-ux-pro-max, impeccable, playwright | Planned |
+| 116 | Parda to the standard | high | typescript-lsp | Planned |
+| 117 | Parda's UX pass, with 0244's watch page | high | ui-ux-pro-max, impeccable, playwright | Planned |
+| 118 | Chaal to the standard | xhigh | typescript-lsp | Planned |
+| 119 | Chaal's UX pass, with 0275's redesigns | high | ui-ux-pro-max, impeccable, playwright | Planned |
+| 120 | Portfolio: direction, content, comps (the owner picks) | high | impeccable, ui-ux-pro-max, frontend-design, playwright | Planned |
+| 121 | Portfolio: the new design system and every page | xhigh | impeccable, ui-ux-pro-max, playwright | Planned |
+| 122 | Portfolio: case studies, admin, SEO, finish review | high | impeccable, playwright | Planned |
+| 123 | Tests: coverage floors and new kinds | high | none | Planned |
+| 124 | Performance: measured and tuned | high | playwright | Planned |
+| 125 | Security review of the whole app | xhigh | none | Planned |
+| 126 | Code review of the whole app | xhigh | none | Planned |
+| 127 | Wrap-up: full suites, the matrix, the scorecard | high | impeccable | Planned |
+
+- **Order.**
+  - 98–101 are fixed: measure, make the gates fast (every later task runs them), write the rules, then move the files once.
+  - 102–109 build the core's one way for each thing, in order.
+  - 110–119 apply it layer by layer. The layers can go in any order, but a product's UX pass follows its standard task.
+  - 120–122 come after the products' UX passes, because the case studies show their screens. If the owner wants the portfolio sooner, 120 and 121 can run any time after 107.
+  - 123–127 prove it, in order. The reviews come last so they read the final code.
+- **A layer task is done** when the layer's lists in the ratchets are empty and 15.7's checklist holds.
+
+### 15.4 What exists today (measured 2026-11-14; check, because it moves)
+
+- **Size:** 1,873 source files and 206,000 lines in `src`; 262 routes; 592 server functions in 121 files; 59 migrations; 7,228 messages; 207 test files, 77 story files with 394 stories, 104 reviewed pages in e2e; 293 decisions (the index says 241).
+- **State:** the tree is clean on `main` and `pnpm typecheck` is green. The last commit (`ac15bf9`, "optimistic trying still") is 0294's work: admin lists write through TanStack DB.
+- **Gate times (0292, 2 e2e workers, 4 Vitest workers):** `pnpm test` 208 files and 2,539 tests in 4.4 min; Storybook 394 stories, twice; `pnpm test:e2e` 3,832 checks in 72.3 min, split in ten shards to fit the tool's 10-minute limit (24.9 min at Part 4's end); build 47 s; `build-storybook` about 20 s (0280). The owner's machine has 11.7 GB of memory, which caps the workers. `docs/guides/testing.md` still says e2e takes "about 6 minutes".
+- **Two folder conventions:** core features keep components in `components/` (Test CRUD, rbac, portfolio, auth: 140 `.tsx` files). The four products keep them beside the data files in module folders (taskline 111, chaal 93, kharcha 81, parda 74).
+- **Names that differ:** `collection.ts` (10 files) and `collections.ts` (3); `repository.ts` and `service.ts` in a folder (core), `posts-repository.ts` style (portfolio), and many other file kinds in the products' server folders; function verbs outside the usual set (`save` 10, `find`, `locate`, `patch`, `toggle`, `add`/`remove` next to `create`/`delete`).
+- **Two write paths:** `useCrudMutation` (73 calls in 45 files, the admin's, 0294) and raw `useMutation` (152 calls in 80 files: taskline 66, kharcha 44, apps 15, chaal 11, `/dev` 10). Collections: `crudCollection` descriptors for admin lists, and `queryCollectionOptions` collections in Notes, Habits and Taskline's board.
+- **Two read paths:** `useSuspenseQuery` (180) after a loader's `ensureQuery` (185), and `useQuery` (198, of which chaal 107), each of which needs a reason.
+- **Server functions are already uniform in shape:** every one is `createServerFn(…).middleware([…]).validator(zodInput(…)).handler(…)`. The guards differ in name per product (`withPardaCatalog`, `withChaalPublic`, `requireKharchaUser`, …).
+- **Hand-written code that packages cover:** `src/hooks/use-hotkeys.ts` (98 lines, 11 call sites, plus 26 `onKeyDown` props and 3 raw listeners), `src/hooks/use-debounced-value.ts` (8 call sites) and timers in `filter-bar.tsx`, `async-combobox-field.tsx`, `slug-field.tsx` and `async-validators.ts`, `src/lib/fractional-index.ts` (178 lines), `src/lib/csv.ts`'s parser, an LRU cache, `src/server/http/rate-limit.ts`, Chaal's request lanes.
+- **Behind on versions (npm, 2026-11-14):** TypeScript 6.0.3 (7.0.2 is out), `@tanstack/react-db` 0.5.4 (1.0.0-rc.1.5), Vitest 5.0.3 (5.1.0), Start 1.168 (1.169), Query 5.104 (5.107). Not installed: `@tanstack/react-pacer` (0.24.1), `@tanstack/react-hotkeys` (0.25.0).
+- **Widths:** `Page width="admin"` is already fluid. Centred columns come from `wide`, `default` and `narrow` (`max-w-6xl`, `5xl`, `3xl`), the apps layout (`max-w-6xl`), Chaal's frame (`max-w-7xl`, 32 uses) and Parda (10).
+- **Error pieces exist:** `AppError` and its codes (`src/lib/errors.ts`), `errorNormalizationMiddleware`, `ErrorPage`, `NotFoundPage`, `PendingPage` as the router's defaults, `log()` with the request id. Sixteen Nitro routes and four `/api` routes each do their own method, secret and error handling.
+- **Seeds and migrations:** five `db:seed-*` scripts with `scripts/lib/*-seed.ts`, each its own shape; migrations are `NNNN_name.sql`, checked against the schema in CI, with no lint and no upgrade test.
+- **Coverage:** `pnpm test:coverage` prints a table per area; there is no floor.
+- **Portfolio:** a demo persona ("Aarav Shrestha"), seven invented projects and six posts in `scripts/lib/portfolio-data`, the "Himal" system in `src/styles/himal.css` and `src/features/portfolio` (104 files). None of the four products is in it.
+- **The apps gallery** (`src/features/apps/registry.ts`) lists Notes, Links, Habits and Forms only; `/apps/kanban` and `/apps/expenses` are redirect routes in the taskline and kharcha layers.
+- **Redesigns the finish reviews left for the owner:** Chaal's desktop game page, home, play hub and puzzle page (0275); Kharcha's desktop thread, expense panel, split editor and phone thread header (0291); Parda's watch page chrome (0244).
+- **Security:** an earlier whole-app review's open findings are in `security-review.local/` (gitignored). Task 125 starts there. Their details never go into a commit, a doc or this plan before the fix ships.
+- **AI rules:** CLAUDE.md and the guides are in the repo. The working rules (confirm the effort, targeted gates, worker caps, commit on `main`, plugin toggling) live only in Claude's memory on the owner's machine.
+
+### 15.5 The standard (what "uniform" means)
+
+Task 98 checks these lines against its counts and Task 100 records the final text as a decision. Until then this is the target.
+
+**A feature folder** has one shape, at any depth. A core feature is one; a product is a folder of them.
+
+```
+src/features/<feature>/            a core feature; a product's module is src/features/<product>/<module>/
+  schema.ts                        Zod schemas and the DTO types (forms, function inputs)
+  search.ts                        the URL contract (the only file a route imports statically)
+  keys.ts                          query keys
+  queries.ts                       queryOptions and mutationOptions
+  collection.ts                    TanStack DB collections (always singular)
+  columns.tsx  filters.tsx         a list's columns and filters
+  labels.ts  constants.ts  types.ts  links.ts  commands.ts
+  lib/                             pure helpers, no React
+  components/                      every component, its stories beside it
+src/server/<feature>/              repository.ts (SQL only), service.ts (rules, transactions, audit)
+src/server/<product>/<module>/     the same pair, plus the product's access.ts, settings.ts, cron.ts
+src/functions/<feature>.ts         or src/functions/<product>/<module>.ts and <product>-admin/<module>.ts
+tests/{unit,server,components}/    <feature>[-<topic>].test.ts, mirroring the feature's name
+```
+
+A product adds `shell/`, `kit/` and `admin/`, each a feature folder.
+
+**Names.**
+- Files are kebab-case. A component file is `<thing>-<role>.tsx`, with a role from one list: `page`, `list`, `detail`, `form`, `dialog`, `sheet`, `panel`, `card`, `field`, `menu`. Hooks are `use-<thing>.ts`.
+- Exports: `<feature>Keys`, `<feature>Queries`, `<feature>Mutations`, `<feature>Rows` (a collection); `<thing>InputSchema`, `<thing>UpdateSchema`; `<Thing>ListItem`, `<Thing>Detail`, `<Thing>Input`, `<Thing>Page`.
+- Guards: `require<Who>` refuses, `with<What>` provides, in that order, with the same words in every layer (`require<Product>User`, `with<Product>Services`, `with<Product>Public`).
+- Tables carry their layer's prefix, columns are snake_case, a migration is `NNNN_<layer>_<what>.sql`. Messages are `<feature>_<part>_<name>`. Permissions are `<resource>:<action>`.
+
+**Server function verbs.** One word per meaning:
+
+| Verb | Means |
+| --- | --- |
+| `list` | many rows under the list or cursor contract |
+| `get` | one row, or one computed read |
+| `search` | free text across kinds |
+| `create`, `update`, `delete` | a row made from a form, its fields changed (versioned), rows gone (ids, bulk) |
+| `set<Field>` | one field or switch (replaces `toggle`, `mark`, `patch`) |
+| `add`, `remove` | a link between two rows that exist (a member, a tag) |
+| `trash`, `restore`, `purge` | soft delete, its undo, and the final delete |
+| `reorder`, `is<Check>`, `import`, `export` | as named |
+| a domain verb | allowed when none of the above says it (`join`, `invite`, `accept`, `settle`); the audit lists them |
+
+`save`, `find`, `locate`, `fetch` and `patch` are folded into the verbs above.
+
+**One way for each thing.**
+
+| Need | The one way |
+| --- | --- |
+| Data on a page | the loader awaits `ensureQuery`, the component calls `useSuspenseQuery`. `useQuery` only for data asked for after an interaction, or live data over a server-rendered first paint |
+| A list | the list contract (`listSchema`, `listLoader`, `useListPage`, `CrudListPage`), or the cursor contract for feeds |
+| A write | the one write hook over a collection (Task 105), optimistic per 15.6. A form uses `useCrudForm` |
+| A server function | literal `createServerFn`, `.middleware([require…, with…])`, `.validator(zodInput(schema))`, one call into a service |
+| A server route | `defineApiRoute` or `defineCron` (Task 103) |
+| A refusal | throw an `AppError` (`ruleError`, `notFound`, …), never a bare `Error`. The UI shows it through the write hook, the form's fields or `ErrorPage` |
+| A shortcut | TanStack Hotkeys, registered with a name so the shortcuts dialog lists it |
+| Debounce, throttle, rate limit, queue, batch | TanStack Pacer |
+| A log line | `log()` |
+| Dates, numbers, money | `src/lib/i18n` |
+
+### 15.6 Optimistic writes: the position
+
+The owner asked whether every operation can be optimistic, and said to do it if the planner agrees. **The plan agrees, with rules.**
+
+- **It does not weaken the server.** An optimistic write is a prediction: the page shows the result while the server decides. The server still validates and authorizes everything (golden rule 4). Client validation only makes a refusal rare; it never replaces a check.
+- **Optimistic is the default.** Before sending, the client runs the same Zod schema and checks what it can know: the permission (`useCan`), quotas and counts from the loader's data, uniqueness through the async validators.
+- **What makes it safe:**
+  1. **Client ids.** A create sends an id made on the client (UUIDv7), so the optimistic row is the final row, and sending the same create twice makes one row.
+  2. **Two kinds of failure.** *Refused* (an `AppError`: validation, forbidden, conflict, quota): roll back at once, say why, and give the input back (the form reopens with its field errors). *Unknown* (network, timeout, a 5xx): keep the change, mark it "saving", and retry with backoff, which is safe because of the ids and the versions. After the last try, mark it failed with Retry and Discard.
+  3. **One write at a time per row** (a Pacer queue keyed by the row's id), so versions chain and two fast edits never conflict with each other.
+  4. **What only the server knows shows as pending:** totals, page counts, generated keys and slugs, until the refetch. Where the rule is shared code the client computes it (Kharcha's money core).
+  5. **A delete is optimistic with Undo.**
+- **Not optimistic** (wait for the server, show progress):
+  - **credentials and sessions:** signing in and up, passwords, two-factor, OAuth, revoking sessions;
+  - **what can't be undone or leaves the app:** a purge, deleting an account, sending an email or an invite, imports and exports, calls made to Lichess, TMDB or Cloudinary for the user (a move on the board is shown at once, as today);
+  - **access changes** (roles, permissions, bans, blocks, suspensions): shown at once but marked pending until the server confirms, because an admin must not believe a ban that didn't land.
+- **Reads stay Query's and server-rendered** (0294): the loader, the URL and the totals don't change. Local-first sync and offline use stay out of scope.
+- Task 105 proves this on the hardest cases and may change a rule by decision.
+
+### 15.7 Rules for every Part 9 task
+
+- **Measured, not claimed.** "Faster", "smaller" or "better" needs a number before and after, from Task 98's baseline.
+- **Research first:** the current docs (context7) for every library API a task adopts or upgrades.
+- **Records keep their words** (0163): PLAN.md's done sections, old decisions and `docs/history` are not rewritten when files move.
+- **Layer independence** (0215): shared code is core and unmarked. Strip markers stay balanced, and a task that touches them runs its row of the template matrix.
+- **Strings:** both message files. **Bundle:** the entry stays under 300 kB and a route under 360 kB, and the aim is down.
+- **Design flow for UI tasks:** as 14.6 (build with `ui-ux-pro-max:ui-styling` on shadcn; `impeccable` critique and polish; Playwright screenshots at 390, 768 and 1280 in en/ne, dark and light), plus 1920 for app and admin pages.
+- **The layer checklist** (Tasks 110–119):
+  1. the layer's ratchet lists are empty;
+  2. every write goes through the write hook, optimistic per 15.6, with tests for a refusal and an unknown failure;
+  3. every page passes "the first load asks for nothing", every list is under a contract, every `useQuery` has its reason;
+  4. functions follow the chain and the verbs, services resolve access first, refusals are `AppError`s, the lists' queries are within the count and time budgets;
+  5. shortcuts are registered with names, and every action works from the keyboard;
+  6. no hand-written timers for debouncing or throttling;
+  7. pages use the full width, and the empty, loading, error, not-found and forbidden states come from the kit;
+  8. coverage is at or above the layer's floor, stories and e2e flows pass;
+  9. the layer's guide and its Learn section say what the code does;
+  10. the bundle and Task 98's timings did not get worse.
+
+### Task 98: Baseline and audit
+
+**Goal:** know where the repo stands before changing it. No app code changes; scripts and a report only.
+
+- **Gates:** run all ten in full, once, each with its wall time and peak memory, and Vitest's and Playwright's per-file times. This is the baseline every later claim is measured against.
+- **Coverage:** `pnpm test:coverage`, per area and per layer. **Bundle:** `check-bundle.ts` for every route. **Lighthouse:** the public home and each product's landing.
+- **The audit scripts** (`scripts/audit/`, kept: Task 100 turns them into tests). Each prints counts and a list:
+  - structure and names against 15.5 (folders, file names, exports, verbs, guards, tables, messages, tests);
+  - writes: every `useMutation`, and whether it is optimistic, with the 15.6 class of each write;
+  - reads: every `useQuery` with its reason, every route with data but no loader, every list outside the contracts;
+  - errors: every `throw` in `src/server` that isn't an `AppError`, every `catch` that swallows, every server route's handling;
+  - effects (`useEffect` by purpose), casts (`as unknown as`), `biome-ignore` reasons, default exports;
+  - copies: a duplicate-code report across the layers (jscpd or the like), which feeds Task 108.
+- **Every library used as its docs say today:** version, latest, deprecated APIs in use, and a line on whether our use matches the recommended one (Start, Router, Query, DB, Form, Store, Table, Better Auth, Drizzle, Paraglide, Tailwind, shadcn, Sentry, PostHog, Ably, Cloudinary, Resend, Nitro, Vite, the React Compiler, Vitest, Storybook, Playwright, Biome, Knip).
+- **Package verdicts:** for each hand-written module, the package that could replace it and a verdict (replace or keep, with the reason). 15.4 has the candidates.
+- **The old plan:** each deliverable of sections 4–10 against today's code, with its gap and the Part 9 task that closes it. The starting map: env, scaffold and observability to 103; the database to 104; router, SSR and server functions to 103 and 106; email and auth to 103 and 110; forms and the kit to 107; state to 105 and 106; Test CRUD, RBAC, attachments and the audit log to 110; Storybook, tests and CI to 99 and 123; the CRUD standard and the generator to 100; the apps to 111; the portfolio to 120–122.
+- **UX:** a screenshot of every reviewed page at 1280 and 1920, and a list of the pages with empty side space, a missing state or an anatomy unlike the others.
+- **Docs that are stale:** found and listed (the testing guide's times, the decisions index).
+- **Output:** `docs/history/part9-audit.md` with its data files beside it, a decision with the baseline numbers, and corrections to 15.4 and 15.5 where the counts disagree with them.
+
+### Task 99: Fast gates
+
+**Goal:** every suite as fast as the machine allows, with no check removed, and every remaining minute explained.
+
+- **Profile first,** from Task 98's per-file times. Suspects to confirm or clear:
+  - **unit:** one Vitest project for node, jsdom and PGlite tests; the DOM setup file loaded by every file; a PGlite data directory loaded per file (65 files); guard tests that walk the tree again and again; isolation where pure tests don't need it;
+  - **Storybook:** two projects, so two Vite servers and two dependency optimizations (the cause of the "first run fails" in 0292); full Chrome through `channel: "chrome"`;
+  - **e2e:** full Chrome, a new context and sign-in per check, the 12-way matrix over 104 pages, one PGlite connection behind the production server, the harness rebuilding when nothing changed, retries hiding slow tests;
+  - **anything that hangs:** orphaned runners, servers on port 3100 and automated Chromes; the low-memory reaper.
+- **Fix** what the profile shows. Candidates: Vitest projects split by environment with the right pool and isolation for each; one Storybook run with both variants as browser instances; a lighter browser for the review; contexts reused per locale and theme; the harness's build cached by a hash of the source; worker counts computed from free memory, in the configs, so no flag is needed.
+- **TypeScript 7:** try the native compiler for `pnpm typecheck` (the 4 GB heap of 0222 may go). Keep it only if every tool that reads TypeScript still works.
+- **`pnpm gates`:** one command for all gates in the right order, `--changed` (the changed-files rule, 0280) by default and `--full`, with a table of times at the end; `pnpm gates:clean` kills leftovers of a stopped run.
+- **CI:** caches for the pnpm store, the tsc and PGlite caches and Vite's; shard counts from the new times; cancelled runs on a new push.
+- **Aims** (from 15.4; the summary says where the time goes if one is missed): `pnpm test` under 2 minutes, both Storybook variants under 3, the full e2e under 30 at two workers with the same 3,832 checks or more.
+- **Proof:** the number of tests and review checks before and after, in the summary. **Docs:** `docs/guides/testing.md` with the real times.
+
+### Task 100: The standard: rules, enforcement, AI rules, the generator
+
+**Goal:** 15.5 becomes the repo's law, checked by tests, so neither a person nor an AI session can drift from it.
+
+- **Write it:** `docs/guides/conventions.md` and `crud.md` state the standard as rules with one example each, from Test CRUD. A decision records each choice Task 98's counts settled.
+- **Enforce it** (`tests/unit/standard/`): structure, names, verbs and guards; one write path, one read path, no raw key listeners or timers where the packages apply, `AppError` for refusals, thin routes, import boundaries, documented exports of the shared folders. Biome rules (restricted imports, a GritQL plugin if Biome supports it here) for what a linter sees better than a test.
+- **Ratchets:** each test reads `tests/unit/standard/known-deviations.json`, made from Task 98's lists. A new deviation fails. A fixed one still listed fails too. Task 127 deletes the file's mechanism when the lists are empty.
+- **AI rules that are in the repo, not in one machine's memory:**
+  - CLAUDE.md rewritten around "MUST" and "NEVER" lines and a "before you write code" checklist, still short, pointing at the guides;
+  - `AGENTS.md` pointing other tools at the same rules;
+  - path-scoped rules for routes, functions, server code, features, tests, messages and migrations (check Claude Code's current docs for rule files, skills and hooks);
+  - project skills for the repeated jobs: a new feature, a server function, a migration, running the gates, running a PLAN task (the effort question, targeted gates, worker caps, one commit on `main`);
+  - hooks that run Biome and the standard's tests on what a session edited.
+- **The generator:** `pnpm new:feature` emits the standard exactly, and `--in <product>` makes a product's module. CI's template job runs both.
+- **Tests:** the standard's tests themselves have tests (a fixture tree with one of each deviation).
+
+### Task 101: Structure and names everywhere
+
+**Goal:** every file in its standard place with its standard name, in one move. Behaviour does not change.
+
+- **One codemod** (`scripts/codemods/part9-structure.ts`, kept for reference): moves and renames files and exports for every layer, rewrites imports, and updates what holds paths as strings: `knip.json`, `scripts/strip-demo.ts`'s specs, Storybook's mocks, the guard tests' lists, lazy imports, `vite.config.ts`, the guides and CLAUDE.md.
+- **Covers:** components into `components/`, `collections.ts` to `collection.ts`, server files to `repository.ts` and `service.ts` in a folder per module, function verbs and guard names per 15.5, test files' names, message key prefixes that break the rule.
+- **Renamed server functions** keep working for open tabs: check how Start derives a function's id, and say in the summary whether a deploy invalidates open pages.
+- **Database names don't change here.** A table or column rename is a migration with a cost; Task 104 decides each.
+- **Gates:** typecheck, check, knip, the full `pnpm test` and Storybook (a move can break any import), e2e for one flow per layer, the template matrix. The structure and name lists in the ratchets are empty afterwards.
+
+### Task 102: Packages: upgrades, Pacer, Hotkeys, replacements
+
+**Goal:** current versions, and maintained packages where they beat our own code.
+
+- **Upgrades,** one at a time with the gates: TypeScript 7 (if Task 99 didn't), TanStack DB 1.0 (the release candidate only if its notes say it is safe to ship), Start, Router, Query, Vitest, Nitro, Storybook, Biome and the rest. Record every surprise.
+- **TanStack Pacer** (`@tanstack/react-pacer`, and `@tanstack/pacer` on the server):
+  - `PacerProvider` with the app's defaults;
+  - replaces `useDebouncedValue` and the hand-written timers in the filter bar, the async combobox, the slug field and the validators (a form's own `asyncDebounceMs` stays);
+  - throttles what fires fast: scroll, resize and drag handlers, progress pulses, and the refetches that polling, `rev` and realtime events trigger (the "loader throttling" the owner asked for: a burst of events reloads a route's data once);
+  - queues uploads with a concurrency; a per-row queue is Task 105's;
+  - on the server, Chaal's lanes and cooldown and TMDB's pacing move to it only if the tests show the same behaviour.
+- **TanStack Hotkeys** (`@tanstack/react-hotkeys`): `HotkeysProvider`; `use-hotkeys.ts` goes; every shortcut is registered with a name and a group, so the shortcuts dialog lists what is really bound (`useHotkeyRegistrations`, `formatForDisplay`); sequences (`g` then `h`) where a product wants them. The server-rendered label and its fixed-width `Kbd` (no layout shift) must survive.
+- **Replacements** by Task 98's verdicts. Each needs a test that our stored data behaves the same (order keys made by `fractional-index.ts` must still sort between their neighbours), the CSP still holds (no eval, no blob workers), and the bundle does not grow on every page.
+- **Shown:** a `/dev/examples` page for Pacer, for Hotkeys and for each replacement, and `/dev/stack` updated.
+
+### Task 103: Server core: requests, errors, auth, logs
+
+**Goal:** one request path, one error shape, one way to log, for server functions and server routes alike.
+
+- **Errors, end to end:** one envelope (`code`, `reason`, `message`, `fieldErrors`, `requestId`) from every server function and every route. Database errors (unique, foreign key, serialization), Zod errors and outside APIs' errors each map to an `AppError` in one place. Nothing expected reaches the client as a 500, and nothing internal leaks in a message.
+- **Server routes:** `defineApiRoute` (method, auth or secret, rate limit, body limit, errors as problem JSON, the log line) and `defineCron` (the secret, one run at a time, named steps, timing, failures reported). All sixteen Nitro routes and the `/api` routes use them.
+- **Request scope:** the id, the user, the locale, the start time; a `Server-Timing` header; a slow-request log line; timeouts.
+- **Calls out:** one helper for TMDB, Lichess, Cloudinary, Resend, Turnstile and PostHog: a timeout, retries with backoff, an abort signal, a host allowlist (no SSRF), a size cap, logs without tokens.
+- **Auth:** Better Auth's settings against its current docs (cookies, rotation, limits, two-factor, the account's life), the guards' names per 15.5, and what a page shows when a session ends while it is open.
+- **Logs:** standard fields, secrets and personal data redacted, the cause chain kept, unhandled rejections caught by a Nitro plugin. **The browser's errors reach the server log** through a small rate-limited endpoint when Sentry is off, with the request id.
+- **Tests:** a contract test made from the guard test's list, for every function: anonymous is `UNAUTHORIZED`, the wrong role `FORBIDDEN`, bad input `VALIDATION` with field errors, always in the envelope. Each route: method, secret, errors.
+- **Docs:** `routing-data.md`, `security.md`, `observability.md`.
+
+### Task 104: Data core: repositories, migrations, seeds
+
+**Goal:** every table read and written the same way, and migrations and seeds a developer can trust.
+
+- **Repositories and services:** the helpers in `src/server/db/crud.ts` and `list.ts` (`findOrThrow`, `listPage`, `updateVersioned`, `withAudit`, `cursorPaginate`) used by every layer or the reason recorded; one transaction helper; a test helper that counts a service call's queries (`expectQueries`), with budgets on the lists.
+- **Indexes:** `pnpm db:explain` runs each list's and search's SQL on a volume seed and fails over a time budget. Missing indexes are added.
+- **Migrations:** the naming rule; additive first, backfill, drop in a later one; shipped files never edited; a lint for dangerous SQL (squawk, or our own rules if it does not fit PGlite and drizzle-kit's output); an **upgrade test** that migrates a seeded snapshot of the previous schema and checks the data; a destructive-change checklist in the guide. Table and column renames that 15.5 asks for are decided one by one, by cost.
+- **Seeds:** one entry, `pnpm db:seed <name|all> [--reset]`, over a seed kit (stable ids, upserts, safe to run twice, both languages, passwords from a flag, a refusal to touch production without a second flag). Each layer's seed has the same shape, the guests' seeds share its generators, and `--volume` makes the data the explain and performance tests use. A test runs each seed twice and compares.
+- **The client:** the driver and pool settings for Vercel and Neon, a statement timeout, retries on a dropped connection or a serialization failure.
+- **Docs:** a new `docs/guides/database.md`; `deployment.md` points at it.
+
+### Task 105: Writes: the optimistic engine
+
+**Goal:** one write path for every layer, optimistic by 15.6's rules, proved on the hardest cases before the layers adopt it.
+
+- **Research:** TanStack DB's current docs (transactions, optimistic actions, inserts, what 1.0 changed, its SSR story), Query's paused and retried mutations, and how Linear-style apps separate a refusal from a network failure. The decision records what was chosen and what was not.
+- **The engine:** today's `useCrudMutation` grown into the one hook (renamed if its job outgrows the name):
+  - inserts, updates and deletes on collections, with client ids;
+  - *refused* against *unknown* failures, the retry policy, and the "saving" and "failed" marks on a row;
+  - a queue per row (Pacer), so versions chain;
+  - Undo for deletes; pending marks for server-only values;
+  - **where a created row shows** in a filtered, sorted, paged list, which the client can't know: settle one rule (for example, at the top with a "saving" mark until the refetch places it) and record it;
+  - the standard toasts, and the form path (`useCrudForm`): a refused create reopens the form with the input and the field errors.
+- **The server's half:** creates accept a client id (format checked, a repeat by the same owner returns the row), and every write is safe to retry.
+- **Proved on:** Test CRUD (the reference: create, edit, publish, delete, bulk), a form with a server-only refusal (a slug taken, a quota), a Kharcha expense (the ledger and balances computed by the shared money core), and fast edits of one Taskline task (versions).
+- **Tests:** unit tests for the engine (each failure kind, the queue, rollback, retry), a Storybook story per state, an e2e flow that drops the network mid-write.
+- **Docs:** `state.md` and `crud.md`; the `/dev/examples/optimistic` page shows every case; the ratchet lists each write's 15.6 class.
+
+### Task 106: Reads: loaders, SSR, lists, generic pages
+
+**Goal:** every page arrives rendered with its data, lists page and filter the same way everywhere, and every failure has a proper page.
+
+- **"The first load asks for nothing":** the e2e review asserts that no server-function request leaves the page between navigation and idle, for every reviewed page. Live pages are listed with their reason.
+- **Server HTML has the content:** with JavaScript off, every public page shows its data and every private page's HTML holds its rows, not skeletons. `no-js.spec.ts` grows from two tests to the whole list.
+- **Query and Router defaults:** `staleTime` by kind of data, no retry on an `AppError`, global error handlers on the caches, preload on intent, pending thresholds, view transitions, the previous page's rows kept while the next page loads, the next page prefetched.
+- **Lists:** every list under the list contract or the cursor contract; search debounced through Pacer into the URL; the filter bar working without JavaScript everywhere; long lists virtualized (`@tanstack/react-virtual`) with their first rows server-rendered.
+- **Refetches are paced** (Pacer): polling, `rev`, realtime events and window focus reload a route's data once per burst.
+- **Generic pages,** one component with a variant per code, themed by each section's shell, in both languages, each with the request id and a way forward: sign in (401), forbidden (403), not found (404), conflict (409), slow down (429), something broke (500), offline, maintenance (a flag), feature turned off, session ended. Static `404` and `500` files for when the server itself fails. All of them are in the e2e review.
+- **Docs:** `routing-data.md`, `search-filters-masking.md`, `state.md`.
+
+### Task 107: The kit: full-width layout, page anatomy, keyboard
+
+**Goal:** the shared components give every app and admin page the same anatomy, the full width, and the keyboard.
+
+- **Width policy:** app and admin pages fill their content area at every size up to 1920. Lists and dashboards are fluid. A form is two columns with a side rail (help, meta, activity), not a narrow column in the middle. A detail page is a main column and an aside. A reading measure limits a block of text, never the page. `narrow` stays for the auth pages and long reading only. The apps layout and the product frames follow.
+- **Anatomy:** header (title, description, the primary action), toolbar (search, filters, views), content, pagination, and the five states. `CrudListPage`, `DetailLayout`, `SettingsLayout` and `FormLayout` are the only ways to lay a page out.
+- **Components:** the table (keyboard rows, selection, sticky header, density), filter chips, pagination, dialog against sheet (one rule), toasts with Undo, confirm, skeletons that match the final layout, empty states with a next step.
+- **Keyboard:** one global map in every shell (palette, search, the shortcuts dialog, go-to sequences, create, edit, delete, save, submit, close, next and previous), per-section additions, and a preference that turns single-key shortcuts off (WCAG 2.1.4).
+- **Accessibility:** WCAG 2.2 AA for the kit: focus order and return, target sizes, reduced motion, forced colours.
+- **Storybook:** every kit component with every state. **Docs:** `design-system.md`, `tables-filters.md`, `forms.md`.
+
+### Task 108: Shared patterns of the products move to the core
+
+**Goal:** what two or more products built separately becomes one core piece, so each product does it the same way.
+
+- **Candidates** (Task 98's copy report decides): access resolvers and their refusal reasons, the access-matrix test helper, activity logs, notifications written in the transaction and delivered after it commits (`produce`, `deliver`), comments and mentions, invites and joining, `rev` freshness, settings rows with a version, daily counts for an admin overview, guest data, the admin overview's page.
+- **The rule:** extract when two products share most of the logic; otherwise only align the names and the shape. No abstraction with one user.
+- **Each extraction:** tests first on both products, then the move, then the products' tests still green. Layer independence holds: the shared piece is core and unmarked, and each `--keep-*` row of the matrix passes.
+
+### Task 109: The Learn page and the examples
+
+**Goal:** `/dev/learn` tells a developer, or an AI session, everything needed to work here, and cannot go stale.
+
+- **A path, in order:** run it; the map (folders, files, names, what goes where); a request end to end; build a feature step by step (schema, migration, repository, service, functions, queries, route, list, form, permissions, tests, stories, messages, docs), each step with its file, the helper to use and code taken from Test CRUD's real files by markers; tables and filters; forms; writes; state; errors; i18n; auth and RBAC; tests and the gates; the packages we use and why; the products' layers; checklists (a new page, function, table, message); the rules for AI sessions.
+- **A reference, generated** from the source: every export of the shared folders (`src/lib`, `src/hooks`, `src/components/*`, `src/middleware`, `src/server/db`, `src/server/http`, `tests/utils`, `scripts`) with its signature, its doc comment, an example, its source file, its guide and its live example. A standard test fails when a shared export has no doc comment.
+- **Search,** deep links and copy buttons.
+- **"This page" in the devtools:** the route's file, its feature folder, its loader's queries, its permission and its guide.
+- **`/dev/examples`:** one working page per module, the list complete (a test checks it against the shared folders).
+- **Docs:** README and CLAUDE.md point at it.
+
+### Task 110: Core features and the admin to the standard
+
+15.7's checklist for: Test CRUD (the reference, which must show every rule), RBAC, the audit log, media and attachments, auth and the account, the dashboard and settings, flags, the stack page, `/dev`, and the portfolio's admin (its public side is Tasks 120–122).
+
+- **The old plan's gaps** that Task 98 mapped here are closed.
+- **The admin's UX:** the sidebar's order and names, a dashboard that says something useful, and the same list, detail and form patterns on every page.
+- **The generator's output** and Test CRUD are the same code, line for line where they can be.
+
+### Task 111: The showcase apps and the apps gallery
+
+- **15.7's checklist** for Notes, Links, Habits and Forms.
+- **The gallery** (`/apps`, the switcher, the sitemap, `/admin/apps`): Taskline, Kharcha, Parda and Chaal as cards beside the four apps, each from its own layer's markers so a stripped layer's card goes with it. The registry gains the products as entries with their own address.
+- **The redirect routes go:** `/apps/kanban`, `/apps/kanban/$boardId` and `/apps/expenses/$`, with a decision that supersedes those lines of 0210 and 0289.
+- **The apps layout** at full width; the landings and the guest's first minute polished.
+
+### Tasks 112, 114, 116, 118: a product to the standard
+
+One task per product: **112 Taskline, 114 Kharcha, 116 Parda, 118 Chaal.** Each is 15.7's checklist for that layer. What is particular:
+
+- **Taskline (112):** 66 raw writes to the engine; the board's `queryCollectionOptions` collections and the admin's `crudCollection` ones under one rule; realtime events paced; automations and notifications on Task 108's core pieces.
+- **Kharcha (114):** 44 raw writes; balances and debts computed optimistically by the money core; `rev` polling paced; eleven `as unknown as` casts in its server code gone; `useKharchaActions` on the hotkey registry.
+- **Parda (116):** the catalogue stays the only door to TMDB; the library's writes (lists, progress, ratings) optimistic; progress pulses throttled; the player's keys on the registry.
+- **Chaal (118):** 107 `useQuery` calls each given its reason or moved to a loader; 51 effects reviewed; the Lichess client's pacing by Task 102's verdict; the board's own keys kept and listed in the dialog.
+
+### Tasks 113, 115, 117, 119: a product's UX pass
+
+One task per product, after its standard task. The design flow of 15.7. Each starts from a walkthrough: the product's ten most common jobs, done by mouse, by keyboard and on a phone, with the steps counted and every stumble fixed.
+
+- **Taskline (113):** no redesign is on record (0226), so the walkthrough leads.
+- **Kharcha (115):** 0291's redesigns: the desktop thread with its list and third column, the expense panel's content, the split editor as its own step, the phone thread's header.
+- **Parda (117):** 0244's watch page chrome. The placeholder servers stay (0228).
+- **Chaal (119):** 0275's redesigns: the desktop game page, the home, the play hub, the puzzle page.
+- **Each ends** with the `impeccable-finish-reviewer` against the product's contract, and its design record updated.
+
+### Task 120: Portfolio: direction, content, comps
+
+- **Ask the owner first** for the bio, role, location, links, photo, CV and anything true worth showing. What is missing stays a marked placeholder.
+- **Content model:** Home, Work, a case study, About, Contact, a link to `/apps`, a printable CV. The Journal stays only if there are real posts. Taskline, Parda, Chaal and Kharcha are the case studies (the problem, what was built, how, the numbers from 0227, 0245, 0276 and 0292, real screens, "Open the app"); the template itself and the four small apps are shorter entries. Parda's says plainly that its servers are a placeholder.
+- **Direction:** three distinct comps as static pages in `.impeccable/mocks/portfolio/`, in en and ne, light and dark, phone and desktop. The owner picks one. Then tokens, type (a Latin and Devanagari pair), motion rules and a mark.
+- **Kept:** bilingual, server-rendered, the strict CSP, CLS at most 0.01, content edited in the admin, the strip markers.
+
+### Task 121: Portfolio: the new design system and every page
+
+- The picked direction built: tokens and CSS in place of `himal.css`, primitives, the chrome, every page, the art, OG images, fonts within the preload budget.
+- Himal's code that nothing uses is removed. `docs/guides/portfolio.md` and the surface's contract are rewritten.
+- Stories, tests, the e2e review of every page. Lighthouse mobile at 95 or more on every page, by the median.
+
+### Task 122: Portfolio: case studies, admin, SEO, finish review
+
+- **Screens** of the four products taken by a script (fixed sizes, both languages and themes), so they can be retaken after a change.
+- **The case studies** in both languages; admin editors and a migration for any new field; the seed (`pnpm db:seed portfolio`) with Amrit Kuikel's content in place of the demo persona.
+- **SEO:** person, profile and work structured data, the sitemap, OG images. The contact form.
+- **Finish:** the `impeccable-finish-reviewer`, then the documenter (`docs/design/portfolio.md`).
+
+### Task 123: Tests: coverage floors and new kinds
+
+- **Floors:** from Task 98's numbers and what Tasks 100–122 added, a floor per area in `vitest.config.ts`, enforced in CI. "Full" means every server service, every access rule, every shared helper and every write path's failure kinds are tested; the summary lists what is deliberately not.
+- **Gaps closed,** area by area, from the coverage report.
+- **New kinds, each kept only if it finds something:** property tests for the list contract, order keys and the access resolvers; mutation testing on the money core, the list contract and access (the survivors killed); keyboard-only flows for every product; a small load test of the hottest endpoints with a p95 budget; visual snapshots of the kit and the portfolio, adopted only if they are stable in CI three runs in a row.
+- **`pnpm test:coverage`** joins CI.
+
+### Task 124: Performance: measured and tuned
+
+- **Measure** on the production build: Lighthouse for every landing and the portfolio; LCP, INP and CLS; a route change from click to content; server-function p95; queries and round trips per loader; the bundle per route.
+- **Tune:** what can leave the entry; a loader's queries in one round trip; the function's region next to the database's; cache headers for public pages; images and fonts; anything the numbers name.
+- **Budgets in CI:** a route change, the entry, a route, the query counts. A decision records before and after.
+
+### Task 125: Security review of the whole app
+
+- **Start with the open findings** in `security-review.local/`: fix each, with a test, and update its status table. Details stay out of commits and docs until the fix ships.
+- **Then a fresh review,** area by area: authentication and sessions; authorization (every function in a guard or access test; other people's ids); input validation; uploads; HTML and rich text; CSRF; redirects; SSRF in calls out; tokens and invites (length, expiry, single use); rate limits on every unauthenticated write; cron secrets; headers and the CSP; cookies; logs free of secrets; impersonation; consent and privacy.
+- **Dependencies and secrets:** `pnpm audit`, a secret scan of the history, and both in CI with a code scanner.
+- **Docs:** a threat model in `security.md`; `SECURITY.md`. With the owner's word, area sweeps can run as subagents.
+
+### Task 126: Code review of the whole app
+
+- **By layer** (the core, the admin, the apps, each product, the portfolio, scripts and tests), with the `code-review` skill at high effort. The owner can also run `/code-review ultra`, which is theirs to start.
+- **Looks for:** wrong behaviour, races, missing error paths, dead code, copies, needless complexity, weak types (no `as unknown as` left, every `biome-ignore` justified), effects that should be derived state, names.
+- **Every confirmed finding fixed,** with a test where it was a bug. A decision holds the table. May be split in two (126a the core and the small layers, 126b the products).
+
+### Task 127: Wrap-up
+
+- **Every suite in full,** and the template matrix: each `--keep-*` row and all layers.
+- **The ratchets' lists are empty** and the mechanism is removed.
+- **Measured again** against Task 98: a before and after table for every gate's time, coverage, the bundle, Lighthouse and the query budgets, as a decision.
+- **Docs:** every guide, CLAUDE.md, README and the Learn page say what the code does; the decisions index is regenerated.
+- **The scorecard** (`docs/history/part9-scorecard.md`): each claim (uniform, fast, server-rendered, safe, tested, documented, easy to learn) with the test or the number that proves it, and what is left for the owner.
+
+**Out of scope for Part 9:**
+- new products, and features beyond those named here;
+- local-first sync, offline use and native apps;
+- real video sources for Parda (0228);
+- a change of framework, ORM, auth library or host;
+- a new design system for the admin and the apps (Graphite stays; the portfolio's is the only new one);
+- AI features;
+- renaming a product or changing its address.
