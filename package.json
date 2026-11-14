@@ -46,7 +46,7 @@
 		"prepare": "node scripts/install-hooks.mjs"
 	},
 	"dependencies": {
-		"@better-auth/drizzle-adapter": "^1.7.6",
+		"@better-auth/drizzle-adapter": "^1.7.20",
 		"@dnd-kit/dom": "0.5.1",
 		"@dnd-kit/react": "0.5.1",
 		"@fontsource-variable/anek-devanagari": "5.3.0",
@@ -82,7 +82,7 @@
 		"@vercel/analytics": "^2.0.1",
 		"@vercel/functions": "^3.9.9",
 		"ably": "^2.30.0",
-		"better-auth": "^1.7.6",
+		"better-auth": "^1.7.20",
 		"chess.js": "1.4.0",
 		"class-variance-authority": "^0.7.1",
 		"clsx": "^2.1.1",
@@ -143,7 +143,7 @@
 		"@vitest/browser": "5.0.3",
 		"@vitest/browser-playwright": "5.0.3",
 		"@vitest/coverage-v8": "5.0.3",
-		"auth": "^1.7.6",
+		"auth": "^1.7.20",
 		"babel-plugin-react-compiler": "1.0.0",
 		"drizzle-kit": "^0.31.11",
 		"jsdom": "^30.1.1",
