@@ -5,6 +5,7 @@
  */
 import AxeBuilder from "@axe-core/playwright";
 import type { Page } from "@playwright/test";
+import { startAudit } from "./audit.ts";
 import { expect } from "./fixtures.ts";
 
 /** WCAG 2.2 AA plus axe's best practices. */
@@ -24,6 +25,8 @@ export async function reviewPage(
 	await page.goto(url, { waitUntil: "load" });
 	// A live page (Chaal's TV, Task 82) keeps a stream open, so the network is never idle: the load,
 	// then a quiet moment for hydration and the lazy parts.
+	// Off unless AUDIT_DIR is set (Part 9 Task 98): what the measured load asks the server for, and the page's layout.
+	const audit = startAudit(page);
 	const response = await page.goto(url, { waitUntil: live ? "load" : "networkidle" });
 	if (live) await page.waitForTimeout(LIVE_SETTLE_MS);
 	expect(response?.status(), `HTTP status of ${url}`).toBe(status);
@@ -59,6 +62,8 @@ export async function reviewPage(
 				.join(", ")}`,
 	);
 	expect.soft(violations, "axe violations").toEqual([]);
+
+	await audit?.finish();
 
 	// Keyboard: the first tab stop is a skip link whose target is the page's <main>.
 	// After axe, so the focused (now visible) link can't affect the checks above.

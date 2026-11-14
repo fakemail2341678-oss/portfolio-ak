@@ -1,0 +1,1307 @@
+{
+	"generated": "node scripts/audit/errors.ts",
+	"appErrorHelpers": [
+		"AppError",
+		"LichessAuthError",
+		"activeError",
+		"completedError",
+		"conflict",
+		"disabled",
+		"duplicate",
+		"duplicateBudget",
+		"fieldError",
+		"forbidden",
+		"gone",
+		"linkError",
+		"lockedError",
+		"missing",
+		"nameTaken",
+		"normalizeServerError",
+		"notFound",
+		"notMemberError",
+		"parentError",
+		"quotaError",
+		"reconnect",
+		"referenceError",
+		"refuseGuest",
+		"refusePublish",
+		"reused",
+		"roleSaveError",
+		"ruleError",
+		"saveError",
+		"slugTaken",
+		"slugTakenError",
+		"splitError",
+		"staleError",
+		"tooMany",
+		"unavailable",
+		"uniqueViolation",
+		"waitError"
+	],
+	"throws": {
+		"byKind": {
+			"an AppError": 528,
+			"a bare Error": 63,
+			"a rethrow": 43,
+			"a class of its own": 17,
+			"something else": 10,
+			"a helper that is not an AppError": 5
+		},
+		"bare": [
+			{
+				"file": "src/functions/examples.ts",
+				"line": 107,
+				"layer": "dev",
+				"kind": "a bare Error",
+				"what": "Error"
+			},
+			{
+				"file": "src/functions/stack.ts",
+				"line": 19,
+				"layer": "dev",
+				"kind": "a bare Error",
+				"what": "Error"
+			},
+			{
+				"file": "src/server/apps/forms/repository.ts",
+				"line": 67,
+				"layer": "apps",
+				"kind": "a bare Error",
+				"what": "Error"
+			},
+			{
+				"file": "src/server/apps/forms/service.ts",
+				"line": 57,
+				"layer": "apps",
+				"kind": "a bare Error",
+				"what": "Error"
+			},
+			{
+				"file": "src/server/apps/habits/service.ts",
+				"line": 105,
+				"layer": "apps",
+				"kind": "a bare Error",
+				"what": "Error"
+			},
+			{
+				"file": "src/server/apps/links/service.ts",
+				"line": 52,
+				"layer": "apps",
+				"kind": "a bare Error",
+				"what": "Error"
+			},
+			{
+				"file": "src/server/apps/links/service.ts",
+				"line": 73,
+				"layer": "apps",
+				"kind": "a bare Error",
+				"what": "Error"
+			},
+			{
+				"file": "src/server/apps/notes/service.ts",
+				"line": 70,
+				"layer": "apps",
+				"kind": "a bare Error",
+				"what": "Error"
+			},
+			{
+				"file": "src/server/attachments/cloudinary.ts",
+				"line": 99,
+				"layer": "core",
+				"kind": "a bare Error",
+				"what": "Error"
+			},
+			{
+				"file": "src/server/attachments/cloudinary.ts",
+				"line": 121,
+				"layer": "core",
+				"kind": "a bare Error",
+				"what": "Error"
+			},
+			{
+				"file": "src/server/attachments/cloudinary.ts",
+				"line": 124,
+				"layer": "core",
+				"kind": "a bare Error",
+				"what": "Error"
+			},
+			{
+				"file": "src/server/attachments/repository.ts",
+				"line": 37,
+				"layer": "core",
+				"kind": "a bare Error",
+				"what": "Error"
+			},
+			{
+				"file": "src/server/email/send.ts",
+				"line": 35,
+				"layer": "core",
+				"kind": "a bare Error",
+				"what": "Error"
+			},
+			{
+				"file": "src/server/env.ts",
+				"line": 16,
+				"layer": "core",
+				"kind": "a bare Error",
+				"what": "Error"
+			},
+			{
+				"file": "src/server/examples/jobs.ts",
+				"line": 46,
+				"layer": "core",
+				"kind": "a bare Error",
+				"what": "Error"
+			},
+			{
+				"file": "src/server/kharcha/conversations/service.ts",
+				"line": 293,
+				"layer": "kharcha",
+				"kind": "a bare Error",
+				"what": "Error"
+			},
+			{
+				"file": "src/server/kharcha/conversations/service.ts",
+				"line": 305,
+				"layer": "kharcha",
+				"kind": "a bare Error",
+				"what": "Error"
+			},
+			{
+				"file": "src/server/kharcha/expenses/repository.ts",
+				"line": 107,
+				"layer": "kharcha",
+				"kind": "a bare Error",
+				"what": "Error"
+			},
+			{
+				"file": "src/server/kharcha/groups/service.ts",
+				"line": 224,
+				"layer": "kharcha",
+				"kind": "a bare Error",
+				"what": "Error"
+			},
+			{
+				"file": "src/server/kharcha/guest-data.ts",
+				"line": 354,
+				"layer": "kharcha",
+				"kind": "a bare Error",
+				"what": "Error"
+			},
+			{
+				"file": "src/server/kharcha/guest-data.ts",
+				"line": 417,
+				"layer": "kharcha",
+				"kind": "a bare Error",
+				"what": "Error"
+			},
+			{
+				"file": "src/server/kharcha/payments/service.ts",
+				"line": 99,
+				"layer": "kharcha",
+				"kind": "a bare Error",
+				"what": "Error"
+			},
+			{
+				"file": "src/server/kharcha/recurring/service.ts",
+				"line": 210,
+				"layer": "kharcha",
+				"kind": "a bare Error",
+				"what": "Error"
+			},
+			{
+				"file": "src/server/parda/catalog/hubs.ts",
+				"line": 195,
+				"layer": "parda",
+				"kind": "a bare Error",
+				"what": "Error"
+			},
+			{
+				"file": "src/server/parda/catalog/people.ts",
+				"line": 174,
+				"layer": "parda",
+				"kind": "a bare Error",
+				"what": "Error"
+			},
+			{
+				"file": "src/server/parda/profiles/repository.ts",
+				"line": 21,
+				"layer": "parda",
+				"kind": "a bare Error",
+				"what": "Error"
+			},
+			{
+				"file": "src/server/parda/profiles/repository.ts",
+				"line": 66,
+				"layer": "parda",
+				"kind": "a bare Error",
+				"what": "Error"
+			},
+			{
+				"file": "src/server/plugins/validate-env.ts",
+				"line": 19,
+				"layer": "core",
+				"kind": "a bare Error",
+				"what": "Error"
+			},
+			{
+				"file": "src/server/portfolio/messages-repository.ts",
+				"line": 40,
+				"layer": "portfolio",
+				"kind": "a bare Error",
+				"what": "Error"
+			},
+			{
+				"file": "src/server/rbac/repository.ts",
+				"line": 131,
+				"layer": "core",
+				"kind": "a bare Error",
+				"what": "Error"
+			},
+			{
+				"file": "src/server/rbac/repository.ts",
+				"line": 210,
+				"layer": "core",
+				"kind": "a bare Error",
+				"what": "Error"
+			},
+			{
+				"file": "src/server/taskline/admin/invitations.ts",
+				"line": 129,
+				"layer": "taskline",
+				"kind": "a bare Error",
+				"what": "Error"
+			},
+			{
+				"file": "src/server/taskline/admin/invitations.ts",
+				"line": 271,
+				"layer": "taskline",
+				"kind": "a bare Error",
+				"what": "Error"
+			},
+			{
+				"file": "src/server/taskline/admin/settings.ts",
+				"line": 245,
+				"layer": "taskline",
+				"kind": "a bare Error",
+				"what": "Error"
+			},
+			{
+				"file": "src/server/taskline/automations/repository.ts",
+				"line": 88,
+				"layer": "taskline",
+				"kind": "a bare Error",
+				"what": "Error"
+			},
+			{
+				"file": "src/server/taskline/automations/repository.ts",
+				"line": 94,
+				"layer": "taskline",
+				"kind": "a bare Error",
+				"what": "Error"
+			},
+			{
+				"file": "src/server/taskline/collab/repository.ts",
+				"line": 40,
+				"layer": "taskline",
+				"kind": "a bare Error",
+				"what": "Error"
+			},
+			{
+				"file": "src/server/taskline/collab/repository.ts",
+				"line": 50,
+				"layer": "taskline",
+				"kind": "a bare Error",
+				"what": "Error"
+			},
+			{
+				"file": "src/server/taskline/fields/repository.ts",
+				"line": 69,
+				"layer": "taskline",
+				"kind": "a bare Error",
+				"what": "Error"
+			},
+			{
+				"file": "src/server/taskline/fields/repository.ts",
+				"line": 79,
+				"layer": "taskline",
+				"kind": "a bare Error",
+				"what": "Error"
+			},
+			{
+				"file": "src/server/taskline/projects/repository.ts",
+				"line": 136,
+				"layer": "taskline",
+				"kind": "a bare Error",
+				"what": "Error"
+			},
+			{
+				"file": "src/server/taskline/projects/repository.ts",
+				"line": 147,
+				"layer": "taskline",
+				"kind": "a bare Error",
+				"what": "Error"
+			},
+			{
+				"file": "src/server/taskline/projects/updates.ts",
+				"line": 70,
+				"layer": "taskline",
+				"kind": "a bare Error",
+				"what": "Error"
+			},
+			{
+				"file": "src/server/taskline/sandbox.ts",
+				"line": 248,
+				"layer": "taskline",
+				"kind": "a bare Error",
+				"what": "Error"
+			},
+			{
+				"file": "src/server/taskline/sprints/repository.ts",
+				"line": 131,
+				"layer": "taskline",
+				"kind": "a bare Error",
+				"what": "Error"
+			},
+			{
+				"file": "src/server/taskline/sprints/repository.ts",
+				"line": 141,
+				"layer": "taskline",
+				"kind": "a bare Error",
+				"what": "Error"
+			},
+			{
+				"file": "src/server/taskline/tasks/repository.ts",
+				"line": 211,
+				"layer": "taskline",
+				"kind": "a bare Error",
+				"what": "Error"
+			},
+			{
+				"file": "src/server/taskline/tasks/repository.ts",
+				"line": 268,
+				"layer": "taskline",
+				"kind": "a bare Error",
+				"what": "Error"
+			},
+			{
+				"file": "src/server/taskline/templates/repository.ts",
+				"line": 39,
+				"layer": "taskline",
+				"kind": "a bare Error",
+				"what": "Error"
+			},
+			{
+				"file": "src/server/taskline/templates/service.ts",
+				"line": 103,
+				"layer": "taskline",
+				"kind": "a bare Error",
+				"what": "Error"
+			},
+			{
+				"file": "src/server/taskline/time/repository.ts",
+				"line": 92,
+				"layer": "taskline",
+				"kind": "a bare Error",
+				"what": "Error"
+			},
+			{
+				"file": "src/server/taskline/time/repository.ts",
+				"line": 110,
+				"layer": "taskline",
+				"kind": "a bare Error",
+				"what": "Error"
+			},
+			{
+				"file": "src/server/taskline/time/service.ts",
+				"line": 143,
+				"layer": "taskline",
+				"kind": "a bare Error",
+				"what": "Error"
+			},
+			{
+				"file": "src/server/taskline/timeline/repository.ts",
+				"line": 63,
+				"layer": "taskline",
+				"kind": "a bare Error",
+				"what": "Error"
+			},
+			{
+				"file": "src/server/taskline/timeline/repository.ts",
+				"line": 73,
+				"layer": "taskline",
+				"kind": "a bare Error",
+				"what": "Error"
+			},
+			{
+				"file": "src/server/taskline/views/repository.ts",
+				"line": 73,
+				"layer": "taskline",
+				"kind": "a bare Error",
+				"what": "Error"
+			},
+			{
+				"file": "src/server/taskline/views/repository.ts",
+				"line": 83,
+				"layer": "taskline",
+				"kind": "a bare Error",
+				"what": "Error"
+			},
+			{
+				"file": "src/server/taskline/workflow/repository.ts",
+				"line": 61,
+				"layer": "taskline",
+				"kind": "a bare Error",
+				"what": "Error"
+			},
+			{
+				"file": "src/server/taskline/workflow/repository.ts",
+				"line": 71,
+				"layer": "taskline",
+				"kind": "a bare Error",
+				"what": "Error"
+			},
+			{
+				"file": "src/server/taskline/workflow/repository.ts",
+				"line": 120,
+				"layer": "taskline",
+				"kind": "a bare Error",
+				"what": "Error"
+			},
+			{
+				"file": "src/server/taskline/workflow/service.ts",
+				"line": 122,
+				"layer": "taskline",
+				"kind": "a bare Error",
+				"what": "Error"
+			},
+			{
+				"file": "src/server/taskline/workspace/repository.ts",
+				"line": 38,
+				"layer": "taskline",
+				"kind": "a bare Error",
+				"what": "Error"
+			},
+			{
+				"file": "src/server/taskline/workspace/repository.ts",
+				"line": 55,
+				"layer": "taskline",
+				"kind": "a bare Error",
+				"what": "Error"
+			}
+		],
+		"other": [
+			{
+				"file": "src/server/apps/notes/service.ts",
+				"line": 100,
+				"layer": "apps",
+				"kind": "something else",
+				"what": "error instanceof AttachmentLinkError\n\t\t\t\t? ruleError(\"BAD_RE"
+			},
+			{
+				"file": "src/server/attachments/repository.ts",
+				"line": 94,
+				"layer": "core",
+				"kind": "a class of its own",
+				"what": "AttachmentLinkError"
+			},
+			{
+				"file": "src/server/attachments/repository.ts",
+				"line": 111,
+				"layer": "core",
+				"kind": "a class of its own",
+				"what": "AttachmentLinkError"
+			},
+			{
+				"file": "src/server/attachments/service.ts",
+				"line": 85,
+				"layer": "core",
+				"kind": "something else",
+				"what": "formatOk\n\t\t\t? ruleError(\n\t\t\t\t\t\"BAD_REQUEST\",\n\t\t\t\t\t\"Upload to"
+			},
+			{
+				"file": "src/server/auth/auth.ts",
+				"line": 213,
+				"layer": "core",
+				"kind": "a class of its own",
+				"what": "APIError"
+			},
+			{
+				"file": "src/server/auth/hooks.ts",
+				"line": 29,
+				"layer": "core",
+				"kind": "a class of its own",
+				"what": "APIError"
+			},
+			{
+				"file": "src/server/auth/hooks.ts",
+				"line": 44,
+				"layer": "core",
+				"kind": "a class of its own",
+				"what": "APIError"
+			},
+			{
+				"file": "src/server/auth/hooks.ts",
+				"line": 65,
+				"layer": "core",
+				"kind": "a class of its own",
+				"what": "APIError"
+			},
+			{
+				"file": "src/server/auth/hooks.ts",
+				"line": 68,
+				"layer": "core",
+				"kind": "a class of its own",
+				"what": "APIError"
+			},
+			{
+				"file": "src/server/chaal/analysis/lichess.ts",
+				"line": 126,
+				"layer": "chaal",
+				"kind": "a class of its own",
+				"what": "NoExplorerToken"
+			},
+			{
+				"file": "src/server/chaal/connect/vault.ts",
+				"line": 40,
+				"layer": "chaal",
+				"kind": "a class of its own",
+				"what": "VaultError"
+			},
+			{
+				"file": "src/server/chaal/connect/vault.ts",
+				"line": 55,
+				"layer": "chaal",
+				"kind": "a class of its own",
+				"what": "VaultError"
+			},
+			{
+				"file": "src/server/chaal/connect/vault.ts",
+				"line": 70,
+				"layer": "chaal",
+				"kind": "a class of its own",
+				"what": "VaultError"
+			},
+			{
+				"file": "src/server/chaal/connect/vault.ts",
+				"line": 72,
+				"layer": "chaal",
+				"kind": "a class of its own",
+				"what": "VaultError"
+			},
+			{
+				"file": "src/server/chaal/connect/vault.ts",
+				"line": 81,
+				"layer": "chaal",
+				"kind": "a class of its own",
+				"what": "VaultError"
+			},
+			{
+				"file": "src/server/db/crud.ts",
+				"line": 102,
+				"layer": "core",
+				"kind": "something else",
+				"what": "exists ? staleError(what) : notFound(what)"
+			},
+			{
+				"file": "src/server/email/config.ts",
+				"line": 31,
+				"layer": "core",
+				"kind": "a class of its own",
+				"what": "EmailConfigError"
+			},
+			{
+				"file": "src/server/email/config.ts",
+				"line": 37,
+				"layer": "core",
+				"kind": "a class of its own",
+				"what": "EmailConfigError"
+			},
+			{
+				"file": "src/server/email/config.ts",
+				"line": 47,
+				"layer": "core",
+				"kind": "a class of its own",
+				"what": "EmailConfigError"
+			},
+			{
+				"file": "src/server/email/providers/resend.ts",
+				"line": 36,
+				"layer": "core",
+				"kind": "a class of its own",
+				"what": "ResendDeliveryError"
+			},
+			{
+				"file": "src/server/kharcha/access.ts",
+				"line": 140,
+				"layer": "kharcha",
+				"kind": "a helper that is not an AppError",
+				"what": "groupRefusal"
+			},
+			{
+				"file": "src/server/kharcha/access.ts",
+				"line": 147,
+				"layer": "kharcha",
+				"kind": "a helper that is not an AppError",
+				"what": "groupRefusal"
+			},
+			{
+				"file": "src/server/kharcha/access.ts",
+				"line": 223,
+				"layer": "kharcha",
+				"kind": "a helper that is not an AppError",
+				"what": "groupRefusal"
+			},
+			{
+				"file": "src/server/kharcha/access.ts",
+				"line": 224,
+				"layer": "kharcha",
+				"kind": "something else",
+				"what": "action === \"restore\"\n\t\t? ruleError(\"FORBIDDEN\", \"Kharcha: no"
+			},
+			{
+				"file": "src/server/kharcha/expenses/service.ts",
+				"line": 61,
+				"layer": "kharcha",
+				"kind": "something else",
+				"what": "unpaid.code === \"unassigned\"\n\t\t\t? ruleError(\"BAD_REQUEST\", \""
+			},
+			{
+				"file": "src/server/kharcha/expenses/service.ts",
+				"line": 623,
+				"layer": "kharcha",
+				"kind": "something else",
+				"what": "deleted\n\t\t\t? ruleError(\"FORBIDDEN\", \"Kharcha: in the trash\","
+			},
+			{
+				"file": "src/server/kharcha/payments/service.ts",
+				"line": 261,
+				"layer": "kharcha",
+				"kind": "something else",
+				"what": "deleted\n\t\t\t\t? ruleError(\"FORBIDDEN\", \"Kharcha: in the trash\""
+			},
+			{
+				"file": "src/server/kharcha/rev.ts",
+				"line": 65,
+				"layer": "kharcha",
+				"kind": "something else",
+				"what": "exists ? staleError(what) : notFound(what)"
+			},
+			{
+				"file": "src/server/parda/admin/context.ts",
+				"line": 51,
+				"layer": "parda",
+				"kind": "something else",
+				"what": "exists ? staleError(what) : notFound(what)"
+			},
+			{
+				"file": "src/server/parda/admin/curation.ts",
+				"line": 74,
+				"layer": "parda",
+				"kind": "a helper that is not an AppError",
+				"what": "refuse"
+			},
+			{
+				"file": "src/server/parda/admin/curation.ts",
+				"line": 80,
+				"layer": "parda",
+				"kind": "a helper that is not an AppError",
+				"what": "refuse"
+			},
+			{
+				"file": "src/server/taskline/rev.ts",
+				"line": 81,
+				"layer": "taskline",
+				"kind": "something else",
+				"what": "exists ? staleError(what) : notFound(what)"
+			}
+		]
+	},
+	"catches": {
+		"byKind": {
+			"try: rethrows or maps": 70,
+			"try: logs and goes on": 34,
+			"try: goes on in silence": 28,
+			"promise: goes on in silence": 17,
+			"promise: logs and goes on": 14,
+			"promise: rethrows or maps": 7,
+			"promise: empty": 3,
+			"try: empty": 1
+		},
+		"silent": [
+			{
+				"file": "src/middleware/short-links.ts",
+				"line": 10,
+				"layer": "apps",
+				"form": "try",
+				"kind": "goes on in silence",
+				"comment": false
+			},
+			{
+				"file": "src/server/analytics/posthog.ts",
+				"line": 47,
+				"layer": "core",
+				"form": "try",
+				"kind": "goes on in silence",
+				"comment": false
+			},
+			{
+				"file": "src/server/analytics/posthog.ts",
+				"line": 98,
+				"layer": "core",
+				"form": "try",
+				"kind": "goes on in silence",
+				"comment": false
+			},
+			{
+				"file": "src/server/apps/links/clicks.ts",
+				"line": 35,
+				"layer": "apps",
+				"form": "try",
+				"kind": "goes on in silence",
+				"comment": false
+			},
+			{
+				"file": "src/server/attachments/service.ts",
+				"line": 114,
+				"layer": "core",
+				"form": "try",
+				"kind": "goes on in silence",
+				"comment": false
+			},
+			{
+				"file": "src/server/chaal/admin/health.ts",
+				"line": 127,
+				"layer": "chaal",
+				"form": "try",
+				"kind": "goes on in silence",
+				"comment": false
+			},
+			{
+				"file": "src/server/chaal/connect/oauth.ts",
+				"line": 53,
+				"layer": "chaal",
+				"form": "try",
+				"kind": "goes on in silence",
+				"comment": false
+			},
+			{
+				"file": "src/server/chaal/connect/service.ts",
+				"line": 148,
+				"layer": "chaal",
+				"form": "try",
+				"kind": "goes on in silence",
+				"comment": true
+			},
+			{
+				"file": "src/server/chaal/controls.ts",
+				"line": 51,
+				"layer": "chaal",
+				"form": "promise",
+				"kind": "goes on in silence",
+				"comment": true
+			},
+			{
+				"file": "src/server/chaal/events/service.ts",
+				"line": 143,
+				"layer": "chaal",
+				"form": "promise",
+				"kind": "goes on in silence",
+				"comment": false
+			},
+			{
+				"file": "src/server/chaal/events/service.ts",
+				"line": 148,
+				"layer": "chaal",
+				"form": "promise",
+				"kind": "goes on in silence",
+				"comment": false
+			},
+			{
+				"file": "src/server/chaal/lichess/client.ts",
+				"line": 94,
+				"layer": "chaal",
+				"form": "promise",
+				"kind": "empty",
+				"comment": false
+			},
+			{
+				"file": "src/server/chaal/lichess/client.ts",
+				"line": 210,
+				"layer": "chaal",
+				"form": "promise",
+				"kind": "empty",
+				"comment": false
+			},
+			{
+				"file": "src/server/chaal/lichess/client.ts",
+				"line": 269,
+				"layer": "chaal",
+				"form": "try",
+				"kind": "goes on in silence",
+				"comment": false
+			},
+			{
+				"file": "src/server/chaal/lichess/client.ts",
+				"line": 296,
+				"layer": "chaal",
+				"form": "promise",
+				"kind": "empty",
+				"comment": false
+			},
+			{
+				"file": "src/server/chaal/lichess/schemas.ts",
+				"line": 235,
+				"layer": "chaal",
+				"form": "promise",
+				"kind": "goes on in silence",
+				"comment": false
+			},
+			{
+				"file": "src/server/chaal/lichess/schemas.ts",
+				"line": 243,
+				"layer": "chaal",
+				"form": "promise",
+				"kind": "goes on in silence",
+				"comment": false
+			},
+			{
+				"file": "src/server/chaal/lichess/schemas.ts",
+				"line": 340,
+				"layer": "chaal",
+				"form": "promise",
+				"kind": "goes on in silence",
+				"comment": false
+			},
+			{
+				"file": "src/server/chaal/lichess/schemas.ts",
+				"line": 341,
+				"layer": "chaal",
+				"form": "promise",
+				"kind": "goes on in silence",
+				"comment": false
+			},
+			{
+				"file": "src/server/chaal/lichess/schemas.ts",
+				"line": 531,
+				"layer": "chaal",
+				"form": "promise",
+				"kind": "goes on in silence",
+				"comment": false
+			},
+			{
+				"file": "src/server/chaal/lichess/schemas.ts",
+				"line": 734,
+				"layer": "chaal",
+				"form": "promise",
+				"kind": "goes on in silence",
+				"comment": false
+			},
+			{
+				"file": "src/server/chaal/lichess/schemas.ts",
+				"line": 742,
+				"layer": "chaal",
+				"form": "promise",
+				"kind": "goes on in silence",
+				"comment": false
+			},
+			{
+				"file": "src/server/chaal/lichess/schemas.ts",
+				"line": 838,
+				"layer": "chaal",
+				"form": "promise",
+				"kind": "goes on in silence",
+				"comment": false
+			},
+			{
+				"file": "src/server/chaal/lichess/schemas.ts",
+				"line": 1144,
+				"layer": "chaal",
+				"form": "promise",
+				"kind": "goes on in silence",
+				"comment": false
+			},
+			{
+				"file": "src/server/chaal/lichess/schemas.ts",
+				"line": 1145,
+				"layer": "chaal",
+				"form": "promise",
+				"kind": "goes on in silence",
+				"comment": false
+			},
+			{
+				"file": "src/server/chaal/lichess/schemas.ts",
+				"line": 1180,
+				"layer": "chaal",
+				"form": "promise",
+				"kind": "goes on in silence",
+				"comment": false
+			},
+			{
+				"file": "src/server/chaal/lichess/schemas.ts",
+				"line": 1353,
+				"layer": "chaal",
+				"form": "try",
+				"kind": "goes on in silence",
+				"comment": false
+			},
+			{
+				"file": "src/server/chaal/lichess/schemas.ts",
+				"line": 1559,
+				"layer": "chaal",
+				"form": "promise",
+				"kind": "goes on in silence",
+				"comment": false
+			},
+			{
+				"file": "src/server/chaal/local/service.ts",
+				"line": 161,
+				"layer": "chaal",
+				"form": "try",
+				"kind": "goes on in silence",
+				"comment": false
+			},
+			{
+				"file": "src/server/chaal/puzzles/service.ts",
+				"line": 342,
+				"layer": "chaal",
+				"form": "try",
+				"kind": "goes on in silence",
+				"comment": false
+			},
+			{
+				"file": "src/server/chaal/stream.ts",
+				"line": 157,
+				"layer": "chaal",
+				"form": "try",
+				"kind": "goes on in silence",
+				"comment": false
+			},
+			{
+				"file": "src/server/chaal/stream.ts",
+				"line": 205,
+				"layer": "chaal",
+				"form": "try",
+				"kind": "goes on in silence",
+				"comment": false
+			},
+			{
+				"file": "src/server/chaal/stream.ts",
+				"line": 254,
+				"layer": "chaal",
+				"form": "try",
+				"kind": "goes on in silence",
+				"comment": false
+			},
+			{
+				"file": "src/server/chaal/stream.ts",
+				"line": 317,
+				"layer": "chaal",
+				"form": "try",
+				"kind": "goes on in silence",
+				"comment": false
+			},
+			{
+				"file": "src/server/db/list.ts",
+				"line": 133,
+				"layer": "core",
+				"form": "try",
+				"kind": "empty",
+				"comment": true
+			},
+			{
+				"file": "src/server/examples/jobs.ts",
+				"line": 28,
+				"layer": "core",
+				"form": "try",
+				"kind": "goes on in silence",
+				"comment": false
+			},
+			{
+				"file": "src/server/http/csp-report.ts",
+				"line": 40,
+				"layer": "core",
+				"form": "try",
+				"kind": "goes on in silence",
+				"comment": true
+			},
+			{
+				"file": "src/server/http/csp-report.ts",
+				"line": 84,
+				"layer": "core",
+				"form": "try",
+				"kind": "goes on in silence",
+				"comment": false
+			},
+			{
+				"file": "src/server/http/request-scope.ts",
+				"line": 35,
+				"layer": "core",
+				"form": "promise",
+				"kind": "goes on in silence",
+				"comment": false
+			},
+			{
+				"file": "src/server/http/request-scope.ts",
+				"line": 49,
+				"layer": "core",
+				"form": "try",
+				"kind": "goes on in silence",
+				"comment": false
+			},
+			{
+				"file": "src/server/http/turnstile.ts",
+				"line": 23,
+				"layer": "core",
+				"form": "try",
+				"kind": "goes on in silence",
+				"comment": true
+			},
+			{
+				"file": "src/server/parda/catalog/context.ts",
+				"line": 75,
+				"layer": "parda",
+				"form": "try",
+				"kind": "goes on in silence",
+				"comment": false
+			},
+			{
+				"file": "src/server/parda/catalog/title-page.ts",
+				"line": 27,
+				"layer": "parda",
+				"form": "try",
+				"kind": "goes on in silence",
+				"comment": false
+			},
+			{
+				"file": "src/server/parda/catalog/title-page.ts",
+				"line": 33,
+				"layer": "parda",
+				"form": "try",
+				"kind": "goes on in silence",
+				"comment": false
+			},
+			{
+				"file": "src/server/parda/controls.ts",
+				"line": 29,
+				"layer": "parda",
+				"form": "promise",
+				"kind": "goes on in silence",
+				"comment": true
+			},
+			{
+				"file": "src/server/parda/player/probe.ts",
+				"line": 169,
+				"layer": "parda",
+				"form": "try",
+				"kind": "goes on in silence",
+				"comment": false
+			},
+			{
+				"file": "src/server/routes/chaal-stream.ts",
+				"line": 41,
+				"layer": "chaal",
+				"form": "try",
+				"kind": "goes on in silence",
+				"comment": false
+			},
+			{
+				"file": "src/server/taskline/admin/settings.ts",
+				"line": 37,
+				"layer": "taskline",
+				"form": "try",
+				"kind": "goes on in silence",
+				"comment": false
+			},
+			{
+				"file": "src/server/taskline/time/service.ts",
+				"line": 290,
+				"layer": "taskline",
+				"form": "try",
+				"kind": "goes on in silence",
+				"comment": true
+			}
+		]
+	},
+	"routes": [
+		{
+			"file": "src/server/routes/chaal-manifest.ts",
+			"layer": "chaal",
+			"lines": 19,
+			"own": [
+				"new Response()"
+			]
+		},
+		{
+			"file": "src/server/routes/chaal-oauth.ts",
+			"layer": "chaal",
+			"lines": 84,
+			"own": [
+				"log()",
+				"new Response()"
+			]
+		},
+		{
+			"file": "src/server/routes/chaal-stream.ts",
+			"layer": "chaal",
+			"lines": 48,
+			"own": [
+				"its own json()",
+				"its own method check",
+				"its own try/catch",
+				"new Response()"
+			]
+		},
+		{
+			"file": "src/server/routes/cron-attachments.ts",
+			"layer": "core",
+			"lines": 35,
+			"own": [
+				"its own json()",
+				"its own secret check",
+				"new Response()"
+			]
+		},
+		{
+			"file": "src/server/routes/cron-chaal.ts",
+			"layer": "chaal",
+			"lines": 34,
+			"own": [
+				"its own json()",
+				"its own secret check",
+				"log()",
+				"new Response()"
+			]
+		},
+		{
+			"file": "src/server/routes/cron-guests.ts",
+			"layer": "apps",
+			"lines": 38,
+			"own": [
+				"its own json()",
+				"its own secret check",
+				"log()",
+				"new Response()"
+			]
+		},
+		{
+			"file": "src/server/routes/cron-kharcha.ts",
+			"layer": "kharcha",
+			"lines": 37,
+			"own": [
+				"its own json()",
+				"its own secret check",
+				"log()",
+				"new Response()"
+			]
+		},
+		{
+			"file": "src/server/routes/cron-parda.ts",
+			"layer": "parda",
+			"lines": 35,
+			"own": [
+				"its own json()",
+				"its own secret check",
+				"log()",
+				"new Response()"
+			]
+		},
+		{
+			"file": "src/server/routes/cron-taskline.ts",
+			"layer": "taskline",
+			"lines": 37,
+			"own": [
+				"its own json()",
+				"its own secret check",
+				"log()",
+				"new Response()"
+			]
+		},
+		{
+			"file": "src/server/routes/kharcha-manifest.ts",
+			"layer": "kharcha",
+			"lines": 19,
+			"own": [
+				"new Response()"
+			]
+		},
+		{
+			"file": "src/server/routes/kharcha-unsubscribe.ts",
+			"layer": "kharcha",
+			"lines": 94,
+			"own": [
+				"its own method check",
+				"log()",
+				"new Response()"
+			]
+		},
+		{
+			"file": "src/server/routes/manifest.ts",
+			"layer": "core",
+			"lines": 23,
+			"own": [
+				"new Response()"
+			]
+		},
+		{
+			"file": "src/server/routes/parda-manifest.ts",
+			"layer": "parda",
+			"lines": 19,
+			"own": [
+				"new Response()"
+			]
+		},
+		{
+			"file": "src/server/routes/parda-player.ts",
+			"layer": "parda",
+			"lines": 23,
+			"own": [
+				"new Response()"
+			]
+		},
+		{
+			"file": "src/server/routes/parda-probe.ts",
+			"layer": "parda",
+			"lines": 24,
+			"own": [
+				"its own method check",
+				"log()"
+			]
+		},
+		{
+			"file": "src/server/routes/taskline-manifest.ts",
+			"layer": "taskline",
+			"lines": 19,
+			"own": [
+				"new Response()"
+			]
+		},
+		{
+			"file": "src/routes/api/account/export.ts",
+			"layer": "core",
+			"lines": 32,
+			"own": [
+				"its own json()",
+				"new Response()"
+			]
+		},
+		{
+			"file": "src/routes/api/auth/$.ts",
+			"layer": "core",
+			"lines": 14,
+			"own": []
+		},
+		{
+			"file": "src/routes/api/csp-report.ts",
+			"layer": "core",
+			"lines": 25,
+			"own": []
+		},
+		{
+			"file": "src/routes/api/health.ts",
+			"layer": "core",
+			"lines": 16,
+			"own": []
+		}
+	]
+}

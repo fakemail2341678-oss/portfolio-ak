@@ -1,0 +1,1236 @@
+{
+	"generated": "node scripts/audit/names.ts",
+	"tables": {
+		"total": 123,
+		"byLayer": {
+			"kharcha": 30,
+			"taskline": 27,
+			"parda": 26,
+			"chaal": 13,
+			"core": 12,
+			"portfolio": 8,
+			"apps": 7
+		},
+		"prefixesByLayer": {
+			"apps": {
+				"(none)": 4,
+				"form": 1,
+				"habit": 1,
+				"link": 1
+			},
+			"core": {
+				"(none)": 6,
+				"audit": 1,
+				"rate": 1,
+				"role": 1,
+				"test": 1,
+				"two": 1,
+				"user": 1
+			},
+			"chaal": {
+				"ch": 13
+			},
+			"kharcha": {
+				"kh": 30
+			},
+			"parda": {
+				"pd": 26
+			},
+			"portfolio": {
+				"portfolio": 8
+			},
+			"taskline": {
+				"tl": 27
+			}
+		},
+		"list": [
+			{
+				"name": "form",
+				"file": "src/server/db/schema/apps/forms.ts",
+				"layer": "apps",
+				"prefix": "(none)"
+			},
+			{
+				"name": "form_response",
+				"file": "src/server/db/schema/apps/forms.ts",
+				"layer": "apps",
+				"prefix": "form"
+			},
+			{
+				"name": "habit",
+				"file": "src/server/db/schema/apps/habits.ts",
+				"layer": "apps",
+				"prefix": "(none)"
+			},
+			{
+				"name": "habit_checkin",
+				"file": "src/server/db/schema/apps/habits.ts",
+				"layer": "apps",
+				"prefix": "habit"
+			},
+			{
+				"name": "link",
+				"file": "src/server/db/schema/apps/links.ts",
+				"layer": "apps",
+				"prefix": "(none)"
+			},
+			{
+				"name": "link_click",
+				"file": "src/server/db/schema/apps/links.ts",
+				"layer": "apps",
+				"prefix": "link"
+			},
+			{
+				"name": "note",
+				"file": "src/server/db/schema/apps/notes.ts",
+				"layer": "apps",
+				"prefix": "(none)"
+			},
+			{
+				"name": "attachment",
+				"file": "src/server/db/schema/attachments.ts",
+				"layer": "core",
+				"prefix": "(none)"
+			},
+			{
+				"name": "audit_event",
+				"file": "src/server/db/schema/audit.ts",
+				"layer": "core",
+				"prefix": "audit"
+			},
+			{
+				"name": "user",
+				"file": "src/server/db/schema/auth.ts",
+				"layer": "core",
+				"prefix": "(none)"
+			},
+			{
+				"name": "session",
+				"file": "src/server/db/schema/auth.ts",
+				"layer": "core",
+				"prefix": "(none)"
+			},
+			{
+				"name": "account",
+				"file": "src/server/db/schema/auth.ts",
+				"layer": "core",
+				"prefix": "(none)"
+			},
+			{
+				"name": "verification",
+				"file": "src/server/db/schema/auth.ts",
+				"layer": "core",
+				"prefix": "(none)"
+			},
+			{
+				"name": "two_factor",
+				"file": "src/server/db/schema/auth.ts",
+				"layer": "core",
+				"prefix": "two"
+			},
+			{
+				"name": "rate_limit",
+				"file": "src/server/db/schema/auth.ts",
+				"layer": "core",
+				"prefix": "rate"
+			},
+			{
+				"name": "ch_activity",
+				"file": "src/server/db/schema/chaal/activity.ts",
+				"layer": "chaal",
+				"prefix": "ch"
+			},
+			{
+				"name": "ch_analysis",
+				"file": "src/server/db/schema/chaal/analysis.ts",
+				"layer": "chaal",
+				"prefix": "ch"
+			},
+			{
+				"name": "ch_api_stat",
+				"file": "src/server/db/schema/chaal/api-stat.ts",
+				"layer": "chaal",
+				"prefix": "ch"
+			},
+			{
+				"name": "ch_api_error",
+				"file": "src/server/db/schema/chaal/api-stat.ts",
+				"layer": "chaal",
+				"prefix": "ch"
+			},
+			{
+				"name": "ch_connection",
+				"file": "src/server/db/schema/chaal/connection.ts",
+				"layer": "chaal",
+				"prefix": "ch"
+			},
+			{
+				"name": "ch_featured",
+				"file": "src/server/db/schema/chaal/curation.ts",
+				"layer": "chaal",
+				"prefix": "ch"
+			},
+			{
+				"name": "ch_home_section",
+				"file": "src/server/db/schema/chaal/curation.ts",
+				"layer": "chaal",
+				"prefix": "ch"
+			},
+			{
+				"name": "ch_daily_stat",
+				"file": "src/server/db/schema/chaal/curation.ts",
+				"layer": "chaal",
+				"prefix": "ch"
+			},
+			{
+				"name": "ch_local_game",
+				"file": "src/server/db/schema/chaal/local-game.ts",
+				"layer": "chaal",
+				"prefix": "ch"
+			},
+			{
+				"name": "ch_preference",
+				"file": "src/server/db/schema/chaal/preference.ts",
+				"layer": "chaal",
+				"prefix": "ch"
+			},
+			{
+				"name": "ch_puzzle_attempt",
+				"file": "src/server/db/schema/chaal/puzzle-attempt.ts",
+				"layer": "chaal",
+				"prefix": "ch"
+			},
+			{
+				"name": "ch_settings",
+				"file": "src/server/db/schema/chaal/settings.ts",
+				"layer": "chaal",
+				"prefix": "ch"
+			},
+			{
+				"name": "ch_block",
+				"file": "src/server/db/schema/chaal/settings.ts",
+				"layer": "chaal",
+				"prefix": "ch"
+			},
+			{
+				"name": "kh_activity",
+				"file": "src/server/db/schema/kharcha/activity.ts",
+				"layer": "kharcha",
+				"prefix": "kh"
+			},
+			{
+				"name": "kh_comment",
+				"file": "src/server/db/schema/kharcha/conversation.ts",
+				"layer": "kharcha",
+				"prefix": "kh"
+			},
+			{
+				"name": "kh_reaction",
+				"file": "src/server/db/schema/kharcha/conversation.ts",
+				"layer": "kharcha",
+				"prefix": "kh"
+			},
+			{
+				"name": "kh_read",
+				"file": "src/server/db/schema/kharcha/conversation.ts",
+				"layer": "kharcha",
+				"prefix": "kh"
+			},
+			{
+				"name": "kh_notification",
+				"file": "src/server/db/schema/kharcha/conversation.ts",
+				"layer": "kharcha",
+				"prefix": "kh"
+			},
+			{
+				"name": "kh_expense",
+				"file": "src/server/db/schema/kharcha/expense.ts",
+				"layer": "kharcha",
+				"prefix": "kh"
+			},
+			{
+				"name": "kh_expense_payer",
+				"file": "src/server/db/schema/kharcha/expense.ts",
+				"layer": "kharcha",
+				"prefix": "kh"
+			},
+			{
+				"name": "kh_expense_share",
+				"file": "src/server/db/schema/kharcha/expense.ts",
+				"layer": "kharcha",
+				"prefix": "kh"
+			},
+			{
+				"name": "kh_share_tag",
+				"file": "src/server/db/schema/kharcha/expense.ts",
+				"layer": "kharcha",
+				"prefix": "kh"
+			},
+			{
+				"name": "kh_group",
+				"file": "src/server/db/schema/kharcha/group.ts",
+				"layer": "kharcha",
+				"prefix": "kh"
+			},
+			{
+				"name": "kh_group_member",
+				"file": "src/server/db/schema/kharcha/group.ts",
+				"layer": "kharcha",
+				"prefix": "kh"
+			},
+			{
+				"name": "kh_invite",
+				"file": "src/server/db/schema/kharcha/invite.ts",
+				"layer": "kharcha",
+				"prefix": "kh"
+			},
+			{
+				"name": "kh_ledger",
+				"file": "src/server/db/schema/kharcha/ledger.ts",
+				"layer": "kharcha",
+				"prefix": "kh"
+			},
+			{
+				"name": "kh_category",
+				"file": "src/server/db/schema/kharcha/lists.ts",
+				"layer": "kharcha",
+				"prefix": "kh"
+			},
+			{
+				"name": "kh_tag",
+				"file": "src/server/db/schema/kharcha/lists.ts",
+				"layer": "kharcha",
+				"prefix": "kh"
+			},
+			{
+				"name": "kh_method",
+				"file": "src/server/db/schema/kharcha/lists.ts",
+				"layer": "kharcha",
+				"prefix": "kh"
+			},
+			{
+				"name": "kh_merchant_rule",
+				"file": "src/server/db/schema/kharcha/lists.ts",
+				"layer": "kharcha",
+				"prefix": "kh"
+			},
+			{
+				"name": "kh_receipt_draft",
+				"file": "src/server/db/schema/kharcha/lists.ts",
+				"layer": "kharcha",
+				"prefix": "kh"
+			},
+			{
+				"name": "kh_payment",
+				"file": "src/server/db/schema/kharcha/payment.ts",
+				"layer": "kharcha",
+				"prefix": "kh"
+			},
+			{
+				"name": "kh_person",
+				"file": "src/server/db/schema/kharcha/person.ts",
+				"layer": "kharcha",
+				"prefix": "kh"
+			},
+			{
+				"name": "kh_profile",
+				"file": "src/server/db/schema/kharcha/person.ts",
+				"layer": "kharcha",
+				"prefix": "kh"
+			},
+			{
+				"name": "kh_friend",
+				"file": "src/server/db/schema/kharcha/person.ts",
+				"layer": "kharcha",
+				"prefix": "kh"
+			},
+			{
+				"name": "kh_budget",
+				"file": "src/server/db/schema/kharcha/plan.ts",
+				"layer": "kharcha",
+				"prefix": "kh"
+			},
+			{
+				"name": "kh_budget_month",
+				"file": "src/server/db/schema/kharcha/plan.ts",
+				"layer": "kharcha",
+				"prefix": "kh"
+			},
+			{
+				"name": "kh_budget_alert",
+				"file": "src/server/db/schema/kharcha/plan.ts",
+				"layer": "kharcha",
+				"prefix": "kh"
+			},
+			{
+				"name": "kh_recurring",
+				"file": "src/server/db/schema/kharcha/plan.ts",
+				"layer": "kharcha",
+				"prefix": "kh"
+			},
+			{
+				"name": "kh_settings",
+				"file": "src/server/db/schema/kharcha/settings.ts",
+				"layer": "kharcha",
+				"prefix": "kh"
+			},
+			{
+				"name": "kh_daily_stat",
+				"file": "src/server/db/schema/kharcha/settings.ts",
+				"layer": "kharcha",
+				"prefix": "kh"
+			},
+			{
+				"name": "kh_saved_search",
+				"file": "src/server/db/schema/kharcha/spend.ts",
+				"layer": "kharcha",
+				"prefix": "kh"
+			},
+			{
+				"name": "kh_import",
+				"file": "src/server/db/schema/kharcha/spend.ts",
+				"layer": "kharcha",
+				"prefix": "kh"
+			},
+			{
+				"name": "pd_follow_state",
+				"file": "src/server/db/schema/parda/alerts.ts",
+				"layer": "parda",
+				"prefix": "pd"
+			},
+			{
+				"name": "pd_notification",
+				"file": "src/server/db/schema/parda/alerts.ts",
+				"layer": "parda",
+				"prefix": "pd"
+			},
+			{
+				"name": "pd_title",
+				"file": "src/server/db/schema/parda/catalog.ts",
+				"layer": "parda",
+				"prefix": "pd"
+			},
+			{
+				"name": "pd_blocked_title",
+				"file": "src/server/db/schema/parda/catalog.ts",
+				"layer": "parda",
+				"prefix": "pd"
+			},
+			{
+				"name": "pd_billboard",
+				"file": "src/server/db/schema/parda/curation.ts",
+				"layer": "parda",
+				"prefix": "pd"
+			},
+			{
+				"name": "pd_collection",
+				"file": "src/server/db/schema/parda/curation.ts",
+				"layer": "parda",
+				"prefix": "pd"
+			},
+			{
+				"name": "pd_collection_item",
+				"file": "src/server/db/schema/parda/curation.ts",
+				"layer": "parda",
+				"prefix": "pd"
+			},
+			{
+				"name": "pd_rail",
+				"file": "src/server/db/schema/parda/curation.ts",
+				"layer": "parda",
+				"prefix": "pd"
+			},
+			{
+				"name": "pd_daily_stat",
+				"file": "src/server/db/schema/parda/curation.ts",
+				"layer": "parda",
+				"prefix": "pd"
+			},
+			{
+				"name": "pd_profile",
+				"file": "src/server/db/schema/parda/library.ts",
+				"layer": "parda",
+				"prefix": "pd"
+			},
+			{
+				"name": "pd_progress",
+				"file": "src/server/db/schema/parda/library.ts",
+				"layer": "parda",
+				"prefix": "pd"
+			},
+			{
+				"name": "pd_continue_state",
+				"file": "src/server/db/schema/parda/library.ts",
+				"layer": "parda",
+				"prefix": "pd"
+			},
+			{
+				"name": "pd_party",
+				"file": "src/server/db/schema/parda/party.ts",
+				"layer": "parda",
+				"prefix": "pd"
+			},
+			{
+				"name": "pd_party_member",
+				"file": "src/server/db/schema/parda/party.ts",
+				"layer": "parda",
+				"prefix": "pd"
+			},
+			{
+				"name": "pd_settings",
+				"file": "src/server/db/schema/parda/playback.ts",
+				"layer": "parda",
+				"prefix": "pd"
+			},
+			{
+				"name": "pd_source",
+				"file": "src/server/db/schema/parda/playback.ts",
+				"layer": "parda",
+				"prefix": "pd"
+			},
+			{
+				"name": "pd_play",
+				"file": "src/server/db/schema/parda/playback.ts",
+				"layer": "parda",
+				"prefix": "pd"
+			},
+			{
+				"name": "pd_report",
+				"file": "src/server/db/schema/parda/playback.ts",
+				"layer": "parda",
+				"prefix": "pd"
+			},
+			{
+				"name": "pd_source_stat",
+				"file": "src/server/db/schema/parda/ranking.ts",
+				"layer": "parda",
+				"prefix": "pd"
+			},
+			{
+				"name": "pd_source_probe",
+				"file": "src/server/db/schema/parda/ranking.ts",
+				"layer": "parda",
+				"prefix": "pd"
+			},
+			{
+				"name": "pd_source_title_fail",
+				"file": "src/server/db/schema/parda/ranking.ts",
+				"layer": "parda",
+				"prefix": "pd"
+			},
+			{
+				"name": "pd_list_item",
+				"file": "src/server/db/schema/parda/saved.ts",
+				"layer": "parda",
+				"prefix": "pd"
+			},
+			{
+				"name": "pd_favourite_person",
+				"file": "src/server/db/schema/parda/saved.ts",
+				"layer": "parda",
+				"prefix": "pd"
+			},
+			{
+				"name": "pd_rating",
+				"file": "src/server/db/schema/parda/saved.ts",
+				"layer": "parda",
+				"prefix": "pd"
+			},
+			{
+				"name": "pd_account",
+				"file": "src/server/db/schema/parda/saved.ts",
+				"layer": "parda",
+				"prefix": "pd"
+			},
+			{
+				"name": "pd_search_stat",
+				"file": "src/server/db/schema/parda/search.ts",
+				"layer": "parda",
+				"prefix": "pd"
+			},
+			{
+				"name": "portfolio_profile",
+				"file": "src/server/db/schema/portfolio.ts",
+				"layer": "portfolio",
+				"prefix": "portfolio"
+			},
+			{
+				"name": "portfolio_project",
+				"file": "src/server/db/schema/portfolio.ts",
+				"layer": "portfolio",
+				"prefix": "portfolio"
+			},
+			{
+				"name": "portfolio_post",
+				"file": "src/server/db/schema/portfolio.ts",
+				"layer": "portfolio",
+				"prefix": "portfolio"
+			},
+			{
+				"name": "portfolio_experience",
+				"file": "src/server/db/schema/portfolio.ts",
+				"layer": "portfolio",
+				"prefix": "portfolio"
+			},
+			{
+				"name": "portfolio_skill",
+				"file": "src/server/db/schema/portfolio.ts",
+				"layer": "portfolio",
+				"prefix": "portfolio"
+			},
+			{
+				"name": "portfolio_process_step",
+				"file": "src/server/db/schema/portfolio.ts",
+				"layer": "portfolio",
+				"prefix": "portfolio"
+			},
+			{
+				"name": "portfolio_testimonial",
+				"file": "src/server/db/schema/portfolio.ts",
+				"layer": "portfolio",
+				"prefix": "portfolio"
+			},
+			{
+				"name": "portfolio_contact_message",
+				"file": "src/server/db/schema/portfolio.ts",
+				"layer": "portfolio",
+				"prefix": "portfolio"
+			},
+			{
+				"name": "role",
+				"file": "src/server/db/schema/rbac.ts",
+				"layer": "core",
+				"prefix": "(none)"
+			},
+			{
+				"name": "role_permission",
+				"file": "src/server/db/schema/rbac.ts",
+				"layer": "core",
+				"prefix": "role"
+			},
+			{
+				"name": "user_role",
+				"file": "src/server/db/schema/rbac.ts",
+				"layer": "core",
+				"prefix": "user"
+			},
+			{
+				"name": "tl_automation",
+				"file": "src/server/db/schema/taskline/automation.ts",
+				"layer": "taskline",
+				"prefix": "tl"
+			},
+			{
+				"name": "tl_automation_run",
+				"file": "src/server/db/schema/taskline/automation.ts",
+				"layer": "taskline",
+				"prefix": "tl"
+			},
+			{
+				"name": "tl_comment",
+				"file": "src/server/db/schema/taskline/collab.ts",
+				"layer": "taskline",
+				"prefix": "tl"
+			},
+			{
+				"name": "tl_notification",
+				"file": "src/server/db/schema/taskline/collab.ts",
+				"layer": "taskline",
+				"prefix": "tl"
+			},
+			{
+				"name": "tl_field",
+				"file": "src/server/db/schema/taskline/field.ts",
+				"layer": "taskline",
+				"prefix": "tl"
+			},
+			{
+				"name": "tl_milestone",
+				"file": "src/server/db/schema/taskline/milestone.ts",
+				"layer": "taskline",
+				"prefix": "tl"
+			},
+			{
+				"name": "tl_project",
+				"file": "src/server/db/schema/taskline/project.ts",
+				"layer": "taskline",
+				"prefix": "tl"
+			},
+			{
+				"name": "tl_project_member",
+				"file": "src/server/db/schema/taskline/project.ts",
+				"layer": "taskline",
+				"prefix": "tl"
+			},
+			{
+				"name": "tl_star",
+				"file": "src/server/db/schema/taskline/project.ts",
+				"layer": "taskline",
+				"prefix": "tl"
+			},
+			{
+				"name": "tl_status",
+				"file": "src/server/db/schema/taskline/project.ts",
+				"layer": "taskline",
+				"prefix": "tl"
+			},
+			{
+				"name": "tl_label",
+				"file": "src/server/db/schema/taskline/project.ts",
+				"layer": "taskline",
+				"prefix": "tl"
+			},
+			{
+				"name": "tl_retired_key",
+				"file": "src/server/db/schema/taskline/project.ts",
+				"layer": "taskline",
+				"prefix": "tl"
+			},
+			{
+				"name": "tl_invitation",
+				"file": "src/server/db/schema/taskline/project.ts",
+				"layer": "taskline",
+				"prefix": "tl"
+			},
+			{
+				"name": "tl_sprint",
+				"file": "src/server/db/schema/taskline/sprint.ts",
+				"layer": "taskline",
+				"prefix": "tl"
+			},
+			{
+				"name": "tl_sprint_snapshot",
+				"file": "src/server/db/schema/taskline/sprint.ts",
+				"layer": "taskline",
+				"prefix": "tl"
+			},
+			{
+				"name": "tl_task",
+				"file": "src/server/db/schema/taskline/task.ts",
+				"layer": "taskline",
+				"prefix": "tl"
+			},
+			{
+				"name": "tl_task_label",
+				"file": "src/server/db/schema/taskline/task.ts",
+				"layer": "taskline",
+				"prefix": "tl"
+			},
+			{
+				"name": "tl_task_dependency",
+				"file": "src/server/db/schema/taskline/task.ts",
+				"layer": "taskline",
+				"prefix": "tl"
+			},
+			{
+				"name": "tl_task_watcher",
+				"file": "src/server/db/schema/taskline/task.ts",
+				"layer": "taskline",
+				"prefix": "tl"
+			},
+			{
+				"name": "tl_activity",
+				"file": "src/server/db/schema/taskline/task.ts",
+				"layer": "taskline",
+				"prefix": "tl"
+			},
+			{
+				"name": "tl_template",
+				"file": "src/server/db/schema/taskline/template.ts",
+				"layer": "taskline",
+				"prefix": "tl"
+			},
+			{
+				"name": "tl_project_update",
+				"file": "src/server/db/schema/taskline/template.ts",
+				"layer": "taskline",
+				"prefix": "tl"
+			},
+			{
+				"name": "tl_time_entry",
+				"file": "src/server/db/schema/taskline/time.ts",
+				"layer": "taskline",
+				"prefix": "tl"
+			},
+			{
+				"name": "tl_saved_view",
+				"file": "src/server/db/schema/taskline/views.ts",
+				"layer": "taskline",
+				"prefix": "tl"
+			},
+			{
+				"name": "tl_import",
+				"file": "src/server/db/schema/taskline/views.ts",
+				"layer": "taskline",
+				"prefix": "tl"
+			},
+			{
+				"name": "tl_workspace",
+				"file": "src/server/db/schema/taskline/workspace.ts",
+				"layer": "taskline",
+				"prefix": "tl"
+			},
+			{
+				"name": "tl_member",
+				"file": "src/server/db/schema/taskline/workspace.ts",
+				"layer": "taskline",
+				"prefix": "tl"
+			},
+			{
+				"name": "test_crud",
+				"file": "src/server/db/schema/test-crud.ts",
+				"layer": "core",
+				"prefix": "test"
+			}
+		]
+	},
+	"columns": {
+		"explicit": [
+			{
+				"file": "src/server/db/schema/auth.ts",
+				"name": "id"
+			},
+			{
+				"file": "src/server/db/schema/auth.ts",
+				"name": "name"
+			},
+			{
+				"file": "src/server/db/schema/auth.ts",
+				"name": "email"
+			},
+			{
+				"file": "src/server/db/schema/auth.ts",
+				"name": "email_verified"
+			},
+			{
+				"file": "src/server/db/schema/auth.ts",
+				"name": "image"
+			},
+			{
+				"file": "src/server/db/schema/auth.ts",
+				"name": "created_at"
+			},
+			{
+				"file": "src/server/db/schema/auth.ts",
+				"name": "updated_at"
+			},
+			{
+				"file": "src/server/db/schema/auth.ts",
+				"name": "role"
+			},
+			{
+				"file": "src/server/db/schema/auth.ts",
+				"name": "banned"
+			},
+			{
+				"file": "src/server/db/schema/auth.ts",
+				"name": "ban_reason"
+			},
+			{
+				"file": "src/server/db/schema/auth.ts",
+				"name": "ban_expires"
+			},
+			{
+				"file": "src/server/db/schema/auth.ts",
+				"name": "two_factor_enabled"
+			},
+			{
+				"file": "src/server/db/schema/auth.ts",
+				"name": "is_anonymous"
+			},
+			{
+				"file": "src/server/db/schema/auth.ts",
+				"name": "id"
+			},
+			{
+				"file": "src/server/db/schema/auth.ts",
+				"name": "expires_at"
+			},
+			{
+				"file": "src/server/db/schema/auth.ts",
+				"name": "token"
+			},
+			{
+				"file": "src/server/db/schema/auth.ts",
+				"name": "created_at"
+			},
+			{
+				"file": "src/server/db/schema/auth.ts",
+				"name": "updated_at"
+			},
+			{
+				"file": "src/server/db/schema/auth.ts",
+				"name": "ip_address"
+			},
+			{
+				"file": "src/server/db/schema/auth.ts",
+				"name": "user_agent"
+			},
+			{
+				"file": "src/server/db/schema/auth.ts",
+				"name": "user_id"
+			},
+			{
+				"file": "src/server/db/schema/auth.ts",
+				"name": "impersonated_by"
+			},
+			{
+				"file": "src/server/db/schema/auth.ts",
+				"name": "id"
+			},
+			{
+				"file": "src/server/db/schema/auth.ts",
+				"name": "account_id"
+			},
+			{
+				"file": "src/server/db/schema/auth.ts",
+				"name": "provider_id"
+			},
+			{
+				"file": "src/server/db/schema/auth.ts",
+				"name": "user_id"
+			},
+			{
+				"file": "src/server/db/schema/auth.ts",
+				"name": "access_token"
+			},
+			{
+				"file": "src/server/db/schema/auth.ts",
+				"name": "refresh_token"
+			},
+			{
+				"file": "src/server/db/schema/auth.ts",
+				"name": "id_token"
+			},
+			{
+				"file": "src/server/db/schema/auth.ts",
+				"name": "access_token_expires_at"
+			},
+			{
+				"file": "src/server/db/schema/auth.ts",
+				"name": "refresh_token_expires_at"
+			},
+			{
+				"file": "src/server/db/schema/auth.ts",
+				"name": "scope"
+			},
+			{
+				"file": "src/server/db/schema/auth.ts",
+				"name": "password"
+			},
+			{
+				"file": "src/server/db/schema/auth.ts",
+				"name": "created_at"
+			},
+			{
+				"file": "src/server/db/schema/auth.ts",
+				"name": "updated_at"
+			},
+			{
+				"file": "src/server/db/schema/auth.ts",
+				"name": "id"
+			},
+			{
+				"file": "src/server/db/schema/auth.ts",
+				"name": "identifier"
+			},
+			{
+				"file": "src/server/db/schema/auth.ts",
+				"name": "value"
+			},
+			{
+				"file": "src/server/db/schema/auth.ts",
+				"name": "expires_at"
+			},
+			{
+				"file": "src/server/db/schema/auth.ts",
+				"name": "created_at"
+			},
+			{
+				"file": "src/server/db/schema/auth.ts",
+				"name": "updated_at"
+			},
+			{
+				"file": "src/server/db/schema/auth.ts",
+				"name": "id"
+			},
+			{
+				"file": "src/server/db/schema/auth.ts",
+				"name": "secret"
+			},
+			{
+				"file": "src/server/db/schema/auth.ts",
+				"name": "backup_codes"
+			},
+			{
+				"file": "src/server/db/schema/auth.ts",
+				"name": "user_id"
+			},
+			{
+				"file": "src/server/db/schema/auth.ts",
+				"name": "verified"
+			},
+			{
+				"file": "src/server/db/schema/auth.ts",
+				"name": "failed_verification_count"
+			},
+			{
+				"file": "src/server/db/schema/auth.ts",
+				"name": "locked_until"
+			},
+			{
+				"file": "src/server/db/schema/auth.ts",
+				"name": "id"
+			},
+			{
+				"file": "src/server/db/schema/auth.ts",
+				"name": "key"
+			},
+			{
+				"file": "src/server/db/schema/auth.ts",
+				"name": "count"
+			},
+			{
+				"file": "src/server/db/schema/auth.ts",
+				"name": "last_request"
+			},
+			{
+				"file": "src/server/db/schema/parda/ranking.ts",
+				"name": "start_p90_ms"
+			}
+		]
+	},
+	"migrations": {
+		"total": 59,
+		"firstWords": {
+			"parda": 11,
+			"chaal": 10,
+			"taskline": 10,
+			"kharcha": 8,
+			"drop": 3,
+			"auth": 2,
+			"expenses": 2,
+			"rbac": 2,
+			"test": 2,
+			"attachments": 1,
+			"audit": 1,
+			"forms": 1,
+			"guests": 1,
+			"init": 1,
+			"kanban": 1,
+			"notes": 1,
+			"portfolio": 1,
+			"role": 1
+		},
+		"list": [
+			"0000_init.sql",
+			"0001_auth.sql",
+			"0002_test_crud.sql",
+			"0003_test_crud_filter_indexes.sql",
+			"0004_rbac.sql",
+			"0005_rbac_seed.sql",
+			"0006_attachments.sql",
+			"0007_auth_hardening.sql",
+			"0008_audit_log.sql",
+			"0009_drop_legacy_test_crud_image.sql",
+			"0010_role_name_unique.sql",
+			"0011_portfolio.sql",
+			"0012_guests_kanban.sql",
+			"0013_notes_links.sql",
+			"0014_expenses_habits.sql",
+			"0015_forms.sql",
+			"0016_taskline.sql",
+			"0017_kanban_to_taskline.sql",
+			"0018_drop_kanban.sql",
+			"0019_taskline_admin.sql",
+			"0020_taskline_collab.sql",
+			"0021_taskline_views.sql",
+			"0022_taskline_sprints.sql",
+			"0023_taskline_time.sql",
+			"0024_taskline_timeline.sql",
+			"0025_taskline_fields.sql",
+			"0026_taskline_automations.sql",
+			"0027_taskline_templates.sql",
+			"0028_parda_foundation.sql",
+			"0029_parda_player.sql",
+			"0030_parda_admin.sql",
+			"0031_parda_ranking.sql",
+			"0032_parda_search.sql",
+			"0033_parda_library.sql",
+			"0034_parda_alerts.sql",
+			"0035_parda_curation.sql",
+			"0036_parda_party.sql",
+			"0037_parda_player_base.sql",
+			"0038_parda_viduki.sql",
+			"0039_chaal_foundation.sql",
+			"0040_chaal_shell.sql",
+			"0041_chaal_analysis.sql",
+			"0042_chaal_local_game.sql",
+			"0043_chaal_play.sql",
+			"0044_chaal_admin.sql",
+			"0045_chaal_puzzles.sql",
+			"0046_chaal_watch.sql",
+			"0047_chaal_community.sql",
+			"0048_chaal_curation.sql",
+			"0049_kharcha_foundation.sql",
+			"0050_kharcha_onboarding.sql",
+			"0051_kharcha_expenses.sql",
+			"0052_kharcha_invites.sql",
+			"0053_kharcha_conversations.sql",
+			"0054_kharcha_spend.sql",
+			"0055_kharcha_planning.sql",
+			"0056_expenses_to_kharcha.sql",
+			"0057_drop_expenses.sql",
+			"0058_kharcha_admin.sql"
+		]
+	},
+	"messages": {
+		"total": 7227,
+		"notSnakeCase": [],
+		"firstWords": {
+			"taskline": 1609,
+			"ch": 1378,
+			"kharcha": 1045,
+			"pd": 856,
+			"portfolio": 327,
+			"audit": 217,
+			"examples": 197,
+			"forms": 186,
+			"email": 104,
+			"admin": 98,
+			"links": 93,
+			"kit": 89,
+			"auth": 79,
+			"notes": 79,
+			"account": 65,
+			"habits": 61,
+			"test": 56,
+			"perm": 50,
+			"users": 46,
+			"showcase": 38,
+			"media": 35,
+			"validation": 35,
+			"apps": 31,
+			"appearance": 28,
+			"command": 27,
+			"messages": 23,
+			"tool": 22,
+			"attachments": 21,
+			"filters": 19,
+			"error": 18,
+			"rt": 18,
+			"table": 17,
+			"stack": 16,
+			"crud": 15,
+			"csv": 15,
+			"rbac": 15,
+			"roles": 15,
+			"dashboard": 13,
+			"nav": 10,
+			"guest": 9,
+			"password": 8,
+			"category": 7,
+			"health": 7,
+			"consent": 6,
+			"form": 6,
+			"intl": 6,
+			"matrix": 6,
+			"pagination": 6,
+			"sidebar": 6,
+			"sortable": 6,
+			"file": 5,
+			"home": 5,
+			"image": 5,
+			"slug": 5,
+			"common": 4,
+			"date": 4,
+			"role": 4,
+			"theme": 4,
+			"unsaved": 4,
+			"blocks": 3,
+			"combobox": 3,
+			"impersonation": 3,
+			"language": 3,
+			"localized": 3,
+			"seo": 3,
+			"breadcrumbs": 2,
+			"calendar": 2,
+			"field": 2,
+			"list": 2,
+			"multiselect": 2,
+			"not": 2,
+			"rail": 2,
+			"tags": 2,
+			"color": 1,
+			"copy": 1,
+			"dialog": 1,
+			"footer": 1,
+			"key": 1,
+			"pending": 1,
+			"phone": 1,
+			"select": 1,
+			"settings": 1,
+			"site": 1,
+			"skip": 1,
+			"slider": 1,
+			"time": 1,
+			"user": 1
+		}
+	},
+	"permissions": {
+		"list": [
+			"apps:read",
+			"attachments:upload",
+			"audit:read",
+			"chaal:configure",
+			"chaal:curate",
+			"chaal:moderate",
+			"chaal:read",
+			"kharcha:configure",
+			"kharcha:read",
+			"links:moderate",
+			"media:read",
+			"media:write",
+			"messages:manage",
+			"messages:read",
+			"parda:configure",
+			"parda:curate",
+			"parda:moderate",
+			"parda:read",
+			"portfolio:publish",
+			"portfolio:read",
+			"portfolio:write",
+			"roles:manage",
+			"roles:read",
+			"taskline:configure",
+			"taskline:manage",
+			"taskline:read",
+			"taskline:time",
+			"test-crud:create",
+			"test-crud:delete",
+			"test-crud:publish",
+			"test-crud:read",
+			"test-crud:update",
+			"users:ban",
+			"users:invite",
+			"users:read",
+			"users:update"
+		],
+		"actions": {
+			"read": 12,
+			"configure": 4,
+			"manage": 3,
+			"moderate": 3,
+			"curate": 2,
+			"publish": 2,
+			"update": 2,
+			"write": 2,
+			"ban": 1,
+			"create": 1,
+			"delete": 1,
+			"invite": 1,
+			"time": 1,
+			"upload": 1
+		}
+	}
+}

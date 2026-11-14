@@ -49,7 +49,7 @@ Vitest for logic, server code and components; Storybook for every component in a
 - **Fields:** wrap them in `FieldStory` (`src/components/forms/story-harness.tsx`) and add a `play` function for anything interactive.
 - **What not to import:** components must not import Start runtime helpers (`createIsomorphicFn`); Storybook has no Start plugin.
 - **Narrowing to what changed** (0280): `STORIES_ONLY` limits `.storybook/main.ts`'s `stories` to some folders or story files, comma-separated, relative to the repository root (PowerShell: `$env:STORIES_ONLY="src/features/kharcha,src/components/forms"; pnpm build-storybook`). The story tests read the same list, so it narrows `test:storybook` too; a path filter (`pnpm exec vitest run --project storybook src/features/kharcha`) does the same there. Unset, every story. A narrowed build doesn't prove the whole Storybook builds: a Part's last task and CI build it all.
-- **No docgen** (0280): `typescript: { reactDocgen: false }`. It only inferred the Controls panel's props and took nearly all of every build (over 10 minutes); the full build now takes about 20 s. A story that wants controls declares them in `args` or `argTypes`.
+- **No docgen** (0280): `typescript: { reactDocgen: false }`. It only inferred the Controls panel's props and took nearly all of every build (over 10 minutes); the full build takes 1 min 16 s (0295; about 20 s when 0280 was written). A story that wants controls declares them in `args` or `argTypes`.
 
 ## E2E and the browser review (`pnpm test:e2e`)
 
@@ -62,7 +62,7 @@ One command, locally and in CI. Playwright runs `node e2e/harness/server.ts` (it
 
 | Command | Use |
 | --- | --- |
-| `pnpm test:e2e` | Everything (about 6 minutes; CI splits it into 3 shards) |
+| `pnpm test:e2e` | Everything (73 minutes with 2 workers on the owner's machine, 0295; CI splits it into 3 shards) |
 | `pnpm test:e2e e2e/flows` / `--project=review -g "/admin"` | A folder, or tests whose title matches |
 | `node e2e/harness/server.ts` in another terminal | Keeps a server up: `pnpm test:e2e` reuses it locally (restart it after changing app code) |
 | `E2E_SKIP_BUILD=1` | Reuse the last e2e build in `.output` |
@@ -112,6 +112,23 @@ Ports: the app on `E2E_PORT` (3100), the harness on `E2E_HARNESS_PORT` (3101); P
 - Auth endpoints are rate limited per IP and every test is 127.0.0.1: call `harness.resetRateLimits()` before tests that sign in.
 - Use roles and labels from `messages/en.json`; give an exact name when one label contains another ("Edit" vs "Quick edit").
 - A new page needs nothing beyond its `REVIEWED_PAGES` entry.
+
+## Measuring the gates and auditing the source (`scripts/audit`)
+
+Part 9's baseline (0295, `docs/history/part9-audit.md`) was taken with these, and every later "faster" or "fewer" is measured the same way.
+
+| Command | Gives |
+| --- | --- |
+| `node scripts/audit/measure.ts <label> -- <command>` | The command's wall time, the peak memory of every process it started and the machine's least free memory, added to `docs/history/part9-audit/gates.json`. Its output goes to `.data/audit/logs/<label>.log` |
+| `node scripts/audit/times.ts` | Where the suites spend their time: the slowest test files, stories, reviewed pages and flows, from the reporters' JSON (the commands are in the file's header) |
+| `node scripts/audit/all.ts` | The ten audits that only read the source: folders and names, server functions, writes, reads, errors, effects and casts, docs, shared modules, the old plan |
+| `node scripts/audit/coverage.ts` | Coverage per layer and per kind of code, after `pnpm test:coverage` |
+| `node scripts/audit/ux.ts` | Every reviewed page's use of the width, its anatomy and what its first load asks the server for, after an audit run of the review (`AUDIT_DIR`, `AUDIT_WIDTHS`; the command is in the file) |
+| `deprecated.ts`, `libraries.ts`, `copies.ts`, `lighthouse.ts` | Deprecated APIs in use, versions behind, copied code, Lighthouse through an HTTP/2 proxy with brotli. Each file's header says what it needs |
+
+- **Check the machine first.** Close what else is running, keep the session unlocked and the laptop cool. `measure.ts` warns when the processors are more than 15% busy before it starts; it cannot see a processor that is throttled. On 2026-11-14 a locked, overheating laptop ran the same loop in 1.7 s, then 4.8 s, and headless Chrome drew no frames: the review's `page.evaluate` timed out and the runner printed nothing until it was killed.
+- **The audits never import app code.** They read files as text and as TypeScript syntax trees (`scripts/audit/lib.ts`), so `node` runs them as they are.
+- **Their data files are not formatted** (`biome.json` leaves `docs/history/part9-audit` out): each run writes them again.
 
 ## Pitfalls already solved
 

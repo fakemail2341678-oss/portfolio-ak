@@ -1,0 +1,1882 @@
+{
+	"generated": "node scripts/audit/code.ts",
+	"effects": {
+		"total": 118,
+		"byPurpose": {
+			"something else": 27,
+			"runs a timer": 24,
+			"copies props or state into state": 23,
+			"keeps a ref current": 11,
+			"listens to another DOM event": 9,
+			"drives a library object (editor, board, engine, chart, player)": 5,
+			"fetches or writes (a query's or a mutation's job)": 5,
+			"moves focus or scroll": 4,
+			"touches the document (title, class, attribute)": 3,
+			"listens to key presses": 2,
+			"navigates": 2,
+			"subscribes to a stream, a channel or a store": 2,
+			"observes size, visibility or mutations": 1
+		},
+		"byLayer": {
+			"chaal": 50,
+			"core": 27,
+			"parda": 25,
+			"kharcha": 8,
+			"taskline": 4,
+			"dev": 2,
+			"portfolio": 2
+		},
+		"list": [
+			{
+				"file": "src/components/admin-shell/command-menu.tsx",
+				"line": 72,
+				"layer": "core",
+				"hook": "useEffect",
+				"purpose": "something else",
+				"lines": 3
+			},
+			{
+				"file": "src/components/admin-shell/command-menu.tsx",
+				"line": 76,
+				"layer": "core",
+				"hook": "useEffect",
+				"purpose": "copies props or state into state",
+				"lines": 3
+			},
+			{
+				"file": "src/components/data-display/copy-button.tsx",
+				"line": 27,
+				"layer": "core",
+				"hook": "useEffect",
+				"purpose": "runs a timer",
+				"lines": 5
+			},
+			{
+				"file": "src/components/data-table/saved-views.tsx",
+				"line": 59,
+				"layer": "core",
+				"hook": "useEffect",
+				"purpose": "copies props or state into state",
+				"lines": 1
+			},
+			{
+				"file": "src/components/errors/error-page.tsx",
+				"line": 59,
+				"layer": "core",
+				"hook": "useEffect",
+				"purpose": "something else",
+				"lines": 3
+			},
+			{
+				"file": "src/components/filters/filter-bar.tsx",
+				"line": 90,
+				"layer": "core",
+				"hook": "useEffect",
+				"purpose": "something else",
+				"lines": 3
+			},
+			{
+				"file": "src/components/filters/filter-bar.tsx",
+				"line": 93,
+				"layer": "core",
+				"hook": "useEffect",
+				"purpose": "something else",
+				"lines": 1
+			},
+			{
+				"file": "src/components/filters/filters.tsx",
+				"line": 121,
+				"layer": "core",
+				"hook": "useEffect",
+				"purpose": "listens to key presses",
+				"lines": 19
+			},
+			{
+				"file": "src/components/forms/fields/date-fields.tsx",
+				"line": 163,
+				"layer": "core",
+				"hook": "useEffect",
+				"purpose": "copies props or state into state",
+				"lines": 3
+			},
+			{
+				"file": "src/components/forms/fields/file-fields.tsx",
+				"line": 160,
+				"layer": "core",
+				"hook": "useEffect",
+				"purpose": "copies props or state into state",
+				"lines": 9
+			},
+			{
+				"file": "src/components/forms/fields/localized-fields.tsx",
+				"line": 42,
+				"layer": "core",
+				"hook": "useEffect",
+				"purpose": "copies props or state into state",
+				"lines": 5
+			},
+			{
+				"file": "src/components/forms/fields/number-fields.tsx",
+				"line": 23,
+				"layer": "core",
+				"hook": "useEffect",
+				"purpose": "copies props or state into state",
+				"lines": 7
+			},
+			{
+				"file": "src/components/forms/fields/phone-otp-fields.tsx",
+				"line": 78,
+				"layer": "core",
+				"hook": "useEffect",
+				"purpose": "copies props or state into state",
+				"lines": 6
+			},
+			{
+				"file": "src/components/forms/fields/rich-text-editor.tsx",
+				"line": 338,
+				"layer": "core",
+				"hook": "useEffect",
+				"purpose": "drives a library object (editor, board, engine, chart, player)",
+				"lines": 5
+			},
+			{
+				"file": "src/components/forms/fields/slug-field.tsx",
+				"line": 60,
+				"layer": "core",
+				"hook": "useEffect",
+				"purpose": "keeps a ref current",
+				"lines": 5
+			},
+			{
+				"file": "src/components/forms/form-components.tsx",
+				"line": 110,
+				"layer": "core",
+				"hook": "useEffect",
+				"purpose": "moves focus or scroll",
+				"lines": 3
+			},
+			{
+				"file": "src/components/layout/navigation-progress.tsx",
+				"line": 26,
+				"layer": "core",
+				"hook": "useEffect",
+				"purpose": "runs a timer",
+				"lines": 9
+			},
+			{
+				"file": "src/components/layout/observability.tsx",
+				"line": 38,
+				"layer": "core",
+				"hook": "useEffect",
+				"purpose": "touches the document (title, class, attribute)",
+				"lines": 18
+			},
+			{
+				"file": "src/components/layout/observability.tsx",
+				"line": 57,
+				"layer": "core",
+				"hook": "useEffect",
+				"purpose": "subscribes to a stream, a channel or a store",
+				"lines": 6
+			},
+			{
+				"file": "src/components/layout/observability.tsx",
+				"line": 65,
+				"layer": "core",
+				"hook": "useEffect",
+				"purpose": "copies props or state into state",
+				"lines": 9
+			},
+			{
+				"file": "src/components/layout/theme.tsx",
+				"line": 57,
+				"layer": "core",
+				"hook": "useLayoutEffect",
+				"purpose": "listens to another DOM event",
+				"lines": 9
+			},
+			{
+				"file": "src/features/attachments/components/image-gallery-field.tsx",
+				"line": 77,
+				"layer": "core",
+				"hook": "useEffect",
+				"purpose": "something else",
+				"lines": 1
+			},
+			{
+				"file": "src/features/attachments/components/image-gallery-field.tsx",
+				"line": 78,
+				"layer": "core",
+				"hook": "useEffect",
+				"purpose": "something else",
+				"lines": 3
+			},
+			{
+				"file": "src/features/auth/components/bot-check.tsx",
+				"line": 78,
+				"layer": "core",
+				"hook": "useEffect",
+				"purpose": "touches the document (title, class, attribute)",
+				"lines": 23
+			},
+			{
+				"file": "src/features/chaal/admin/lab/lab-page.tsx",
+				"line": 260,
+				"layer": "chaal",
+				"hook": "useEffect",
+				"purpose": "runs a timer",
+				"lines": 5
+			},
+			{
+				"file": "src/features/chaal/admin/lab/lab-page.tsx",
+				"line": 276,
+				"layer": "chaal",
+				"hook": "useEffect",
+				"purpose": "something else",
+				"lines": 1
+			},
+			{
+				"file": "src/features/chaal/analysis/analysis-page.tsx",
+				"line": 149,
+				"layer": "chaal",
+				"hook": "useEffect",
+				"purpose": "drives a library object (editor, board, engine, chart, player)",
+				"lines": 4
+			},
+			{
+				"file": "src/features/chaal/analysis/analysis-page.tsx",
+				"line": 153,
+				"layer": "chaal",
+				"hook": "useEffect",
+				"purpose": "copies props or state into state",
+				"lines": 4
+			},
+			{
+				"file": "src/features/chaal/analysis/analysis-page.tsx",
+				"line": 168,
+				"layer": "chaal",
+				"hook": "useEffect",
+				"purpose": "copies props or state into state",
+				"lines": 4
+			},
+			{
+				"file": "src/features/chaal/analysis/use-analysis.ts",
+				"line": 80,
+				"layer": "chaal",
+				"hook": "useEffect",
+				"purpose": "copies props or state into state",
+				"lines": 7
+			},
+			{
+				"file": "src/features/chaal/analysis/use-analysis.ts",
+				"line": 89,
+				"layer": "chaal",
+				"hook": "useEffect",
+				"purpose": "runs a timer",
+				"lines": 10
+			},
+			{
+				"file": "src/features/chaal/board/board.tsx",
+				"line": 140,
+				"layer": "chaal",
+				"hook": "useEffect",
+				"purpose": "keeps a ref current",
+				"lines": 5
+			},
+			{
+				"file": "src/features/chaal/board/clock.tsx",
+				"line": 38,
+				"layer": "chaal",
+				"hook": "useEffect",
+				"purpose": "runs a timer",
+				"lines": 9
+			},
+			{
+				"file": "src/features/chaal/board/move-list.tsx",
+				"line": 40,
+				"layer": "chaal",
+				"hook": "useEffect",
+				"purpose": "something else",
+				"lines": 12
+			},
+			{
+				"file": "src/features/chaal/board/promotion-picker.tsx",
+				"line": 32,
+				"layer": "chaal",
+				"hook": "useEffect",
+				"purpose": "moves focus or scroll",
+				"lines": 3
+			},
+			{
+				"file": "src/features/chaal/engine/use-engine.ts",
+				"line": 58,
+				"layer": "chaal",
+				"hook": "useEffect",
+				"purpose": "drives a library object (editor, board, engine, chart, player)",
+				"lines": 4
+			},
+			{
+				"file": "src/features/chaal/engine/use-engine.ts",
+				"line": 67,
+				"layer": "chaal",
+				"hook": "useEffect",
+				"purpose": "listens to another DOM event",
+				"lines": 6
+			},
+			{
+				"file": "src/features/chaal/engine/use-engine.ts",
+				"line": 75,
+				"layer": "chaal",
+				"hook": "useEffect",
+				"purpose": "drives a library object (editor, board, engine, chart, player)",
+				"lines": 34
+			},
+			{
+				"file": "src/features/chaal/engine/use-engine.ts",
+				"line": 111,
+				"layer": "chaal",
+				"hook": "useEffect",
+				"purpose": "runs a timer",
+				"lines": 36
+			},
+			{
+				"file": "src/features/chaal/game/live-chat.tsx",
+				"line": 35,
+				"layer": "chaal",
+				"hook": "useEffect",
+				"purpose": "something else",
+				"lines": 4
+			},
+			{
+				"file": "src/features/chaal/game/live-game-page.tsx",
+				"line": 329,
+				"layer": "chaal",
+				"hook": "useEffect",
+				"purpose": "runs a timer",
+				"lines": 5
+			},
+			{
+				"file": "src/features/chaal/game/live-game-page.tsx",
+				"line": 350,
+				"layer": "chaal",
+				"hook": "useEffect",
+				"purpose": "runs a timer",
+				"lines": 6
+			},
+			{
+				"file": "src/features/chaal/game/live-game-page.tsx",
+				"line": 495,
+				"layer": "chaal",
+				"hook": "useEffect",
+				"purpose": "runs a timer",
+				"lines": 4
+			},
+			{
+				"file": "src/features/chaal/game/use-live-game.ts",
+				"line": 69,
+				"layer": "chaal",
+				"hook": "useEffect",
+				"purpose": "copies props or state into state",
+				"lines": 25
+			},
+			{
+				"file": "src/features/chaal/game/use-live-game.ts",
+				"line": 108,
+				"layer": "chaal",
+				"hook": "useEffect",
+				"purpose": "copies props or state into state",
+				"lines": 10
+			},
+			{
+				"file": "src/features/chaal/live/use-live-events.ts",
+				"line": 34,
+				"layer": "chaal",
+				"hook": "useEffect",
+				"purpose": "something else",
+				"lines": 12
+			},
+			{
+				"file": "src/features/chaal/local/use-local-game.ts",
+				"line": 106,
+				"layer": "chaal",
+				"hook": "useEffect",
+				"purpose": "runs a timer",
+				"lines": 14
+			},
+			{
+				"file": "src/features/chaal/local/use-local-game.ts",
+				"line": 130,
+				"layer": "chaal",
+				"hook": "useEffect",
+				"purpose": "drives a library object (editor, board, engine, chart, player)",
+				"lines": 30
+			},
+			{
+				"file": "src/features/chaal/local/use-local-game.ts",
+				"line": 162,
+				"layer": "chaal",
+				"hook": "useEffect",
+				"purpose": "runs a timer",
+				"lines": 28
+			},
+			{
+				"file": "src/features/chaal/local/use-local-game.ts",
+				"line": 194,
+				"layer": "chaal",
+				"hook": "useEffect",
+				"purpose": "keeps a ref current",
+				"lines": 7
+			},
+			{
+				"file": "src/features/chaal/local/use-local-game.ts",
+				"line": 201,
+				"layer": "chaal",
+				"hook": "useEffect",
+				"purpose": "something else",
+				"lines": 1
+			},
+			{
+				"file": "src/features/chaal/local/use-local-game.ts",
+				"line": 338,
+				"layer": "chaal",
+				"hook": "useEffect",
+				"purpose": "listens to another DOM event",
+				"lines": 11
+			},
+			{
+				"file": "src/features/chaal/local/use-local-games.ts",
+				"line": 35,
+				"layer": "chaal",
+				"hook": "useEffect",
+				"purpose": "fetches or writes (a query's or a mutation's job)",
+				"lines": 15
+			},
+			{
+				"file": "src/features/chaal/play/online-play.tsx",
+				"line": 470,
+				"layer": "chaal",
+				"hook": "useEffect",
+				"purpose": "navigates",
+				"lines": 3
+			},
+			{
+				"file": "src/features/chaal/play/online-play.tsx",
+				"line": 719,
+				"layer": "chaal",
+				"hook": "useEffect",
+				"purpose": "runs a timer",
+				"lines": 5
+			},
+			{
+				"file": "src/features/chaal/play/quick-pair.tsx",
+				"line": 241,
+				"layer": "chaal",
+				"hook": "useEffect",
+				"purpose": "runs a timer",
+				"lines": 6
+			},
+			{
+				"file": "src/features/chaal/play/use-challenge-stream.ts",
+				"line": 39,
+				"layer": "chaal",
+				"hook": "useEffect",
+				"purpose": "something else",
+				"lines": 1
+			},
+			{
+				"file": "src/features/chaal/play/use-seek.ts",
+				"line": 60,
+				"layer": "chaal",
+				"hook": "useEffect",
+				"purpose": "keeps a ref current",
+				"lines": 4
+			},
+			{
+				"file": "src/features/chaal/puzzles/puzzles-page.tsx",
+				"line": 341,
+				"layer": "chaal",
+				"hook": "useEffect",
+				"purpose": "fetches or writes (a query's or a mutation's job)",
+				"lines": 3
+			},
+			{
+				"file": "src/features/chaal/puzzles/use-attempts.ts",
+				"line": 48,
+				"layer": "chaal",
+				"hook": "useEffect",
+				"purpose": "fetches or writes (a query's or a mutation's job)",
+				"lines": 14
+			},
+			{
+				"file": "src/features/chaal/puzzles/use-queue.ts",
+				"line": 73,
+				"layer": "chaal",
+				"hook": "useEffect",
+				"purpose": "copies props or state into state",
+				"lines": 38
+			},
+			{
+				"file": "src/features/chaal/puzzles/use-trainer.ts",
+				"line": 48,
+				"layer": "chaal",
+				"hook": "useEffect",
+				"purpose": "keeps a ref current",
+				"lines": 3
+			},
+			{
+				"file": "src/features/chaal/puzzles/use-trainer.ts",
+				"line": 55,
+				"layer": "chaal",
+				"hook": "useEffect",
+				"purpose": "runs a timer",
+				"lines": 12
+			},
+			{
+				"file": "src/features/chaal/puzzles/use-trainer.ts",
+				"line": 69,
+				"layer": "chaal",
+				"hook": "useEffect",
+				"purpose": "keeps a ref current",
+				"lines": 3
+			},
+			{
+				"file": "src/features/chaal/puzzles/use-trainer.ts",
+				"line": 74,
+				"layer": "chaal",
+				"hook": "useEffect",
+				"purpose": "keeps a ref current",
+				"lines": 9
+			},
+			{
+				"file": "src/features/chaal/settings/use-preferences.ts",
+				"line": 70,
+				"layer": "chaal",
+				"hook": "useEffect",
+				"purpose": "copies props or state into state",
+				"lines": 15
+			},
+			{
+				"file": "src/features/chaal/shell/live-notices.tsx",
+				"line": 134,
+				"layer": "chaal",
+				"hook": "useEffect",
+				"purpose": "subscribes to a stream, a channel or a store",
+				"lines": 25
+			},
+			{
+				"file": "src/features/chaal/watch/broadcast-page.tsx",
+				"line": 195,
+				"layer": "chaal",
+				"hook": "useEffect",
+				"purpose": "something else",
+				"lines": 5
+			},
+			{
+				"file": "src/features/chaal/watch/broadcast-page.tsx",
+				"line": 285,
+				"layer": "chaal",
+				"hook": "useEffect",
+				"purpose": "fetches or writes (a query's or a mutation's job)",
+				"lines": 3
+			},
+			{
+				"file": "src/features/chaal/watch/spectate-board.tsx",
+				"line": 64,
+				"layer": "chaal",
+				"hook": "useEffect",
+				"purpose": "something else",
+				"lines": 3
+			},
+			{
+				"file": "src/features/chaal/watch/tv-page.tsx",
+				"line": 168,
+				"layer": "chaal",
+				"hook": "useEffect",
+				"purpose": "runs a timer",
+				"lines": 9
+			},
+			{
+				"file": "src/features/chaal/watch/use-live.ts",
+				"line": 31,
+				"layer": "chaal",
+				"hook": "useEffect",
+				"purpose": "copies props or state into state",
+				"lines": 14
+			},
+			{
+				"file": "src/features/chaal/watch/use-live.ts",
+				"line": 51,
+				"layer": "chaal",
+				"hook": "useEffect",
+				"purpose": "listens to another DOM event",
+				"lines": 6
+			},
+			{
+				"file": "src/features/chaal/watch/use-live.ts",
+				"line": 66,
+				"layer": "chaal",
+				"hook": "useEffect",
+				"purpose": "observes size, visibility or mutations",
+				"lines": 12
+			},
+			{
+				"file": "src/features/kharcha/expenses/receipts-field.tsx",
+				"line": 49,
+				"layer": "kharcha",
+				"hook": "useEffect",
+				"purpose": "something else",
+				"lines": 1
+			},
+			{
+				"file": "src/features/kharcha/expenses/receipts-field.tsx",
+				"line": 50,
+				"layer": "kharcha",
+				"hook": "useEffect",
+				"purpose": "something else",
+				"lines": 3
+			},
+			{
+				"file": "src/features/kharcha/expenses/receipts-field.tsx",
+				"line": 85,
+				"layer": "kharcha",
+				"hook": "useEffect",
+				"purpose": "keeps a ref current",
+				"lines": 5
+			},
+			{
+				"file": "src/features/kharcha/home/onboarding.tsx",
+				"line": 55,
+				"layer": "kharcha",
+				"hook": "useEffect",
+				"purpose": "copies props or state into state",
+				"lines": 4
+			},
+			{
+				"file": "src/features/kharcha/settle/settle-dialog.tsx",
+				"line": 103,
+				"layer": "kharcha",
+				"hook": "useEffect",
+				"purpose": "something else",
+				"lines": 5
+			},
+			{
+				"file": "src/features/kharcha/shell/kharcha-shell.tsx",
+				"line": 203,
+				"layer": "kharcha",
+				"hook": "useEffect",
+				"purpose": "listens to another DOM event",
+				"lines": 36
+			},
+			{
+				"file": "src/features/kharcha/shell/kharcha-shell.tsx",
+				"line": 252,
+				"layer": "kharcha",
+				"hook": "useEffect",
+				"purpose": "keeps a ref current",
+				"lines": 5
+			},
+			{
+				"file": "src/features/kharcha/threads/use-read.ts",
+				"line": 14,
+				"layer": "kharcha",
+				"hook": "useEffect",
+				"purpose": "something else",
+				"lines": 3
+			},
+			{
+				"file": "src/features/parda/admin/player-lab/player-lab-page.tsx",
+				"line": 58,
+				"layer": "parda",
+				"hook": "useEffect",
+				"purpose": "runs a timer",
+				"lines": 8
+			},
+			{
+				"file": "src/features/parda/kit/billboard.tsx",
+				"line": 140,
+				"layer": "parda",
+				"hook": "useEffect",
+				"purpose": "runs a timer",
+				"lines": 13
+			},
+			{
+				"file": "src/features/parda/library/continue-rail.tsx",
+				"line": 126,
+				"layer": "parda",
+				"hook": "useEffect",
+				"purpose": "copies props or state into state",
+				"lines": 1
+			},
+			{
+				"file": "src/features/parda/library/title-progress.tsx",
+				"line": 79,
+				"layer": "parda",
+				"hook": "useEffect",
+				"purpose": "copies props or state into state",
+				"lines": 4
+			},
+			{
+				"file": "src/features/parda/library/use-viewer-session.ts",
+				"line": 48,
+				"layer": "parda",
+				"hook": "useEffect",
+				"purpose": "keeps a ref current",
+				"lines": 11
+			},
+			{
+				"file": "src/features/parda/party/use-party-room.ts",
+				"line": 248,
+				"layer": "parda",
+				"hook": "useEffect",
+				"purpose": "copies props or state into state",
+				"lines": 62
+			},
+			{
+				"file": "src/features/parda/party/use-party-room.ts",
+				"line": 313,
+				"layer": "parda",
+				"hook": "useEffect",
+				"purpose": "something else",
+				"lines": 4
+			},
+			{
+				"file": "src/features/parda/party/use-party-room.ts",
+				"line": 320,
+				"layer": "parda",
+				"hook": "useEffect",
+				"purpose": "runs a timer",
+				"lines": 14
+			},
+			{
+				"file": "src/features/parda/party/use-party-room.ts",
+				"line": 337,
+				"layer": "parda",
+				"hook": "useEffect",
+				"purpose": "runs a timer",
+				"lines": 8
+			},
+			{
+				"file": "src/features/parda/party/use-party-room.ts",
+				"line": 348,
+				"layer": "parda",
+				"hook": "useEffect",
+				"purpose": "listens to another DOM event",
+				"lines": 9
+			},
+			{
+				"file": "src/features/parda/party/use-party-room.ts",
+				"line": 360,
+				"layer": "parda",
+				"hook": "useEffect",
+				"purpose": "something else",
+				"lines": 6
+			},
+			{
+				"file": "src/features/parda/player/picture-in-picture.ts",
+				"line": 30,
+				"layer": "parda",
+				"hook": "useEffect",
+				"purpose": "something else",
+				"lines": 1
+			},
+			{
+				"file": "src/features/parda/player/player-frame.tsx",
+				"line": 46,
+				"layer": "parda",
+				"hook": "useEffect",
+				"purpose": "listens to another DOM event",
+				"lines": 15
+			},
+			{
+				"file": "src/features/parda/player/redirect-guard.ts",
+				"line": 12,
+				"layer": "parda",
+				"hook": "useEffect",
+				"purpose": "listens to another DOM event",
+				"lines": 20
+			},
+			{
+				"file": "src/features/parda/player/use-watch-player.ts",
+				"line": 352,
+				"layer": "parda",
+				"hook": "useEffect",
+				"purpose": "copies props or state into state",
+				"lines": 22
+			},
+			{
+				"file": "src/features/parda/player/use-watch-player.ts",
+				"line": 376,
+				"layer": "parda",
+				"hook": "useEffect",
+				"purpose": "runs a timer",
+				"lines": 13
+			},
+			{
+				"file": "src/features/parda/player/use-watch-player.ts",
+				"line": 396,
+				"layer": "parda",
+				"hook": "useEffect",
+				"purpose": "listens to another DOM event",
+				"lines": 8
+			},
+			{
+				"file": "src/features/parda/player/use-watch-player.ts",
+				"line": 407,
+				"layer": "parda",
+				"hook": "useEffect",
+				"purpose": "something else",
+				"lines": 5
+			},
+			{
+				"file": "src/features/parda/player/watch-panels.tsx",
+				"line": 46,
+				"layer": "parda",
+				"hook": "useEffect",
+				"purpose": "runs a timer",
+				"lines": 5
+			},
+			{
+				"file": "src/features/parda/player/watch-panels.tsx",
+				"line": 52,
+				"layer": "parda",
+				"hook": "useEffect",
+				"purpose": "navigates",
+				"lines": 5
+			},
+			{
+				"file": "src/features/parda/player/watch-panels.tsx",
+				"line": 262,
+				"layer": "parda",
+				"hook": "useEffect",
+				"purpose": "copies props or state into state",
+				"lines": 4
+			},
+			{
+				"file": "src/features/parda/search/recent.ts",
+				"line": 88,
+				"layer": "parda",
+				"hook": "useEffect",
+				"purpose": "something else",
+				"lines": 3
+			},
+			{
+				"file": "src/features/parda/search/search-overlay.tsx",
+				"line": 96,
+				"layer": "parda",
+				"hook": "useEffect",
+				"purpose": "copies props or state into state",
+				"lines": 3
+			},
+			{
+				"file": "src/features/parda/search/search-page.tsx",
+				"line": 41,
+				"layer": "parda",
+				"hook": "useEffect",
+				"purpose": "touches the document (title, class, attribute)",
+				"lines": 3
+			},
+			{
+				"file": "src/features/parda/search/search-page.tsx",
+				"line": 179,
+				"layer": "parda",
+				"hook": "useEffect",
+				"purpose": "something else",
+				"lines": 3
+			},
+			{
+				"file": "src/features/portfolio/components/art/hero-range.tsx",
+				"line": 21,
+				"layer": "portfolio",
+				"hook": "useEffect",
+				"purpose": "something else",
+				"lines": 11
+			},
+			{
+				"file": "src/features/portfolio/components/contact/copy-email-button.tsx",
+				"line": 15,
+				"layer": "portfolio",
+				"hook": "useEffect",
+				"purpose": "runs a timer",
+				"lines": 5
+			},
+			{
+				"file": "src/features/taskline/calendar/calendar.tsx",
+				"line": 82,
+				"layer": "taskline",
+				"hook": "useEffect",
+				"purpose": "moves focus or scroll",
+				"lines": 5
+			},
+			{
+				"file": "src/features/taskline/freshness.ts",
+				"line": 16,
+				"layer": "taskline",
+				"hook": "useEffect",
+				"purpose": "fetches or writes (a query's or a mutation's job)",
+				"lines": 8
+			},
+			{
+				"file": "src/features/taskline/time/timer.tsx",
+				"line": 26,
+				"layer": "taskline",
+				"hook": "useEffect",
+				"purpose": "runs a timer",
+				"lines": 5
+			},
+			{
+				"file": "src/features/taskline/timeline/timeline.tsx",
+				"line": 161,
+				"layer": "taskline",
+				"hook": "useEffect",
+				"purpose": "moves focus or scroll",
+				"lines": 6
+			},
+			{
+				"file": "src/hooks/use-debounced-value.ts",
+				"line": 6,
+				"layer": "core",
+				"hook": "useEffect",
+				"purpose": "runs a timer",
+				"lines": 4
+			},
+			{
+				"file": "src/hooks/use-hotkeys.ts",
+				"line": 55,
+				"layer": "core",
+				"hook": "useEffect",
+				"purpose": "listens to key presses",
+				"lines": 17
+			},
+			{
+				"file": "src/routes/_public/verify-email.tsx",
+				"line": 40,
+				"layer": "core",
+				"hook": "useEffect",
+				"purpose": "something else",
+				"lines": 3
+			},
+			{
+				"file": "src/routes/dev/examples/list-extras.tsx",
+				"line": 76,
+				"layer": "dev",
+				"hook": "useEffect",
+				"purpose": "something else",
+				"lines": 6
+			},
+			{
+				"file": "src/routes/dev/test-crud/$slug.tsx",
+				"line": 55,
+				"layer": "dev",
+				"hook": "useEffect",
+				"purpose": "keeps a ref current",
+				"lines": 5
+			}
+		]
+	},
+	"casts": {
+		"doubleCasts": [
+			{
+				"file": "src/components/forms/fields/list-fields.tsx",
+				"line": 229,
+				"layer": "core"
+			},
+			{
+				"file": "src/components/forms/fields/list-fields.tsx",
+				"line": 248,
+				"layer": "core"
+			},
+			{
+				"file": "src/features/chaal/engine/engine.ts",
+				"line": 68,
+				"layer": "chaal"
+			},
+			{
+				"file": "src/features/kharcha/budgets/budget-dialog.tsx",
+				"line": 57,
+				"layer": "kharcha"
+			},
+			{
+				"file": "src/features/parda/admin/titles/takedown-form.tsx",
+				"line": 17,
+				"layer": "parda"
+			},
+			{
+				"file": "src/lib/crud/collection.ts",
+				"line": 88,
+				"layer": "core"
+			},
+			{
+				"file": "src/lib/crud/route.ts",
+				"line": 75,
+				"layer": "core"
+			},
+			{
+				"file": "src/lib/seo.ts",
+				"line": 69,
+				"layer": "core"
+			},
+			{
+				"file": "src/server/kharcha/insights/service.ts",
+				"line": 71,
+				"layer": "kharcha"
+			},
+			{
+				"file": "src/server/kharcha/insights/service.ts",
+				"line": 92,
+				"layer": "kharcha"
+			},
+			{
+				"file": "src/server/kharcha/insights/service.ts",
+				"line": 104,
+				"layer": "kharcha"
+			},
+			{
+				"file": "src/server/kharcha/insights/service.ts",
+				"line": 112,
+				"layer": "kharcha"
+			},
+			{
+				"file": "src/server/kharcha/insights/service.ts",
+				"line": 194,
+				"layer": "kharcha"
+			},
+			{
+				"file": "src/server/kharcha/insights/service.ts",
+				"line": 198,
+				"layer": "kharcha"
+			},
+			{
+				"file": "src/server/kharcha/insights/service.ts",
+				"line": 206,
+				"layer": "kharcha"
+			},
+			{
+				"file": "src/server/kharcha/insights/service.ts",
+				"line": 263,
+				"layer": "kharcha"
+			},
+			{
+				"file": "src/server/kharcha/insights/service.ts",
+				"line": 270,
+				"layer": "kharcha"
+			},
+			{
+				"file": "src/server/kharcha/insights/service.ts",
+				"line": 274,
+				"layer": "kharcha"
+			},
+			{
+				"file": "src/server/kharcha/spend/service.ts",
+				"line": 311,
+				"layer": "kharcha"
+			}
+		],
+		"anyCasts": [],
+		"nonNull": {
+			"total": 0,
+			"byLayer": {}
+		}
+	},
+	"suppressions": {
+		"byKind": {
+			"biome-ignore": 67
+		},
+		"list": [
+			{
+				"file": "src/components/brand/contour-art.tsx",
+				"line": 127,
+				"layer": "core",
+				"kind": "biome-ignore",
+				"rule": "lint/suspicious/noArrayIndexKey",
+				"reason": "see above."
+			},
+			{
+				"file": "src/components/data-display/rail.tsx",
+				"line": 141,
+				"layer": "core",
+				"kind": "biome-ignore",
+				"rule": "lint/suspicious/noArrayIndexKey",
+				"reason": "nothing reorders them."
+			},
+			{
+				"file": "src/components/data-table/data-table-skeleton.tsx",
+				"line": 13,
+				"layer": "core",
+				"kind": "biome-ignore",
+				"rule": "lint/suspicious/noArrayIndexKey",
+				"reason": "static placeholder cells have no identity."
+			},
+			{
+				"file": "src/components/data-table/data-table-skeleton.tsx",
+				"line": 18,
+				"layer": "core",
+				"kind": "biome-ignore",
+				"rule": "lint/suspicious/noArrayIndexKey",
+				"reason": "static placeholder rows have no identity."
+			},
+			{
+				"file": "src/components/data-table/data-table-skeleton.tsx",
+				"line": 21,
+				"layer": "core",
+				"kind": "biome-ignore",
+				"rule": "lint/suspicious/noArrayIndexKey",
+				"reason": "static placeholder cells have no identity."
+			},
+			{
+				"file": "src/components/dialogs/query-dialog.tsx",
+				"line": 66,
+				"layer": "core",
+				"kind": "biome-ignore",
+				"rule": "lint/suspicious/noArrayIndexKey",
+				"reason": "static placeholder rows have no identity."
+			},
+			{
+				"file": "src/components/forms/fields/file-fields.tsx",
+				"line": 68,
+				"layer": "core",
+				"kind": "biome-ignore",
+				"rule": "lint/a11y/noStaticElementInteractions",
+				"reason": "drag-and-drop is a pointer-only enhancement; the focusable native file input inside is the keyboard/AT path. */}"
+			},
+			{
+				"file": "src/components/forms/fields/localized-fields.tsx",
+				"line": 41,
+				"layer": "core",
+				"kind": "biome-ignore",
+				"rule": "lint/correctness/useExhaustiveDependencies",
+				"reason": "reacts to submit attempts only, not to every error change."
+			},
+			{
+				"file": "src/components/forms/fields/phone-otp-fields.tsx",
+				"line": 196,
+				"layer": "core",
+				"kind": "biome-ignore",
+				"rule": "lint/suspicious/noArrayIndexKey",
+				"reason": "slots are positional (one per digit)."
+			},
+			{
+				"file": "src/components/page/breadcrumbs.tsx",
+				"line": 51,
+				"layer": "core",
+				"kind": "biome-ignore",
+				"rule": "lint/security/noDangerouslySetInnerHtml",
+				"reason": "JSON-LD data block built from our own labels; \"<\" is escaped by serializeJsonLd."
+			},
+			{
+				"file": "src/components/page/skeletons.tsx",
+				"line": 38,
+				"layer": "core",
+				"kind": "biome-ignore",
+				"rule": "lint/suspicious/noArrayIndexKey",
+				"reason": "static placeholder list; items have no identity."
+			},
+			{
+				"file": "src/components/rich-text-content.tsx",
+				"line": 36,
+				"layer": "core",
+				"kind": "biome-ignore",
+				"rule": "lint/security/noDangerouslySetInnerHtml",
+				"reason": "html is SafeHtml, produced only by the server-side sanitizer (src/server/rich-text/sanitize.ts)."
+			},
+			{
+				"file": "src/features/apps/forms/components/form-results.tsx",
+				"line": 244,
+				"layer": "apps",
+				"kind": "biome-ignore",
+				"rule": "lint/suspicious/noArrayIndexKey",
+				"reason": "answers have no id of their own and never reorder."
+			},
+			{
+				"file": "src/features/apps/habits/components/habits-home.tsx",
+				"line": 122,
+				"layer": "apps",
+				"kind": "biome-ignore",
+				"rule": "lint/suspicious/noArrayIndexKey",
+				"reason": "a fixed decorative week."
+			},
+			{
+				"file": "src/features/apps/links/components/links-home.tsx",
+				"line": 111,
+				"layer": "apps",
+				"kind": "biome-ignore",
+				"rule": "lint/suspicious/noArrayIndexKey",
+				"reason": "a fixed decorative series."
+			},
+			{
+				"file": "src/features/attachments/components/image-gallery-field.tsx",
+				"line": 257,
+				"layer": "core",
+				"kind": "biome-ignore",
+				"rule": "lint/a11y/noStaticElementInteractions",
+				"reason": "drag-and-drop target; the button inside is the accessible way to add files."
+			},
+			{
+				"file": "src/features/chaal/analysis/engine-panel.tsx",
+				"line": 98,
+				"layer": "chaal",
+				"kind": "biome-ignore",
+				"rule": "lint/suspicious/noArrayIndexKey",
+				"reason": "a line's place is its identity (multi-PV 1, 2, 3)."
+			},
+			{
+				"file": "src/features/chaal/analysis/use-analysis.ts",
+				"line": 79,
+				"layer": "chaal",
+				"kind": "biome-ignore",
+				"rule": "lint/correctness/useExhaustiveDependencies",
+				"reason": "only a change of the URL itself starts again."
+			},
+			{
+				"file": "src/features/chaal/board/board.tsx",
+				"line": 335,
+				"layer": "chaal",
+				"kind": "biome-ignore",
+				"rule": "lint/a11y/noStaticElementInteractions",
+				"reason": "pointer input (drag, click, right-drag); the keyboard goes through the grid inside. */}"
+			},
+			{
+				"file": "src/features/chaal/board/board.tsx",
+				"line": 348,
+				"layer": "chaal",
+				"kind": "biome-ignore",
+				"rule": "lint/a11y/useSemanticElements",
+				"reason": "the board is a CSS grid of squares; a <table> would lose its layout. The grid, rows and cells are the ARIA grid pattern with aria-activedescendant. */}"
+			},
+			{
+				"file": "src/features/chaal/board/board.tsx",
+				"line": 360,
+				"layer": "chaal",
+				"kind": "biome-ignore",
+				"rule": "lint/a11y/useSemanticElements",
+				"reason": "lint/a11y/useFocusableInteractive: a row of the grid above; focus stays on the grid (aria-activedescendant)."
+			},
+			{
+				"file": "src/features/chaal/board/board.tsx",
+				"line": 363,
+				"layer": "chaal",
+				"kind": "biome-ignore",
+				"rule": "lint/a11y/useSemanticElements",
+				"reason": "lint/a11y/useFocusableInteractive: a square of the grid; the grid holds focus and points at the cursor's square (aria-activedescendant)."
+			},
+			{
+				"file": "src/features/chaal/board/eval-bar.tsx",
+				"line": 30,
+				"layer": "chaal",
+				"kind": "biome-ignore",
+				"rule": "lint/a11y/useSemanticElements",
+				"reason": "<meter> can't draw the bar's paper and ink halves; the role carries the same meaning."
+			},
+			{
+				"file": "src/features/chaal/game/live-chat.tsx",
+				"line": 69,
+				"layer": "chaal",
+				"kind": "biome-ignore",
+				"rule": "lint/suspicious/noArrayIndexKey",
+				"reason": "an append-only list."
+			},
+			{
+				"file": "src/features/dev/examples/kit-components.tsx",
+				"line": 381,
+				"layer": "dev",
+				"kind": "biome-ignore",
+				"rule": "lint/suspicious/noArrayIndexKey",
+				"reason": "a static list of numbered lines."
+			},
+			{
+				"file": "src/features/kharcha/expenses/expense-sheet.tsx",
+				"line": 50,
+				"layer": "kharcha",
+				"kind": "biome-ignore",
+				"rule": "lint/suspicious/noArrayIndexKey",
+				"reason": "static placeholder rows have no identity."
+			},
+			{
+				"file": "src/features/kharcha/expenses/receipt-viewer.tsx",
+				"line": 79,
+				"layer": "kharcha",
+				"kind": "biome-ignore",
+				"rule": "lint/a11y/noNoninteractiveTabindex",
+				"reason": "a scrolling region needs a tab stop to be scrolled by the keyboard."
+			},
+			{
+				"file": "src/features/kharcha/insights/heatmap.tsx",
+				"line": 87,
+				"layer": "kharcha",
+				"kind": "biome-ignore",
+				"rule": "lint/suspicious/noArrayIndexKey",
+				"reason": "blank cells before the 1st and after the last have nothing else to be keyed by"
+			},
+			{
+				"file": "src/features/kharcha/insights/heatmap.tsx",
+				"line": 99,
+				"layer": "kharcha",
+				"kind": "biome-ignore",
+				"rule": "lint/suspicious/noArrayIndexKey",
+				"reason": "the scale's steps are fixed and in order"
+			},
+			{
+				"file": "src/features/kharcha/spend/import-page.tsx",
+				"line": 245,
+				"layer": "kharcha",
+				"kind": "biome-ignore",
+				"rule": "lint/suspicious/noArrayIndexKey",
+				"reason": "columns are positions; names may repeat."
+			},
+			{
+				"file": "src/features/kharcha/spend/import-page.tsx",
+				"line": 319,
+				"layer": "kharcha",
+				"kind": "biome-ignore",
+				"rule": "lint/a11y/noNoninteractiveTabindex",
+				"reason": "a scrollable region must be focusable (axe scrollable-region-focusable)."
+			},
+			{
+				"file": "src/features/kharcha/spend/saved-dialogs.tsx",
+				"line": 146,
+				"layer": "kharcha",
+				"kind": "biome-ignore",
+				"rule": "lint/a11y/noNoninteractiveTabindex",
+				"reason": "a row is a tab stop so Alt+arrows can move it."
+			},
+			{
+				"file": "src/features/kharcha/spend/spend-page.tsx",
+				"line": 285,
+				"layer": "kharcha",
+				"kind": "biome-ignore",
+				"rule": "lint/suspicious/noArrayIndexKey",
+				"reason": "terms are positions in the query; the same text may repeat."
+			},
+			{
+				"file": "src/features/kharcha/threads/comment-line.tsx",
+				"line": 34,
+				"layer": "kharcha",
+				"kind": "biome-ignore",
+				"rule": "lint/suspicious/noArrayIndexKey",
+				"reason": "the parts of one text, in order, never reordered."
+			},
+			{
+				"file": "src/features/kharcha/threads/comment-line.tsx",
+				"line": 44,
+				"layer": "kharcha",
+				"kind": "biome-ignore",
+				"rule": "lint/suspicious/noArrayIndexKey",
+				"reason": "as above."
+			},
+			{
+				"file": "src/features/kharcha/threads/comment-line.tsx",
+				"line": 49,
+				"layer": "kharcha",
+				"kind": "biome-ignore",
+				"rule": "lint/suspicious/noArrayIndexKey",
+				"reason": "as above."
+			},
+			{
+				"file": "src/features/parda/kit/billboard.tsx",
+				"line": 202,
+				"layer": "parda",
+				"kind": "biome-ignore",
+				"rule": "lint/a11y/useSemanticElements",
+				"reason": "a <fieldset> is for form controls. */}"
+			},
+			{
+				"file": "src/features/parda/library/local.ts",
+				"line": 51,
+				"layer": "parda",
+				"kind": "biome-ignore",
+				"rule": "lint/suspicious/noDocumentCookie",
+				"reason": "one non-sensitive flag; the Cookie Store API isn't in Safari or Firefox."
+			},
+			{
+				"file": "src/features/parda/library/title-progress.tsx",
+				"line": 78,
+				"layer": "parda",
+				"kind": "biome-ignore",
+				"rule": "lint/correctness/useExhaustiveDependencies",
+				"reason": "ref and shape come with the page."
+			},
+			{
+				"file": "src/features/parda/party/use-party-room.ts",
+				"line": 247,
+				"layer": "parda",
+				"kind": "biome-ignore",
+				"rule": "lint/correctness/useExhaustiveDependencies",
+				"reason": "the room is one party; the rest is read through refs."
+			},
+			{
+				"file": "src/features/parda/party/use-party-room.ts",
+				"line": 312,
+				"layer": "parda",
+				"kind": "biome-ignore",
+				"rule": "lint/correctness/useExhaustiveDependencies",
+				"reason": "loads once per seat; changes of source come as effects."
+			},
+			{
+				"file": "src/features/parda/party/use-party-room.ts",
+				"line": 319,
+				"layer": "parda",
+				"kind": "biome-ignore",
+				"rule": "lint/correctness/useExhaustiveDependencies",
+				"reason": "reads the latest state through refs."
+			},
+			{
+				"file": "src/features/parda/party/use-party-room.ts",
+				"line": 336,
+				"layer": "parda",
+				"kind": "biome-ignore",
+				"rule": "lint/correctness/useExhaustiveDependencies",
+				"reason": "reads the latest state through refs."
+			},
+			{
+				"file": "src/features/parda/party/use-party-room.ts",
+				"line": 359,
+				"layer": "parda",
+				"kind": "biome-ignore",
+				"rule": "lint/correctness/useExhaustiveDependencies",
+				"reason": "on unmount only, with the latest refs."
+			},
+			{
+				"file": "src/features/parda/player/use-watch-player.ts",
+				"line": 351,
+				"layer": "parda",
+				"kind": "biome-ignore",
+				"rule": "lint/correctness/useExhaustiveDependencies",
+				"reason": "load and the data are read once, on mount."
+			},
+			{
+				"file": "src/features/parda/player/use-watch-player.ts",
+				"line": 406,
+				"layer": "parda",
+				"kind": "biome-ignore",
+				"rule": "lint/correctness/useExhaustiveDependencies",
+				"reason": "on unmount only, with the latest refs."
+			},
+			{
+				"file": "src/features/portfolio/components/art/relief.tsx",
+				"line": 123,
+				"layer": "portfolio",
+				"kind": "biome-ignore",
+				"rule": "lint/suspicious/noArrayIndexKey",
+				"reason": "the bands are a fixed split by altitude."
+			},
+			{
+				"file": "src/features/portfolio/components/content/code-block.tsx",
+				"line": 19,
+				"layer": "portfolio",
+				"kind": "biome-ignore",
+				"rule": "lint/a11y/noNoninteractiveTabindex",
+				"reason": "a scrollable region must be focusable so keyboard users can scroll it (axe scrollable-region-focusable). */}"
+			},
+			{
+				"file": "src/features/portfolio/components/primitives/fitted-name.tsx",
+				"line": 29,
+				"layer": "portfolio",
+				"kind": "biome-ignore",
+				"rule": "lint/suspicious/noArrayIndexKey",
+				"reason": "a name may repeat a word; the order is the identity."
+			},
+			{
+				"file": "src/features/portfolio/lib/fit.ts",
+				"line": 25,
+				"layer": "portfolio",
+				"kind": "biome-ignore",
+				"rule": "format",
+				"reason": "a measured table reads as rows of the alphabet, not one entry per line."
+			},
+			{
+				"file": "src/features/taskline/admin/workflows/workflows-page.tsx",
+				"line": 94,
+				"layer": "taskline",
+				"kind": "biome-ignore",
+				"rule": "lint/suspicious/noArrayIndexKey",
+				"reason": "unsaved rows have no id"
+			},
+			{
+				"file": "src/features/taskline/board/board.tsx",
+				"line": 136,
+				"layer": "taskline",
+				"kind": "biome-ignore",
+				"rule": "lint/a11y/noNoninteractiveTabindex",
+				"reason": "a scrollable region must be reachable by keyboard (axe scrollable-region-focusable)."
+			},
+			{
+				"file": "src/features/taskline/calendar/calendar.tsx",
+				"line": 116,
+				"layer": "taskline",
+				"kind": "biome-ignore",
+				"rule": "lint/a11y/noNoninteractiveTabindex",
+				"reason": "a scrollable region must be reachable by keyboard (axe scrollable-region-focusable)."
+			},
+			{
+				"file": "src/features/taskline/list/import-dialog.tsx",
+				"line": 244,
+				"layer": "taskline",
+				"kind": "biome-ignore",
+				"rule": "lint/suspicious/noArrayIndexKey",
+				"reason": "columns are positions; names may repeat."
+			},
+			{
+				"file": "src/features/taskline/list/import-dialog.tsx",
+				"line": 268,
+				"layer": "taskline",
+				"kind": "biome-ignore",
+				"rule": "lint/suspicious/noArrayIndexKey",
+				"reason": "columns are positions; names may repeat."
+			},
+			{
+				"file": "src/features/taskline/list/import-dialog.tsx",
+				"line": 349,
+				"layer": "taskline",
+				"kind": "biome-ignore",
+				"rule": "lint/a11y/noNoninteractiveTabindex",
+				"reason": "a scrollable region must be focusable (axe scrollable-region-focusable)."
+			},
+			{
+				"file": "src/features/taskline/shell/taskline-art.tsx",
+				"line": 34,
+				"layer": "taskline",
+				"kind": "biome-ignore",
+				"rule": "lint/suspicious/noArrayIndexKey",
+				"reason": "a fixed grid that never reorders"
+			},
+			{
+				"file": "src/features/taskline/shell/taskline-art.tsx",
+				"line": 46,
+				"layer": "taskline",
+				"kind": "biome-ignore",
+				"rule": "lint/suspicious/noArrayIndexKey",
+				"reason": "a fixed drawing that never reorders"
+			},
+			{
+				"file": "src/features/taskline/task/task-sheet.tsx",
+				"line": 52,
+				"layer": "taskline",
+				"kind": "biome-ignore",
+				"rule": "lint/suspicious/noArrayIndexKey",
+				"reason": "static placeholder rows have no identity."
+			},
+			{
+				"file": "src/lib/guests.ts",
+				"line": 26,
+				"layer": "apps",
+				"kind": "biome-ignore",
+				"rule": "lint/suspicious/noDocumentCookie",
+				"reason": "one short-lived, non-sensitive cookie; the Cookie Store API isn't in Safari or Firefox."
+			},
+			{
+				"file": "src/lib/observability/analytics.ts",
+				"line": 63,
+				"layer": "core",
+				"kind": "biome-ignore",
+				"rule": "lint/suspicious/noDocumentCookie",
+				"reason": "removing PostHog's own cookie; the Cookie Store API isn't in Firefox/Safari."
+			},
+			{
+				"file": "src/lib/stores/preferences.ts",
+				"line": 127,
+				"layer": "core",
+				"kind": "biome-ignore",
+				"rule": "lint/suspicious/noDocumentCookie",
+				"reason": "the Cookie Store API is not available in Firefox/Safari; these are non-sensitive UI preferences."
+			},
+			{
+				"file": "src/lib/stores/preferences.ts",
+				"line": 134,
+				"layer": "core",
+				"kind": "biome-ignore",
+				"rule": "lint/suspicious/noDocumentCookie",
+				"reason": "the Cookie Store API is not available in Firefox/Safari; these are non-sensitive UI preferences."
+			},
+			{
+				"file": "tests/components/layout/preferences-ui.test.tsx",
+				"line": 83,
+				"layer": "core",
+				"kind": "biome-ignore",
+				"rule": "lint/suspicious/noDocumentCookie",
+				"reason": "test cleanup of the cookies the store writes."
+			},
+			{
+				"file": "tests/unit/preferences.test.ts",
+				"line": 12,
+				"layer": "core",
+				"kind": "biome-ignore",
+				"rule": "lint/suspicious/noDocumentCookie",
+				"reason": "test cleanup of the cookies the store writes."
+			},
+			{
+				"file": "e2e/support/fixtures.ts",
+				"line": 339,
+				"layer": "core",
+				"kind": "biome-ignore",
+				"rule": "lint/correctness/noEmptyPattern",
+				"reason": "Playwright fixtures take their dependencies as a destructured object."
+			},
+			{
+				"file": "scripts/audit/code.ts",
+				"line": 141,
+				"layer": "core",
+				"kind": "biome-ignore",
+				"rule": "by",
+				"reason": "rule\","
+			}
+		]
+	},
+	"defaultExports": {
+		"needed": 94,
+		"rest": [
+			"src/components/charts/cartesian-chart.tsx",
+			"src/components/charts/donut-chart.tsx",
+			"src/components/forms/fields/rich-text-editor.tsx",
+			"src/features/apps/components/name-dialog.tsx",
+			"src/features/apps/habits/components/habit-dialog.tsx",
+			"src/features/apps/links/components/link-dialog.tsx",
+			"src/features/chaal/shell/palette-players.tsx",
+			"src/features/kharcha/budgets/budget-dialog.tsx",
+			"src/features/kharcha/expenses/expense-dialog.tsx",
+			"src/features/kharcha/expenses/expense-sheet.tsx",
+			"src/features/kharcha/expenses/receipt-viewer.tsx",
+			"src/features/kharcha/expenses/split-editor.tsx",
+			"src/features/kharcha/groups/group-settings.tsx",
+			"src/features/kharcha/groups/group-totals.tsx",
+			"src/features/kharcha/recurring/repeat-dialog.tsx",
+			"src/features/kharcha/settings/list-dialogs.tsx",
+			"src/features/kharcha/settle/settle-dialog.tsx",
+			"src/features/kharcha/shell/create-dialogs.tsx",
+			"src/features/kharcha/spend/saved-dialogs.tsx",
+			"src/features/kharcha/spend/spend-chart.tsx",
+			"src/features/kharcha/spend/spend-table.tsx",
+			"src/features/kharcha/threads/friend-dialogs.tsx",
+			"src/features/parda/search/search-overlay.tsx",
+			"src/features/taskline/admin/projects/delete-project-dialog.tsx",
+			"src/features/taskline/admin/templates/save-template-dialog.tsx",
+			"src/features/taskline/admin/templates/template-dialog.tsx",
+			"src/features/taskline/automations/automation-dialog.tsx",
+			"src/features/taskline/automations/recurrence-dialog.tsx",
+			"src/features/taskline/custom-fields/field-dialog.tsx",
+			"src/features/taskline/list/import-dialog.tsx",
+			"src/features/taskline/projects/create-project-dialog.tsx",
+			"src/features/taskline/projects/project-update-dialog.tsx",
+			"src/features/taskline/shell/new-task-dialog.tsx",
+			"src/features/taskline/task/task-sheet.tsx",
+			"src/features/taskline/timeline/milestone-dialog.tsx"
+		]
+	},
+	"patterns": {
+		"setTimeout(": {
+			"total": 31,
+			"byLayer": {
+				"chaal": 13,
+				"core": 8,
+				"parda": 5,
+				"dev": 4,
+				"portfolio": 1
+			},
+			"files": [
+				"src/components/data-display/copy-button.tsx",
+				"src/components/filters/filter-bar.tsx",
+				"src/components/layout/navigation-progress.tsx",
+				"src/features/chaal/analysis/use-analysis.ts",
+				"src/features/chaal/engine/engine.ts",
+				"src/features/chaal/engine/use-engine.ts",
+				"src/features/chaal/live/events-client.ts",
+				"src/features/chaal/live/reader.ts",
+				"src/features/chaal/local/use-local-game.ts",
+				"src/features/chaal/play/use-seek.ts",
+				"src/features/chaal/puzzles/use-trainer.ts",
+				"src/features/dev/examples/kit-fields.tsx",
+				"src/features/parda/party/channel.ts",
+				"src/features/parda/party/use-party-room.ts",
+				"src/features/parda/player/use-watch-player.ts",
+				"src/features/portfolio/components/contact/copy-email-button.tsx",
+				"src/functions/examples.ts",
+				"src/functions/stack.ts",
+				"src/hooks/use-debounced-value.ts",
+				"src/routes/dev/examples/list-extras.tsx",
+				"src/server/chaal/lichess/client.ts",
+				"src/server/chaal/stream.ts",
+				"src/server/db/health.ts",
+				"src/server/examples/idempotency.ts",
+				"src/server/examples/jobs.ts",
+				"src/server/parda/notify/rules.ts",
+				"src/server/parda/tmdb/client.ts"
+			]
+		},
+		"setInterval(": {
+			"total": 18,
+			"byLayer": {
+				"chaal": 9,
+				"parda": 7,
+				"core": 1,
+				"taskline": 1
+			},
+			"files": [
+				"src/features/chaal/admin/lab/lab-page.tsx",
+				"src/features/chaal/board/clock.tsx",
+				"src/features/chaal/game/live-game-page.tsx",
+				"src/features/chaal/local/use-local-game.ts",
+				"src/features/chaal/play/online-play.tsx",
+				"src/features/chaal/play/quick-pair.tsx",
+				"src/features/chaal/watch/tv-page.tsx",
+				"src/features/parda/admin/player-lab/player-lab-page.tsx",
+				"src/features/parda/kit/billboard.tsx",
+				"src/features/parda/party/use-party-room.ts",
+				"src/features/parda/player/use-watch-player.ts",
+				"src/features/parda/player/watch-panels.tsx",
+				"src/features/taskline/time/timer.tsx",
+				"src/hooks/use-minute-clock.ts",
+				"src/server/parda/player/placeholder.ts"
+			]
+		},
+		"useDebouncedValue(": {
+			"total": 8,
+			"byLayer": {
+				"taskline": 3,
+				"core": 2,
+				"chaal": 1,
+				"dev": 1,
+				"parda": 1
+			},
+			"files": [
+				"src/components/forms/fields/async-combobox-field.tsx",
+				"src/features/chaal/shell/palette-players.tsx",
+				"src/features/dev/examples/kit-components.tsx",
+				"src/features/media/components/media-picker.tsx",
+				"src/features/parda/search/search-overlay.tsx",
+				"src/features/taskline/automations/automation-dialog.tsx",
+				"src/features/taskline/shell/taskline-palette.tsx",
+				"src/features/taskline/timeline/dependencies.tsx"
+			]
+		},
+		"debounce or throttle by name": {
+			"total": 35,
+			"byLayer": {
+				"core": 24,
+				"dev": 4,
+				"taskline": 3,
+				"chaal": 2,
+				"parda": 2
+			},
+			"files": [
+				"src/components/filters/filter-bar.tsx",
+				"src/components/forms/async-validators.ts",
+				"src/components/forms/fields/async-combobox-field.tsx",
+				"src/components/forms/fields/slug-field.tsx",
+				"src/components/forms/form-components.tsx",
+				"src/features/chaal/local/use-local-game.ts",
+				"src/features/chaal/shell/palette-players.tsx",
+				"src/features/dev/examples/kit-components.tsx",
+				"src/features/media/components/media-picker.tsx",
+				"src/features/parda/search/search-overlay.tsx",
+				"src/features/taskline/automations/automation-dialog.tsx",
+				"src/features/taskline/shell/taskline-palette.tsx",
+				"src/features/taskline/timeline/dependencies.tsx",
+				"src/hooks/use-debounced-value.ts",
+				"src/routes/dev/examples/filters.tsx",
+				"src/server/parda/library/repository.ts"
+			]
+		},
+		"useHotkeys(": {
+			"total": 13,
+			"byLayer": {
+				"chaal": 5,
+				"core": 3,
+				"parda": 2,
+				"dev": 1,
+				"kharcha": 1,
+				"taskline": 1
+			},
+			"files": [
+				"src/components/admin-shell/admin-shell.tsx",
+				"src/features/chaal/board/game-controls.tsx",
+				"src/features/chaal/board/move-input.tsx",
+				"src/features/chaal/shell/chaal-frame.tsx",
+				"src/features/chaal/shell/zen.ts",
+				"src/features/chaal/watch/channel-page.tsx",
+				"src/features/dev/examples/kit-components.tsx",
+				"src/features/kharcha/shell/kharcha-shell.tsx",
+				"src/features/parda/player/watch-page.tsx",
+				"src/features/parda/search/search-button.tsx",
+				"src/features/taskline/shell/taskline-shell.tsx",
+				"src/hooks/use-hotkeys.ts"
+			]
+		},
+		"onKeyDown=": {
+			"total": 26,
+			"byLayer": {
+				"taskline": 11,
+				"kharcha": 5,
+				"core": 4,
+				"chaal": 3,
+				"apps": 1,
+				"parda": 1,
+				"portfolio": 1
+			},
+			"files": [
+				"src/components/forms/fields/misc-fields.tsx",
+				"src/components/forms/fields/rich-text-editor.tsx",
+				"src/components/forms/fields/sortable-list.tsx",
+				"src/features/apps/forms/components/builder-canvas.tsx",
+				"src/features/chaal/board/board.tsx",
+				"src/features/chaal/board/eval-graph.tsx",
+				"src/features/chaal/board/promotion-picker.tsx",
+				"src/features/kharcha/expenses/receipt-viewer.tsx",
+				"src/features/kharcha/spend/query-input.tsx",
+				"src/features/kharcha/spend/saved-dialogs.tsx",
+				"src/features/kharcha/threads/composer.tsx",
+				"src/features/parda/title/gallery.tsx",
+				"src/features/portfolio/components/chrome/portfolio-menu.tsx",
+				"src/features/taskline/board/board.tsx",
+				"src/features/taskline/calendar/calendar.tsx",
+				"src/features/taskline/sprints/backlog.tsx",
+				"src/features/taskline/task/task-panel.tsx",
+				"src/features/taskline/time/timesheet.tsx",
+				"src/features/taskline/timeline/timeline.tsx"
+			]
+		},
+		"addEventListener(\"keydown\"": {
+			"total": 2,
+			"byLayer": {
+				"core": 2
+			},
+			"files": [
+				"src/components/filters/filters.tsx",
+				"src/hooks/use-hotkeys.ts"
+			]
+		},
+		"useMemo(": {
+			"total": 4,
+			"byLayer": {
+				"core": 2,
+				"dev": 2
+			},
+			"files": [
+				"src/components/crud/use-crud-collection.ts",
+				"src/components/forms/fields/phone-otp-fields.tsx",
+				"src/routes/dev/examples/optimistic.tsx"
+			]
+		},
+		"useCallback(": {
+			"total": 0,
+			"byLayer": {},
+			"files": []
+		},
+		"console.* in src/server": {
+			"total": 1,
+			"byLayer": {
+				"core": 1
+			},
+			"files": [
+				"src/server/email/providers/console.ts"
+			]
+		},
+		"console.* elsewhere in src": {
+			"total": 4,
+			"byLayer": {
+				"core": 4
+			},
+			"files": [
+				"src/client.tsx",
+				"src/lib/observability/log-line.ts"
+			]
+		}
+	}
+}

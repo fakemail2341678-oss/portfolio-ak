@@ -1,0 +1,2901 @@
+{
+	"generated": "node scripts/audit/times.ts",
+	"unit": {
+		"files": 207,
+		"tests": 2534,
+		"totalSeconds": 416.2,
+		"byFolder": {
+			"tests/server": 375.7,
+			"tests/components": 34.4,
+			"tests/unit": 5.6,
+			"tests/i18n": 0.3,
+			"tests/email": 0.3
+		},
+		"byLayer": {
+			"kharcha": 205,
+			"taskline": 85.1,
+			"core": 45.7,
+			"chaal": 32.4,
+			"parda": 32.3,
+			"apps": 12.2,
+			"portfolio": 3.2,
+			"dev": 0.4
+		},
+		"slowestFiles": [
+			{
+				"file": "tests/server/kharcha-access.test.ts",
+				"tests": 100,
+				"ms": 172933
+			},
+			{
+				"file": "tests/server/taskline-access.test.ts",
+				"tests": 30,
+				"ms": 30476
+			},
+			{
+				"file": "tests/server/chaal-access.test.ts",
+				"tests": 87,
+				"ms": 11103
+			},
+			{
+				"file": "tests/server/kharcha-plan.test.ts",
+				"tests": 12,
+				"ms": 6045
+			},
+			{
+				"file": "tests/server/kharcha-search.test.ts",
+				"tests": 13,
+				"ms": 5617
+			},
+			{
+				"file": "tests/server/taskline.test.ts",
+				"tests": 19,
+				"ms": 5433
+			},
+			{
+				"file": "tests/server/parda-access.test.ts",
+				"tests": 44,
+				"ms": 5399
+			},
+			{
+				"file": "tests/server/env-boundary.test.ts",
+				"tests": 4,
+				"ms": 5241
+			},
+			{
+				"file": "tests/server/taskline-collab.test.ts",
+				"tests": 14,
+				"ms": 5191
+			},
+			{
+				"file": "tests/server/taskline-admin.test.ts",
+				"tests": 19,
+				"ms": 5186
+			},
+			{
+				"file": "tests/server/taskline-views.test.ts",
+				"tests": 16,
+				"ms": 4826
+			},
+			{
+				"file": "tests/server/taskline-time.test.ts",
+				"tests": 15,
+				"ms": 4518
+			},
+			{
+				"file": "tests/server/parda-party.test.ts",
+				"tests": 27,
+				"ms": 4300
+			},
+			{
+				"file": "tests/server/taskline-timeline.test.ts",
+				"tests": 7,
+				"ms": 3968
+			},
+			{
+				"file": "tests/server/taskline-automations.test.ts",
+				"tests": 12,
+				"ms": 3797
+			},
+			{
+				"file": "tests/server/taskline-templates.test.ts",
+				"tests": 25,
+				"ms": 3771
+			},
+			{
+				"file": "tests/server/taskline-sprints.test.ts",
+				"tests": 14,
+				"ms": 3616
+			},
+			{
+				"file": "tests/server/kharcha-social.test.ts",
+				"tests": 12,
+				"ms": 3604
+			},
+			{
+				"file": "tests/server/parda-curation.test.ts",
+				"tests": 22,
+				"ms": 3176
+			},
+			{
+				"file": "tests/server/kharcha-settle.test.ts",
+				"tests": 9,
+				"ms": 3083
+			},
+			{
+				"file": "tests/server/chaal-play.test.ts",
+				"tests": 21,
+				"ms": 3078
+			},
+			{
+				"file": "tests/server/kharcha-talk.test.ts",
+				"tests": 11,
+				"ms": 3067
+			},
+			{
+				"file": "tests/server/kharcha.test.ts",
+				"tests": 12,
+				"ms": 3012
+			},
+			{
+				"file": "tests/server/apps-forms.test.ts",
+				"tests": 20,
+				"ms": 2911
+			},
+			{
+				"file": "tests/components/forms/date-fields.test.tsx",
+				"tests": 10,
+				"ms": 2869
+			},
+			{
+				"file": "tests/server/parda-catalog.test.ts",
+				"tests": 19,
+				"ms": 2846
+			},
+			{
+				"file": "tests/server/test-crud-repository.test.ts",
+				"tests": 23,
+				"ms": 2824
+			},
+			{
+				"file": "tests/server/chaal-puzzles.test.ts",
+				"tests": 13,
+				"ms": 2787
+			},
+			{
+				"file": "tests/server/parda-ranking.test.ts",
+				"tests": 20,
+				"ms": 2737
+			},
+			{
+				"file": "tests/server/taskline-find.test.ts",
+				"tests": 11,
+				"ms": 2724
+			},
+			{
+				"file": "tests/server/apps-links.test.ts",
+				"tests": 18,
+				"ms": 2646
+			},
+			{
+				"file": "tests/components/forms/kit-fields.test.tsx",
+				"tests": 7,
+				"ms": 2620
+			},
+			{
+				"file": "tests/server/parda-library.test.ts",
+				"tests": 18,
+				"ms": 2524
+			},
+			{
+				"file": "tests/server/apps-notes.test.ts",
+				"tests": 19,
+				"ms": 2508
+			},
+			{
+				"file": "tests/server/kharcha-spending.test.ts",
+				"tests": 9,
+				"ms": 2498
+			},
+			{
+				"file": "tests/server/portfolio-admin.test.ts",
+				"tests": 17,
+				"ms": 2476
+			},
+			{
+				"file": "tests/components/forms/text-fields.test.tsx",
+				"tests": 10,
+				"ms": 2436
+			},
+			{
+				"file": "tests/components/forms/choice-fields.test.tsx",
+				"tests": 14,
+				"ms": 2423
+			},
+			{
+				"file": "tests/server/guests.test.ts",
+				"tests": 12,
+				"ms": 2392
+			},
+			{
+				"file": "tests/server/chaal-connect.test.ts",
+				"tests": 15,
+				"ms": 2360
+			}
+		],
+		"slowestTests": [
+			{
+				"name": "server-only import boundary no client-reachable source file imports src/server",
+				"ms": 5236
+			},
+			{
+				"name": "Kharcha's access matrix updateNotifySettings (the caller's own)",
+				"ms": 4521
+			},
+			{
+				"name": "Kharcha's access matrix createBudget (the caller's own)",
+				"ms": 4403
+			},
+			{
+				"name": "Kharcha's access matrix updateProfile (the caller's own)",
+				"ms": 4313
+			},
+			{
+				"name": "Kharcha's access matrix insights (the caller's own): overview, trends, statement",
+				"ms": 4295
+			},
+			{
+				"name": "Kharcha's access matrix listPeople",
+				"ms": 4246
+			},
+			{
+				"name": "Kharcha's access matrix listSpend",
+				"ms": 4234
+			},
+			{
+				"name": "Kharcha's access matrix getSettleUp: everything of the caller's",
+				"ms": 4200
+			},
+			{
+				"name": "Kharcha's access matrix importSpend (the caller's own)",
+				"ms": 4146
+			},
+			{
+				"name": "Kharcha's access matrix setFocus (the caller's own)",
+				"ms": 4124
+			},
+			{
+				"name": "Kharcha's access matrix listRecurring (the caller's own)",
+				"ms": 3944
+			},
+			{
+				"name": "Kharcha's access matrix listBudgets (the caller's own)",
+				"ms": 3910
+			},
+			{
+				"name": "Kharcha's access matrix createCategory",
+				"ms": 3898
+			},
+			{
+				"name": "Kharcha's access matrix exportSpend",
+				"ms": 3873
+			},
+			{
+				"name": "Kharcha's access matrix saveSearch",
+				"ms": 3872
+			},
+			{
+				"name": "Kharcha's access matrix spendChart",
+				"ms": 3872
+			},
+			{
+				"name": "Kharcha's access matrix markRead (the caller's own notifications)",
+				"ms": 3855
+			},
+			{
+				"name": "Kharcha's access matrix createTag",
+				"ms": 3669
+			},
+			{
+				"name": "Kharcha's access matrix createMethod",
+				"ms": 3484
+			},
+			{
+				"name": "Kharcha's access matrix getLists",
+				"ms": 3396
+			},
+			{
+				"name": "Kharcha's access matrix acceptInvite",
+				"ms": 3210
+			},
+			{
+				"name": "Kharcha's access matrix getMerchants",
+				"ms": 3114
+			},
+			{
+				"name": "the Taskline access matrix a team-visible project lead: manage",
+				"ms": 2850
+			},
+			{
+				"name": "budgets alert at 80% and at 100% once per period, from the daily job",
+				"ms": 2477
+			},
+			{
+				"name": "Kharcha's access matrix setNotDuplicate: in the group, before the former member left",
+				"ms": 2367
+			},
+			{
+				"name": "Kharcha's access matrix getGroupTotals",
+				"ms": 2021
+			},
+			{
+				"name": "Kharcha's access matrix markThreadRead: the group's",
+				"ms": 1975
+			},
+			{
+				"name": "Kharcha's access matrix getGroupThread",
+				"ms": 1934
+			},
+			{
+				"name": "Kharcha's access matrix bulkExpenses: a category on the shared expense",
+				"ms": 1816
+			},
+			{
+				"name": "Kharcha's access matrix createComment: on the shared expense",
+				"ms": 1756
+			},
+			{
+				"name": "Kharcha's access matrix addNewMember",
+				"ms": 1751
+			},
+			{
+				"name": "the Taskline access matrix a guest's sandbox guest: manage",
+				"ms": 1681
+			},
+			{
+				"name": "Kharcha's access matrix getExpense: in the group, before the former member left",
+				"ms": 1680
+			},
+			{
+				"name": "Kharcha's access matrix repeatExpense: shared",
+				"ms": 1594
+			},
+			{
+				"name": "Kharcha's access matrix getGroup",
+				"ms": 1585
+			},
+			{
+				"name": "Kharcha's access matrix getExpense: personal",
+				"ms": 1583
+			},
+			{
+				"name": "Kharcha's access matrix repeatExpense: the group's old expense",
+				"ms": 1546
+			},
+			{
+				"name": "the Taskline access matrix a team-visible project member: edit",
+				"ms": 1524
+			},
+			{
+				"name": "Kharcha's access matrix markThreadRead: the shared expense's",
+				"ms": 1489
+			},
+			{
+				"name": "the Taskline access matrix a team-visible project manager: manage",
+				"ms": 1474
+			}
+		],
+		"slowestTenthShare": 71
+	},
+	"storybook": {
+		"files": 77,
+		"tests": 394,
+		"totalSeconds": 96.5,
+		"byFolder": {
+			"src/features": 78.9,
+			"src/components": 17.6
+		},
+		"byLayer": {
+			"core": 29.1,
+			"kharcha": 20.1,
+			"chaal": 15.3,
+			"taskline": 14.9,
+			"parda": 8.5,
+			"portfolio": 4.4,
+			"apps": 4.2
+		},
+		"slowestFiles": [
+			{
+				"file": "src/features/kharcha/spend/spend.stories.tsx",
+				"tests": 9,
+				"ms": 4574
+			},
+			{
+				"file": "src/features/rbac/components/rbac.stories.tsx",
+				"tests": 8,
+				"ms": 4463
+			},
+			{
+				"file": "src/features/parda/admin/parda-admin.stories.tsx",
+				"tests": 8,
+				"ms": 3859
+			},
+			{
+				"file": "src/features/kharcha/insights/insights.stories.tsx",
+				"tests": 9,
+				"ms": 3599
+			},
+			{
+				"file": "src/features/taskline/task/task-panel.stories.tsx",
+				"tests": 8,
+				"ms": 3389
+			},
+			{
+				"file": "src/features/kharcha/people/people.stories.tsx",
+				"tests": 6,
+				"ms": 3077
+			},
+			{
+				"file": "src/components/admin-shell/admin-shell.stories.tsx",
+				"tests": 5,
+				"ms": 2582
+			},
+			{
+				"file": "src/features/test-crud/components/test-crud.stories.tsx",
+				"tests": 11,
+				"ms": 2567
+			},
+			{
+				"file": "src/features/kharcha/expenses/expenses.stories.tsx",
+				"tests": 7,
+				"ms": 2487
+			},
+			{
+				"file": "src/components/data-table/data-table.stories.tsx",
+				"tests": 12,
+				"ms": 2373
+			},
+			{
+				"file": "src/features/kharcha/settle/settle.stories.tsx",
+				"tests": 5,
+				"ms": 2311
+			},
+			{
+				"file": "src/features/chaal/play/online.stories.tsx",
+				"tests": 11,
+				"ms": 2277
+			},
+			{
+				"file": "src/features/taskline/admin/taskline-admin.stories.tsx",
+				"tests": 7,
+				"ms": 2259
+			},
+			{
+				"file": "src/features/taskline/reports/reports.stories.tsx",
+				"tests": 5,
+				"ms": 2182
+			},
+			{
+				"file": "src/features/chaal/admin/chaal-admin.stories.tsx",
+				"tests": 7,
+				"ms": 1981
+			},
+			{
+				"file": "src/features/kharcha/threads/talk.stories.tsx",
+				"tests": 4,
+				"ms": 1873
+			},
+			{
+				"file": "src/features/parda/kit/kit.stories.tsx",
+				"tests": 8,
+				"ms": 1860
+			},
+			{
+				"file": "src/features/chaal/puzzles/puzzles.stories.tsx",
+				"tests": 4,
+				"ms": 1802
+			},
+			{
+				"file": "src/features/taskline/shell/taskline-shell.stories.tsx",
+				"tests": 4,
+				"ms": 1668
+			},
+			{
+				"file": "src/components/charts/charts.stories.tsx",
+				"tests": 6,
+				"ms": 1613
+			},
+			{
+				"file": "src/features/apps/habits/components/habits.stories.tsx",
+				"tests": 4,
+				"ms": 1581
+			},
+			{
+				"file": "src/features/chaal/board/board.stories.tsx",
+				"tests": 8,
+				"ms": 1520
+			},
+			{
+				"file": "src/features/kharcha/shell/kharcha-shell.stories.tsx",
+				"tests": 4,
+				"ms": 1515
+			},
+			{
+				"file": "src/features/taskline/automations/automations.stories.tsx",
+				"tests": 2,
+				"ms": 1509
+			},
+			{
+				"file": "src/components/forms/fields/kit-fields.stories.tsx",
+				"tests": 7,
+				"ms": 1469
+			},
+			{
+				"file": "src/features/auth/components/login-form.stories.tsx",
+				"tests": 5,
+				"ms": 1338
+			},
+			{
+				"file": "src/features/chaal/watch/watch.stories.tsx",
+				"tests": 6,
+				"ms": 1238
+			},
+			{
+				"file": "src/features/chaal/local/play.stories.tsx",
+				"tests": 4,
+				"ms": 1211
+			},
+			{
+				"file": "src/features/apps/forms/components/forms.stories.tsx",
+				"tests": 4,
+				"ms": 1184
+			},
+			{
+				"file": "src/features/auth/components/account-security.stories.tsx",
+				"tests": 7,
+				"ms": 1184
+			},
+			{
+				"file": "src/features/chaal/community/community.stories.tsx",
+				"tests": 6,
+				"ms": 1182
+			},
+			{
+				"file": "src/features/apps/links/components/links.stories.tsx",
+				"tests": 4,
+				"ms": 1157
+			},
+			{
+				"file": "src/features/chaal/players/players.stories.tsx",
+				"tests": 4,
+				"ms": 1141
+			},
+			{
+				"file": "src/features/portfolio/components/sections/sections.stories.tsx",
+				"tests": 10,
+				"ms": 1127
+			},
+			{
+				"file": "src/features/parda/search/search.stories.tsx",
+				"tests": 1,
+				"ms": 1073
+			},
+			{
+				"file": "src/features/admin/components/admin.stories.tsx",
+				"tests": 3,
+				"ms": 1033
+			},
+			{
+				"file": "src/features/chaal/board/kit.stories.tsx",
+				"tests": 9,
+				"ms": 1030
+			},
+			{
+				"file": "src/features/taskline/board/board.stories.tsx",
+				"tests": 5,
+				"ms": 1018
+			},
+			{
+				"file": "src/components/dialogs/dialogs.stories.tsx",
+				"tests": 3,
+				"ms": 1015
+			},
+			{
+				"file": "src/features/chaal/analysis/analysis.stories.tsx",
+				"tests": 6,
+				"ms": 913
+			}
+		],
+		"slowestTests": [
+			{
+				"name": "Matrix",
+				"ms": 1564
+			},
+			{
+				"name": "Overview",
+				"ms": 1552
+			},
+			{
+				"name": "Daily",
+				"ms": 1463
+			},
+			{
+				"name": "Source List",
+				"ms": 1460
+			},
+			{
+				"name": "Search",
+				"ms": 1434
+			},
+			{
+				"name": "Builder",
+				"ms": 1185
+			},
+			{
+				"name": "New Collection",
+				"ms": 1123
+			},
+			{
+				"name": "Add Expense",
+				"ms": 1105
+			},
+			{
+				"name": "Overlay",
+				"ms": 1073
+			},
+			{
+				"name": "Editing",
+				"ms": 1022
+			},
+			{
+				"name": "Area",
+				"ms": 976
+			},
+			{
+				"name": "Thread",
+				"ms": 956
+			},
+			{
+				"name": "People",
+				"ms": 936
+			},
+			{
+				"name": "Command Menu",
+				"ms": 924
+			},
+			{
+				"name": "Split A Bill",
+				"ms": 876
+			},
+			{
+				"name": "Invite User",
+				"ms": 865
+			},
+			{
+				"name": "Rich Text",
+				"ms": 803
+			},
+			{
+				"name": "Creates Item",
+				"ms": 800
+			},
+			{
+				"name": "Without Time",
+				"ms": 747
+			},
+			{
+				"name": "Repeat",
+				"ms": 730
+			},
+			{
+				"name": "Poster Preview",
+				"ms": 704
+			},
+			{
+				"name": "Expanded",
+				"ms": 697
+			},
+			{
+				"name": "Palette",
+				"ms": 662
+			},
+			{
+				"name": "Settings",
+				"ms": 654
+			},
+			{
+				"name": "Setup",
+				"ms": 641
+			},
+			{
+				"name": "Settle Up",
+				"ms": 629
+			},
+			{
+				"name": "New Habit",
+				"ms": 626
+			},
+			{
+				"name": "Group Settings",
+				"ms": 622
+			},
+			{
+				"name": "Table",
+				"ms": 615
+			},
+			{
+				"name": "No Days",
+				"ms": 613
+			},
+			{
+				"name": "Chart",
+				"ms": 610
+			},
+			{
+				"name": "Fields",
+				"ms": 607
+			},
+			{
+				"name": "Matrix Rollback",
+				"ms": 604
+			},
+			{
+				"name": "Settings Page",
+				"ms": 596
+			},
+			{
+				"name": "New Link",
+				"ms": 583
+			},
+			{
+				"name": "Selection",
+				"ms": 579
+			},
+			{
+				"name": "New Source",
+				"ms": 570
+			},
+			{
+				"name": "Playing",
+				"ms": 552
+			},
+			{
+				"name": "New Project From Template",
+				"ms": 545
+			},
+			{
+				"name": "Matrix Read Only",
+				"ms": 530
+			}
+		],
+		"slowestTenthShare": 29
+	},
+	"storybookNe": {
+		"files": 77,
+		"tests": 394,
+		"totalSeconds": 96.1,
+		"byFolder": {
+			"src/features": 78.9,
+			"src/components": 17.2
+		},
+		"byLayer": {
+			"core": 28.6,
+			"kharcha": 21.2,
+			"chaal": 15.5,
+			"taskline": 14,
+			"parda": 8.3,
+			"portfolio": 4.3,
+			"apps": 4.2
+		},
+		"slowestFiles": [
+			{
+				"file": "src/features/kharcha/spend/spend.stories.tsx",
+				"tests": 9,
+				"ms": 4747
+			},
+			{
+				"file": "src/features/rbac/components/rbac.stories.tsx",
+				"tests": 8,
+				"ms": 4357
+			},
+			{
+				"file": "src/features/kharcha/insights/insights.stories.tsx",
+				"tests": 9,
+				"ms": 3884
+			},
+			{
+				"file": "src/features/parda/admin/parda-admin.stories.tsx",
+				"tests": 8,
+				"ms": 3831
+			},
+			{
+				"file": "src/features/kharcha/people/people.stories.tsx",
+				"tests": 6,
+				"ms": 3072
+			},
+			{
+				"file": "src/features/test-crud/components/test-crud.stories.tsx",
+				"tests": 11,
+				"ms": 2861
+			},
+			{
+				"file": "src/features/kharcha/expenses/expenses.stories.tsx",
+				"tests": 7,
+				"ms": 2703
+			},
+			{
+				"file": "src/features/taskline/task/task-panel.stories.tsx",
+				"tests": 8,
+				"ms": 2699
+			},
+			{
+				"file": "src/features/chaal/play/online.stories.tsx",
+				"tests": 11,
+				"ms": 2621
+			},
+			{
+				"file": "src/features/kharcha/settle/settle.stories.tsx",
+				"tests": 5,
+				"ms": 2516
+			},
+			{
+				"file": "src/components/data-table/data-table.stories.tsx",
+				"tests": 12,
+				"ms": 2387
+			},
+			{
+				"file": "src/features/taskline/reports/reports.stories.tsx",
+				"tests": 5,
+				"ms": 2194
+			},
+			{
+				"file": "src/components/admin-shell/admin-shell.stories.tsx",
+				"tests": 5,
+				"ms": 2159
+			},
+			{
+				"file": "src/features/chaal/admin/chaal-admin.stories.tsx",
+				"tests": 7,
+				"ms": 2101
+			},
+			{
+				"file": "src/features/taskline/admin/taskline-admin.stories.tsx",
+				"tests": 7,
+				"ms": 2056
+			},
+			{
+				"file": "src/features/kharcha/shell/kharcha-shell.stories.tsx",
+				"tests": 4,
+				"ms": 1810
+			},
+			{
+				"file": "src/features/parda/kit/kit.stories.tsx",
+				"tests": 8,
+				"ms": 1794
+			},
+			{
+				"file": "src/components/forms/fields/kit-fields.stories.tsx",
+				"tests": 7,
+				"ms": 1768
+			},
+			{
+				"file": "src/features/kharcha/threads/talk.stories.tsx",
+				"tests": 4,
+				"ms": 1704
+			},
+			{
+				"file": "src/features/chaal/board/board.stories.tsx",
+				"tests": 8,
+				"ms": 1634
+			},
+			{
+				"file": "src/features/chaal/puzzles/puzzles.stories.tsx",
+				"tests": 4,
+				"ms": 1599
+			},
+			{
+				"file": "src/features/taskline/shell/taskline-shell.stories.tsx",
+				"tests": 4,
+				"ms": 1516
+			},
+			{
+				"file": "src/features/apps/habits/components/habits.stories.tsx",
+				"tests": 4,
+				"ms": 1448
+			},
+			{
+				"file": "src/features/chaal/watch/watch.stories.tsx",
+				"tests": 6,
+				"ms": 1397
+			},
+			{
+				"file": "src/features/chaal/local/play.stories.tsx",
+				"tests": 4,
+				"ms": 1382
+			},
+			{
+				"file": "src/features/auth/components/login-form.stories.tsx",
+				"tests": 5,
+				"ms": 1343
+			},
+			{
+				"file": "src/features/taskline/board/board.stories.tsx",
+				"tests": 5,
+				"ms": 1318
+			},
+			{
+				"file": "src/features/portfolio/components/sections/sections.stories.tsx",
+				"tests": 10,
+				"ms": 1293
+			},
+			{
+				"file": "src/components/charts/charts.stories.tsx",
+				"tests": 6,
+				"ms": 1223
+			},
+			{
+				"file": "src/features/chaal/community/community.stories.tsx",
+				"tests": 6,
+				"ms": 1205
+			},
+			{
+				"file": "src/features/apps/links/components/links.stories.tsx",
+				"tests": 4,
+				"ms": 1191
+			},
+			{
+				"file": "src/features/auth/components/account-security.stories.tsx",
+				"tests": 7,
+				"ms": 1082
+			},
+			{
+				"file": "src/components/dialogs/dialogs.stories.tsx",
+				"tests": 3,
+				"ms": 1056
+			},
+			{
+				"file": "src/features/apps/forms/components/forms.stories.tsx",
+				"tests": 4,
+				"ms": 1016
+			},
+			{
+				"file": "src/features/taskline/automations/automations.stories.tsx",
+				"tests": 2,
+				"ms": 988
+			},
+			{
+				"file": "src/features/chaal/players/players.stories.tsx",
+				"tests": 4,
+				"ms": 960
+			},
+			{
+				"file": "src/features/parda/search/search.stories.tsx",
+				"tests": 1,
+				"ms": 958
+			},
+			{
+				"file": "src/features/chaal/board/kit.stories.tsx",
+				"tests": 9,
+				"ms": 916
+			},
+			{
+				"file": "src/features/chaal/analysis/analysis.stories.tsx",
+				"tests": 6,
+				"ms": 900
+			},
+			{
+				"file": "src/components/filters/filters.stories.tsx",
+				"tests": 3,
+				"ms": 781
+			}
+		],
+		"slowestTests": [
+			{
+				"name": "Matrix",
+				"ms": 1633
+			},
+			{
+				"name": "Search",
+				"ms": 1536
+			},
+			{
+				"name": "Overview",
+				"ms": 1502
+			},
+			{
+				"name": "Source List",
+				"ms": 1497
+			},
+			{
+				"name": "Daily",
+				"ms": 1408
+			},
+			{
+				"name": "Add Expense",
+				"ms": 1100
+			},
+			{
+				"name": "New Collection",
+				"ms": 1013
+			},
+			{
+				"name": "Split A Bill",
+				"ms": 979
+			},
+			{
+				"name": "Overlay",
+				"ms": 958
+			},
+			{
+				"name": "Creates Item",
+				"ms": 888
+			},
+			{
+				"name": "Invite User",
+				"ms": 820
+			},
+			{
+				"name": "Command Menu",
+				"ms": 793
+			},
+			{
+				"name": "Without Time",
+				"ms": 781
+			},
+			{
+				"name": "Settings Page",
+				"ms": 771
+			},
+			{
+				"name": "Builder",
+				"ms": 751
+			},
+			{
+				"name": "Poster Preview",
+				"ms": 737
+			},
+			{
+				"name": "Repeat",
+				"ms": 708
+			},
+			{
+				"name": "Setup",
+				"ms": 693
+			},
+			{
+				"name": "Area",
+				"ms": 693
+			},
+			{
+				"name": "Group Settings",
+				"ms": 687
+			},
+			{
+				"name": "Thread",
+				"ms": 677
+			},
+			{
+				"name": "Selection",
+				"ms": 675
+			},
+			{
+				"name": "Chart",
+				"ms": 654
+			},
+			{
+				"name": "Balances",
+				"ms": 646
+			},
+			{
+				"name": "Table",
+				"ms": 639
+			},
+			{
+				"name": "Palette",
+				"ms": 629
+			},
+			{
+				"name": "Settle Up",
+				"ms": 627
+			},
+			{
+				"name": "New Link",
+				"ms": 624
+			},
+			{
+				"name": "People",
+				"ms": 619
+			},
+			{
+				"name": "Fields",
+				"ms": 599
+			},
+			{
+				"name": "New Source",
+				"ms": 594
+			},
+			{
+				"name": "Matrix Rollback",
+				"ms": 588
+			},
+			{
+				"name": "Expanded",
+				"ms": 565
+			},
+			{
+				"name": "No Days",
+				"ms": 563
+			},
+			{
+				"name": "Rich Text",
+				"ms": 560
+			},
+			{
+				"name": "Card",
+				"ms": 558
+			},
+			{
+				"name": "Playing",
+				"ms": 555
+			},
+			{
+				"name": "Editing",
+				"ms": 552
+			},
+			{
+				"name": "Settings",
+				"ms": 538
+			},
+			{
+				"name": "Tv Channels",
+				"ms": 536
+			}
+		],
+		"slowestTenthShare": 29
+	},
+	"e2e": {
+		"shards": 10,
+		"shardSeconds": [
+			630,
+			342,
+			435,
+			457,
+			441,
+			466,
+			384,
+			441,
+			364,
+			436
+		],
+		"tests": 3832,
+		"flaky": 1,
+		"flakyTests": [
+			"flows/chaal.spec.ts › flows\\chaal.spec.ts › Chaal's community connected to Lichess (Task 83) › saves the analysis board to a study, then opens the new chapter"
+		],
+		"failed": 0,
+		"retries": 3,
+		"testMinutes": 143.8,
+		"reviewPages": [
+			{
+				"route": "/app/parda",
+				"checks": 12,
+				"seconds": 56.7
+			},
+			{
+				"route": "/app/parda/$hub series",
+				"checks": 12,
+				"seconds": 54
+			},
+			{
+				"route": "/app/parda/$hub movies",
+				"checks": 12,
+				"seconds": 53.9
+			},
+			{
+				"route": "/app/parda/$hub anime",
+				"checks": 12,
+				"seconds": 52.1
+			},
+			{
+				"route": "/dev/examples/streaming",
+				"checks": 12,
+				"seconds": 51.4
+			},
+			{
+				"route": "/admin/portfolio/projects/$id as admin",
+				"checks": 12,
+				"seconds": 47.3
+			},
+			{
+				"route": "/app/taskline/$ws/p/$key/list as admin grouped",
+				"checks": 12,
+				"seconds": 43.7
+			},
+			{
+				"route": "/app/taskline/$ws/p/$key/list as admin",
+				"checks": 12,
+				"seconds": 43
+			},
+			{
+				"route": "/admin/portfolio/profile as admin",
+				"checks": 12,
+				"seconds": 42.9
+			},
+			{
+				"route": "/admin/kharcha/settings as admin",
+				"checks": 12,
+				"seconds": 41.7
+			},
+			{
+				"route": "/app/chaal/watch",
+				"checks": 12,
+				"seconds": 41
+			},
+			{
+				"route": "/app/taskline/$ws/p/$key/board as admin swimlanes",
+				"checks": 12,
+				"seconds": 40.8
+			},
+			{
+				"route": "/admin/chaal/health as admin",
+				"checks": 12,
+				"seconds": 39.5
+			},
+			{
+				"route": "/app/parda/$type/$id series",
+				"checks": 12,
+				"seconds": 38.7
+			},
+			{
+				"route": "/admin/roles/permissions as admin",
+				"checks": 12,
+				"seconds": 38.5
+			},
+			{
+				"route": "/app/chaal/broadcasts/$id a tournament",
+				"checks": 12,
+				"seconds": 38.1
+			},
+			{
+				"route": "/app/taskline/$ws/p/$key/timeline as admin days by milestone",
+				"checks": 12,
+				"seconds": 36.6
+			},
+			{
+				"route": "/app/taskline/$ws/p/$key/board as admin",
+				"checks": 12,
+				"seconds": 35.9
+			},
+			{
+				"route": "/app/taskline/$ws/p/$key/timeline as admin",
+				"checks": 12,
+				"seconds": 35.8
+			},
+			{
+				"route": "/app/chaal/watch/$channel a channel",
+				"checks": 12,
+				"seconds": 35.7
+			},
+			{
+				"route": "/",
+				"checks": 12,
+				"seconds": 35.6
+			},
+			{
+				"route": "/app/chaal/game/$id a game being played",
+				"checks": 12,
+				"seconds": 35.6
+			},
+			{
+				"route": "/dev/stack",
+				"checks": 12,
+				"seconds": 35.5
+			},
+			{
+				"route": "/app/taskline/$ws/p/$key/calendar as admin",
+				"checks": 12,
+				"seconds": 34.6
+			},
+			{
+				"route": "/app/parda/$type/$id movie",
+				"checks": 12,
+				"seconds": 34.6
+			},
+			{
+				"route": "/admin/audit as admin",
+				"checks": 12,
+				"seconds": 34.4
+			},
+			{
+				"route": "/admin/test-crud as admin",
+				"checks": 12,
+				"seconds": 33.9
+			},
+			{
+				"route": "/app/taskline/$ws/p/$key/backlog as admin",
+				"checks": 12,
+				"seconds": 33.9
+			},
+			{
+				"route": "/app/taskline/$ws/p/$key/timeline as admin months by assignee",
+				"checks": 12,
+				"seconds": 33.8
+			},
+			{
+				"route": "/app/taskline/$ws/p/$key/calendar as admin a week by start date",
+				"checks": 12,
+				"seconds": 33.6
+			},
+			{
+				"route": "/app/taskline/$ws/p/$key/reports as admin",
+				"checks": 12,
+				"seconds": 32.8
+			},
+			{
+				"route": "/admin/kharcha as admin",
+				"checks": 12,
+				"seconds": 32.7
+			},
+			{
+				"route": "/app/taskline/$ws/p/$key/sprints/$sprintId as admin",
+				"checks": 12,
+				"seconds": 32.2
+			},
+			{
+				"route": "/admin/chaal/settings as admin",
+				"checks": 12,
+				"seconds": 32.2
+			},
+			{
+				"route": "/app/chaal/players/$username a player",
+				"checks": 12,
+				"seconds": 31.9
+			},
+			{
+				"route": "/app/taskline/$ws/p/$key/reports as admin small, four weeks",
+				"checks": 12,
+				"seconds": 31.4
+			},
+			{
+				"route": "/admin/test-crud/$id as admin",
+				"checks": 12,
+				"seconds": 31.4
+			},
+			{
+				"route": "/admin/test-crud/new as admin",
+				"checks": 12,
+				"seconds": 31.1
+			},
+			{
+				"route": "/admin/chaal as admin",
+				"checks": 12,
+				"seconds": 31.1
+			},
+			{
+				"route": "/app/kharcha/g/$groupId as kharcha settings",
+				"checks": 12,
+				"seconds": 31
+			},
+			{
+				"route": "/admin/taskline as admin",
+				"checks": 12,
+				"seconds": 30.7
+			},
+			{
+				"route": "/app/chaal/analysis a position",
+				"checks": 12,
+				"seconds": 30.7
+			},
+			{
+				"route": "/app/chaal/broadcasts/$id a board",
+				"checks": 12,
+				"seconds": 30.6
+			},
+			{
+				"route": "/admin/portfolio/journal/$id as admin",
+				"checks": 12,
+				"seconds": 30.6
+			},
+			{
+				"route": "/app/taskline/$ws/p/$key as admin",
+				"checks": 12,
+				"seconds": 30.4
+			},
+			{
+				"route": "/admin/parda as admin",
+				"checks": 12,
+				"seconds": 30.3
+			},
+			{
+				"route": "/admin/portfolio/journal/new as admin",
+				"checks": 12,
+				"seconds": 30.2
+			},
+			{
+				"route": "/app/taskline/$ws/t/$ref as admin",
+				"checks": 12,
+				"seconds": 30.2
+			},
+			{
+				"route": "/admin/links as admin",
+				"checks": 12,
+				"seconds": 30.1
+			},
+			{
+				"route": "/app/taskline/$ws/p/$key/sprints/$sprintId as admin completed",
+				"checks": 12,
+				"seconds": 30.1
+			},
+			{
+				"route": "/admin/chaal/lab as admin",
+				"checks": 12,
+				"seconds": 29.9
+			},
+			{
+				"route": "/app/chaal/analysis",
+				"checks": 12,
+				"seconds": 29.9
+			},
+			{
+				"route": "/app/chaal/game/$id a replay",
+				"checks": 12,
+				"seconds": 29.6
+			},
+			{
+				"route": "/admin/users as admin",
+				"checks": 12,
+				"seconds": 29.6
+			},
+			{
+				"route": "/dev/examples/components",
+				"checks": 12,
+				"seconds": 29.5
+			},
+			{
+				"route": "/admin/portfolio/projects/new as admin",
+				"checks": 12,
+				"seconds": 29.4
+			},
+			{
+				"route": "/app/kharcha/insights/$tab as kharcha overview",
+				"checks": 12,
+				"seconds": 29.4
+			},
+			{
+				"route": "/app/taskline/$ws/p/$key/settings/general as admin",
+				"checks": 12,
+				"seconds": 29.4
+			},
+			{
+				"route": "/app/chaal/studies/$id a chapter",
+				"checks": 12,
+				"seconds": 29.3
+			},
+			{
+				"route": "/app/kharcha/spend as kharcha",
+				"checks": 12,
+				"seconds": 29.2
+			},
+			{
+				"route": "/app/chaal/analysis as viewer viewer",
+				"checks": 12,
+				"seconds": 29.2
+			},
+			{
+				"route": "/app/chaal/studies/$id a study",
+				"checks": 12,
+				"seconds": 29.2
+			},
+			{
+				"route": "/app/taskline/$ws/p/$key/settings/workflow as admin",
+				"checks": 12,
+				"seconds": 29.1
+			},
+			{
+				"route": "/app/taskline/$ws/p/$key/time as admin",
+				"checks": 12,
+				"seconds": 29
+			},
+			{
+				"route": "/admin as admin",
+				"checks": 12,
+				"seconds": 29
+			},
+			{
+				"route": "/app/chaal/players/$username their games",
+				"checks": 12,
+				"seconds": 28.7
+			},
+			{
+				"route": "/app/taskline/$ws/p/$key/milestones as admin",
+				"checks": 12,
+				"seconds": 28.7
+			},
+			{
+				"route": "/admin/portfolio/projects as admin",
+				"checks": 12,
+				"seconds": 28.7
+			},
+			{
+				"route": "/app/kharcha/settings/$tab as kharcha categories",
+				"checks": 12,
+				"seconds": 28.7
+			},
+			{
+				"route": "/app/taskline/$ws/p/$key/backlog as admin sprints off",
+				"checks": 12,
+				"seconds": 28.5
+			},
+			{
+				"route": "/admin/taskline/timesheets as admin",
+				"checks": 12,
+				"seconds": 28.5
+			},
+			{
+				"route": "/app/chaal/broadcasts",
+				"checks": 12,
+				"seconds": 28.4
+			},
+			{
+				"route": "/app/kharcha/insights/$tab as kharcha trends",
+				"checks": 12,
+				"seconds": 28.4
+			},
+			{
+				"route": "/apps/forms/$formId/results as member",
+				"checks": 12,
+				"seconds": 28.3
+			},
+			{
+				"route": "/app/kharcha/spend as kharcha chart",
+				"checks": 12,
+				"seconds": 28.2
+			},
+			{
+				"route": "/dev/forms",
+				"checks": 12,
+				"seconds": 28.2
+			},
+			{
+				"route": "/app/kharcha/spend as kharcha table",
+				"checks": 12,
+				"seconds": 28.1
+			},
+			{
+				"route": "/app/kharcha/spend as kharcha donut",
+				"checks": 12,
+				"seconds": 28.1
+			},
+			{
+				"route": "/app/kharcha/home as member first visit",
+				"checks": 12,
+				"seconds": 28
+			},
+			{
+				"route": "/admin/taskline/settings as admin",
+				"checks": 12,
+				"seconds": 28
+			},
+			{
+				"route": "/app/kharcha/settings/$tab as kharcha notifications",
+				"checks": 12,
+				"seconds": 28
+			},
+			{
+				"route": "/admin/apps as admin",
+				"checks": 12,
+				"seconds": 27.8
+			},
+			{
+				"route": "/app/kharcha/g/$groupId as kharcha totals",
+				"checks": 12,
+				"seconds": 27.7
+			},
+			{
+				"route": "/app/taskline/$ws/p/$key/milestones as admin none yet",
+				"checks": 12,
+				"seconds": 27.6
+			},
+			{
+				"route": "/app/taskline/home as admin",
+				"checks": 12,
+				"seconds": 27.6
+			},
+			{
+				"route": "/app/kharcha/spend as kharcha search",
+				"checks": 12,
+				"seconds": 27.5
+			},
+			{
+				"route": "/app/parda/$type/$id/credits",
+				"checks": 12,
+				"seconds": 27.5
+			},
+			{
+				"route": "/apps/links/$linkId as member",
+				"checks": 12,
+				"seconds": 27.5
+			},
+			{
+				"route": "/app/taskline/$ws/p/$key/time as admin by member",
+				"checks": 12,
+				"seconds": 27.4
+			},
+			{
+				"route": "/app/kharcha/insights/$tab as kharcha statement",
+				"checks": 12,
+				"seconds": 27.4
+			},
+			{
+				"route": "/app/parda/watch/$type/$id series",
+				"checks": 12,
+				"seconds": 27.4
+			},
+			{
+				"route": "/app/parda/watch/$type/$id movie",
+				"checks": 12,
+				"seconds": 27.3
+			},
+			{
+				"route": "/app/taskline/$ws/p/$key/settings/automations as admin",
+				"checks": 12,
+				"seconds": 27.3
+			},
+			{
+				"route": "/dev/examples/fields",
+				"checks": 12,
+				"seconds": 27.1
+			},
+			{
+				"route": "/app/kharcha/settings/$tab as kharcha profile",
+				"checks": 12,
+				"seconds": 27
+			},
+			{
+				"route": "/about",
+				"checks": 12,
+				"seconds": 27
+			},
+			{
+				"route": "/app/parda/person/$id",
+				"checks": 12,
+				"seconds": 26.9
+			},
+			{
+				"route": "/admin/taskline/activity as admin",
+				"checks": 12,
+				"seconds": 26.9
+			},
+			{
+				"route": "/app/taskline/$ws/p/$key/settings/automations as admin none of its own",
+				"checks": 12,
+				"seconds": 26.7
+			},
+			{
+				"route": "/admin/taskline/reports as admin",
+				"checks": 12,
+				"seconds": 26.7
+			},
+			{
+				"route": "/admin/taskline/workflows as admin",
+				"checks": 12,
+				"seconds": 26.6
+			},
+			{
+				"route": "/app/chaal/tournaments",
+				"checks": 12,
+				"seconds": 26.6
+			},
+			{
+				"route": "/app/kharcha/account as kharcha",
+				"checks": 12,
+				"seconds": 26.5
+			},
+			{
+				"route": "/app/kharcha/g/$groupId as kharcha",
+				"checks": 12,
+				"seconds": 26.5
+			},
+			{
+				"route": "/app/kharcha/e/$expenseId as kharcha",
+				"checks": 12,
+				"seconds": 26.5
+			},
+			{
+				"route": "/app/taskline/$ws/p/$key/settings/labels as admin",
+				"checks": 12,
+				"seconds": 26.5
+			},
+			{
+				"route": "/app/taskline/home as admin assigned and watched",
+				"checks": 12,
+				"seconds": 26.4
+			},
+			{
+				"route": "/app/kharcha/f/$personId as kharcha",
+				"checks": 12,
+				"seconds": 26.4
+			},
+			{
+				"route": "/app/taskline/$ws/p/$key/settings/members as admin",
+				"checks": 12,
+				"seconds": 26.4
+			},
+			{
+				"route": "/app/taskline/$ws/p/$key/settings/trash as admin",
+				"checks": 12,
+				"seconds": 26.4
+			},
+			{
+				"route": "/app/chaal/players rapid",
+				"checks": 12,
+				"seconds": 26.4
+			},
+			{
+				"route": "/admin/portfolio/journal as admin",
+				"checks": 12,
+				"seconds": 26.3
+			},
+			{
+				"route": "/admin/taskline/projects as admin",
+				"checks": 12,
+				"seconds": 26.3
+			},
+			{
+				"route": "/app/chaal/players",
+				"checks": 12,
+				"seconds": 26.2
+			},
+			{
+				"route": "/admin/parda/sources as admin",
+				"checks": 12,
+				"seconds": 26.2
+			},
+			{
+				"route": "/app/taskline/$ws/p/$key/settings/fields as admin",
+				"checks": 12,
+				"seconds": 26
+			},
+			{
+				"route": "/admin/taskline/members as admin",
+				"checks": 12,
+				"seconds": 26
+			},
+			{
+				"route": "/admin/taskline/projects/$id as admin",
+				"checks": 12,
+				"seconds": 26
+			},
+			{
+				"route": "/app/chaal/studies",
+				"checks": 12,
+				"seconds": 25.9
+			},
+			{
+				"route": "/app/kharcha/settings/$tab as kharcha recurring",
+				"checks": 12,
+				"seconds": 25.9
+			},
+			{
+				"route": "/app/chaal/puzzles training",
+				"checks": 12,
+				"seconds": 25.9
+			},
+			{
+				"route": "/app/taskline/$ws/p/$key/settings/fields as admin none of its own",
+				"checks": 12,
+				"seconds": 25.8
+			},
+			{
+				"route": "/app/taskline/account as admin",
+				"checks": 12,
+				"seconds": 25.7
+			},
+			{
+				"route": "/admin/parda/collections/$id as admin",
+				"checks": 12,
+				"seconds": 25.6
+			},
+			{
+				"route": "/app/kharcha/settings/$tab as kharcha methods",
+				"checks": 12,
+				"seconds": 25.6
+			},
+			{
+				"route": "/admin/parda/sources/$id as admin",
+				"checks": 12,
+				"seconds": 25.6
+			},
+			{
+				"route": "/app/chaal/puzzles",
+				"checks": 12,
+				"seconds": 25.6
+			},
+			{
+				"route": "/admin/taskline/projects/$id/members as admin",
+				"checks": 12,
+				"seconds": 25.6
+			},
+			{
+				"route": "/app/kharcha/g/$groupId as kharcha balances",
+				"checks": 12,
+				"seconds": 25.5
+			},
+			{
+				"route": "/admin/parda/sources/new as admin",
+				"checks": 12,
+				"seconds": 25.5
+			},
+			{
+				"route": "/app/kharcha/insights/$tab as kharcha budgets",
+				"checks": 12,
+				"seconds": 25.5
+			},
+			{
+				"route": "/app/parda/discover filtered",
+				"checks": 12,
+				"seconds": 25.4
+			},
+			{
+				"route": "/app/taskline/$ws/projects as admin",
+				"checks": 12,
+				"seconds": 25.4
+			},
+			{
+				"route": "/app/kharcha/import as kharcha",
+				"checks": 12,
+				"seconds": 25.4
+			},
+			{
+				"route": "/app/chaal/puzzles the streak",
+				"checks": 12,
+				"seconds": 25.3
+			},
+			{
+				"route": "/app/chaal/puzzles/$id the daily one by id",
+				"checks": 12,
+				"seconds": 25.2
+			},
+			{
+				"route": "/app/kharcha/settings/$tab as kharcha tags",
+				"checks": 12,
+				"seconds": 25.1
+			},
+			{
+				"route": "/app/chaal/puzzles as viewer viewer",
+				"checks": 12,
+				"seconds": 25.1
+			},
+			{
+				"route": "/work",
+				"checks": 12,
+				"seconds": 25.1
+			},
+			{
+				"route": "/admin/parda/settings as admin",
+				"checks": 12,
+				"seconds": 25.1
+			},
+			{
+				"route": "/apps/notes/$noteId as member",
+				"checks": 12,
+				"seconds": 25.1
+			},
+			{
+				"route": "/app/kharcha/people as kharcha",
+				"checks": 12,
+				"seconds": 25
+			},
+			{
+				"route": "/app/taskline/settings as admin",
+				"checks": 12,
+				"seconds": 25
+			},
+			{
+				"route": "/app/taskline/$ws/timesheet as admin",
+				"checks": 12,
+				"seconds": 25
+			},
+			{
+				"route": "/app/parda/discover default",
+				"checks": 12,
+				"seconds": 24.9
+			},
+			{
+				"route": "/app/kharcha/home as kharcha",
+				"checks": 12,
+				"seconds": 24.9
+			},
+			{
+				"route": "/apps/habits/$habitId as member",
+				"checks": 12,
+				"seconds": 24.8
+			},
+			{
+				"route": "/admin/parda/collections/new as admin",
+				"checks": 12,
+				"seconds": 24.7
+			},
+			{
+				"route": "/app/parda/party/$code as viewer viewer",
+				"checks": 12,
+				"seconds": 24.7
+			},
+			{
+				"route": "/admin/parda/layout as admin",
+				"checks": 12,
+				"seconds": 24.7
+			},
+			{
+				"route": "/admin/parda/billboard/$id as admin",
+				"checks": 12,
+				"seconds": 24.6
+			},
+			{
+				"route": "/admin/portfolio/process as admin",
+				"checks": 12,
+				"seconds": 24.6
+			},
+			{
+				"route": "/admin/roles as admin",
+				"checks": 12,
+				"seconds": 24.6
+			},
+			{
+				"route": "/admin/taskline/invitations as admin",
+				"checks": 12,
+				"seconds": 24.6
+			},
+			{
+				"route": "/app/taskline/home as editor no team",
+				"checks": 12,
+				"seconds": 24.5
+			},
+			{
+				"route": "/admin/portfolio/experience as admin",
+				"checks": 12,
+				"seconds": 24.5
+			},
+			{
+				"route": "/app/taskline/inbox as admin",
+				"checks": 12,
+				"seconds": 24.4
+			},
+			{
+				"route": "/app/kharcha/settings/$tab as kharcha rules",
+				"checks": 12,
+				"seconds": 24.4
+			},
+			{
+				"route": "/admin/taskline/projects/new as admin",
+				"checks": 12,
+				"seconds": 24.4
+			},
+			{
+				"route": "/admin/settings/appearance as admin",
+				"checks": 12,
+				"seconds": 24.4
+			},
+			{
+				"route": "/admin/taskline/projects/$id/workflow as admin",
+				"checks": 12,
+				"seconds": 24.3
+			},
+			{
+				"route": "/admin/chaal/curation as admin",
+				"checks": 12,
+				"seconds": 24.3
+			},
+			{
+				"route": "/admin/portfolio/skills as admin",
+				"checks": 12,
+				"seconds": 24.3
+			},
+			{
+				"route": "/apps/forms/$formId as member",
+				"checks": 12,
+				"seconds": 24.2
+			},
+			{
+				"route": "/app/taskline/$ws/t/$ref as admin unknown task",
+				"checks": 12,
+				"seconds": 24.2
+			},
+			{
+				"route": "/app/taskline/inbox as admin everything",
+				"checks": 12,
+				"seconds": 24.2
+			},
+			{
+				"route": "/app/chaal/tournaments/$id an arena being played",
+				"checks": 12,
+				"seconds": 24.1
+			},
+			{
+				"route": "/admin/parda/billboard/new as admin",
+				"checks": 12,
+				"seconds": 24.1
+			},
+			{
+				"route": "/admin/taskline/projects/$id/labels as admin",
+				"checks": 12,
+				"seconds": 24.1
+			},
+			{
+				"route": "/admin/taskline/automations as admin",
+				"checks": 12,
+				"seconds": 24.1
+			},
+			{
+				"route": "/admin/taskline/timesheets/utilization as admin",
+				"checks": 12,
+				"seconds": 24.1
+			},
+			{
+				"route": "/app/taskline/$ws/projects as admin unknown workspace",
+				"checks": 12,
+				"seconds": 24
+			},
+			{
+				"route": "/admin/taskline/templates as admin",
+				"checks": 12,
+				"seconds": 24
+			},
+			{
+				"route": "/journal/$slug",
+				"checks": 12,
+				"seconds": 23.9
+			},
+			{
+				"route": "/admin/portfolio/messages as admin",
+				"checks": 12,
+				"seconds": 23.9
+			},
+			{
+				"route": "/app/parda/search results",
+				"checks": 12,
+				"seconds": 23.9
+			},
+			{
+				"route": "/admin/portfolio/testimonials as admin",
+				"checks": 12,
+				"seconds": 23.8
+			},
+			{
+				"route": "/app/chaal as viewer viewer",
+				"checks": 12,
+				"seconds": 23.8
+			},
+			{
+				"route": "/dev/test-crud",
+				"checks": 12,
+				"seconds": 23.8
+			},
+			{
+				"route": "/work/$slug",
+				"checks": 12,
+				"seconds": 23.7
+			},
+			{
+				"route": "/app/taskline/$ws/search as admin results",
+				"checks": 12,
+				"seconds": 23.7
+			},
+			{
+				"route": "/admin/parda/reports as admin",
+				"checks": 12,
+				"seconds": 23.7
+			},
+			{
+				"route": "/contact",
+				"checks": 12,
+				"seconds": 23.6
+			},
+			{
+				"route": "/admin/chaal/connections as admin",
+				"checks": 12,
+				"seconds": 23.6
+			},
+			{
+				"route": "/app/chaal/settings as viewer viewer",
+				"checks": 12,
+				"seconds": 23.6
+			},
+			{
+				"route": "/admin/kharcha/senders as admin",
+				"checks": 12,
+				"seconds": 23.5
+			},
+			{
+				"route": "/app/taskline/$ws/search as admin",
+				"checks": 12,
+				"seconds": 23.5
+			},
+			{
+				"route": "/app/chaal/broadcasts official",
+				"checks": 12,
+				"seconds": 23.5
+			},
+			{
+				"route": "/admin/parda/titles/new as admin",
+				"checks": 12,
+				"seconds": 23.3
+			},
+			{
+				"route": "/admin/chaal/blocks as admin",
+				"checks": 12,
+				"seconds": 23.3
+			},
+			{
+				"route": "/app/chaal/settings signed out",
+				"checks": 12,
+				"seconds": 23.3
+			},
+			{
+				"route": "/admin/parda/titles as admin",
+				"checks": 12,
+				"seconds": 23.3
+			},
+			{
+				"route": "/app/chaal/settings connect result",
+				"checks": 12,
+				"seconds": 23.2
+			},
+			{
+				"route": "/admin/parda/collections as admin",
+				"checks": 12,
+				"seconds": 23.2
+			},
+			{
+				"route": "/admin/parda/billboard as admin",
+				"checks": 12,
+				"seconds": 23.2
+			},
+			{
+				"route": "/admin/media as admin",
+				"checks": 12,
+				"seconds": 23.2
+			},
+			{
+				"route": "/journal",
+				"checks": 12,
+				"seconds": 23
+			},
+			{
+				"route": "/app/chaal/tournaments/$id standings, page 2",
+				"checks": 12,
+				"seconds": 23
+			},
+			{
+				"route": "/app/chaal/tournaments/$id a finished arena",
+				"checks": 12,
+				"seconds": 22.9
+			},
+			{
+				"route": "/app/chaal",
+				"checks": 12,
+				"seconds": 22.9
+			},
+			{
+				"route": "/admin/taskline/fields as admin",
+				"checks": 12,
+				"seconds": 22.9
+			},
+			{
+				"route": "/app/chaal/tournaments/$id a Swiss",
+				"checks": 12,
+				"seconds": 22.8
+			},
+			{
+				"route": "/admin/parda/player-lab as admin",
+				"checks": 12,
+				"seconds": 22.7
+			},
+			{
+				"route": "/app/parda/search nothing found",
+				"checks": 12,
+				"seconds": 22.4
+			},
+			{
+				"route": "/app/chaal/teams",
+				"checks": 12,
+				"seconds": 22.3
+			},
+			{
+				"route": "/app/chaal/tournaments finished",
+				"checks": 12,
+				"seconds": 22.2
+			},
+			{
+				"route": "/app/chaal/teams/$id a team",
+				"checks": 12,
+				"seconds": 22.2
+			},
+			{
+				"route": "/app/chaal/broadcasts a search",
+				"checks": 12,
+				"seconds": 22
+			},
+			{
+				"route": "/app/parda/search empty",
+				"checks": 12,
+				"seconds": 22
+			},
+			{
+				"route": "/app/chaal/tournaments playing now",
+				"checks": 12,
+				"seconds": 22
+			},
+			{
+				"route": "/app/chaal/play",
+				"checks": 12,
+				"seconds": 21.8
+			},
+			{
+				"route": "/app/chaal/play as viewer viewer",
+				"checks": 12,
+				"seconds": 21.8
+			},
+			{
+				"route": "/app/chaal/tournaments/$id an arena coming up",
+				"checks": 12,
+				"seconds": 21.8
+			},
+			{
+				"route": "/app/parda/search people",
+				"checks": 12,
+				"seconds": 21.6
+			},
+			{
+				"route": "/app/chaal/about",
+				"checks": 12,
+				"seconds": 21.6
+			},
+			{
+				"route": "/app/chaal/teams a search",
+				"checks": 12,
+				"seconds": 21.6
+			},
+			{
+				"route": "/app/parda/library/$tab as viewer history",
+				"checks": 12,
+				"seconds": 21.4
+			},
+			{
+				"route": "/app/parda/account as viewer viewer",
+				"checks": 12,
+				"seconds": 21.4
+			},
+			{
+				"route": "/dev/examples/data-table",
+				"checks": 12,
+				"seconds": 21.3
+			},
+			{
+				"route": "/app/parda/library/$tab as viewer continue",
+				"checks": 12,
+				"seconds": 21.1
+			},
+			{
+				"route": "/admin/audit as editor forbidden",
+				"checks": 12,
+				"seconds": 21.1
+			},
+			{
+				"route": "/apps/habits as member habits",
+				"checks": 12,
+				"seconds": 21.1
+			},
+			{
+				"route": "/dev/examples",
+				"checks": 12,
+				"seconds": 21
+			},
+			{
+				"route": "/app/parda/profiles as viewer viewer",
+				"checks": 12,
+				"seconds": 21
+			},
+			{
+				"route": "/app/parda/library/$tab as viewer favourites",
+				"checks": 12,
+				"seconds": 20.9
+			},
+			{
+				"route": "/app/parda/library/$tab as viewer my list",
+				"checks": 12,
+				"seconds": 20.9
+			},
+			{
+				"route": "/app/parda/collection/$id",
+				"checks": 12,
+				"seconds": 20.6
+			},
+			{
+				"route": "/admin/portfolio/messages as editor forbidden",
+				"checks": 12,
+				"seconds": 20.5
+			},
+			{
+				"route": "/apps/links as member links",
+				"checks": 12,
+				"seconds": 20.5
+			},
+			{
+				"route": "/f/$slug",
+				"checks": 12,
+				"seconds": 20.5
+			},
+			{
+				"route": "/dev",
+				"checks": 12,
+				"seconds": 20.4
+			},
+			{
+				"route": "/app/parda/profiles signed out",
+				"checks": 12,
+				"seconds": 20.4
+			},
+			{
+				"route": "/verify-email",
+				"checks": 12,
+				"seconds": 20.3
+			},
+			{
+				"route": "/reset-password",
+				"checks": 12,
+				"seconds": 20.3
+			},
+			{
+				"route": "/app/parda/library/$tab signed out",
+				"checks": 12,
+				"seconds": 20.3
+			},
+			{
+				"route": "/dev/examples/list-extras",
+				"checks": 12,
+				"seconds": 20.2
+			},
+			{
+				"route": "/health",
+				"checks": 12,
+				"seconds": 20.2
+			},
+			{
+				"route": "/app/chaal/studies mine, not connected",
+				"checks": 12,
+				"seconds": 20.2
+			},
+			{
+				"route": "/apps/links",
+				"checks": 12,
+				"seconds": 20.1
+			},
+			{
+				"route": "/app/parda/party/$code signed out",
+				"checks": 12,
+				"seconds": 20.1
+			},
+			{
+				"route": "/app/chaal/teams mine, not connected",
+				"checks": 12,
+				"seconds": 20.1
+			},
+			{
+				"route": "/app/chaal/watch/$channel a variant's channel",
+				"checks": 12,
+				"seconds": 20
+			},
+			{
+				"route": "/dev/examples/forms",
+				"checks": 12,
+				"seconds": 20
+			},
+			{
+				"route": "/app/parda/c/$slug",
+				"checks": 12,
+				"seconds": 20
+			},
+			{
+				"route": "/app/chaal/broadcasts/$id no such broadcast",
+				"checks": 12,
+				"seconds": 20
+			},
+			{
+				"route": "/app/chaal/sign-up",
+				"checks": 12,
+				"seconds": 20
+			},
+			{
+				"route": "/app/chaal/players/$username no such player",
+				"checks": 12,
+				"seconds": 20
+			},
+			{
+				"route": "/dev/examples/optimistic",
+				"checks": 12,
+				"seconds": 19.9
+			},
+			{
+				"route": "/app/chaal/game/$id no such game",
+				"checks": 12,
+				"seconds": 19.8
+			},
+			{
+				"route": "/app/chaal/sign-in",
+				"checks": 12,
+				"seconds": 19.7
+			},
+			{
+				"route": "/app/chaal/studies/$id no such study",
+				"checks": 12,
+				"seconds": 19.7
+			},
+			{
+				"route": "/app/parda/about",
+				"checks": 12,
+				"seconds": 19.7
+			},
+			{
+				"route": "/apps/habits",
+				"checks": 12,
+				"seconds": 19.6
+			},
+			{
+				"route": "/dev/test-crud/$slug",
+				"checks": 12,
+				"seconds": 19.6
+			},
+			{
+				"route": "/dev/examples/seo",
+				"checks": 12,
+				"seconds": 19.6
+			},
+			{
+				"route": "/app/parda/sign-in",
+				"checks": 12,
+				"seconds": 19.5
+			},
+			{
+				"route": "/app/chaal/tournaments/$id a Swiss coming up",
+				"checks": 12,
+				"seconds": 19.5
+			},
+			{
+				"route": "/app/chaal/teams/$id no such team",
+				"checks": 12,
+				"seconds": 19.5
+			},
+			{
+				"route": "/app/chaal/local/$id a game not in this browser",
+				"checks": 12,
+				"seconds": 19.5
+			},
+			{
+				"route": "/dev/examples/loader-query",
+				"checks": 12,
+				"seconds": 19.4
+			},
+			{
+				"route": "/app/parda/sign-up",
+				"checks": 12,
+				"seconds": 19.4
+			},
+			{
+				"route": "/app/parda/schedule as viewer viewer",
+				"checks": 12,
+				"seconds": 19.3
+			},
+			{
+				"route": "/apps/notes/s/$token",
+				"checks": 12,
+				"seconds": 19.3
+			},
+			{
+				"route": "/app/parda/schedule signed out",
+				"checks": 12,
+				"seconds": 19.3
+			},
+			{
+				"route": "/app/kharcha/join/$token as member signed in",
+				"checks": 12,
+				"seconds": 19.3
+			},
+			{
+				"route": "/app/kharcha/join/$token",
+				"checks": 12,
+				"seconds": 19.3
+			},
+			{
+				"route": "/dev/examples/preferences",
+				"checks": 12,
+				"seconds": 19.2
+			},
+			{
+				"route": "/app/taskline",
+				"checks": 12,
+				"seconds": 19.2
+			},
+			{
+				"route": "/dev/examples/idempotency",
+				"checks": 12,
+				"seconds": 19.2
+			},
+			{
+				"route": "/app/kharcha",
+				"checks": 12,
+				"seconds": 19.2
+			},
+			{
+				"route": "/dev/examples/filters",
+				"checks": 12,
+				"seconds": 19.1
+			},
+			{
+				"route": "/account as member",
+				"checks": 12,
+				"seconds": 19.1
+			},
+			{
+				"route": "/app/chaal/tournaments/$id no such tournament",
+				"checks": 12,
+				"seconds": 19.1
+			},
+			{
+				"route": "/dev/examples/analytics",
+				"checks": 12,
+				"seconds": 19.1
+			},
+			{
+				"route": "/app/chaal/$ unknown page",
+				"checks": 12,
+				"seconds": 19.1
+			},
+			{
+				"route": "/apps/notes as member notes",
+				"checks": 12,
+				"seconds": 19
+			},
+			{
+				"route": "/app/kharcha/sign-in",
+				"checks": 12,
+				"seconds": 18.9
+			},
+			{
+				"route": "/app/kharcha/sign-up",
+				"checks": 12,
+				"seconds": 18.9
+			},
+			{
+				"route": "/apps/forms as member forms",
+				"checks": 12,
+				"seconds": 18.8
+			},
+			{
+				"route": "/dev/examples/attachments",
+				"checks": 12,
+				"seconds": 18.8
+			},
+			{
+				"route": "/apps",
+				"checks": 12,
+				"seconds": 18.7
+			},
+			{
+				"route": "/apps/forms",
+				"checks": 12,
+				"seconds": 18.7
+			},
+			{
+				"route": "/dev/examples/masking",
+				"checks": 12,
+				"seconds": 18.7
+			},
+			{
+				"route": "/admin as member forbidden",
+				"checks": 12,
+				"seconds": 18.6
+			},
+			{
+				"route": "/dev/examples/errors",
+				"checks": 12,
+				"seconds": 18.6
+			},
+			{
+				"route": "/apps/notes",
+				"checks": 12,
+				"seconds": 18.5
+			},
+			{
+				"route": "/dev/examples/i18n",
+				"checks": 12,
+				"seconds": 18.5
+			},
+			{
+				"route": "/app/parda/$ unknown page",
+				"checks": 12,
+				"seconds": 18.4
+			},
+			{
+				"route": "/dev/examples/background-jobs",
+				"checks": 12,
+				"seconds": 18.4
+			},
+			{
+				"route": "/dev/examples/caching",
+				"checks": 12,
+				"seconds": 18.3
+			},
+			{
+				"route": "/dev/examples/permissions",
+				"checks": 12,
+				"seconds": 18.3
+			},
+			{
+				"route": "/app/taskline/sign-up",
+				"checks": 12,
+				"seconds": 18.3
+			},
+			{
+				"route": "/app/taskline/sign-in",
+				"checks": 12,
+				"seconds": 18.3
+			},
+			{
+				"route": "/account/delete as member",
+				"checks": 12,
+				"seconds": 18.1
+			},
+			{
+				"route": "/dev/examples/contact",
+				"checks": 12,
+				"seconds": 18
+			},
+			{
+				"route": "/dev/examples/masking/$id",
+				"checks": 12,
+				"seconds": 18
+			},
+			{
+				"route": "/login",
+				"checks": 12,
+				"seconds": 17.9
+			},
+			{
+				"route": "(not found)",
+				"checks": 12,
+				"seconds": 17.7
+			},
+			{
+				"route": "/register",
+				"checks": 12,
+				"seconds": 17.6
+			},
+			{
+				"route": "/sign-in-code",
+				"checks": 12,
+				"seconds": 17.5
+			},
+			{
+				"route": "/upgrade",
+				"checks": 12,
+				"seconds": 17.5
+			},
+			{
+				"route": "/forgot-password",
+				"checks": 12,
+				"seconds": 17.3
+			}
+		],
+		"reviewVariants": {
+			"light 1280 ne": 2.194,
+			"dark 1280 ne": 2.19,
+			"dark 768 ne": 2.176,
+			"light 768 ne": 2.176,
+			"light 1280 en": 2.166,
+			"dark 1280 en": 2.163,
+			"dark 768 en": 2.146,
+			"light 768 en": 2.138,
+			"light 390 ne": 2.084,
+			"dark 390 ne": 2.082,
+			"dark 390 en": 2.073,
+			"light 390 en": 2.073
+		},
+		"flows": [
+			{
+				"file": "flows/chaal.spec.ts",
+				"seconds": 265.6
+			},
+			{
+				"file": "flows/parda.spec.ts",
+				"seconds": 248.5
+			},
+			{
+				"file": "flows/taskline.spec.ts",
+				"seconds": 168
+			},
+			{
+				"file": "flows/kharcha.spec.ts",
+				"seconds": 77.7
+			},
+			{
+				"file": "flows/account.spec.ts",
+				"seconds": 26.4
+			},
+			{
+				"file": "flows/auth.spec.ts",
+				"seconds": 18.8
+			},
+			{
+				"file": "flows/admin-users.spec.ts",
+				"seconds": 14.5
+			},
+			{
+				"file": "flows/portfolio.spec.ts",
+				"seconds": 9.8
+			},
+			{
+				"file": "flows/rbac.spec.ts",
+				"seconds": 9.4
+			},
+			{
+				"file": "flows/notes-links.spec.ts",
+				"seconds": 8.8
+			},
+			{
+				"file": "flows/conflict.spec.ts",
+				"seconds": 8.6
+			},
+			{
+				"file": "flows/test-crud.spec.ts",
+				"seconds": 8.4
+			},
+			{
+				"file": "flows/forms.spec.ts",
+				"seconds": 5.6
+			},
+			{
+				"file": "flows/frontend.spec.ts",
+				"seconds": 3.6
+			},
+			{
+				"file": "flows/apps.spec.ts",
+				"seconds": 2.7
+			},
+			{
+				"file": "flows/habits.spec.ts",
+				"seconds": 1.7
+			},
+			{
+				"file": "flows/no-js.spec.ts",
+				"seconds": 1
+			},
+			{
+				"file": "flows/health.spec.ts",
+				"seconds": 0.6
+			}
+		],
+		"slowestFlowTests": [
+			{
+				"name": "flows/chaal.spec.ts › flows\\chaal.spec.ts › Chaal's community connected to Lichess (Task 83) › saves the analysis board to a study, then opens the new chapter",
+				"ms": 63363
+			},
+			{
+				"name": "flows/chaal.spec.ts › flows\\chaal.spec.ts › Chaal's puzzles connected to Lichess (Task 80) › training at the player's rating posts results to Lichess in batches; its dashboard and replays follow",
+				"ms": 21252
+			},
+			{
+				"name": "flows/chaal.spec.ts › flows\\chaal.spec.ts › Chaal's admin (Task 79) › blocking a Lichess account refuses connecting it; unblocking lets it connect",
+				"ms": 18366
+			},
+			{
+				"name": "flows/taskline.spec.ts › flows\\taskline.spec.ts › Taskline › a member imports tasks, reschedules one on the calendar by keyboard, shares a view and finds them",
+				"ms": 18259
+			},
+			{
+				"name": "flows/parda.spec.ts › flows\\parda.spec.ts › Parda's watch page › only offers another server when one is slow to start, and stays put (0247)",
+				"ms": 16199
+			},
+			{
+				"name": "flows/taskline.spec.ts › flows\\taskline.spec.ts › Taskline automations › a rule built in the project's settings acts when a task is done, logs its run, and tells the lead",
+				"ms": 15598
+			},
+			{
+				"name": "flows/account.spec.ts › flows\\account.spec.ts › turn on two-factor, then log in with an app code and with a backup code",
+				"ms": 15082
+			},
+			{
+				"name": "flows/kharcha.spec.ts › flows\\kharcha.spec.ts › Kharcha › a mention in the trip's thread notifies the other demo account (Task 92)",
+				"ms": 14252
+			},
+			{
+				"name": "flows/taskline.spec.ts › flows\\taskline.spec.ts › Taskline › assigning reaches the assignee's inbox and email, and a mention in a comment emails the one mentioned",
+				"ms": 13834
+			},
+			{
+				"name": "flows/parda.spec.ts › flows\\parda.spec.ts › Parda's watch page › offers a smoother server when playback stutters, and stays put",
+				"ms": 13677
+			},
+			{
+				"name": "flows/parda.spec.ts › flows\\parda.spec.ts › Parda's watch party › a stall on one pauses the other and names them; resuming seeks both to one position",
+				"ms": 13677
+			},
+			{
+				"name": "flows/taskline.spec.ts › flows\\taskline.spec.ts › Taskline timeline and dependencies › a lead adds a choice field, a task gets a value, the list filters by it, and a required one stops Done",
+				"ms": 13428
+			},
+			{
+				"name": "flows/parda.spec.ts › flows\\parda.spec.ts › Parda's watch page › Up next counts down near the end and plays the next episode",
+				"ms": 11441
+			},
+			{
+				"name": "flows/taskline.spec.ts › flows\\taskline.spec.ts › Taskline timeline and dependencies › with the project's rule on, a blocked task can't be completed until its blockers are",
+				"ms": 11155
+			},
+			{
+				"name": "flows/parda.spec.ts › flows\\parda.spec.ts › Parda's watch party on a server without commands › starts together, says it can't pause together, and resyncs with its start position",
+				"ms": 11061
+			},
+			{
+				"name": "flows/taskline.spec.ts › flows\\taskline.spec.ts › Taskline from the admin › an admin creates a project and invites someone, who signs up from the email and lands in it; once deactivated, it's a 404",
+				"ms": 9528
+			},
+			{
+				"name": "flows/taskline.spec.ts › flows\\taskline.spec.ts › Taskline › a member moves a task by keyboard and opens it by its address",
+				"ms": 9082
+			},
+			{
+				"name": "flows/taskline.spec.ts › flows\\taskline.spec.ts › Taskline templates, reports and updates › a project from a template has its statuses, fields and automation; its reports read; the lead posts an update",
+				"ms": 8842
+			},
+			{
+				"name": "flows/taskline.spec.ts › flows\\taskline.spec.ts › Taskline › a guest signs in to an account with two-factor and keeps the sandbox",
+				"ms": 8739
+			},
+			{
+				"name": "flows/parda.spec.ts › flows\\parda.spec.ts › Parda's source ranking › a source failing on a title for two viewers is tried last there",
+				"ms": 8620
+			},
+			{
+				"name": "flows/conflict.spec.ts › flows\\conflict.spec.ts › the second of two edits from the same version is refused, and no data is lost",
+				"ms": 8575
+			},
+			{
+				"name": "flows/test-crud.spec.ts › flows\\test-crud.spec.ts › create, edit, publish and delete an item",
+				"ms": 8424
+			},
+			{
+				"name": "flows/kharcha.spec.ts › flows\\kharcha.spec.ts › Kharcha › the daily job makes a guest's recurring rent and sends a budget's alert (Task 94)",
+				"ms": 8240
+			},
+			{
+				"name": "flows/parda.spec.ts › flows\\parda.spec.ts › Parda's watch party › a pause on one pauses the other, and either can resume",
+				"ms": 7919
+			},
+			{
+				"name": "flows/chaal.spec.ts › flows\\chaal.spec.ts › Chaal's puzzles for a visitor (Task 80) › training: a wrong move goes back for another try, the solution shows, and Next brings another puzzle",
+				"ms": 7881
+			},
+			{
+				"name": "flows/chaal.spec.ts › flows\\chaal.spec.ts › Chaal's puzzles for a visitor (Task 80) › the streak: solved puzzles count, a miss ends it, and the best is kept",
+				"ms": 7876
+			},
+			{
+				"name": "flows/kharcha.spec.ts › flows\\kharcha.spec.ts › Kharcha › the Expenses app's addresses redirect, and a user it had finds their data (Task 95)",
+				"ms": 7823
+			},
+			{
+				"name": "flows/taskline.spec.ts › flows\\taskline.spec.ts › Taskline time from the admin › an admin locks the days up to yesterday: they read only in the timesheet, and logging there is refused",
+				"ms": 7711
+			},
+			{
+				"name": "flows/parda.spec.ts › flows\\parda.spec.ts › Parda's watch party › a reload rejoins at the group's position",
+				"ms": 7580
+			},
+			{
+				"name": "flows/taskline.spec.ts › flows\\taskline.spec.ts › Taskline › a member sees the team's projects, and not a private one they aren't on",
+				"ms": 7567
+			}
+		]
+	}
+}

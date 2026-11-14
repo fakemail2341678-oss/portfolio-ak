@@ -1,0 +1,4125 @@
+{
+	"generated": "node scripts/audit/writes.ts",
+	"callSites": 222,
+	"byHook": {
+		"useMutation": 151,
+		"useCrudMutation": 71
+	},
+	"optimisticByLayer": {
+		"core": "6/12",
+		"apps": "4/17",
+		"chaal": "3/20",
+		"kharcha": "1/45",
+		"parda": "6/13",
+		"portfolio": "8/10",
+		"taskline": "8/95",
+		"dev": "0/10"
+	},
+	"classes": {
+		"optimistic": 184,
+		"irreversible": 24,
+		"access": 11,
+		"credentials": 3
+	},
+	"toMakeOptimistic": {
+		"taskline": 81,
+		"kharcha": 39,
+		"apps": 13,
+		"dev": 9,
+		"parda": 6,
+		"chaal": 5,
+		"core": 3,
+		"portfolio": 2
+	},
+	"definitions": [
+		{
+			"id": "formMutations.create",
+			"file": "src/features/apps/forms/queries.ts",
+			"line": 47,
+			"optimistic": false,
+			"calls": [
+				"createForm"
+			]
+		},
+		{
+			"id": "formMutations.save",
+			"file": "src/features/apps/forms/queries.ts",
+			"line": 53,
+			"optimistic": false,
+			"calls": [
+				"saveForm"
+			]
+		},
+		{
+			"id": "formMutations.status",
+			"file": "src/features/apps/forms/queries.ts",
+			"line": 59,
+			"optimistic": false,
+			"calls": [
+				"setFormStatus"
+			]
+		},
+		{
+			"id": "formMutations.delete",
+			"file": "src/features/apps/forms/queries.ts",
+			"line": 65,
+			"optimistic": false,
+			"calls": [
+				"deleteForm"
+			]
+		},
+		{
+			"id": "habitMutations.create",
+			"file": "src/features/apps/habits/queries.ts",
+			"line": 28,
+			"optimistic": false,
+			"calls": [
+				"createHabit"
+			]
+		},
+		{
+			"id": "habitMutations.update",
+			"file": "src/features/apps/habits/queries.ts",
+			"line": 33,
+			"optimistic": false,
+			"calls": [
+				"updateHabit"
+			]
+		},
+		{
+			"id": "habitMutations.delete",
+			"file": "src/features/apps/habits/queries.ts",
+			"line": 39,
+			"optimistic": false,
+			"calls": [
+				"deleteHabit"
+			]
+		},
+		{
+			"id": "linkModerationMutations.block",
+			"file": "src/features/apps/links/admin/queries.ts",
+			"line": 12,
+			"optimistic": false,
+			"calls": [
+				"setLinksBlocked"
+			]
+		},
+		{
+			"id": "linkModerationMutations.delete",
+			"file": "src/features/apps/links/admin/queries.ts",
+			"line": 17,
+			"optimistic": false,
+			"calls": [
+				"deleteModeratedLinks"
+			]
+		},
+		{
+			"id": "linkMutations.create",
+			"file": "src/features/apps/links/queries.ts",
+			"line": 49,
+			"optimistic": false,
+			"calls": [
+				"createLink"
+			]
+		},
+		{
+			"id": "linkMutations.update",
+			"file": "src/features/apps/links/queries.ts",
+			"line": 54,
+			"optimistic": true,
+			"calls": [
+				"updateLink"
+			]
+		},
+		{
+			"id": "linkMutations.delete",
+			"file": "src/features/apps/links/queries.ts",
+			"line": 73,
+			"optimistic": true,
+			"calls": [
+				"deleteLink"
+			]
+		},
+		{
+			"id": "noteMutations.save",
+			"file": "src/features/apps/notes/queries.ts",
+			"line": 41,
+			"optimistic": false,
+			"calls": [
+				"updateNote"
+			]
+		},
+		{
+			"id": "noteMutations.share",
+			"file": "src/features/apps/notes/queries.ts",
+			"line": 47,
+			"optimistic": false,
+			"calls": [
+				"shareNote"
+			]
+		},
+		{
+			"id": "noteMutations.unshare",
+			"file": "src/features/apps/notes/queries.ts",
+			"line": 56,
+			"optimistic": false,
+			"calls": [
+				"unshareNote"
+			]
+		},
+		{
+			"id": "checkPublicLaneMutationOptions",
+			"file": "src/features/chaal/admin/queries.ts",
+			"line": 32,
+			"optimistic": false,
+			"calls": []
+		},
+		{
+			"id": "chaalAdminMutations.updateSettings",
+			"file": "src/features/chaal/admin/queries.ts",
+			"line": 58,
+			"optimistic": false,
+			"calls": [
+				"updateChaalSettings"
+			]
+		},
+		{
+			"id": "chaalAdminMutations.setMaintenance",
+			"file": "src/features/chaal/admin/queries.ts",
+			"line": 64,
+			"optimistic": false,
+			"calls": [
+				"setChaalMaintenance"
+			]
+		},
+		{
+			"id": "chaalAdminMutations.purgeCache",
+			"file": "src/features/chaal/admin/queries.ts",
+			"line": 69,
+			"optimistic": false,
+			"calls": []
+		},
+		{
+			"id": "chaalAdminMutations.revokeConnections",
+			"file": "src/features/chaal/admin/queries.ts",
+			"line": 74,
+			"optimistic": false,
+			"calls": [
+				"revokeChaalConnections"
+			]
+		},
+		{
+			"id": "chaalAdminMutations.block",
+			"file": "src/features/chaal/admin/queries.ts",
+			"line": 79,
+			"optimistic": false,
+			"calls": [
+				"blockChaal"
+			]
+		},
+		{
+			"id": "chaalAdminMutations.unblock",
+			"file": "src/features/chaal/admin/queries.ts",
+			"line": 84,
+			"optimistic": false,
+			"calls": [
+				"unblockChaal"
+			]
+		},
+		{
+			"id": "chaalAdminMutations.createFeatured",
+			"file": "src/features/chaal/admin/queries.ts",
+			"line": 89,
+			"optimistic": false,
+			"calls": [
+				"createChaalFeatured"
+			]
+		},
+		{
+			"id": "chaalAdminMutations.updateFeatured",
+			"file": "src/features/chaal/admin/queries.ts",
+			"line": 94,
+			"optimistic": false,
+			"calls": [
+				"updateChaalFeatured"
+			]
+		},
+		{
+			"id": "chaalAdminMutations.reorderFeatured",
+			"file": "src/features/chaal/admin/queries.ts",
+			"line": 99,
+			"optimistic": false,
+			"calls": [
+				"reorderChaalFeatured"
+			]
+		},
+		{
+			"id": "chaalAdminMutations.deleteFeatured",
+			"file": "src/features/chaal/admin/queries.ts",
+			"line": 104,
+			"optimistic": false,
+			"calls": [
+				"deleteChaalFeatured"
+			]
+		},
+		{
+			"id": "chaalAdminMutations.saveSections",
+			"file": "src/features/chaal/admin/queries.ts",
+			"line": 109,
+			"optimistic": false,
+			"calls": [
+				"saveChaalHomeSections"
+			]
+		},
+		{
+			"id": "chaalAdminMutations.saveAnnouncement",
+			"file": "src/features/chaal/admin/queries.ts",
+			"line": 115,
+			"optimistic": false,
+			"calls": [
+				"saveChaalAnnouncement"
+			]
+		},
+		{
+			"id": "chaalAdminMutations.ping",
+			"file": "src/features/chaal/admin/queries.ts",
+			"line": 120,
+			"optimistic": false,
+			"calls": []
+		},
+		{
+			"id": "saveAnalysisMutationOptions",
+			"file": "src/features/chaal/analysis/queries.ts",
+			"line": 63,
+			"optimistic": false,
+			"calls": [
+				"saveChaalAnalysis"
+			]
+		},
+		{
+			"id": "deleteAnalysisMutationOptions",
+			"file": "src/features/chaal/analysis/queries.ts",
+			"line": 69,
+			"optimistic": false,
+			"calls": [
+				"deleteChaalAnalysis"
+			]
+		},
+		{
+			"id": "disconnectChaalMutationOptions",
+			"file": "src/features/chaal/queries.ts",
+			"line": 14,
+			"optimistic": false,
+			"calls": []
+		},
+		{
+			"id": "kharchaAdminMutations.updateSettings",
+			"file": "src/features/kharcha/admin/queries.ts",
+			"line": 28,
+			"optimistic": false,
+			"calls": [
+				"updateKharchaSettings"
+			]
+		},
+		{
+			"id": "kharchaAdminMutations.suspend",
+			"file": "src/features/kharcha/admin/queries.ts",
+			"line": 36,
+			"optimistic": false,
+			"calls": [
+				"suspendKharchaSender"
+			]
+		},
+		{
+			"id": "kharchaMutations.budgets",
+			"file": "src/features/kharcha/queries.ts",
+			"line": 277,
+			"optimistic": false,
+			"calls": []
+		},
+		{
+			"id": "kharchaMutations.recurring",
+			"file": "src/features/kharcha/queries.ts",
+			"line": 286,
+			"optimistic": false,
+			"calls": []
+		},
+		{
+			"id": "kharchaMutations.bulk",
+			"file": "src/features/kharcha/queries.ts",
+			"line": 294,
+			"optimistic": false,
+			"calls": [
+				"bulkKharchaExpenses"
+			]
+		},
+		{
+			"id": "kharchaMutations.saveSearch",
+			"file": "src/features/kharcha/queries.ts",
+			"line": 299,
+			"optimistic": false,
+			"calls": [
+				"saveKharchaSearch"
+			]
+		},
+		{
+			"id": "kharchaMutations.renameSearch",
+			"file": "src/features/kharcha/queries.ts",
+			"line": 304,
+			"optimistic": false,
+			"calls": [
+				"renameKharchaSearch"
+			]
+		},
+		{
+			"id": "kharchaMutations.reorderSearches",
+			"file": "src/features/kharcha/queries.ts",
+			"line": 309,
+			"optimistic": false,
+			"calls": [
+				"reorderKharchaSearches"
+			]
+		},
+		{
+			"id": "kharchaMutations.deleteSearch",
+			"file": "src/features/kharcha/queries.ts",
+			"line": 314,
+			"optimistic": false,
+			"calls": [
+				"deleteKharchaSearch"
+			]
+		},
+		{
+			"id": "kharchaMutations.importSpend",
+			"file": "src/features/kharcha/queries.ts",
+			"line": 319,
+			"optimistic": false,
+			"calls": [
+				"importKharchaSpend"
+			]
+		},
+		{
+			"id": "kharchaMutations.onboard",
+			"file": "src/features/kharcha/queries.ts",
+			"line": 324,
+			"optimistic": false,
+			"calls": [
+				"completeKharchaOnboarding"
+			]
+		},
+		{
+			"id": "kharchaMutations.addFriend",
+			"file": "src/features/kharcha/queries.ts",
+			"line": 329,
+			"optimistic": false,
+			"calls": [
+				"addKharchaFriend"
+			]
+		},
+		{
+			"id": "kharchaMutations.createGroup",
+			"file": "src/features/kharcha/queries.ts",
+			"line": 334,
+			"optimistic": false,
+			"calls": [
+				"createKharchaGroup"
+			]
+		},
+		{
+			"id": "kharchaMutations.createExpense",
+			"file": "src/features/kharcha/queries.ts",
+			"line": 339,
+			"optimistic": false,
+			"calls": [
+				"createKharchaExpense"
+			]
+		},
+		{
+			"id": "kharchaMutations.updateExpense",
+			"file": "src/features/kharcha/queries.ts",
+			"line": 344,
+			"optimistic": false,
+			"calls": [
+				"updateKharchaExpense"
+			]
+		},
+		{
+			"id": "kharchaMutations.trashExpense",
+			"file": "src/features/kharcha/queries.ts",
+			"line": 349,
+			"optimistic": false,
+			"calls": [
+				"restoreKharchaExpense",
+				"deleteKharchaExpense"
+			]
+		},
+		{
+			"id": "kharchaMutations.markDuplicate",
+			"file": "src/features/kharcha/queries.ts",
+			"line": 355,
+			"optimistic": false,
+			"calls": [
+				"markKharchaDuplicate"
+			]
+		},
+		{
+			"id": "kharchaMutations.createDraft",
+			"file": "src/features/kharcha/queries.ts",
+			"line": 360,
+			"optimistic": false,
+			"calls": [
+				"createKharchaDraft"
+			]
+		},
+		{
+			"id": "kharchaMutations.deleteDraft",
+			"file": "src/features/kharcha/queries.ts",
+			"line": 365,
+			"optimistic": false,
+			"calls": [
+				"deleteKharchaDraft"
+			]
+		},
+		{
+			"id": "kharchaMutations.updateFriend",
+			"file": "src/features/kharcha/queries.ts",
+			"line": 370,
+			"optimistic": false,
+			"calls": [
+				"updateKharchaFriend"
+			]
+		},
+		{
+			"id": "kharchaMutations.setFriendEmail",
+			"file": "src/features/kharcha/queries.ts",
+			"line": 375,
+			"optimistic": false,
+			"calls": [
+				"setKharchaFriendEmail"
+			]
+		},
+		{
+			"id": "kharchaMutations.invite",
+			"file": "src/features/kharcha/queries.ts",
+			"line": 380,
+			"optimistic": false,
+			"calls": [
+				"inviteKharchaFriend"
+			]
+		},
+		{
+			"id": "kharchaMutations.acceptInvite",
+			"file": "src/features/kharcha/queries.ts",
+			"line": 385,
+			"optimistic": false,
+			"calls": [
+				"acceptKharchaInvite"
+			]
+		},
+		{
+			"id": "kharchaMutations.updateGroup",
+			"file": "src/features/kharcha/queries.ts",
+			"line": 390,
+			"optimistic": false,
+			"calls": [
+				"updateKharchaGroup"
+			]
+		},
+		{
+			"id": "kharchaMutations.archiveGroup",
+			"file": "src/features/kharcha/queries.ts",
+			"line": 395,
+			"optimistic": false,
+			"calls": [
+				"archiveKharchaGroup"
+			]
+		},
+		{
+			"id": "kharchaMutations.addMember",
+			"file": "src/features/kharcha/queries.ts",
+			"line": 400,
+			"optimistic": false,
+			"calls": [
+				"addKharchaGroupMember"
+			]
+		},
+		{
+			"id": "kharchaMutations.addNewMember",
+			"file": "src/features/kharcha/queries.ts",
+			"line": 405,
+			"optimistic": false,
+			"calls": [
+				"addKharchaNewGroupMember"
+			]
+		},
+		{
+			"id": "kharchaMutations.removeMember",
+			"file": "src/features/kharcha/queries.ts",
+			"line": 410,
+			"optimistic": false,
+			"calls": [
+				"removeKharchaGroupMember"
+			]
+		},
+		{
+			"id": "kharchaMutations.createPayment",
+			"file": "src/features/kharcha/queries.ts",
+			"line": 415,
+			"optimistic": false,
+			"calls": [
+				"createKharchaPayment"
+			]
+		},
+		{
+			"id": "kharchaMutations.updatePayment",
+			"file": "src/features/kharcha/queries.ts",
+			"line": 420,
+			"optimistic": false,
+			"calls": [
+				"updateKharchaPayment"
+			]
+		},
+		{
+			"id": "kharchaMutations.trashPayment",
+			"file": "src/features/kharcha/queries.ts",
+			"line": 425,
+			"optimistic": false,
+			"calls": [
+				"restoreKharchaPayment",
+				"deleteKharchaPayment"
+			]
+		},
+		{
+			"id": "kharchaMutations.remind",
+			"file": "src/features/kharcha/queries.ts",
+			"line": 431,
+			"optimistic": false,
+			"calls": [
+				"remindKharchaFriend"
+			]
+		},
+		{
+			"id": "kharchaMutations.updateProfile",
+			"file": "src/features/kharcha/queries.ts",
+			"line": 436,
+			"optimistic": false,
+			"calls": [
+				"updateKharchaProfile"
+			]
+		},
+		{
+			"id": "kharchaMutations.comment",
+			"file": "src/features/kharcha/queries.ts",
+			"line": 441,
+			"optimistic": false,
+			"calls": [
+				"createKharchaComment"
+			]
+		},
+		{
+			"id": "kharchaMutations.editComment",
+			"file": "src/features/kharcha/queries.ts",
+			"line": 446,
+			"optimistic": false,
+			"calls": [
+				"updateKharchaComment"
+			]
+		},
+		{
+			"id": "kharchaMutations.deleteComment",
+			"file": "src/features/kharcha/queries.ts",
+			"line": 451,
+			"optimistic": false,
+			"calls": [
+				"deleteKharchaComment"
+			]
+		},
+		{
+			"id": "kharchaMutations.react",
+			"file": "src/features/kharcha/queries.ts",
+			"line": 456,
+			"optimistic": false,
+			"calls": [
+				"reactKharchaComment"
+			]
+		},
+		{
+			"id": "kharchaMutations.readThread",
+			"file": "src/features/kharcha/queries.ts",
+			"line": 462,
+			"optimistic": false,
+			"calls": [
+				"markKharchaThreadRead"
+			]
+		},
+		{
+			"id": "kharchaMutations.readNotifications",
+			"file": "src/features/kharcha/queries.ts",
+			"line": 472,
+			"optimistic": false,
+			"calls": [
+				"markKharchaNotificationsRead"
+			]
+		},
+		{
+			"id": "kharchaMutations.notifySettings",
+			"file": "src/features/kharcha/queries.ts",
+			"line": 477,
+			"optimistic": false,
+			"calls": [
+				"updateKharchaNotifySettings"
+			]
+		},
+		{
+			"id": "kharchaMutations.focus",
+			"file": "src/features/kharcha/queries.ts",
+			"line": 482,
+			"optimistic": false,
+			"calls": [
+				"setKharchaFocus"
+			]
+		},
+		{
+			"id": "kharchaMutations.leaveGroup",
+			"file": "src/features/kharcha/queries.ts",
+			"line": 487,
+			"optimistic": false,
+			"calls": [
+				"leaveKharchaGroup"
+			]
+		},
+		{
+			"id": "mediaMutations.setAlt",
+			"file": "src/features/media/queries.ts",
+			"line": 14,
+			"optimistic": false,
+			"calls": [
+				"updateMediaAlt"
+			]
+		},
+		{
+			"id": "mediaMutations.delete",
+			"file": "src/features/media/queries.ts",
+			"line": 19,
+			"optimistic": false,
+			"calls": [
+				"deleteMedia"
+			]
+		},
+		{
+			"id": "openLabPlayerMutationOptions",
+			"file": "src/features/parda/admin/queries.ts",
+			"line": 109,
+			"optimistic": false,
+			"calls": [
+				"openPardaLabPlayer"
+			]
+		},
+		{
+			"id": "pardaAdminMutations.createSource",
+			"file": "src/features/parda/admin/queries.ts",
+			"line": 114,
+			"optimistic": false,
+			"calls": [
+				"createPardaSource"
+			]
+		},
+		{
+			"id": "pardaAdminMutations.updateSource",
+			"file": "src/features/parda/admin/queries.ts",
+			"line": 119,
+			"optimistic": false,
+			"calls": [
+				"updatePardaSource"
+			]
+		},
+		{
+			"id": "pardaAdminMutations.setSourceState",
+			"file": "src/features/parda/admin/queries.ts",
+			"line": 124,
+			"optimistic": false,
+			"calls": [
+				"setPardaSourceState"
+			]
+		},
+		{
+			"id": "pardaAdminMutations.reorderSources",
+			"file": "src/features/parda/admin/queries.ts",
+			"line": 129,
+			"optimistic": false,
+			"calls": [
+				"reorderPardaSources"
+			]
+		},
+		{
+			"id": "pardaAdminMutations.deleteSources",
+			"file": "src/features/parda/admin/queries.ts",
+			"line": 134,
+			"optimistic": false,
+			"calls": [
+				"deletePardaSources"
+			]
+		},
+		{
+			"id": "pardaAdminMutations.blockTitle",
+			"file": "src/features/parda/admin/queries.ts",
+			"line": 139,
+			"optimistic": false,
+			"calls": [
+				"blockPardaTitle"
+			]
+		},
+		{
+			"id": "pardaAdminMutations.unblockTitles",
+			"file": "src/features/parda/admin/queries.ts",
+			"line": 144,
+			"optimistic": false,
+			"calls": [
+				"unblockPardaTitles"
+			]
+		},
+		{
+			"id": "pardaAdminMutations.setReportStatus",
+			"file": "src/features/parda/admin/queries.ts",
+			"line": 149,
+			"optimistic": false,
+			"calls": [
+				"setPardaReportStatus"
+			]
+		},
+		{
+			"id": "pardaAdminMutations.updateSettings",
+			"file": "src/features/parda/admin/queries.ts",
+			"line": 154,
+			"optimistic": false,
+			"calls": [
+				"updatePardaSettings"
+			]
+		},
+		{
+			"id": "pardaAdminMutations.setPlayback",
+			"file": "src/features/parda/admin/queries.ts",
+			"line": 160,
+			"optimistic": false,
+			"calls": [
+				"setPardaPlayback"
+			]
+		},
+		{
+			"id": "pardaAdminMutations.setSourceOrder",
+			"file": "src/features/parda/admin/queries.ts",
+			"line": 165,
+			"optimistic": false,
+			"calls": [
+				"setPardaSourceOrder"
+			]
+		},
+		{
+			"id": "pardaAdminMutations.createBillboard",
+			"file": "src/features/parda/admin/queries.ts",
+			"line": 170,
+			"optimistic": false,
+			"calls": [
+				"createPardaBillboard"
+			]
+		},
+		{
+			"id": "pardaAdminMutations.updateBillboard",
+			"file": "src/features/parda/admin/queries.ts",
+			"line": 175,
+			"optimistic": false,
+			"calls": [
+				"updatePardaBillboard"
+			]
+		},
+		{
+			"id": "pardaAdminMutations.reorderBillboards",
+			"file": "src/features/parda/admin/queries.ts",
+			"line": 180,
+			"optimistic": false,
+			"calls": [
+				"reorderPardaBillboards"
+			]
+		},
+		{
+			"id": "pardaAdminMutations.deleteBillboards",
+			"file": "src/features/parda/admin/queries.ts",
+			"line": 185,
+			"optimistic": false,
+			"calls": [
+				"deletePardaBillboards"
+			]
+		},
+		{
+			"id": "pardaAdminMutations.createCollection",
+			"file": "src/features/parda/admin/queries.ts",
+			"line": 190,
+			"optimistic": false,
+			"calls": [
+				"createPardaCollection"
+			]
+		},
+		{
+			"id": "pardaAdminMutations.updateCollection",
+			"file": "src/features/parda/admin/queries.ts",
+			"line": 195,
+			"optimistic": false,
+			"calls": [
+				"updatePardaCollection"
+			]
+		},
+		{
+			"id": "pardaAdminMutations.deleteCollections",
+			"file": "src/features/parda/admin/queries.ts",
+			"line": 200,
+			"optimistic": false,
+			"calls": [
+				"deletePardaCollections"
+			]
+		},
+		{
+			"id": "pardaAdminMutations.saveLayout",
+			"file": "src/features/parda/admin/queries.ts",
+			"line": 205,
+			"optimistic": false,
+			"calls": [
+				"savePardaLayout"
+			]
+		},
+		{
+			"id": "pardaAdminMutations.purgeCache",
+			"file": "src/features/parda/admin/queries.ts",
+			"line": 210,
+			"optimistic": false,
+			"calls": []
+		},
+		{
+			"id": "profileMutations.update",
+			"file": "src/features/portfolio/admin/queries.ts",
+			"line": 89,
+			"optimistic": false,
+			"calls": [
+				"updatePortfolioProfile"
+			]
+		},
+		{
+			"id": "projectMutations.create",
+			"file": "src/features/portfolio/admin/queries.ts",
+			"line": 97,
+			"optimistic": false,
+			"calls": [
+				"createProject"
+			]
+		},
+		{
+			"id": "projectMutations.update",
+			"file": "src/features/portfolio/admin/queries.ts",
+			"line": 102,
+			"optimistic": false,
+			"calls": [
+				"updateProject"
+			]
+		},
+		{
+			"id": "projectMutations.setStatus",
+			"file": "src/features/portfolio/admin/queries.ts",
+			"line": 107,
+			"optimistic": false,
+			"calls": [
+				"setProjectStatus"
+			]
+		},
+		{
+			"id": "projectMutations.delete",
+			"file": "src/features/portfolio/admin/queries.ts",
+			"line": 112,
+			"optimistic": false,
+			"calls": [
+				"deleteProjects"
+			]
+		},
+		{
+			"id": "projectMutations.reorder",
+			"file": "src/features/portfolio/admin/queries.ts",
+			"line": 117,
+			"optimistic": false,
+			"calls": [
+				"reorderProjects"
+			]
+		},
+		{
+			"id": "postMutations.create",
+			"file": "src/features/portfolio/admin/queries.ts",
+			"line": 125,
+			"optimistic": false,
+			"calls": [
+				"createPost"
+			]
+		},
+		{
+			"id": "postMutations.update",
+			"file": "src/features/portfolio/admin/queries.ts",
+			"line": 130,
+			"optimistic": false,
+			"calls": [
+				"updatePost"
+			]
+		},
+		{
+			"id": "postMutations.setStatus",
+			"file": "src/features/portfolio/admin/queries.ts",
+			"line": 135,
+			"optimistic": false,
+			"calls": [
+				"setPostStatus"
+			]
+		},
+		{
+			"id": "postMutations.delete",
+			"file": "src/features/portfolio/admin/queries.ts",
+			"line": 140,
+			"optimistic": false,
+			"calls": [
+				"deletePosts"
+			]
+		},
+		{
+			"id": "messageMutations.setState",
+			"file": "src/features/portfolio/admin/queries.ts",
+			"line": 148,
+			"optimistic": false,
+			"calls": [
+				"setContactMessageState"
+			]
+		},
+		{
+			"id": "messageMutations.delete",
+			"file": "src/features/portfolio/admin/queries.ts",
+			"line": 153,
+			"optimistic": false,
+			"calls": [
+				"deleteContactMessages"
+			]
+		},
+		{
+			"id": "section",
+			"file": "src/features/portfolio/admin/queries.ts",
+			"line": 165,
+			"optimistic": false,
+			"calls": [
+				"create",
+				"update",
+				"remove",
+				"reorder"
+			]
+		},
+		{
+			"id": "create",
+			"file": "src/features/portfolio/admin/queries.ts",
+			"line": 179,
+			"optimistic": false,
+			"calls": [
+				"create"
+			]
+		},
+		{
+			"id": "update",
+			"file": "src/features/portfolio/admin/queries.ts",
+			"line": 184,
+			"optimistic": false,
+			"calls": [
+				"update"
+			]
+		},
+		{
+			"id": "delete",
+			"file": "src/features/portfolio/admin/queries.ts",
+			"line": 189,
+			"optimistic": false,
+			"calls": [
+				"remove"
+			]
+		},
+		{
+			"id": "reorder",
+			"file": "src/features/portfolio/admin/queries.ts",
+			"line": 194,
+			"optimistic": false,
+			"calls": [
+				"reorder"
+			]
+		},
+		{
+			"id": "roleMutations.create",
+			"file": "src/features/rbac/queries.ts",
+			"line": 32,
+			"optimistic": false,
+			"calls": [
+				"createRole"
+			]
+		},
+		{
+			"id": "roleMutations.update",
+			"file": "src/features/rbac/queries.ts",
+			"line": 37,
+			"optimistic": false,
+			"calls": [
+				"updateRole"
+			]
+		},
+		{
+			"id": "roleMutations.delete",
+			"file": "src/features/rbac/queries.ts",
+			"line": 42,
+			"optimistic": false,
+			"calls": [
+				"deleteRole"
+			]
+		},
+		{
+			"id": "roleMutations.permissions",
+			"file": "src/features/rbac/queries.ts",
+			"line": 47,
+			"optimistic": false,
+			"calls": [
+				"updateRolePermissions"
+			]
+		},
+		{
+			"id": "userMutations.invite",
+			"file": "src/features/rbac/queries.ts",
+			"line": 55,
+			"optimistic": false,
+			"calls": [
+				"inviteUser"
+			]
+		},
+		{
+			"id": "userMutations.roles",
+			"file": "src/features/rbac/queries.ts",
+			"line": 60,
+			"optimistic": false,
+			"calls": [
+				"setUserRoles"
+			]
+		},
+		{
+			"id": "userMutations.ban",
+			"file": "src/features/rbac/queries.ts",
+			"line": 66,
+			"optimistic": false,
+			"calls": [
+				"setUserBanned"
+			]
+		},
+		{
+			"id": "userMutations.revokeSessions",
+			"file": "src/features/rbac/queries.ts",
+			"line": 71,
+			"optimistic": false,
+			"calls": [
+				"revokeUserSessions"
+			]
+		},
+		{
+			"id": "userMutations.impersonate",
+			"file": "src/features/rbac/queries.ts",
+			"line": 76,
+			"optimistic": false,
+			"calls": [
+				"impersonateUser"
+			]
+		},
+		{
+			"id": "tasklineAdminMutations.createProject",
+			"file": "src/features/taskline/admin/queries.ts",
+			"line": 187,
+			"optimistic": false,
+			"calls": [
+				"createTasklineAdminProject"
+			]
+		},
+		{
+			"id": "tasklineAdminMutations.updateProject",
+			"file": "src/features/taskline/admin/queries.ts",
+			"line": 192,
+			"optimistic": false,
+			"calls": [
+				"updateTasklineAdminProject"
+			]
+		},
+		{
+			"id": "tasklineAdminMutations.setProjectState",
+			"file": "src/features/taskline/admin/queries.ts",
+			"line": 197,
+			"optimistic": false,
+			"calls": [
+				"setTasklineAdminProjectState"
+			]
+		},
+		{
+			"id": "tasklineAdminMutations.setProjectArchived",
+			"file": "src/features/taskline/admin/queries.ts",
+			"line": 203,
+			"optimistic": false,
+			"calls": [
+				"setTasklineAdminProjectArchived"
+			]
+		},
+		{
+			"id": "tasklineAdminMutations.transferLead",
+			"file": "src/features/taskline/admin/queries.ts",
+			"line": 208,
+			"optimistic": false,
+			"calls": [
+				"transferTasklineProjectLead"
+			]
+		},
+		{
+			"id": "tasklineAdminMutations.deleteProject",
+			"file": "src/features/taskline/admin/queries.ts",
+			"line": 213,
+			"optimistic": false,
+			"calls": [
+				"deleteTasklineAdminProject"
+			]
+		},
+		{
+			"id": "tasklineAdminMutations.exportProject",
+			"file": "src/features/taskline/admin/queries.ts",
+			"line": 218,
+			"optimistic": false,
+			"calls": [
+				"exportTasklineAdminProject"
+			]
+		},
+		{
+			"id": "tasklineAdminMutations.setProjectMember",
+			"file": "src/features/taskline/admin/queries.ts",
+			"line": 223,
+			"optimistic": false,
+			"calls": [
+				"setTasklineAdminProjectMember"
+			]
+		},
+		{
+			"id": "tasklineAdminMutations.removeProjectMember",
+			"file": "src/features/taskline/admin/queries.ts",
+			"line": 229,
+			"optimistic": false,
+			"calls": [
+				"removeTasklineAdminProjectMember"
+			]
+		},
+		{
+			"id": "tasklineAdminMutations.addMembers",
+			"file": "src/features/taskline/admin/queries.ts",
+			"line": 234,
+			"optimistic": false,
+			"calls": [
+				"addTasklineMembers"
+			]
+		},
+		{
+			"id": "tasklineAdminMutations.updateMember",
+			"file": "src/features/taskline/admin/queries.ts",
+			"line": 239,
+			"optimistic": false,
+			"calls": [
+				"updateTasklineMember"
+			]
+		},
+		{
+			"id": "tasklineAdminMutations.deactivateMember",
+			"file": "src/features/taskline/admin/queries.ts",
+			"line": 244,
+			"optimistic": false,
+			"calls": [
+				"deactivateTasklineMember"
+			]
+		},
+		{
+			"id": "tasklineAdminMutations.reactivateMember",
+			"file": "src/features/taskline/admin/queries.ts",
+			"line": 249,
+			"optimistic": false,
+			"calls": [
+				"reactivateTasklineMember"
+			]
+		},
+		{
+			"id": "tasklineAdminMutations.invite",
+			"file": "src/features/taskline/admin/queries.ts",
+			"line": 254,
+			"optimistic": false,
+			"calls": [
+				"inviteTasklineMember"
+			]
+		},
+		{
+			"id": "tasklineAdminMutations.resendInvitation",
+			"file": "src/features/taskline/admin/queries.ts",
+			"line": 259,
+			"optimistic": false,
+			"calls": [
+				"resendTasklineInvitation"
+			]
+		},
+		{
+			"id": "tasklineAdminMutations.revokeInvitation",
+			"file": "src/features/taskline/admin/queries.ts",
+			"line": 264,
+			"optimistic": false,
+			"calls": [
+				"revokeTasklineInvitation"
+			]
+		},
+		{
+			"id": "tasklineAdminMutations.updateWorkspace",
+			"file": "src/features/taskline/admin/queries.ts",
+			"line": 269,
+			"optimistic": false,
+			"calls": [
+				"updateTasklineWorkspace"
+			]
+		},
+		{
+			"id": "tasklineAdminMutations.updateWorkflows",
+			"file": "src/features/taskline/admin/queries.ts",
+			"line": 277,
+			"optimistic": false,
+			"calls": [
+				"updateTasklineWorkflows"
+			]
+		},
+		{
+			"id": "tasklineAdminMutations.createLabel",
+			"file": "src/features/taskline/admin/queries.ts",
+			"line": 282,
+			"optimistic": false,
+			"calls": [
+				"createTasklineWorkspaceLabel"
+			]
+		},
+		{
+			"id": "tasklineAdminMutations.updateLabel",
+			"file": "src/features/taskline/admin/queries.ts",
+			"line": 287,
+			"optimistic": false,
+			"calls": [
+				"updateTasklineWorkspaceLabel"
+			]
+		},
+		{
+			"id": "tasklineAdminMutations.deleteLabel",
+			"file": "src/features/taskline/admin/queries.ts",
+			"line": 293,
+			"optimistic": false,
+			"calls": [
+				"deleteTasklineWorkspaceLabel"
+			]
+		},
+		{
+			"id": "tasklineAdminMutations.createField",
+			"file": "src/features/taskline/admin/queries.ts",
+			"line": 298,
+			"optimistic": false,
+			"calls": [
+				"createTasklineWorkspaceField"
+			]
+		},
+		{
+			"id": "tasklineAdminMutations.updateField",
+			"file": "src/features/taskline/admin/queries.ts",
+			"line": 303,
+			"optimistic": false,
+			"calls": [
+				"updateTasklineWorkspaceField"
+			]
+		},
+		{
+			"id": "tasklineAdminMutations.deleteField",
+			"file": "src/features/taskline/admin/queries.ts",
+			"line": 308,
+			"optimistic": false,
+			"calls": [
+				"deleteTasklineWorkspaceField"
+			]
+		},
+		{
+			"id": "tasklineAdminMutations.createAutomation",
+			"file": "src/features/taskline/admin/queries.ts",
+			"line": 313,
+			"optimistic": false,
+			"calls": [
+				"createTasklineWorkspaceAutomation"
+			]
+		},
+		{
+			"id": "tasklineAdminMutations.updateAutomation",
+			"file": "src/features/taskline/admin/queries.ts",
+			"line": 318,
+			"optimistic": false,
+			"calls": [
+				"updateTasklineWorkspaceAutomation"
+			]
+		},
+		{
+			"id": "tasklineAdminMutations.toggleAutomation",
+			"file": "src/features/taskline/admin/queries.ts",
+			"line": 323,
+			"optimistic": false,
+			"calls": [
+				"toggleTasklineWorkspaceAutomation"
+			]
+		},
+		{
+			"id": "tasklineAdminMutations.deleteAutomation",
+			"file": "src/features/taskline/admin/queries.ts",
+			"line": 328,
+			"optimistic": false,
+			"calls": [
+				"deleteTasklineWorkspaceAutomation"
+			]
+		},
+		{
+			"id": "tasklineAdminMutations.createTemplate",
+			"file": "src/features/taskline/admin/queries.ts",
+			"line": 333,
+			"optimistic": false,
+			"calls": [
+				"createTasklineAdminTemplate"
+			]
+		},
+		{
+			"id": "tasklineAdminMutations.updateTemplate",
+			"file": "src/features/taskline/admin/queries.ts",
+			"line": 338,
+			"optimistic": false,
+			"calls": [
+				"updateTasklineAdminTemplate"
+			]
+		},
+		{
+			"id": "tasklineAdminMutations.deleteTemplate",
+			"file": "src/features/taskline/admin/queries.ts",
+			"line": 343,
+			"optimistic": false,
+			"calls": [
+				"deleteTasklineAdminTemplate"
+			]
+		},
+		{
+			"id": "tasklineAdminMutations.saveProjectAsTemplate",
+			"file": "src/features/taskline/admin/queries.ts",
+			"line": 348,
+			"optimistic": false,
+			"calls": [
+				"saveTasklineProjectAsTemplate"
+			]
+		},
+		{
+			"id": "tasklineAdminMutations.updateTimeEntry",
+			"file": "src/features/taskline/admin/queries.ts",
+			"line": 353,
+			"optimistic": false,
+			"calls": [
+				"updateTasklineAdminTimeEntry"
+			]
+		},
+		{
+			"id": "tasklineAdminMutations.deleteTimeEntry",
+			"file": "src/features/taskline/admin/queries.ts",
+			"line": 358,
+			"optimistic": false,
+			"calls": [
+				"deleteTasklineAdminTimeEntry"
+			]
+		},
+		{
+			"id": "tasklineAdminMutations.setTimesheetLock",
+			"file": "src/features/taskline/admin/queries.ts",
+			"line": 363,
+			"optimistic": false,
+			"calls": [
+				"setTasklineTimesheetLock"
+			]
+		},
+		{
+			"id": "tasklineAdminMutations.exportTime",
+			"file": "src/features/taskline/admin/queries.ts",
+			"line": 368,
+			"optimistic": false,
+			"calls": [
+				"exportTasklineTimeEntries"
+			]
+		},
+		{
+			"id": "write",
+			"file": "src/features/taskline/queries.ts",
+			"line": 377,
+			"optimistic": false,
+			"calls": []
+		},
+		{
+			"id": "tasklineMutations.markRead",
+			"file": "src/features/taskline/queries.ts",
+			"line": 496,
+			"optimistic": false,
+			"calls": [
+				"markTasklineRead"
+			]
+		},
+		{
+			"id": "tasklineMutations.saveView",
+			"file": "src/features/taskline/queries.ts",
+			"line": 501,
+			"optimistic": false,
+			"calls": [
+				"saveTasklineSavedView"
+			]
+		},
+		{
+			"id": "tasklineMutations.deleteView",
+			"file": "src/features/taskline/queries.ts",
+			"line": 507,
+			"optimistic": false,
+			"calls": [
+				"deleteTasklineSavedView"
+			]
+		},
+		{
+			"id": "tasklineMutations.saveNotifySettings",
+			"file": "src/features/taskline/queries.ts",
+			"line": 516,
+			"optimistic": false,
+			"calls": [
+				"saveTasklineNotifySettings"
+			]
+		},
+		{
+			"id": "testCrudMutations.create",
+			"file": "src/features/test-crud/queries.ts",
+			"line": 41,
+			"optimistic": false,
+			"calls": [
+				"createTestCrud"
+			]
+		},
+		{
+			"id": "testCrudMutations.update",
+			"file": "src/features/test-crud/queries.ts",
+			"line": 46,
+			"optimistic": false,
+			"calls": [
+				"updateTestCrud"
+			]
+		},
+		{
+			"id": "testCrudMutations.setStatus",
+			"file": "src/features/test-crud/queries.ts",
+			"line": 51,
+			"optimistic": false,
+			"calls": [
+				"setTestCrudStatus"
+			]
+		},
+		{
+			"id": "testCrudMutations.delete",
+			"file": "src/features/test-crud/queries.ts",
+			"line": 56,
+			"optimistic": false,
+			"calls": [
+				"deleteTestCrud"
+			]
+		}
+	],
+	"sites": [
+		{
+			"file": "src/components/crud/use-crud-form.tsx",
+			"line": 71,
+			"layer": "core",
+			"hook": "useMutation",
+			"mutation": "create ?? { mutationFn: unsupported }",
+			"optimistic": false,
+			"class": "optimistic",
+			"calls": []
+		},
+		{
+			"file": "src/components/crud/use-crud-form.tsx",
+			"line": 72,
+			"layer": "core",
+			"hook": "useMutation",
+			"mutation": "update ?? { mutationFn: unsupported }",
+			"optimistic": false,
+			"class": "optimistic",
+			"calls": []
+		},
+		{
+			"file": "src/components/layout/impersonation-banner.tsx",
+			"line": 20,
+			"layer": "core",
+			"hook": "useMutation",
+			"mutation": "inline",
+			"optimistic": false,
+			"class": "access",
+			"calls": []
+		},
+		{
+			"file": "src/features/apps/forms/components/form-builder.tsx",
+			"line": 77,
+			"layer": "apps",
+			"hook": "useMutation",
+			"mutation": "formMutations.save",
+			"optimistic": false,
+			"class": "optimistic",
+			"calls": [
+				"saveForm"
+			]
+		},
+		{
+			"file": "src/features/apps/forms/components/form-builder.tsx",
+			"line": 78,
+			"layer": "apps",
+			"hook": "useMutation",
+			"mutation": "formMutations.status",
+			"optimistic": false,
+			"class": "optimistic",
+			"calls": [
+				"setFormStatus"
+			]
+		},
+		{
+			"file": "src/features/apps/forms/components/forms-home.tsx",
+			"line": 143,
+			"layer": "apps",
+			"hook": "useMutation",
+			"mutation": "formMutations.create",
+			"optimistic": false,
+			"class": "optimistic",
+			"calls": [
+				"createForm"
+			]
+		},
+		{
+			"file": "src/features/apps/forms/components/forms-home.tsx",
+			"line": 196,
+			"layer": "apps",
+			"hook": "useMutation",
+			"mutation": "formMutations.delete",
+			"optimistic": false,
+			"class": "optimistic",
+			"calls": [
+				"deleteForm"
+			]
+		},
+		{
+			"file": "src/features/apps/habits/components/habit-page.tsx",
+			"line": 55,
+			"layer": "apps",
+			"hook": "useMutation",
+			"mutation": "habitMutations.update",
+			"optimistic": false,
+			"class": "optimistic",
+			"calls": [
+				"updateHabit"
+			]
+		},
+		{
+			"file": "src/features/apps/habits/components/habit-page.tsx",
+			"line": 56,
+			"layer": "apps",
+			"hook": "useMutation",
+			"mutation": "habitMutations.delete",
+			"optimistic": false,
+			"class": "optimistic",
+			"calls": [
+				"deleteHabit"
+			]
+		},
+		{
+			"file": "src/features/apps/habits/components/habits-home.tsx",
+			"line": 146,
+			"layer": "apps",
+			"hook": "useMutation",
+			"mutation": "habitMutations.create",
+			"optimistic": false,
+			"class": "optimistic",
+			"calls": [
+				"createHabit"
+			]
+		},
+		{
+			"file": "src/features/apps/habits/components/habits-home.tsx",
+			"line": 147,
+			"layer": "apps",
+			"hook": "useMutation",
+			"mutation": "habitMutations.update",
+			"optimistic": false,
+			"class": "optimistic",
+			"calls": [
+				"updateHabit"
+			]
+		},
+		{
+			"file": "src/features/apps/habits/components/habits-home.tsx",
+			"line": 148,
+			"layer": "apps",
+			"hook": "useMutation",
+			"mutation": "habitMutations.delete",
+			"optimistic": false,
+			"class": "optimistic",
+			"calls": [
+				"deleteHabit"
+			]
+		},
+		{
+			"file": "src/features/apps/links/admin/components/links-moderation.tsx",
+			"line": 33,
+			"layer": "apps",
+			"hook": "useCrudMutation",
+			"mutation": "linkModerationMutations.block",
+			"optimistic": true,
+			"class": "access",
+			"calls": [
+				"setLinksBlocked"
+			]
+		},
+		{
+			"file": "src/features/apps/links/admin/components/links-moderation.tsx",
+			"line": 41,
+			"layer": "apps",
+			"hook": "useCrudMutation",
+			"mutation": "linkModerationMutations.delete",
+			"optimistic": true,
+			"class": "optimistic",
+			"calls": [
+				"deleteModeratedLinks"
+			]
+		},
+		{
+			"file": "src/features/apps/links/components/links-home.tsx",
+			"line": 131,
+			"layer": "apps",
+			"hook": "useMutation",
+			"mutation": "linkMutations.create",
+			"optimistic": false,
+			"class": "optimistic",
+			"calls": [
+				"createLink"
+			]
+		},
+		{
+			"file": "src/features/apps/links/components/links-home.tsx",
+			"line": 132,
+			"layer": "apps",
+			"hook": "useMutation",
+			"mutation": "linkMutations.update",
+			"optimistic": true,
+			"class": "optimistic",
+			"calls": [
+				"updateLink"
+			]
+		},
+		{
+			"file": "src/features/apps/links/components/links-home.tsx",
+			"line": 133,
+			"layer": "apps",
+			"hook": "useMutation",
+			"mutation": "linkMutations.delete",
+			"optimistic": true,
+			"class": "optimistic",
+			"calls": [
+				"deleteLink"
+			]
+		},
+		{
+			"file": "src/features/apps/notes/components/note-editor.tsx",
+			"line": 121,
+			"layer": "apps",
+			"hook": "useMutation",
+			"mutation": "noteMutations.share",
+			"optimistic": false,
+			"class": "optimistic",
+			"calls": [
+				"shareNote"
+			]
+		},
+		{
+			"file": "src/features/apps/notes/components/note-editor.tsx",
+			"line": 122,
+			"layer": "apps",
+			"hook": "useMutation",
+			"mutation": "noteMutations.unshare",
+			"optimistic": false,
+			"class": "optimistic",
+			"calls": [
+				"unshareNote"
+			]
+		},
+		{
+			"file": "src/features/apps/notes/components/note-editor.tsx",
+			"line": 201,
+			"layer": "apps",
+			"hook": "useMutation",
+			"mutation": "inline",
+			"optimistic": false,
+			"class": "optimistic",
+			"calls": [
+				"deleteNote"
+			]
+		},
+		{
+			"file": "src/features/chaal/admin/blocks/block-list.tsx",
+			"line": 97,
+			"layer": "chaal",
+			"hook": "useCrudMutation",
+			"mutation": "chaalAdminMutations.unblock",
+			"optimistic": true,
+			"class": "access",
+			"calls": [
+				"unblockChaal"
+			]
+		},
+		{
+			"file": "src/features/chaal/admin/connections/connection-list.tsx",
+			"line": 186,
+			"layer": "chaal",
+			"hook": "useCrudMutation",
+			"mutation": "chaalAdminMutations.revokeConnections",
+			"optimistic": true,
+			"class": "irreversible",
+			"calls": [
+				"revokeChaalConnections"
+			]
+		},
+		{
+			"file": "src/features/chaal/admin/curation/curation-page.tsx",
+			"line": 84,
+			"layer": "chaal",
+			"hook": "useCrudMutation",
+			"mutation": "chaalAdminMutations.reorderFeatured",
+			"optimistic": false,
+			"class": "optimistic",
+			"calls": [
+				"reorderChaalFeatured"
+			]
+		},
+		{
+			"file": "src/features/chaal/admin/curation/curation-page.tsx",
+			"line": 85,
+			"layer": "chaal",
+			"hook": "useCrudMutation",
+			"mutation": "chaalAdminMutations.deleteFeatured",
+			"optimistic": false,
+			"class": "optimistic",
+			"calls": [
+				"deleteChaalFeatured"
+			]
+		},
+		{
+			"file": "src/features/chaal/admin/curation/curation-page.tsx",
+			"line": 187,
+			"layer": "chaal",
+			"hook": "useCrudMutation",
+			"mutation": "chaalAdminMutations.saveSections",
+			"optimistic": false,
+			"class": "optimistic",
+			"calls": [
+				"saveChaalHomeSections"
+			]
+		},
+		{
+			"file": "src/features/chaal/admin/curation/curation-page.tsx",
+			"line": 252,
+			"layer": "chaal",
+			"hook": "useCrudMutation",
+			"mutation": "chaalAdminMutations.saveAnnouncement",
+			"optimistic": false,
+			"class": "optimistic",
+			"calls": [
+				"saveChaalAnnouncement"
+			]
+		},
+		{
+			"file": "src/features/chaal/admin/health/health-page.tsx",
+			"line": 86,
+			"layer": "chaal",
+			"hook": "useCrudMutation",
+			"mutation": "chaalAdminMutations.ping",
+			"optimistic": false,
+			"class": "irreversible",
+			"calls": []
+		},
+		{
+			"file": "src/features/chaal/admin/lab/lab-page.tsx",
+			"line": 187,
+			"layer": "chaal",
+			"hook": "useMutation",
+			"mutation": "inline",
+			"optimistic": false,
+			"class": "irreversible",
+			"calls": []
+		},
+		{
+			"file": "src/features/chaal/admin/lab/lab-page.tsx",
+			"line": 381,
+			"layer": "chaal",
+			"hook": "useMutation",
+			"mutation": "inline",
+			"optimistic": false,
+			"class": "irreversible",
+			"calls": []
+		},
+		{
+			"file": "src/features/chaal/admin/settings/settings-page.tsx",
+			"line": 300,
+			"layer": "chaal",
+			"hook": "useCrudMutation",
+			"mutation": "chaalAdminMutations.setMaintenance",
+			"optimistic": false,
+			"class": "optimistic",
+			"calls": [
+				"setChaalMaintenance"
+			]
+		},
+		{
+			"file": "src/features/chaal/admin/settings/settings-page.tsx",
+			"line": 355,
+			"layer": "chaal",
+			"hook": "useCrudMutation",
+			"mutation": "chaalAdminMutations.purgeCache",
+			"optimistic": false,
+			"class": "irreversible",
+			"calls": []
+		},
+		{
+			"file": "src/features/chaal/analysis/analysis-page.tsx",
+			"line": 126,
+			"layer": "chaal",
+			"hook": "useMutation",
+			"mutation": "saveAnalysisMutationOptions",
+			"optimistic": false,
+			"class": "irreversible",
+			"calls": [
+				"saveChaalAnalysis"
+			]
+		},
+		{
+			"file": "src/features/chaal/analysis/my-analyses.tsx",
+			"line": 39,
+			"layer": "chaal",
+			"hook": "useMutation",
+			"mutation": "deleteAnalysisMutationOptions",
+			"optimistic": false,
+			"class": "irreversible",
+			"calls": [
+				"deleteChaalAnalysis"
+			]
+		},
+		{
+			"file": "src/features/chaal/connect/use-disconnect.ts",
+			"line": 13,
+			"layer": "chaal",
+			"hook": "useMutation",
+			"mutation": "inline",
+			"optimistic": false,
+			"class": "irreversible",
+			"calls": []
+		},
+		{
+			"file": "src/features/chaal/events/tournament-page.tsx",
+			"line": 255,
+			"layer": "chaal",
+			"hook": "useMutation",
+			"mutation": "inline",
+			"optimistic": false,
+			"class": "credentials",
+			"calls": []
+		},
+		{
+			"file": "src/features/chaal/events/tournament-page.tsx",
+			"line": 320,
+			"layer": "chaal",
+			"hook": "useMutation",
+			"mutation": "inline",
+			"optimistic": false,
+			"class": "irreversible",
+			"calls": []
+		},
+		{
+			"file": "src/features/chaal/players/player-page.tsx",
+			"line": 243,
+			"layer": "chaal",
+			"hook": "useMutation",
+			"mutation": "inline",
+			"optimistic": true,
+			"class": "irreversible",
+			"calls": []
+		},
+		{
+			"file": "src/features/chaal/studies/save-dialog.tsx",
+			"line": 50,
+			"layer": "chaal",
+			"hook": "useMutation",
+			"mutation": "inline",
+			"optimistic": false,
+			"class": "irreversible",
+			"calls": []
+		},
+		{
+			"file": "src/features/chaal/teams/team-page.tsx",
+			"line": 189,
+			"layer": "chaal",
+			"hook": "useMutation",
+			"mutation": "inline",
+			"optimistic": false,
+			"class": "credentials",
+			"calls": []
+		},
+		{
+			"file": "src/features/chaal/teams/team-page.tsx",
+			"line": 234,
+			"layer": "chaal",
+			"hook": "useMutation",
+			"mutation": "inline",
+			"optimistic": false,
+			"class": "irreversible",
+			"calls": []
+		},
+		{
+			"file": "src/features/kharcha/admin/senders/sender-list.tsx",
+			"line": 66,
+			"layer": "kharcha",
+			"hook": "useCrudMutation",
+			"mutation": "kharchaAdminMutations.suspend",
+			"optimistic": true,
+			"class": "access",
+			"calls": [
+				"suspendKharchaSender"
+			]
+		},
+		{
+			"file": "src/features/kharcha/budgets/budgets-tab.tsx",
+			"line": 41,
+			"layer": "kharcha",
+			"hook": "useMutation",
+			"mutation": "inline",
+			"optimistic": false,
+			"class": "optimistic",
+			"calls": []
+		},
+		{
+			"file": "src/features/kharcha/expenses/expense-dialog.tsx",
+			"line": 112,
+			"layer": "kharcha",
+			"hook": "useMutation",
+			"mutation": "kharchaMutations.createExpense",
+			"optimistic": false,
+			"class": "optimistic",
+			"calls": [
+				"createKharchaExpense"
+			]
+		},
+		{
+			"file": "src/features/kharcha/expenses/expense-dialog.tsx",
+			"line": 113,
+			"layer": "kharcha",
+			"hook": "useMutation",
+			"mutation": "kharchaMutations.updateExpense",
+			"optimistic": false,
+			"class": "optimistic",
+			"calls": [
+				"updateKharchaExpense"
+			]
+		},
+		{
+			"file": "src/features/kharcha/expenses/expense-panel.tsx",
+			"line": 40,
+			"layer": "kharcha",
+			"hook": "useMutation",
+			"mutation": "kharchaMutations.trashExpense",
+			"optimistic": false,
+			"class": "optimistic",
+			"calls": [
+				"restoreKharchaExpense",
+				"deleteKharchaExpense"
+			]
+		},
+		{
+			"file": "src/features/kharcha/expenses/expense-panel.tsx",
+			"line": 41,
+			"layer": "kharcha",
+			"hook": "useMutation",
+			"mutation": "kharchaMutations.markDuplicate",
+			"optimistic": false,
+			"class": "optimistic",
+			"calls": [
+				"markKharchaDuplicate"
+			]
+		},
+		{
+			"file": "src/features/kharcha/groups/group-balances.tsx",
+			"line": 138,
+			"layer": "kharcha",
+			"hook": "useMutation",
+			"mutation": "kharchaMutations.archiveGroup",
+			"optimistic": false,
+			"class": "optimistic",
+			"calls": [
+				"archiveKharchaGroup"
+			]
+		},
+		{
+			"file": "src/features/kharcha/groups/group-settings.tsx",
+			"line": 80,
+			"layer": "kharcha",
+			"hook": "useMutation",
+			"mutation": "kharchaMutations.updateGroup",
+			"optimistic": false,
+			"class": "optimistic",
+			"calls": [
+				"updateKharchaGroup"
+			]
+		},
+		{
+			"file": "src/features/kharcha/groups/group-settings.tsx",
+			"line": 202,
+			"layer": "kharcha",
+			"hook": "useMutation",
+			"mutation": "kharchaMutations.removeMember",
+			"optimistic": false,
+			"class": "optimistic",
+			"calls": [
+				"removeKharchaGroupMember"
+			]
+		},
+		{
+			"file": "src/features/kharcha/groups/group-settings.tsx",
+			"line": 337,
+			"layer": "kharcha",
+			"hook": "useMutation",
+			"mutation": "kharchaMutations.addMember",
+			"optimistic": false,
+			"class": "optimistic",
+			"calls": [
+				"addKharchaGroupMember"
+			]
+		},
+		{
+			"file": "src/features/kharcha/groups/group-settings.tsx",
+			"line": 338,
+			"layer": "kharcha",
+			"hook": "useMutation",
+			"mutation": "kharchaMutations.addNewMember",
+			"optimistic": false,
+			"class": "optimistic",
+			"calls": [
+				"addKharchaNewGroupMember"
+			]
+		},
+		{
+			"file": "src/features/kharcha/groups/group-settings.tsx",
+			"line": 414,
+			"layer": "kharcha",
+			"hook": "useMutation",
+			"mutation": "kharchaMutations.archiveGroup",
+			"optimistic": false,
+			"class": "optimistic",
+			"calls": [
+				"archiveKharchaGroup"
+			]
+		},
+		{
+			"file": "src/features/kharcha/groups/group-settings.tsx",
+			"line": 415,
+			"layer": "kharcha",
+			"hook": "useMutation",
+			"mutation": "kharchaMutations.leaveGroup",
+			"optimistic": false,
+			"class": "optimistic",
+			"calls": [
+				"leaveKharchaGroup"
+			]
+		},
+		{
+			"file": "src/features/kharcha/home/onboarding.tsx",
+			"line": 33,
+			"layer": "kharcha",
+			"hook": "useMutation",
+			"mutation": "kharchaMutations.onboard",
+			"optimistic": false,
+			"class": "optimistic",
+			"calls": [
+				"completeKharchaOnboarding"
+			]
+		},
+		{
+			"file": "src/features/kharcha/home/todos.tsx",
+			"line": 85,
+			"layer": "kharcha",
+			"hook": "useMutation",
+			"mutation": "inline",
+			"optimistic": false,
+			"class": "optimistic",
+			"calls": []
+		},
+		{
+			"file": "src/features/kharcha/home/todos.tsx",
+			"line": 151,
+			"layer": "kharcha",
+			"hook": "useMutation",
+			"mutation": "kharchaMutations.deleteDraft",
+			"optimistic": false,
+			"class": "optimistic",
+			"calls": [
+				"deleteKharchaDraft"
+			]
+		},
+		{
+			"file": "src/features/kharcha/home/updates.tsx",
+			"line": 40,
+			"layer": "kharcha",
+			"hook": "useMutation",
+			"mutation": "inline",
+			"optimistic": false,
+			"class": "optimistic",
+			"calls": []
+		},
+		{
+			"file": "src/features/kharcha/join/join-page.tsx",
+			"line": 39,
+			"layer": "kharcha",
+			"hook": "useMutation",
+			"mutation": "kharchaMutations.acceptInvite",
+			"optimistic": false,
+			"class": "irreversible",
+			"calls": [
+				"acceptKharchaInvite"
+			]
+		},
+		{
+			"file": "src/features/kharcha/people/people-page.tsx",
+			"line": 44,
+			"layer": "kharcha",
+			"hook": "useMutation",
+			"mutation": "inline",
+			"optimistic": false,
+			"class": "optimistic",
+			"calls": []
+		},
+		{
+			"file": "src/features/kharcha/recurring/recurring-list.tsx",
+			"line": 46,
+			"layer": "kharcha",
+			"hook": "useMutation",
+			"mutation": "inline",
+			"optimistic": false,
+			"class": "optimistic",
+			"calls": []
+		},
+		{
+			"file": "src/features/kharcha/settings/notify-form.tsx",
+			"line": 46,
+			"layer": "kharcha",
+			"hook": "useMutation",
+			"mutation": "kharchaMutations.notifySettings",
+			"optimistic": false,
+			"class": "optimistic",
+			"calls": [
+				"updateKharchaNotifySettings"
+			]
+		},
+		{
+			"file": "src/features/kharcha/settings/profile-form.tsx",
+			"line": 29,
+			"layer": "kharcha",
+			"hook": "useMutation",
+			"mutation": "kharchaMutations.updateProfile",
+			"optimistic": false,
+			"class": "optimistic",
+			"calls": [
+				"updateKharchaProfile"
+			]
+		},
+		{
+			"file": "src/features/kharcha/settings/settings-page.tsx",
+			"line": 73,
+			"layer": "kharcha",
+			"hook": "useMutation",
+			"mutation": "inline",
+			"optimistic": false,
+			"class": "optimistic",
+			"calls": []
+		},
+		{
+			"file": "src/features/kharcha/settle/settle-dialog.tsx",
+			"line": 128,
+			"layer": "kharcha",
+			"hook": "useMutation",
+			"mutation": "kharchaMutations.createPayment",
+			"optimistic": false,
+			"class": "optimistic",
+			"calls": [
+				"createKharchaPayment"
+			]
+		},
+		{
+			"file": "src/features/kharcha/settle/settle-dialog.tsx",
+			"line": 129,
+			"layer": "kharcha",
+			"hook": "useMutation",
+			"mutation": "kharchaMutations.updatePayment",
+			"optimistic": false,
+			"class": "optimistic",
+			"calls": [
+				"updateKharchaPayment"
+			]
+		},
+		{
+			"file": "src/features/kharcha/settle/settle-dialog.tsx",
+			"line": 130,
+			"layer": "kharcha",
+			"hook": "useMutation",
+			"mutation": "kharchaMutations.trashPayment",
+			"optimistic": false,
+			"class": "optimistic",
+			"calls": [
+				"restoreKharchaPayment",
+				"deleteKharchaPayment"
+			]
+		},
+		{
+			"file": "src/features/kharcha/shell/create-dialogs.tsx",
+			"line": 62,
+			"layer": "kharcha",
+			"hook": "useMutation",
+			"mutation": "kharchaMutations.createDraft",
+			"optimistic": false,
+			"class": "optimistic",
+			"calls": [
+				"createKharchaDraft"
+			]
+		},
+		{
+			"file": "src/features/kharcha/shell/create-dialogs.tsx",
+			"line": 122,
+			"layer": "kharcha",
+			"hook": "useMutation",
+			"mutation": "kharchaMutations.addFriend",
+			"optimistic": false,
+			"class": "optimistic",
+			"calls": [
+				"addKharchaFriend"
+			]
+		},
+		{
+			"file": "src/features/kharcha/shell/create-dialogs.tsx",
+			"line": 206,
+			"layer": "kharcha",
+			"hook": "useMutation",
+			"mutation": "kharchaMutations.createGroup",
+			"optimistic": false,
+			"class": "optimistic",
+			"calls": [
+				"createKharchaGroup"
+			]
+		},
+		{
+			"file": "src/features/kharcha/spend/import-page.tsx",
+			"line": 69,
+			"layer": "kharcha",
+			"hook": "useMutation",
+			"mutation": "kharchaMutations.importSpend",
+			"optimistic": false,
+			"class": "irreversible",
+			"calls": [
+				"importKharchaSpend"
+			]
+		},
+		{
+			"file": "src/features/kharcha/spend/saved-dialogs.tsx",
+			"line": 50,
+			"layer": "kharcha",
+			"hook": "useMutation",
+			"mutation": "kharchaMutations.saveSearch",
+			"optimistic": false,
+			"class": "optimistic",
+			"calls": [
+				"saveKharchaSearch"
+			]
+		},
+		{
+			"file": "src/features/kharcha/spend/saved-dialogs.tsx",
+			"line": 95,
+			"layer": "kharcha",
+			"hook": "useMutation",
+			"mutation": "kharchaMutations.reorderSearches",
+			"optimistic": false,
+			"class": "optimistic",
+			"calls": [
+				"reorderKharchaSearches"
+			]
+		},
+		{
+			"file": "src/features/kharcha/spend/saved-dialogs.tsx",
+			"line": 96,
+			"layer": "kharcha",
+			"hook": "useMutation",
+			"mutation": "kharchaMutations.deleteSearch",
+			"optimistic": false,
+			"class": "optimistic",
+			"calls": [
+				"deleteKharchaSearch"
+			]
+		},
+		{
+			"file": "src/features/kharcha/spend/saved-dialogs.tsx",
+			"line": 198,
+			"layer": "kharcha",
+			"hook": "useMutation",
+			"mutation": "kharchaMutations.renameSearch",
+			"optimistic": false,
+			"class": "optimistic",
+			"calls": [
+				"renameKharchaSearch"
+			]
+		},
+		{
+			"file": "src/features/kharcha/spend/spend-table.tsx",
+			"line": 141,
+			"layer": "kharcha",
+			"hook": "useMutation",
+			"mutation": "kharchaMutations.bulk",
+			"optimistic": false,
+			"class": "optimistic",
+			"calls": [
+				"bulkKharchaExpenses"
+			]
+		},
+		{
+			"file": "src/features/kharcha/threads/comment-line.tsx",
+			"line": 76,
+			"layer": "kharcha",
+			"hook": "useMutation",
+			"mutation": "inline",
+			"optimistic": false,
+			"class": "optimistic",
+			"calls": []
+		},
+		{
+			"file": "src/features/kharcha/threads/comment-line.tsx",
+			"line": 77,
+			"layer": "kharcha",
+			"hook": "useMutation",
+			"mutation": "inline",
+			"optimistic": false,
+			"class": "optimistic",
+			"calls": []
+		},
+		{
+			"file": "src/features/kharcha/threads/comment-line.tsx",
+			"line": 78,
+			"layer": "kharcha",
+			"hook": "useMutation",
+			"mutation": "inline",
+			"optimistic": false,
+			"class": "optimistic",
+			"calls": []
+		},
+		{
+			"file": "src/features/kharcha/threads/composer.tsx",
+			"line": 166,
+			"layer": "kharcha",
+			"hook": "useMutation",
+			"mutation": "inline",
+			"optimistic": false,
+			"class": "optimistic",
+			"calls": []
+		},
+		{
+			"file": "src/features/kharcha/threads/friend-dialogs.tsx",
+			"line": 61,
+			"layer": "kharcha",
+			"hook": "useMutation",
+			"mutation": "kharchaMutations.updateFriend",
+			"optimistic": false,
+			"class": "optimistic",
+			"calls": [
+				"updateKharchaFriend"
+			]
+		},
+		{
+			"file": "src/features/kharcha/threads/friend-dialogs.tsx",
+			"line": 103,
+			"layer": "kharcha",
+			"hook": "useMutation",
+			"mutation": "kharchaMutations.setFriendEmail",
+			"optimistic": false,
+			"class": "irreversible",
+			"calls": [
+				"setKharchaFriendEmail"
+			]
+		},
+		{
+			"file": "src/features/kharcha/threads/friend-dialogs.tsx",
+			"line": 157,
+			"layer": "kharcha",
+			"hook": "useMutation",
+			"mutation": "kharchaMutations.invite",
+			"optimistic": false,
+			"class": "irreversible",
+			"calls": [
+				"inviteKharchaFriend"
+			]
+		},
+		{
+			"file": "src/features/kharcha/threads/friend-thread.tsx",
+			"line": 66,
+			"layer": "kharcha",
+			"hook": "useMutation",
+			"mutation": "kharchaMutations.updateFriend",
+			"optimistic": false,
+			"class": "optimistic",
+			"calls": [
+				"updateKharchaFriend"
+			]
+		},
+		{
+			"file": "src/features/kharcha/threads/friend-thread.tsx",
+			"line": 67,
+			"layer": "kharcha",
+			"hook": "useMutation",
+			"mutation": "kharchaMutations.remind",
+			"optimistic": false,
+			"class": "irreversible",
+			"calls": [
+				"remindKharchaFriend"
+			]
+		},
+		{
+			"file": "src/features/kharcha/threads/use-read.ts",
+			"line": 13,
+			"layer": "kharcha",
+			"hook": "useMutation",
+			"mutation": "kharchaMutations.readThread",
+			"optimistic": false,
+			"class": "optimistic",
+			"calls": [
+				"markKharchaThreadRead"
+			]
+		},
+		{
+			"file": "src/features/media/components/media-alt-dialog.tsx",
+			"line": 14,
+			"layer": "core",
+			"hook": "useCrudMutation",
+			"mutation": "mediaMutations.setAlt",
+			"optimistic": false,
+			"class": "optimistic",
+			"calls": [
+				"updateMediaAlt"
+			]
+		},
+		{
+			"file": "src/features/media/components/media-library.tsx",
+			"line": 55,
+			"layer": "core",
+			"hook": "useCrudMutation",
+			"mutation": "mediaMutations.delete",
+			"optimistic": true,
+			"class": "optimistic",
+			"calls": [
+				"deleteMedia"
+			]
+		},
+		{
+			"file": "src/features/parda/admin/curation/billboard-list.tsx",
+			"line": 119,
+			"layer": "parda",
+			"hook": "useCrudMutation",
+			"mutation": "pardaAdminMutations.deleteBillboards",
+			"optimistic": true,
+			"class": "optimistic",
+			"calls": [
+				"deletePardaBillboards"
+			]
+		},
+		{
+			"file": "src/features/parda/admin/curation/billboard-reorder-dialog.tsx",
+			"line": 35,
+			"layer": "parda",
+			"hook": "useCrudMutation",
+			"mutation": "pardaAdminMutations.reorderBillboards",
+			"optimistic": false,
+			"class": "optimistic",
+			"calls": [
+				"reorderPardaBillboards"
+			]
+		},
+		{
+			"file": "src/features/parda/admin/curation/collection-list.tsx",
+			"line": 95,
+			"layer": "parda",
+			"hook": "useCrudMutation",
+			"mutation": "pardaAdminMutations.deleteCollections",
+			"optimistic": true,
+			"class": "optimistic",
+			"calls": [
+				"deletePardaCollections"
+			]
+		},
+		{
+			"file": "src/features/parda/admin/curation/layout-page.tsx",
+			"line": 63,
+			"layer": "parda",
+			"hook": "useCrudMutation",
+			"mutation": "pardaAdminMutations.saveLayout",
+			"optimistic": false,
+			"class": "optimistic",
+			"calls": [
+				"savePardaLayout"
+			]
+		},
+		{
+			"file": "src/features/parda/admin/player-lab/player-lab-page.tsx",
+			"line": 157,
+			"layer": "parda",
+			"hook": "useMutation",
+			"mutation": "openLabPlayerMutationOptions",
+			"optimistic": false,
+			"class": "optimistic",
+			"calls": [
+				"openPardaLabPlayer"
+			]
+		},
+		{
+			"file": "src/features/parda/admin/reports/report-list.tsx",
+			"line": 123,
+			"layer": "parda",
+			"hook": "useCrudMutation",
+			"mutation": "pardaAdminMutations.setReportStatus",
+			"optimistic": true,
+			"class": "optimistic",
+			"calls": [
+				"setPardaReportStatus"
+			]
+		},
+		{
+			"file": "src/features/parda/admin/settings/playback-switch.tsx",
+			"line": 24,
+			"layer": "parda",
+			"hook": "useCrudMutation",
+			"mutation": "pardaAdminMutations.setPlayback",
+			"optimistic": false,
+			"class": "optimistic",
+			"calls": [
+				"setPardaPlayback"
+			]
+		},
+		{
+			"file": "src/features/parda/admin/settings/settings-page.tsx",
+			"line": 106,
+			"layer": "parda",
+			"hook": "useCrudMutation",
+			"mutation": "pardaAdminMutations.purgeCache",
+			"optimistic": false,
+			"class": "irreversible",
+			"calls": []
+		},
+		{
+			"file": "src/features/parda/admin/sources/source-list.tsx",
+			"line": 261,
+			"layer": "parda",
+			"hook": "useCrudMutation",
+			"mutation": "pardaAdminMutations.deleteSources",
+			"optimistic": true,
+			"class": "optimistic",
+			"calls": [
+				"deletePardaSources"
+			]
+		},
+		{
+			"file": "src/features/parda/admin/sources/source-list.tsx",
+			"line": 265,
+			"layer": "parda",
+			"hook": "useCrudMutation",
+			"mutation": "pardaAdminMutations.setSourceState",
+			"optimistic": true,
+			"class": "optimistic",
+			"calls": [
+				"setPardaSourceState"
+			]
+		},
+		{
+			"file": "src/features/parda/admin/sources/source-order-switch.tsx",
+			"line": 26,
+			"layer": "parda",
+			"hook": "useCrudMutation",
+			"mutation": "pardaAdminMutations.setSourceOrder",
+			"optimistic": false,
+			"class": "optimistic",
+			"calls": [
+				"setPardaSourceOrder"
+			]
+		},
+		{
+			"file": "src/features/parda/admin/sources/source-reorder-dialog.tsx",
+			"line": 35,
+			"layer": "parda",
+			"hook": "useCrudMutation",
+			"mutation": "pardaAdminMutations.reorderSources",
+			"optimistic": false,
+			"class": "optimistic",
+			"calls": [
+				"reorderPardaSources"
+			]
+		},
+		{
+			"file": "src/features/parda/admin/titles/takedown-list.tsx",
+			"line": 96,
+			"layer": "parda",
+			"hook": "useCrudMutation",
+			"mutation": "pardaAdminMutations.unblockTitles",
+			"optimistic": true,
+			"class": "access",
+			"calls": [
+				"unblockPardaTitles"
+			]
+		},
+		{
+			"file": "src/features/portfolio/admin/components/messages-inbox.tsx",
+			"line": 78,
+			"layer": "portfolio",
+			"hook": "useCrudMutation",
+			"mutation": "messageMutations.setState",
+			"optimistic": true,
+			"class": "optimistic",
+			"calls": [
+				"setContactMessageState"
+			]
+		},
+		{
+			"file": "src/features/portfolio/admin/components/messages-inbox.tsx",
+			"line": 82,
+			"layer": "portfolio",
+			"hook": "useCrudMutation",
+			"mutation": "messageMutations.delete",
+			"optimistic": true,
+			"class": "optimistic",
+			"calls": [
+				"deleteContactMessages"
+			]
+		},
+		{
+			"file": "src/features/portfolio/admin/components/ordered-section.tsx",
+			"line": 67,
+			"layer": "portfolio",
+			"hook": "useCrudMutation",
+			"mutation": "queries.reorder",
+			"optimistic": true,
+			"class": "optimistic",
+			"calls": []
+		},
+		{
+			"file": "src/features/portfolio/admin/components/ordered-section.tsx",
+			"line": 77,
+			"layer": "portfolio",
+			"hook": "useCrudMutation",
+			"mutation": "queries.delete",
+			"optimistic": true,
+			"class": "optimistic",
+			"calls": []
+		},
+		{
+			"file": "src/features/portfolio/admin/components/post-list.tsx",
+			"line": 49,
+			"layer": "portfolio",
+			"hook": "useCrudMutation",
+			"mutation": "postMutations.delete",
+			"optimistic": true,
+			"class": "optimistic",
+			"calls": [
+				"deletePosts"
+			]
+		},
+		{
+			"file": "src/features/portfolio/admin/components/post-list.tsx",
+			"line": 53,
+			"layer": "portfolio",
+			"hook": "useCrudMutation",
+			"mutation": "postMutations.setStatus",
+			"optimistic": true,
+			"class": "optimistic",
+			"calls": [
+				"setPostStatus"
+			]
+		},
+		{
+			"file": "src/features/portfolio/admin/components/project-list.tsx",
+			"line": 51,
+			"layer": "portfolio",
+			"hook": "useCrudMutation",
+			"mutation": "projectMutations.delete",
+			"optimistic": true,
+			"class": "optimistic",
+			"calls": [
+				"deleteProjects"
+			]
+		},
+		{
+			"file": "src/features/portfolio/admin/components/project-list.tsx",
+			"line": 55,
+			"layer": "portfolio",
+			"hook": "useCrudMutation",
+			"mutation": "projectMutations.setStatus",
+			"optimistic": true,
+			"class": "optimistic",
+			"calls": [
+				"setProjectStatus"
+			]
+		},
+		{
+			"file": "src/features/portfolio/admin/components/project-reorder-dialog.tsx",
+			"line": 33,
+			"layer": "portfolio",
+			"hook": "useCrudMutation",
+			"mutation": "projectMutations.reorder",
+			"optimistic": false,
+			"class": "optimistic",
+			"calls": [
+				"reorderProjects"
+			]
+		},
+		{
+			"file": "src/features/portfolio/components/contact/contact-form.tsx",
+			"line": 36,
+			"layer": "portfolio",
+			"hook": "useMutation",
+			"mutation": "inline",
+			"optimistic": false,
+			"class": "optimistic",
+			"calls": [
+				"submitContactMessage"
+			]
+		},
+		{
+			"file": "src/features/rbac/components/permission-matrix.tsx",
+			"line": 54,
+			"layer": "core",
+			"hook": "useCrudMutation",
+			"mutation": "roleMutations.permissions",
+			"optimistic": true,
+			"class": "access",
+			"calls": [
+				"updateRolePermissions"
+			]
+		},
+		{
+			"file": "src/features/rbac/components/roles-list.tsx",
+			"line": 31,
+			"layer": "core",
+			"hook": "useCrudMutation",
+			"mutation": "roleMutations.delete",
+			"optimistic": true,
+			"class": "access",
+			"calls": [
+				"deleteRole"
+			]
+		},
+		{
+			"file": "src/features/rbac/components/users-list.tsx",
+			"line": 50,
+			"layer": "core",
+			"hook": "useCrudMutation",
+			"mutation": "userMutations.ban",
+			"optimistic": true,
+			"class": "access",
+			"calls": [
+				"setUserBanned"
+			]
+		},
+		{
+			"file": "src/features/rbac/components/users-list.tsx",
+			"line": 57,
+			"layer": "core",
+			"hook": "useCrudMutation",
+			"mutation": "userMutations.revokeSessions",
+			"optimistic": false,
+			"class": "credentials",
+			"calls": [
+				"revokeUserSessions"
+			]
+		},
+		{
+			"file": "src/features/rbac/components/users-list.tsx",
+			"line": 60,
+			"layer": "core",
+			"hook": "useCrudMutation",
+			"mutation": "userMutations.impersonate",
+			"optimistic": false,
+			"class": "access",
+			"calls": [
+				"impersonateUser"
+			]
+		},
+		{
+			"file": "src/features/taskline/admin/automations/automations-page.tsx",
+			"line": 21,
+			"layer": "taskline",
+			"hook": "useCrudMutation",
+			"mutation": "tasklineAdminMutations.createAutomation",
+			"optimistic": false,
+			"class": "optimistic",
+			"calls": [
+				"createTasklineWorkspaceAutomation"
+			]
+		},
+		{
+			"file": "src/features/taskline/admin/automations/automations-page.tsx",
+			"line": 22,
+			"layer": "taskline",
+			"hook": "useCrudMutation",
+			"mutation": "tasklineAdminMutations.updateAutomation",
+			"optimistic": false,
+			"class": "optimistic",
+			"calls": [
+				"updateTasklineWorkspaceAutomation"
+			]
+		},
+		{
+			"file": "src/features/taskline/admin/automations/automations-page.tsx",
+			"line": 23,
+			"layer": "taskline",
+			"hook": "useCrudMutation",
+			"mutation": "tasklineAdminMutations.toggleAutomation",
+			"optimistic": false,
+			"class": "optimistic",
+			"calls": [
+				"toggleTasklineWorkspaceAutomation"
+			]
+		},
+		{
+			"file": "src/features/taskline/admin/automations/automations-page.tsx",
+			"line": 24,
+			"layer": "taskline",
+			"hook": "useCrudMutation",
+			"mutation": "tasklineAdminMutations.deleteAutomation",
+			"optimistic": false,
+			"class": "optimistic",
+			"calls": [
+				"deleteTasklineWorkspaceAutomation"
+			]
+		},
+		{
+			"file": "src/features/taskline/admin/fields/fields-page.tsx",
+			"line": 17,
+			"layer": "taskline",
+			"hook": "useCrudMutation",
+			"mutation": "tasklineAdminMutations.createField",
+			"optimistic": false,
+			"class": "optimistic",
+			"calls": [
+				"createTasklineWorkspaceField"
+			]
+		},
+		{
+			"file": "src/features/taskline/admin/fields/fields-page.tsx",
+			"line": 18,
+			"layer": "taskline",
+			"hook": "useCrudMutation",
+			"mutation": "tasklineAdminMutations.updateField",
+			"optimistic": false,
+			"class": "optimistic",
+			"calls": [
+				"updateTasklineWorkspaceField"
+			]
+		},
+		{
+			"file": "src/features/taskline/admin/fields/fields-page.tsx",
+			"line": 19,
+			"layer": "taskline",
+			"hook": "useCrudMutation",
+			"mutation": "tasklineAdminMutations.deleteField",
+			"optimistic": false,
+			"class": "optimistic",
+			"calls": [
+				"deleteTasklineWorkspaceField"
+			]
+		},
+		{
+			"file": "src/features/taskline/admin/members/invitation-list.tsx",
+			"line": 62,
+			"layer": "taskline",
+			"hook": "useCrudMutation",
+			"mutation": "tasklineAdminMutations.resendInvitation",
+			"optimistic": false,
+			"class": "irreversible",
+			"calls": [
+				"resendTasklineInvitation"
+			]
+		},
+		{
+			"file": "src/features/taskline/admin/members/invitation-list.tsx",
+			"line": 64,
+			"layer": "taskline",
+			"hook": "useCrudMutation",
+			"mutation": "tasklineAdminMutations.revokeInvitation",
+			"optimistic": true,
+			"class": "optimistic",
+			"calls": [
+				"revokeTasklineInvitation"
+			]
+		},
+		{
+			"file": "src/features/taskline/admin/members/member-list.tsx",
+			"line": 91,
+			"layer": "taskline",
+			"hook": "useCrudMutation",
+			"mutation": "tasklineAdminMutations.reactivateMember",
+			"optimistic": true,
+			"class": "access",
+			"calls": [
+				"reactivateTasklineMember"
+			]
+		},
+		{
+			"file": "src/features/taskline/admin/projects/project-details.tsx",
+			"line": 115,
+			"layer": "taskline",
+			"hook": "useCrudMutation",
+			"mutation": "tasklineAdminMutations.setProjectState",
+			"optimistic": false,
+			"class": "optimistic",
+			"calls": [
+				"setTasklineAdminProjectState"
+			]
+		},
+		{
+			"file": "src/features/taskline/admin/projects/project-details.tsx",
+			"line": 116,
+			"layer": "taskline",
+			"hook": "useCrudMutation",
+			"mutation": "tasklineAdminMutations.transferLead",
+			"optimistic": false,
+			"class": "optimistic",
+			"calls": [
+				"transferTasklineProjectLead"
+			]
+		},
+		{
+			"file": "src/features/taskline/admin/projects/project-layout.tsx",
+			"line": 57,
+			"layer": "taskline",
+			"hook": "useCrudMutation",
+			"mutation": "tasklineAdminMutations.setProjectArchived",
+			"optimistic": false,
+			"class": "optimistic",
+			"calls": [
+				"setTasklineAdminProjectArchived"
+			]
+		},
+		{
+			"file": "src/features/taskline/admin/projects/project-layout.tsx",
+			"line": 58,
+			"layer": "taskline",
+			"hook": "useCrudMutation",
+			"mutation": "tasklineAdminMutations.exportProject",
+			"optimistic": false,
+			"class": "irreversible",
+			"calls": [
+				"exportTasklineAdminProject"
+			]
+		},
+		{
+			"file": "src/features/taskline/admin/projects/project-list.tsx",
+			"line": 41,
+			"layer": "taskline",
+			"hook": "useCrudMutation",
+			"mutation": "tasklineAdminMutations.setProjectArchived",
+			"optimistic": true,
+			"class": "optimistic",
+			"calls": [
+				"setTasklineAdminProjectArchived"
+			]
+		},
+		{
+			"file": "src/features/taskline/admin/projects/project-tabs.tsx",
+			"line": 47,
+			"layer": "taskline",
+			"hook": "useCrudMutation",
+			"mutation": "tasklineAdminMutations.setProjectMember",
+			"optimistic": false,
+			"class": "access",
+			"calls": [
+				"setTasklineAdminProjectMember"
+			]
+		},
+		{
+			"file": "src/features/taskline/admin/projects/project-tabs.tsx",
+			"line": 48,
+			"layer": "taskline",
+			"hook": "useCrudMutation",
+			"mutation": "tasklineAdminMutations.removeProjectMember",
+			"optimistic": false,
+			"class": "optimistic",
+			"calls": [
+				"removeTasklineAdminProjectMember"
+			]
+		},
+		{
+			"file": "src/features/taskline/admin/templates/save-template-dialog.tsx",
+			"line": 30,
+			"layer": "taskline",
+			"hook": "useCrudMutation",
+			"mutation": "tasklineAdminMutations.saveProjectAsTemplate",
+			"optimistic": false,
+			"class": "optimistic",
+			"calls": [
+				"saveTasklineProjectAsTemplate"
+			]
+		},
+		{
+			"file": "src/features/taskline/admin/templates/template-dialog.tsx",
+			"line": 68,
+			"layer": "taskline",
+			"hook": "useCrudMutation",
+			"mutation": "tasklineAdminMutations.createTemplate",
+			"optimistic": false,
+			"class": "optimistic",
+			"calls": [
+				"createTasklineAdminTemplate"
+			]
+		},
+		{
+			"file": "src/features/taskline/admin/templates/template-dialog.tsx",
+			"line": 69,
+			"layer": "taskline",
+			"hook": "useCrudMutation",
+			"mutation": "tasklineAdminMutations.updateTemplate",
+			"optimistic": false,
+			"class": "optimistic",
+			"calls": [
+				"updateTasklineAdminTemplate"
+			]
+		},
+		{
+			"file": "src/features/taskline/admin/templates/templates-page.tsx",
+			"line": 56,
+			"layer": "taskline",
+			"hook": "useCrudMutation",
+			"mutation": "tasklineAdminMutations.deleteTemplate",
+			"optimistic": true,
+			"class": "optimistic",
+			"calls": [
+				"deleteTasklineAdminTemplate"
+			]
+		},
+		{
+			"file": "src/features/taskline/admin/time/time-dialogs.tsx",
+			"line": 29,
+			"layer": "taskline",
+			"hook": "useCrudMutation",
+			"mutation": "tasklineAdminMutations.updateTimeEntry",
+			"optimistic": false,
+			"class": "optimistic",
+			"calls": [
+				"updateTasklineAdminTimeEntry"
+			]
+		},
+		{
+			"file": "src/features/taskline/admin/time/time-dialogs.tsx",
+			"line": 68,
+			"layer": "taskline",
+			"hook": "useCrudMutation",
+			"mutation": "tasklineAdminMutations.setTimesheetLock",
+			"optimistic": false,
+			"class": "optimistic",
+			"calls": [
+				"setTasklineTimesheetLock"
+			]
+		},
+		{
+			"file": "src/features/taskline/admin/time/time-list.tsx",
+			"line": 175,
+			"layer": "taskline",
+			"hook": "useCrudMutation",
+			"mutation": "tasklineAdminMutations.deleteTimeEntry",
+			"optimistic": true,
+			"class": "optimistic",
+			"calls": [
+				"deleteTasklineAdminTimeEntry"
+			]
+		},
+		{
+			"file": "src/features/taskline/admin/time/time-list.tsx",
+			"line": 179,
+			"layer": "taskline",
+			"hook": "useCrudMutation",
+			"mutation": "tasklineAdminMutations.exportTime",
+			"optimistic": false,
+			"class": "irreversible",
+			"calls": [
+				"exportTasklineTimeEntries"
+			]
+		},
+		{
+			"file": "src/features/taskline/admin/workflows/workflows-page.tsx",
+			"line": 64,
+			"layer": "taskline",
+			"hook": "useCrudMutation",
+			"mutation": "tasklineAdminMutations.updateWorkflows",
+			"optimistic": false,
+			"class": "optimistic",
+			"calls": [
+				"updateTasklineWorkflows"
+			]
+		},
+		{
+			"file": "src/features/taskline/admin/workflows/workflows-page.tsx",
+			"line": 212,
+			"layer": "taskline",
+			"hook": "useCrudMutation",
+			"mutation": "tasklineAdminMutations.createLabel",
+			"optimistic": false,
+			"class": "optimistic",
+			"calls": [
+				"createTasklineWorkspaceLabel"
+			]
+		},
+		{
+			"file": "src/features/taskline/admin/workflows/workflows-page.tsx",
+			"line": 213,
+			"layer": "taskline",
+			"hook": "useCrudMutation",
+			"mutation": "tasklineAdminMutations.updateLabel",
+			"optimistic": false,
+			"class": "optimistic",
+			"calls": [
+				"updateTasklineWorkspaceLabel"
+			]
+		},
+		{
+			"file": "src/features/taskline/admin/workflows/workflows-page.tsx",
+			"line": 214,
+			"layer": "taskline",
+			"hook": "useCrudMutation",
+			"mutation": "tasklineAdminMutations.deleteLabel",
+			"optimistic": false,
+			"class": "optimistic",
+			"calls": [
+				"deleteTasklineWorkspaceLabel"
+			]
+		},
+		{
+			"file": "src/features/taskline/automations/repeat-field.tsx",
+			"line": 33,
+			"layer": "taskline",
+			"hook": "useMutation",
+			"mutation": "tasklineMutations.patchTask",
+			"optimistic": false,
+			"class": "optimistic",
+			"calls": []
+		},
+		{
+			"file": "src/features/taskline/home/taskline-home.tsx",
+			"line": 247,
+			"layer": "taskline",
+			"hook": "useMutation",
+			"mutation": "inline",
+			"optimistic": false,
+			"class": "optimistic",
+			"calls": []
+		},
+		{
+			"file": "src/features/taskline/inbox/inbox-page.tsx",
+			"line": 35,
+			"layer": "taskline",
+			"hook": "useMutation",
+			"mutation": "tasklineMutations.markRead",
+			"optimistic": false,
+			"class": "optimistic",
+			"calls": [
+				"markTasklineRead"
+			]
+		},
+		{
+			"file": "src/features/taskline/inbox/notify-settings.tsx",
+			"line": 32,
+			"layer": "taskline",
+			"hook": "useMutation",
+			"mutation": "tasklineMutations.saveNotifySettings",
+			"optimistic": false,
+			"class": "optimistic",
+			"calls": [
+				"saveTasklineNotifySettings"
+			]
+		},
+		{
+			"file": "src/features/taskline/list/import-dialog.tsx",
+			"line": 76,
+			"layer": "taskline",
+			"hook": "useMutation",
+			"mutation": "tasklineMutations.importTasks",
+			"optimistic": false,
+			"class": "irreversible",
+			"calls": []
+		},
+		{
+			"file": "src/features/taskline/list/list-page.tsx",
+			"line": 247,
+			"layer": "taskline",
+			"hook": "useMutation",
+			"mutation": "inline",
+			"optimistic": false,
+			"class": "optimistic",
+			"calls": []
+		},
+		{
+			"file": "src/features/taskline/list/list-page.tsx",
+			"line": 248,
+			"layer": "taskline",
+			"hook": "useMutation",
+			"mutation": "inline",
+			"optimistic": false,
+			"class": "optimistic",
+			"calls": []
+		},
+		{
+			"file": "src/features/taskline/list/list-page.tsx",
+			"line": 249,
+			"layer": "taskline",
+			"hook": "useMutation",
+			"mutation": "tasklineMutations.bulk",
+			"optimistic": false,
+			"class": "optimistic",
+			"calls": []
+		},
+		{
+			"file": "src/features/taskline/projects/create-project-dialog.tsx",
+			"line": 50,
+			"layer": "taskline",
+			"hook": "useMutation",
+			"mutation": "createProjectMutation",
+			"optimistic": false,
+			"class": "optimistic",
+			"calls": []
+		},
+		{
+			"file": "src/features/taskline/projects/project-directory.tsx",
+			"line": 139,
+			"layer": "taskline",
+			"hook": "useMutation",
+			"mutation": "inline",
+			"optimistic": false,
+			"class": "optimistic",
+			"calls": []
+		},
+		{
+			"file": "src/features/taskline/projects/project-layout.tsx",
+			"line": 56,
+			"layer": "taskline",
+			"hook": "useMutation",
+			"mutation": "tasklineMutations.joinProject",
+			"optimistic": false,
+			"class": "optimistic",
+			"calls": []
+		},
+		{
+			"file": "src/features/taskline/projects/project-update-dialog.tsx",
+			"line": 32,
+			"layer": "taskline",
+			"hook": "useMutation",
+			"mutation": "tasklineMutations.postProjectUpdate",
+			"optimistic": false,
+			"class": "optimistic",
+			"calls": []
+		},
+		{
+			"file": "src/features/taskline/projects/project-updates.tsx",
+			"line": 38,
+			"layer": "taskline",
+			"hook": "useMutation",
+			"mutation": "tasklineMutations.deleteProjectUpdate",
+			"optimistic": false,
+			"class": "optimistic",
+			"calls": []
+		},
+		{
+			"file": "src/features/taskline/saved-views.ts",
+			"line": 18,
+			"layer": "taskline",
+			"hook": "useMutation",
+			"mutation": "tasklineMutations.saveView",
+			"optimistic": false,
+			"class": "optimistic",
+			"calls": [
+				"saveTasklineSavedView"
+			]
+		},
+		{
+			"file": "src/features/taskline/saved-views.ts",
+			"line": 19,
+			"layer": "taskline",
+			"hook": "useMutation",
+			"mutation": "tasklineMutations.deleteView",
+			"optimistic": false,
+			"class": "optimistic",
+			"calls": [
+				"deleteTasklineSavedView"
+			]
+		},
+		{
+			"file": "src/features/taskline/settings/automations-settings.tsx",
+			"line": 31,
+			"layer": "taskline",
+			"hook": "useMutation",
+			"mutation": "tasklineMutations.createAutomation",
+			"optimistic": false,
+			"class": "optimistic",
+			"calls": []
+		},
+		{
+			"file": "src/features/taskline/settings/automations-settings.tsx",
+			"line": 32,
+			"layer": "taskline",
+			"hook": "useMutation",
+			"mutation": "tasklineMutations.updateAutomation",
+			"optimistic": false,
+			"class": "optimistic",
+			"calls": []
+		},
+		{
+			"file": "src/features/taskline/settings/automations-settings.tsx",
+			"line": 33,
+			"layer": "taskline",
+			"hook": "useMutation",
+			"mutation": "tasklineMutations.toggleAutomation",
+			"optimistic": false,
+			"class": "optimistic",
+			"calls": []
+		},
+		{
+			"file": "src/features/taskline/settings/automations-settings.tsx",
+			"line": 34,
+			"layer": "taskline",
+			"hook": "useMutation",
+			"mutation": "tasklineMutations.deleteAutomation",
+			"optimistic": false,
+			"class": "optimistic",
+			"calls": []
+		},
+		{
+			"file": "src/features/taskline/settings/fields-settings.tsx",
+			"line": 22,
+			"layer": "taskline",
+			"hook": "useMutation",
+			"mutation": "tasklineMutations.createField",
+			"optimistic": false,
+			"class": "optimistic",
+			"calls": []
+		},
+		{
+			"file": "src/features/taskline/settings/fields-settings.tsx",
+			"line": 23,
+			"layer": "taskline",
+			"hook": "useMutation",
+			"mutation": "tasklineMutations.updateField",
+			"optimistic": false,
+			"class": "optimistic",
+			"calls": []
+		},
+		{
+			"file": "src/features/taskline/settings/fields-settings.tsx",
+			"line": 24,
+			"layer": "taskline",
+			"hook": "useMutation",
+			"mutation": "tasklineMutations.deleteField",
+			"optimistic": false,
+			"class": "optimistic",
+			"calls": []
+		},
+		{
+			"file": "src/features/taskline/settings/general-settings.tsx",
+			"line": 95,
+			"layer": "taskline",
+			"hook": "useMutation",
+			"mutation": "tasklineMutations.updateProject",
+			"optimistic": false,
+			"class": "optimistic",
+			"calls": []
+		},
+		{
+			"file": "src/features/taskline/settings/general-settings.tsx",
+			"line": 237,
+			"layer": "taskline",
+			"hook": "useMutation",
+			"mutation": "tasklineMutations.setProjectState",
+			"optimistic": false,
+			"class": "optimistic",
+			"calls": []
+		},
+		{
+			"file": "src/features/taskline/settings/general-settings.tsx",
+			"line": 238,
+			"layer": "taskline",
+			"hook": "useMutation",
+			"mutation": "tasklineMutations.setArchived",
+			"optimistic": false,
+			"class": "optimistic",
+			"calls": []
+		},
+		{
+			"file": "src/features/taskline/settings/labels-settings.tsx",
+			"line": 32,
+			"layer": "taskline",
+			"hook": "useMutation",
+			"mutation": "tasklineMutations.createLabel",
+			"optimistic": false,
+			"class": "optimistic",
+			"calls": []
+		},
+		{
+			"file": "src/features/taskline/settings/labels-settings.tsx",
+			"line": 33,
+			"layer": "taskline",
+			"hook": "useMutation",
+			"mutation": "tasklineMutations.updateLabel",
+			"optimistic": false,
+			"class": "optimistic",
+			"calls": []
+		},
+		{
+			"file": "src/features/taskline/settings/labels-settings.tsx",
+			"line": 34,
+			"layer": "taskline",
+			"hook": "useMutation",
+			"mutation": "tasklineMutations.deleteLabel",
+			"optimistic": false,
+			"class": "optimistic",
+			"calls": []
+		},
+		{
+			"file": "src/features/taskline/settings/members-settings.tsx",
+			"line": 29,
+			"layer": "taskline",
+			"hook": "useMutation",
+			"mutation": "tasklineMutations.setProjectMember",
+			"optimistic": false,
+			"class": "optimistic",
+			"calls": []
+		},
+		{
+			"file": "src/features/taskline/settings/members-settings.tsx",
+			"line": 30,
+			"layer": "taskline",
+			"hook": "useMutation",
+			"mutation": "tasklineMutations.removeProjectMember",
+			"optimistic": false,
+			"class": "optimistic",
+			"calls": []
+		},
+		{
+			"file": "src/features/taskline/settings/trash-settings.tsx",
+			"line": 28,
+			"layer": "taskline",
+			"hook": "useMutation",
+			"mutation": "tasklineMutations.restoreTask",
+			"optimistic": false,
+			"class": "optimistic",
+			"calls": []
+		},
+		{
+			"file": "src/features/taskline/settings/trash-settings.tsx",
+			"line": 29,
+			"layer": "taskline",
+			"hook": "useMutation",
+			"mutation": "tasklineMutations.purgeTask",
+			"optimistic": false,
+			"class": "irreversible",
+			"calls": []
+		},
+		{
+			"file": "src/features/taskline/settings/workflow-settings.tsx",
+			"line": 48,
+			"layer": "taskline",
+			"hook": "useMutation",
+			"mutation": "tasklineMutations.updateStatus",
+			"optimistic": false,
+			"class": "optimistic",
+			"calls": []
+		},
+		{
+			"file": "src/features/taskline/settings/workflow-settings.tsx",
+			"line": 49,
+			"layer": "taskline",
+			"hook": "useMutation",
+			"mutation": "tasklineMutations.createStatus",
+			"optimistic": false,
+			"class": "optimistic",
+			"calls": []
+		},
+		{
+			"file": "src/features/taskline/settings/workflow-settings.tsx",
+			"line": 50,
+			"layer": "taskline",
+			"hook": "useMutation",
+			"mutation": "tasklineMutations.deleteStatus",
+			"optimistic": false,
+			"class": "optimistic",
+			"calls": []
+		},
+		{
+			"file": "src/features/taskline/shell/new-task-dialog.tsx",
+			"line": 37,
+			"layer": "taskline",
+			"hook": "useMutation",
+			"mutation": "tasklineMutations.createTask",
+			"optimistic": false,
+			"class": "optimistic",
+			"calls": []
+		},
+		{
+			"file": "src/features/taskline/sprints/backlog-page.tsx",
+			"line": 67,
+			"layer": "taskline",
+			"hook": "useMutation",
+			"mutation": "tasklineMutations.startSprint",
+			"optimistic": false,
+			"class": "optimistic",
+			"calls": []
+		},
+		{
+			"file": "src/features/taskline/sprints/backlog-page.tsx",
+			"line": 68,
+			"layer": "taskline",
+			"hook": "useMutation",
+			"mutation": "tasklineMutations.deleteSprint",
+			"optimistic": false,
+			"class": "optimistic",
+			"calls": []
+		},
+		{
+			"file": "src/features/taskline/sprints/sprint-dialogs.tsx",
+			"line": 64,
+			"layer": "taskline",
+			"hook": "useMutation",
+			"mutation": "tasklineMutations.createSprint",
+			"optimistic": false,
+			"class": "optimistic",
+			"calls": []
+		},
+		{
+			"file": "src/features/taskline/sprints/sprint-dialogs.tsx",
+			"line": 65,
+			"layer": "taskline",
+			"hook": "useMutation",
+			"mutation": "tasklineMutations.updateSprint",
+			"optimistic": false,
+			"class": "optimistic",
+			"calls": []
+		},
+		{
+			"file": "src/features/taskline/sprints/sprint-dialogs.tsx",
+			"line": 164,
+			"layer": "taskline",
+			"hook": "useMutation",
+			"mutation": "tasklineMutations.completeSprint",
+			"optimistic": false,
+			"class": "optimistic",
+			"calls": []
+		},
+		{
+			"file": "src/features/taskline/task/conversation.tsx",
+			"line": 45,
+			"layer": "taskline",
+			"hook": "useMutation",
+			"mutation": "tasklineMutations.watch",
+			"optimistic": false,
+			"class": "optimistic",
+			"calls": []
+		},
+		{
+			"file": "src/features/taskline/task/conversation.tsx",
+			"line": 206,
+			"layer": "taskline",
+			"hook": "useMutation",
+			"mutation": "tasklineMutations.addFiles",
+			"optimistic": false,
+			"class": "optimistic",
+			"calls": []
+		},
+		{
+			"file": "src/features/taskline/task/conversation.tsx",
+			"line": 207,
+			"layer": "taskline",
+			"hook": "useMutation",
+			"mutation": "tasklineMutations.removeFile",
+			"optimistic": false,
+			"class": "optimistic",
+			"calls": []
+		},
+		{
+			"file": "src/features/taskline/task/conversation.tsx",
+			"line": 325,
+			"layer": "taskline",
+			"hook": "useMutation",
+			"mutation": "tasklineMutations.deleteComment",
+			"optimistic": false,
+			"class": "optimistic",
+			"calls": []
+		},
+		{
+			"file": "src/features/taskline/task/conversation.tsx",
+			"line": 392,
+			"layer": "taskline",
+			"hook": "useMutation",
+			"mutation": "tasklineMutations.addComment",
+			"optimistic": false,
+			"class": "optimistic",
+			"calls": []
+		},
+		{
+			"file": "src/features/taskline/task/conversation.tsx",
+			"line": 393,
+			"layer": "taskline",
+			"hook": "useMutation",
+			"mutation": "tasklineMutations.updateComment",
+			"optimistic": false,
+			"class": "optimistic",
+			"calls": []
+		},
+		{
+			"file": "src/features/taskline/task/task-panel.tsx",
+			"line": 90,
+			"layer": "taskline",
+			"hook": "useMutation",
+			"mutation": "inline",
+			"optimistic": true,
+			"class": "optimistic",
+			"calls": []
+		},
+		{
+			"file": "src/features/taskline/task/task-panel.tsx",
+			"line": 100,
+			"layer": "taskline",
+			"hook": "useMutation",
+			"mutation": "inline",
+			"optimistic": true,
+			"class": "optimistic",
+			"calls": []
+		},
+		{
+			"file": "src/features/taskline/task/task-panel.tsx",
+			"line": 105,
+			"layer": "taskline",
+			"hook": "useMutation",
+			"mutation": "inline",
+			"optimistic": true,
+			"class": "optimistic",
+			"calls": []
+		},
+		{
+			"file": "src/features/taskline/task/task-panel.tsx",
+			"line": 125,
+			"layer": "taskline",
+			"hook": "useMutation",
+			"mutation": "tasklineMutations.trashTask",
+			"optimistic": false,
+			"class": "optimistic",
+			"calls": []
+		},
+		{
+			"file": "src/features/taskline/task/task-panel.tsx",
+			"line": 126,
+			"layer": "taskline",
+			"hook": "useMutation",
+			"mutation": "tasklineMutations.restoreTask",
+			"optimistic": false,
+			"class": "optimistic",
+			"calls": []
+		},
+		{
+			"file": "src/features/taskline/task/task-panel.tsx",
+			"line": 290,
+			"layer": "taskline",
+			"hook": "useMutation",
+			"mutation": "tasklineMutations.updateTask",
+			"optimistic": false,
+			"class": "optimistic",
+			"calls": []
+		},
+		{
+			"file": "src/features/taskline/task/task-panel.tsx",
+			"line": 668,
+			"layer": "taskline",
+			"hook": "useMutation",
+			"mutation": "tasklineMutations.createTask",
+			"optimistic": false,
+			"class": "optimistic",
+			"calls": []
+		},
+		{
+			"file": "src/features/taskline/time/task-time.tsx",
+			"line": 65,
+			"layer": "taskline",
+			"hook": "useMutation",
+			"mutation": "tasklineMutations.logTime",
+			"optimistic": false,
+			"class": "optimistic",
+			"calls": []
+		},
+		{
+			"file": "src/features/taskline/time/task-time.tsx",
+			"line": 136,
+			"layer": "taskline",
+			"hook": "useMutation",
+			"mutation": "tasklineMutations.updateTimeEntry",
+			"optimistic": false,
+			"class": "optimistic",
+			"calls": []
+		},
+		{
+			"file": "src/features/taskline/time/task-time.tsx",
+			"line": 137,
+			"layer": "taskline",
+			"hook": "useMutation",
+			"mutation": "tasklineMutations.deleteTimeEntry",
+			"optimistic": false,
+			"class": "optimistic",
+			"calls": []
+		},
+		{
+			"file": "src/features/taskline/time/timer.tsx",
+			"line": 39,
+			"layer": "taskline",
+			"hook": "useMutation",
+			"mutation": "inline",
+			"optimistic": false,
+			"class": "optimistic",
+			"calls": []
+		},
+		{
+			"file": "src/features/taskline/time/timer.tsx",
+			"line": 96,
+			"layer": "taskline",
+			"hook": "useMutation",
+			"mutation": "tasklineMutations.startTimer",
+			"optimistic": false,
+			"class": "optimistic",
+			"calls": []
+		},
+		{
+			"file": "src/features/taskline/time/timesheet-page.tsx",
+			"line": 40,
+			"layer": "taskline",
+			"hook": "useMutation",
+			"mutation": "tasklineMutations.setTimesheetCell",
+			"optimistic": false,
+			"class": "optimistic",
+			"calls": []
+		},
+		{
+			"file": "src/features/taskline/time/timesheet-page.tsx",
+			"line": 41,
+			"layer": "taskline",
+			"hook": "useMutation",
+			"mutation": "tasklineMutations.copyWeek",
+			"optimistic": false,
+			"class": "optimistic",
+			"calls": []
+		},
+		{
+			"file": "src/features/taskline/timeline/dependencies.tsx",
+			"line": 111,
+			"layer": "taskline",
+			"hook": "useMutation",
+			"mutation": "inline",
+			"optimistic": false,
+			"class": "optimistic",
+			"calls": []
+		},
+		{
+			"file": "src/features/taskline/timeline/milestone-dialog.tsx",
+			"line": 36,
+			"layer": "taskline",
+			"hook": "useMutation",
+			"mutation": "tasklineMutations.createMilestone",
+			"optimistic": false,
+			"class": "optimistic",
+			"calls": []
+		},
+		{
+			"file": "src/features/taskline/timeline/milestone-dialog.tsx",
+			"line": 37,
+			"layer": "taskline",
+			"hook": "useMutation",
+			"mutation": "tasklineMutations.updateMilestone",
+			"optimistic": false,
+			"class": "optimistic",
+			"calls": []
+		},
+		{
+			"file": "src/features/taskline/timeline/milestones-page.tsx",
+			"line": 126,
+			"layer": "taskline",
+			"hook": "useMutation",
+			"mutation": "tasklineMutations.updateMilestone",
+			"optimistic": false,
+			"class": "optimistic",
+			"calls": []
+		},
+		{
+			"file": "src/features/taskline/timeline/milestones-page.tsx",
+			"line": 127,
+			"layer": "taskline",
+			"hook": "useMutation",
+			"mutation": "tasklineMutations.deleteMilestone",
+			"optimistic": false,
+			"class": "optimistic",
+			"calls": []
+		},
+		{
+			"file": "src/features/test-crud/components/test-crud-list.tsx",
+			"line": 38,
+			"layer": "core",
+			"hook": "useCrudMutation",
+			"mutation": "testCrudMutations.delete",
+			"optimistic": true,
+			"class": "optimistic",
+			"calls": [
+				"deleteTestCrud"
+			]
+		},
+		{
+			"file": "src/features/test-crud/components/test-crud-list.tsx",
+			"line": 42,
+			"layer": "core",
+			"hook": "useCrudMutation",
+			"mutation": "testCrudMutations.setStatus",
+			"optimistic": true,
+			"class": "optimistic",
+			"calls": [
+				"setTestCrudStatus"
+			]
+		},
+		{
+			"file": "src/routes/dev/examples/background-jobs.tsx",
+			"line": 27,
+			"layer": "dev",
+			"hook": "useMutation",
+			"mutation": "inline",
+			"optimistic": false,
+			"class": "optimistic",
+			"calls": [
+				"runExampleJobFn"
+			]
+		},
+		{
+			"file": "src/routes/dev/examples/contact.tsx",
+			"line": 35,
+			"layer": "dev",
+			"hook": "useMutation",
+			"mutation": "inline",
+			"optimistic": false,
+			"class": "optimistic",
+			"calls": [
+				"submitExampleContact"
+			]
+		},
+		{
+			"file": "src/routes/dev/examples/data-table.tsx",
+			"line": 93,
+			"layer": "dev",
+			"hook": "useMutation",
+			"mutation": "inline",
+			"optimistic": false,
+			"class": "optimistic",
+			"calls": [
+				"setExampleTasksDone"
+			]
+		},
+		{
+			"file": "src/routes/dev/examples/data-table.tsx",
+			"line": 99,
+			"layer": "dev",
+			"hook": "useMutation",
+			"mutation": "inline",
+			"optimistic": false,
+			"class": "optimistic",
+			"calls": [
+				"deleteExampleTasks"
+			]
+		},
+		{
+			"file": "src/routes/dev/examples/data-table.tsx",
+			"line": 105,
+			"layer": "dev",
+			"hook": "useMutation",
+			"mutation": "inline",
+			"optimistic": false,
+			"class": "optimistic",
+			"calls": []
+		},
+		{
+			"file": "src/routes/dev/examples/errors.tsx",
+			"line": 52,
+			"layer": "dev",
+			"hook": "useMutation",
+			"mutation": "inline",
+			"optimistic": false,
+			"class": "optimistic",
+			"calls": [
+				"failExample"
+			]
+		},
+		{
+			"file": "src/routes/dev/examples/idempotency.tsx",
+			"line": 47,
+			"layer": "dev",
+			"hook": "useMutation",
+			"mutation": "inline",
+			"optimistic": false,
+			"class": "irreversible",
+			"calls": [
+				"sendExampleMessage"
+			]
+		},
+		{
+			"file": "src/routes/dev/examples/idempotency.tsx",
+			"line": 65,
+			"layer": "dev",
+			"hook": "useMutation",
+			"mutation": "inline",
+			"optimistic": false,
+			"class": "optimistic",
+			"calls": []
+		},
+		{
+			"file": "src/routes/dev/examples/list-extras.tsx",
+			"line": 83,
+			"layer": "dev",
+			"hook": "useMutation",
+			"mutation": "inline",
+			"optimistic": false,
+			"class": "optimistic",
+			"calls": [
+				"deleteExampleTasks"
+			]
+		},
+		{
+			"file": "src/routes/dev/examples/permissions.tsx",
+			"line": 73,
+			"layer": "dev",
+			"hook": "useMutation",
+			"mutation": "inline",
+			"optimistic": false,
+			"class": "optimistic",
+			"calls": []
+		}
+	],
+	"collectionWrites": [
+		{
+			"file": "src/features/apps/habits/components/habits-home.tsx",
+			"line": 162,
+			"layer": "apps",
+			"call": "collection.delete"
+		},
+		{
+			"file": "src/features/apps/habits/components/habits-home.tsx",
+			"line": 163,
+			"layer": "apps",
+			"call": "collection.update"
+		},
+		{
+			"file": "src/features/apps/habits/components/habits-home.tsx",
+			"line": 166,
+			"layer": "apps",
+			"call": "collection.insert"
+		},
+		{
+			"file": "src/features/apps/notes/components/notes-home.tsx",
+			"line": 149,
+			"layer": "apps",
+			"call": "collection.insert"
+		},
+		{
+			"file": "src/features/apps/notes/components/notes-home.tsx",
+			"line": 172,
+			"layer": "apps",
+			"call": "collection.update"
+		},
+		{
+			"file": "src/features/apps/notes/components/notes-home.tsx",
+			"line": 187,
+			"layer": "apps",
+			"call": "collection.delete"
+		},
+		{
+			"file": "src/features/taskline/board/board-page.tsx",
+			"line": 143,
+			"layer": "taskline",
+			"call": "collection.update"
+		},
+		{
+			"file": "src/features/taskline/board/board-page.tsx",
+			"line": 152,
+			"layer": "taskline",
+			"call": "collection.insert"
+		},
+		{
+			"file": "src/features/taskline/calendar/calendar-page.tsx",
+			"line": 164,
+			"layer": "taskline",
+			"call": "collection.update"
+		},
+		{
+			"file": "src/features/taskline/sprints/backlog-page.tsx",
+			"line": 193,
+			"layer": "taskline",
+			"call": "collection.update"
+		},
+		{
+			"file": "src/features/taskline/sprints/backlog-page.tsx",
+			"line": 201,
+			"layer": "taskline",
+			"call": "collection.update"
+		},
+		{
+			"file": "src/features/taskline/sprints/backlog-page.tsx",
+			"line": 208,
+			"layer": "taskline",
+			"call": "collection.update"
+		},
+		{
+			"file": "src/features/taskline/sprints/backlog-page.tsx",
+			"line": 218,
+			"layer": "taskline",
+			"call": "collection.insert"
+		},
+		{
+			"file": "src/features/taskline/timeline/timeline-page.tsx",
+			"line": 164,
+			"layer": "taskline",
+			"call": "collection.update"
+		},
+		{
+			"file": "src/lib/crud/collection.ts",
+			"line": 100,
+			"layer": "core",
+			"call": "collection.delete"
+		},
+		{
+			"file": "src/lib/crud/collection.ts",
+			"line": 110,
+			"layer": "core",
+			"call": "collection.update"
+		},
+		{
+			"file": "src/routes/dev/examples/optimistic.tsx",
+			"line": 66,
+			"layer": "dev",
+			"call": "collection.update"
+		}
+	]
+}

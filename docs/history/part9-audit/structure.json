@@ -1,0 +1,4040 @@
+{
+	"generated": "node scripts/audit/structure.ts",
+	"featureFolders": {
+		"total": 129,
+		"inShape": 9,
+		"byLayer": {
+			"core": {
+				"folders": 9,
+				"inShape": 5,
+				"withComponentsFolder": 7,
+				"looseComponents": 1,
+				"oddFiles": 9
+			},
+			"apps": {
+				"folders": 7,
+				"inShape": 1,
+				"withComponentsFolder": 6,
+				"looseComponents": 1,
+				"oddFiles": 12
+			},
+			"chaal": {
+				"folders": 31,
+				"inShape": 0,
+				"withComponentsFolder": 0,
+				"looseComponents": 93,
+				"oddFiles": 69
+			},
+			"dev": {
+				"folders": 2,
+				"inShape": 0,
+				"withComponentsFolder": 0,
+				"looseComponents": 4,
+				"oddFiles": 1
+			},
+			"kharcha": {
+				"folders": 23,
+				"inShape": 1,
+				"withComponentsFolder": 0,
+				"looseComponents": 81,
+				"oddFiles": 27
+			},
+			"parda": {
+				"folders": 24,
+				"inShape": 0,
+				"withComponentsFolder": 0,
+				"looseComponents": 74,
+				"oddFiles": 40
+			},
+			"portfolio": {
+				"folders": 2,
+				"inShape": 2,
+				"withComponentsFolder": 2,
+				"looseComponents": 0,
+				"oddFiles": 0
+			},
+			"taskline": {
+				"folders": 31,
+				"inShape": 0,
+				"withComponentsFolder": 0,
+				"looseComponents": 107,
+				"oddFiles": 25
+			}
+		},
+		"oddNames": {
+			"load.ts": 8,
+			"brand.ts": 4,
+			"limits.ts": 4,
+			"collections.ts": 3,
+			"head.ts": 3,
+			"uploads.ts": 3,
+			"browser.ts": 2,
+			"clock.ts": 2,
+			"colors.ts": 2,
+			"fields.ts": 2,
+			"format.ts": 2,
+			"history.ts": 2,
+			"import.ts": 2,
+			"local.ts": 2,
+			"moves.ts": 2,
+			"notifications.ts": 2,
+			"options.ts": 2,
+			"progress.ts": 2,
+			"registry.ts": 2,
+			"settings.ts": 2,
+			"words.ts": 2,
+			"angles.ts": 1,
+			"ast.ts": 1,
+			"automation-rules.ts": 1,
+			"blocker.ts": 1,
+			"board-themes.ts": 1,
+			"burndown.ts": 1,
+			"cadence.ts": 1,
+			"channel.ts": 1,
+			"chapters.ts": 1,
+			"check.ts": 1,
+			"controls.ts": 1,
+			"convert.ts": 1,
+			"csv.ts": 1,
+			"curation.ts": 1,
+			"dashboard.ts": 1,
+			"days.ts": 1,
+			"describe.ts": 1,
+			"duration.ts": 1,
+			"edit.ts": 1,
+			"engine.ts": 1,
+			"errors.ts": 1,
+			"eval.ts": 1,
+			"events-client.ts": 1,
+			"events.ts": 1,
+			"fair-play.ts": 1,
+			"features.ts": 1,
+			"fen.ts": 1,
+			"files.ts": 1,
+			"filters.ts": 1,
+			"form.ts": 1,
+			"freshness.ts": 1,
+			"game.ts": 1,
+			"genres.ts": 1,
+			"geometry.ts": 1,
+			"grid.ts": 1,
+			"heatmap.ts": 1,
+			"hero-preload.ts": 1,
+			"image.ts": 1,
+			"index.ts": 1,
+			"input.ts": 1,
+			"kids.ts": 1,
+			"layout.ts": 1,
+			"ledger.ts": 1,
+			"lichess-links.ts": 1,
+			"lines.ts": 1,
+			"list.ts": 1,
+			"lists.ts": 1,
+			"live-game.ts": 1,
+			"live.ts": 1,
+			"local-cookie.ts": 1,
+			"machine.ts": 1,
+			"metrics.ts": 1,
+			"ndjson.ts": 1,
+			"notation.ts": 1,
+			"notices.ts": 1,
+			"parse.ts": 1,
+			"period.ts": 1,
+			"permissions.ts": 1,
+			"pgn.ts": 1,
+			"picture-in-picture.ts": 1,
+			"playback.ts": 1,
+			"preferences.ts": 1,
+			"print.ts": 1,
+			"problem.ts": 1,
+			"rail-labels.ts": 1,
+			"reader.ts": 1,
+			"recent.ts": 1,
+			"recurrence-text.ts": 1,
+			"recurrence.ts": 1,
+			"redirect-guard.ts": 1,
+			"remind.ts": 1,
+			"replay.ts": 1,
+			"report.ts": 1,
+			"results.ts": 1,
+			"round-live.ts": 1,
+			"route-guard.ts": 1,
+			"rules.ts": 1,
+			"saved-views.ts": 1,
+			"searches.ts": 1,
+			"sections.ts": 1,
+			"sheet.ts": 1,
+			"simplify.ts": 1,
+			"slug.ts": 1,
+			"sounds.ts": 1,
+			"source.ts": 1,
+			"spectate.ts": 1,
+			"speech.ts": 1,
+			"split-model.ts": 1,
+			"split.ts": 1,
+			"stall.ts": 1,
+			"store.ts": 1,
+			"streaks.ts": 1,
+			"suggest.ts": 1,
+			"sync.ts": 1,
+			"template-definition.ts": 1,
+			"templates.ts": 1,
+			"themes.ts": 1,
+			"trainer.ts": 1,
+			"tree.ts": 1,
+			"uci.ts": 1,
+			"upload.ts": 1,
+			"url.ts": 1,
+			"use-analysis.ts": 1,
+			"use-attempts.ts": 1,
+			"use-auth-actions.ts": 1,
+			"use-challenge-stream.ts": 1,
+			"use-connect.ts": 1,
+			"use-disconnect.ts": 1,
+			"use-engine.ts": 1,
+			"use-ensure-session.ts": 1,
+			"use-live-events.ts": 1,
+			"use-live-game.ts": 1,
+			"use-live.ts": 1,
+			"use-local-game.ts": 1,
+			"use-local-games.ts": 1,
+			"use-party-room.ts": 1,
+			"use-preferences.ts": 1,
+			"use-queue.ts": 1,
+			"use-read.ts": 1,
+			"use-seek.ts": 1,
+			"use-start.ts": 1,
+			"use-trainer.ts": 1,
+			"use-viewer-session.ts": 1,
+			"use-watch-player.ts": 1,
+			"user-agent.ts": 1,
+			"validation.ts": 1,
+			"watch-types.ts": 1,
+			"zen.ts": 1
+		},
+		"outOfShape": [
+			{
+				"folder": "src/features/admin",
+				"layer": "core",
+				"odd": [
+					"dashboard.ts",
+					"sections.ts"
+				],
+				"looseComponents": [],
+				"components": true
+			},
+			{
+				"folder": "src/features/apps",
+				"layer": "apps",
+				"odd": [
+					"colors.ts",
+					"registry.ts"
+				],
+				"looseComponents": [],
+				"components": true
+			},
+			{
+				"folder": "src/features/apps/admin",
+				"layer": "apps",
+				"odd": [],
+				"looseComponents": [
+					"usage-page.tsx"
+				],
+				"components": false
+			},
+			{
+				"folder": "src/features/apps/forms",
+				"layer": "apps",
+				"odd": [
+					"fields.ts",
+					"results.ts"
+				],
+				"looseComponents": [],
+				"components": true
+			},
+			{
+				"folder": "src/features/apps/habits",
+				"layer": "apps",
+				"odd": [
+					"collections.ts",
+					"format.ts",
+					"heatmap.ts",
+					"streaks.ts"
+				],
+				"looseComponents": [],
+				"components": true
+			},
+			{
+				"folder": "src/features/apps/links",
+				"layer": "apps",
+				"odd": [
+					"format.ts"
+				],
+				"looseComponents": [],
+				"components": true
+			},
+			{
+				"folder": "src/features/apps/notes",
+				"layer": "apps",
+				"odd": [
+					"collections.ts",
+					"list.ts",
+					"uploads.ts"
+				],
+				"looseComponents": [],
+				"components": true
+			},
+			{
+				"folder": "src/features/attachments",
+				"layer": "core",
+				"odd": [
+					"upload.ts"
+				],
+				"looseComponents": [],
+				"components": true
+			},
+			{
+				"folder": "src/features/auth",
+				"layer": "core",
+				"odd": [
+					"errors.ts",
+					"use-auth-actions.ts",
+					"user-agent.ts",
+					"validation.ts"
+				],
+				"looseComponents": [],
+				"components": true
+			},
+			{
+				"folder": "src/features/chaal",
+				"layer": "chaal",
+				"odd": [
+					"brand.ts",
+					"features.ts",
+					"head.ts"
+				],
+				"looseComponents": [],
+				"components": false
+			},
+			{
+				"folder": "src/features/chaal/about",
+				"layer": "chaal",
+				"odd": [],
+				"looseComponents": [
+					"chaal-about.tsx"
+				],
+				"components": false
+			},
+			{
+				"folder": "src/features/chaal/admin",
+				"layer": "chaal",
+				"odd": [],
+				"looseComponents": [
+					"chaal-admin.stories.tsx"
+				],
+				"components": false
+			},
+			{
+				"folder": "src/features/chaal/admin/blocks",
+				"layer": "chaal",
+				"odd": [],
+				"looseComponents": [
+					"block-form.tsx",
+					"block-list.tsx"
+				],
+				"components": false
+			},
+			{
+				"folder": "src/features/chaal/admin/connections",
+				"layer": "chaal",
+				"odd": [],
+				"looseComponents": [
+					"connection-list.tsx"
+				],
+				"components": false
+			},
+			{
+				"folder": "src/features/chaal/admin/curation",
+				"layer": "chaal",
+				"odd": [],
+				"looseComponents": [
+					"curation-page.tsx",
+					"featured-dialog.tsx"
+				],
+				"components": false
+			},
+			{
+				"folder": "src/features/chaal/admin/health",
+				"layer": "chaal",
+				"odd": [],
+				"looseComponents": [
+					"health-page.tsx"
+				],
+				"components": false
+			},
+			{
+				"folder": "src/features/chaal/admin/lab",
+				"layer": "chaal",
+				"odd": [],
+				"looseComponents": [
+					"lab-page.tsx"
+				],
+				"components": false
+			},
+			{
+				"folder": "src/features/chaal/admin/overview",
+				"layer": "chaal",
+				"odd": [],
+				"looseComponents": [
+					"overview-page.tsx"
+				],
+				"components": false
+			},
+			{
+				"folder": "src/features/chaal/admin/settings",
+				"layer": "chaal",
+				"odd": [],
+				"looseComponents": [
+					"settings-page.tsx"
+				],
+				"components": false
+			},
+			{
+				"folder": "src/features/chaal/analysis",
+				"layer": "chaal",
+				"odd": [
+					"import.ts",
+					"lines.ts",
+					"url.ts",
+					"use-analysis.ts"
+				],
+				"looseComponents": [
+					"analysis-dialogs.tsx",
+					"analysis-page.tsx",
+					"analysis.stories.tsx",
+					"engine-panel.tsx",
+					"explorer-panel.tsx",
+					"my-analyses.tsx",
+					"node-tools.tsx",
+					"tablebase-panel.tsx"
+				],
+				"components": false
+			},
+			{
+				"folder": "src/features/chaal/auth",
+				"layer": "chaal",
+				"odd": [],
+				"looseComponents": [
+					"chaal-sign-in.tsx",
+					"chaal-sign-up.tsx"
+				],
+				"components": false
+			},
+			{
+				"folder": "src/features/chaal/board",
+				"layer": "chaal",
+				"odd": [
+					"fen.ts",
+					"geometry.ts",
+					"sounds.ts"
+				],
+				"looseComponents": [
+					"board.stories.tsx",
+					"board.tsx",
+					"clock.tsx",
+					"eval-bar.tsx",
+					"eval-graph.tsx",
+					"game-controls.tsx",
+					"kit.stories.tsx",
+					"material.tsx",
+					"mini-board.stories.tsx",
+					"mini-board.tsx",
+					"move-input.tsx",
+					"move-list.tsx",
+					"opening-name.tsx",
+					"plate.tsx",
+					"player-strip.tsx",
+					"promotion-picker.tsx",
+					"result-banner.tsx",
+					"shapes.tsx"
+				],
+				"components": false
+			},
+			{
+				"folder": "src/features/chaal/chess",
+				"layer": "chaal",
+				"odd": [
+					"clock.ts",
+					"eval.ts",
+					"notation.ts",
+					"pgn.ts",
+					"rules.ts",
+					"speech.ts",
+					"tree.ts"
+				],
+				"looseComponents": [],
+				"components": false
+			},
+			{
+				"folder": "src/features/chaal/community",
+				"layer": "chaal",
+				"odd": [
+					"limits.ts"
+				],
+				"looseComponents": [
+					"community.stories.tsx",
+					"header.tsx"
+				],
+				"components": false
+			},
+			{
+				"folder": "src/features/chaal/connect",
+				"layer": "chaal",
+				"odd": [
+					"use-connect.ts",
+					"use-disconnect.ts",
+					"use-ensure-session.ts"
+				],
+				"looseComponents": [],
+				"components": false
+			},
+			{
+				"folder": "src/features/chaal/engine",
+				"layer": "chaal",
+				"odd": [
+					"engine.ts",
+					"files.ts",
+					"limits.ts",
+					"uci.ts",
+					"use-engine.ts"
+				],
+				"looseComponents": [],
+				"components": false
+			},
+			{
+				"folder": "src/features/chaal/events",
+				"layer": "chaal",
+				"odd": [],
+				"looseComponents": [
+					"tournament-page.tsx",
+					"tournaments-page.tsx"
+				],
+				"components": false
+			},
+			{
+				"folder": "src/features/chaal/game",
+				"layer": "chaal",
+				"odd": [
+					"lichess-links.ts",
+					"live-game.ts",
+					"load.ts",
+					"replay.ts",
+					"use-live-game.ts"
+				],
+				"looseComponents": [
+					"game-page.tsx",
+					"live-chat.tsx",
+					"live-game-page.tsx",
+					"replay-page.tsx"
+				],
+				"components": false
+			},
+			{
+				"folder": "src/features/chaal/home",
+				"layer": "chaal",
+				"odd": [
+					"curation.ts"
+				],
+				"looseComponents": [
+					"chaal-home.tsx",
+					"home-sections.tsx"
+				],
+				"components": false
+			},
+			{
+				"folder": "src/features/chaal/live",
+				"layer": "chaal",
+				"odd": [
+					"events-client.ts",
+					"events.ts",
+					"fair-play.ts",
+					"ndjson.ts",
+					"notices.ts",
+					"reader.ts",
+					"store.ts",
+					"use-live-events.ts"
+				],
+				"looseComponents": [],
+				"components": false
+			},
+			{
+				"folder": "src/features/chaal/local",
+				"layer": "chaal",
+				"odd": [
+					"browser.ts",
+					"game.ts",
+					"use-local-game.ts",
+					"use-local-games.ts",
+					"use-start.ts"
+				],
+				"looseComponents": [
+					"choice.tsx",
+					"game-history.tsx",
+					"local-game-page.tsx",
+					"play-hub.tsx",
+					"play.stories.tsx"
+				],
+				"components": false
+			},
+			{
+				"folder": "src/features/chaal/look",
+				"layer": "chaal",
+				"odd": [
+					"board-themes.ts"
+				],
+				"looseComponents": [
+					"tokens.stories.tsx"
+				],
+				"components": false
+			},
+			{
+				"folder": "src/features/chaal/play",
+				"layer": "chaal",
+				"odd": [
+					"controls.ts",
+					"use-challenge-stream.ts",
+					"use-seek.ts"
+				],
+				"looseComponents": [
+					"online-play.tsx",
+					"online.stories.tsx",
+					"quick-pair.tsx"
+				],
+				"components": false
+			},
+			{
+				"folder": "src/features/chaal/players",
+				"layer": "chaal",
+				"odd": [
+					"history.ts"
+				],
+				"looseComponents": [
+					"game-row.tsx",
+					"online-dot.tsx",
+					"player-games.tsx",
+					"player-page.tsx",
+					"players-page.tsx",
+					"players.stories.tsx"
+				],
+				"components": false
+			},
+			{
+				"folder": "src/features/chaal/puzzles",
+				"layer": "chaal",
+				"odd": [
+					"angles.ts",
+					"browser.ts",
+					"limits.ts",
+					"progress.ts",
+					"themes.ts",
+					"trainer.ts",
+					"use-attempts.ts",
+					"use-queue.ts",
+					"use-trainer.ts"
+				],
+				"looseComponents": [
+					"puzzle-choices.tsx",
+					"puzzle-progress.tsx",
+					"puzzle-solver.tsx",
+					"puzzles-page.tsx",
+					"puzzles.stories.tsx"
+				],
+				"components": false
+			},
+			{
+				"folder": "src/features/chaal/settings",
+				"layer": "chaal",
+				"odd": [
+					"local.ts",
+					"preferences.ts",
+					"use-preferences.ts"
+				],
+				"looseComponents": [
+					"chaal-settings.tsx"
+				],
+				"components": false
+			},
+			{
+				"folder": "src/features/chaal/shell",
+				"layer": "chaal",
+				"odd": [
+					"zen.ts"
+				],
+				"looseComponents": [
+					"chaal-frame.tsx",
+					"chaal-mark.tsx",
+					"chaal-palette.tsx",
+					"chaal-user-menu.tsx",
+					"fair-play-banner.tsx",
+					"live-notices.tsx",
+					"notice-banner.tsx",
+					"palette-players.tsx",
+					"play-layout.tsx",
+					"section.tsx",
+					"shortcuts-dialog.tsx"
+				],
+				"components": false
+			},
+			{
+				"folder": "src/features/chaal/studies",
+				"layer": "chaal",
+				"odd": [
+					"chapters.ts"
+				],
+				"looseComponents": [
+					"save-dialog.tsx",
+					"studies-page.tsx",
+					"study-page.tsx"
+				],
+				"components": false
+			},
+			{
+				"folder": "src/features/chaal/teams",
+				"layer": "chaal",
+				"odd": [],
+				"looseComponents": [
+					"team-page.tsx",
+					"teams-page.tsx"
+				],
+				"components": false
+			},
+			{
+				"folder": "src/features/chaal/watch",
+				"layer": "chaal",
+				"odd": [
+					"limits.ts",
+					"live.ts",
+					"round-live.ts",
+					"spectate.ts",
+					"use-live.ts"
+				],
+				"looseComponents": [
+					"broadcast-page.tsx",
+					"broadcasts-page.tsx",
+					"channel-page.tsx",
+					"spectate-board.tsx",
+					"tv-page.tsx",
+					"watch-header.tsx",
+					"watch.stories.tsx"
+				],
+				"components": false
+			},
+			{
+				"folder": "src/features/dev",
+				"layer": "dev",
+				"odd": [],
+				"looseComponents": [
+					"forms-showcase.tsx"
+				],
+				"components": false
+			},
+			{
+				"folder": "src/features/dev/examples",
+				"layer": "dev",
+				"odd": [
+					"registry.ts"
+				],
+				"looseComponents": [
+					"example-page.tsx",
+					"kit-components.tsx",
+					"kit-fields.tsx"
+				],
+				"components": false
+			},
+			{
+				"folder": "src/features/kharcha",
+				"layer": "kharcha",
+				"odd": [
+					"brand.ts",
+					"lists.ts",
+					"notifications.ts",
+					"settings.ts"
+				],
+				"looseComponents": [],
+				"components": false
+			},
+			{
+				"folder": "src/features/kharcha/admin/overview",
+				"layer": "kharcha",
+				"odd": [],
+				"looseComponents": [
+					"overview-page.tsx"
+				],
+				"components": false
+			},
+			{
+				"folder": "src/features/kharcha/admin/senders",
+				"layer": "kharcha",
+				"odd": [],
+				"looseComponents": [
+					"sender-list.tsx"
+				],
+				"components": false
+			},
+			{
+				"folder": "src/features/kharcha/admin/settings",
+				"layer": "kharcha",
+				"odd": [],
+				"looseComponents": [
+					"settings-page.tsx"
+				],
+				"components": false
+			},
+			{
+				"folder": "src/features/kharcha/auth",
+				"layer": "kharcha",
+				"odd": [],
+				"looseComponents": [
+					"kharcha-account.tsx",
+					"kharcha-sign-in.tsx",
+					"kharcha-sign-up.tsx"
+				],
+				"components": false
+			},
+			{
+				"folder": "src/features/kharcha/budgets",
+				"layer": "kharcha",
+				"odd": [
+					"period.ts"
+				],
+				"looseComponents": [
+					"budget-dialog.tsx",
+					"budget-meter.tsx",
+					"budgets-tab.tsx"
+				],
+				"components": false
+			},
+			{
+				"folder": "src/features/kharcha/expenses",
+				"layer": "kharcha",
+				"odd": [
+					"history.ts",
+					"split-model.ts",
+					"uploads.ts"
+				],
+				"looseComponents": [
+					"expense-dialog.tsx",
+					"expense-page.tsx",
+					"expense-panel.tsx",
+					"expense-sheet.tsx",
+					"expenses.stories.tsx",
+					"receipt-viewer.tsx",
+					"receipts-field.tsx",
+					"split-editor.tsx"
+				],
+				"components": false
+			},
+			{
+				"folder": "src/features/kharcha/groups",
+				"layer": "kharcha",
+				"odd": [],
+				"looseComponents": [
+					"group-balances.tsx",
+					"group-settings.tsx",
+					"group-totals.tsx",
+					"pickers.tsx"
+				],
+				"components": false
+			},
+			{
+				"folder": "src/features/kharcha/home",
+				"layer": "kharcha",
+				"odd": [],
+				"looseComponents": [
+					"kharcha-home.tsx",
+					"onboarding.tsx",
+					"recent-line.tsx",
+					"todos.tsx",
+					"updates.tsx"
+				],
+				"components": false
+			},
+			{
+				"folder": "src/features/kharcha/insights",
+				"layer": "kharcha",
+				"odd": [
+					"words.ts"
+				],
+				"looseComponents": [
+					"heatmap.tsx",
+					"insights-page.tsx",
+					"insights.stories.tsx",
+					"month-currency.tsx",
+					"overview.tsx",
+					"statement.tsx",
+					"trends.tsx"
+				],
+				"components": false
+			},
+			{
+				"folder": "src/features/kharcha/join",
+				"layer": "kharcha",
+				"odd": [],
+				"looseComponents": [
+					"join-page.tsx"
+				],
+				"components": false
+			},
+			{
+				"folder": "src/features/kharcha/kit",
+				"layer": "kharcha",
+				"odd": [],
+				"looseComponents": [
+					"cards.tsx",
+					"category-icon.tsx",
+					"empty.tsx",
+					"fix-badge.tsx",
+					"group-plate.tsx",
+					"kit.stories.tsx",
+					"ledger.tsx",
+					"money.tsx",
+					"person-avatar.tsx",
+					"wordmark.tsx"
+				],
+				"components": false
+			},
+			{
+				"folder": "src/features/kharcha/landing",
+				"layer": "kharcha",
+				"odd": [],
+				"looseComponents": [
+					"kharcha-landing.tsx"
+				],
+				"components": false
+			},
+			{
+				"folder": "src/features/kharcha/money",
+				"layer": "kharcha",
+				"odd": [
+					"convert.ts",
+					"ledger.ts",
+					"problem.ts",
+					"simplify.ts",
+					"split.ts"
+				],
+				"looseComponents": [],
+				"components": false
+			},
+			{
+				"folder": "src/features/kharcha/people",
+				"layer": "kharcha",
+				"odd": [],
+				"looseComponents": [
+					"people-page.tsx",
+					"people.stories.tsx"
+				],
+				"components": false
+			},
+			{
+				"folder": "src/features/kharcha/recurring",
+				"layer": "kharcha",
+				"odd": [
+					"cadence.ts"
+				],
+				"looseComponents": [
+					"recurring-list.tsx",
+					"repeat-dialog.tsx"
+				],
+				"components": false
+			},
+			{
+				"folder": "src/features/kharcha/settings",
+				"layer": "kharcha",
+				"odd": [],
+				"looseComponents": [
+					"list-dialogs.tsx",
+					"notify-form.tsx",
+					"pickers.tsx",
+					"profile-form.tsx",
+					"settings-page.tsx"
+				],
+				"components": false
+			},
+			{
+				"folder": "src/features/kharcha/settle",
+				"layer": "kharcha",
+				"odd": [
+					"remind.ts",
+					"words.ts"
+				],
+				"looseComponents": [
+					"settle-dialog.tsx",
+					"settle.stories.tsx"
+				],
+				"components": false
+			},
+			{
+				"folder": "src/features/kharcha/shell",
+				"layer": "kharcha",
+				"odd": [],
+				"looseComponents": [
+					"actions.tsx",
+					"create-dialogs.tsx",
+					"create-menu.tsx",
+					"kharcha-art.tsx",
+					"kharcha-palette.tsx",
+					"kharcha-shell.stories.tsx",
+					"kharcha-shell.tsx",
+					"kharcha-user-menu.tsx",
+					"public-frame.tsx",
+					"section.tsx",
+					"shortcuts-dialog.tsx"
+				],
+				"components": false
+			},
+			{
+				"folder": "src/features/kharcha/spend",
+				"layer": "kharcha",
+				"odd": [
+					"csv.ts",
+					"input.ts",
+					"searches.ts"
+				],
+				"looseComponents": [
+					"import-page.tsx",
+					"query-input.tsx",
+					"saved-dialogs.tsx",
+					"spend-chart.tsx",
+					"spend-page.tsx",
+					"spend-table.tsx",
+					"spend.stories.tsx"
+				],
+				"components": false
+			},
+			{
+				"folder": "src/features/kharcha/spend/query",
+				"layer": "kharcha",
+				"odd": [
+					"ast.ts",
+					"check.ts",
+					"edit.ts",
+					"parse.ts",
+					"print.ts",
+					"suggest.ts"
+				],
+				"looseComponents": [],
+				"components": false
+			},
+			{
+				"folder": "src/features/kharcha/threads",
+				"layer": "kharcha",
+				"odd": [
+					"use-read.ts"
+				],
+				"looseComponents": [
+					"comment-line.tsx",
+					"composer.tsx",
+					"friend-dialogs.tsx",
+					"friend-thread.tsx",
+					"group-thread.tsx",
+					"talk.stories.tsx",
+					"thread-lines.tsx"
+				],
+				"components": false
+			},
+			{
+				"folder": "src/features/parda",
+				"layer": "parda",
+				"odd": [
+					"brand.ts",
+					"genres.ts",
+					"kids.ts",
+					"slug.ts"
+				],
+				"looseComponents": [],
+				"components": false
+			},
+			{
+				"folder": "src/features/parda/about",
+				"layer": "parda",
+				"odd": [],
+				"looseComponents": [
+					"parda-about.tsx"
+				],
+				"components": false
+			},
+			{
+				"folder": "src/features/parda/account",
+				"layer": "parda",
+				"odd": [],
+				"looseComponents": [
+					"parda-account-page.tsx"
+				],
+				"components": false
+			},
+			{
+				"folder": "src/features/parda/admin",
+				"layer": "parda",
+				"odd": [],
+				"looseComponents": [
+					"parda-admin.stories.tsx",
+					"segment-nav.tsx",
+					"title-cell.tsx"
+				],
+				"components": false
+			},
+			{
+				"folder": "src/features/parda/admin/curation",
+				"layer": "parda",
+				"odd": [],
+				"looseComponents": [
+					"billboard-form.tsx",
+					"billboard-list.tsx",
+					"billboard-reorder-dialog.tsx",
+					"collection-form.tsx",
+					"collection-list.tsx",
+					"layout-page.tsx",
+					"title-fields.tsx"
+				],
+				"components": false
+			},
+			{
+				"folder": "src/features/parda/admin/overview",
+				"layer": "parda",
+				"odd": [],
+				"looseComponents": [
+					"overview-page.tsx"
+				],
+				"components": false
+			},
+			{
+				"folder": "src/features/parda/admin/player-lab",
+				"layer": "parda",
+				"odd": [],
+				"looseComponents": [
+					"player-lab-page.tsx"
+				],
+				"components": false
+			},
+			{
+				"folder": "src/features/parda/admin/reports",
+				"layer": "parda",
+				"odd": [],
+				"looseComponents": [
+					"report-list.tsx"
+				],
+				"components": false
+			},
+			{
+				"folder": "src/features/parda/admin/settings",
+				"layer": "parda",
+				"odd": [],
+				"looseComponents": [
+					"playback-switch.tsx",
+					"settings-page.tsx"
+				],
+				"components": false
+			},
+			{
+				"folder": "src/features/parda/admin/sources",
+				"layer": "parda",
+				"odd": [],
+				"looseComponents": [
+					"source-form.tsx",
+					"source-list.tsx",
+					"source-order-switch.tsx",
+					"source-reorder-dialog.tsx"
+				],
+				"components": false
+			},
+			{
+				"folder": "src/features/parda/admin/titles",
+				"layer": "parda",
+				"odd": [],
+				"looseComponents": [
+					"takedown-form.tsx",
+					"takedown-list.tsx"
+				],
+				"components": false
+			},
+			{
+				"folder": "src/features/parda/auth",
+				"layer": "parda",
+				"odd": [],
+				"looseComponents": [
+					"parda-sign-in.tsx",
+					"parda-sign-up.tsx"
+				],
+				"components": false
+			},
+			{
+				"folder": "src/features/parda/discover",
+				"layer": "parda",
+				"odd": [
+					"options.ts"
+				],
+				"looseComponents": [
+					"discover-page.tsx"
+				],
+				"components": false
+			},
+			{
+				"folder": "src/features/parda/home",
+				"layer": "parda",
+				"odd": [
+					"head.ts",
+					"load.ts",
+					"rail-labels.ts"
+				],
+				"looseComponents": [
+					"catalog-unconfigured.tsx",
+					"parda-page.tsx",
+					"title-rails.tsx"
+				],
+				"components": false
+			},
+			{
+				"folder": "src/features/parda/kit",
+				"layer": "parda",
+				"odd": [
+					"hero-preload.ts",
+					"image.ts"
+				],
+				"looseComponents": [
+					"badges.tsx",
+					"billboard.tsx",
+					"cards.tsx",
+					"kit.stories.tsx",
+					"tmdb-image.tsx",
+					"tokens.stories.tsx",
+					"top10-rail.tsx"
+				],
+				"components": false
+			},
+			{
+				"folder": "src/features/parda/library",
+				"layer": "parda",
+				"odd": [
+					"load.ts",
+					"local-cookie.ts",
+					"local.ts",
+					"progress.ts",
+					"use-viewer-session.ts"
+				],
+				"looseComponents": [
+					"continue-rail.tsx",
+					"for-you-rails.tsx",
+					"library-page.tsx",
+					"library.stories.tsx",
+					"save-buttons.tsx",
+					"title-progress.tsx"
+				],
+				"components": false
+			},
+			{
+				"folder": "src/features/parda/party",
+				"layer": "parda",
+				"odd": [
+					"channel.ts",
+					"clock.ts",
+					"load.ts",
+					"source.ts",
+					"sync.ts",
+					"use-party-room.ts"
+				],
+				"looseComponents": [
+					"party-page.tsx",
+					"watch-together.tsx"
+				],
+				"components": false
+			},
+			{
+				"folder": "src/features/parda/player",
+				"layer": "parda",
+				"odd": [
+					"blocker.ts",
+					"load.ts",
+					"machine.ts",
+					"picture-in-picture.ts",
+					"playback.ts",
+					"redirect-guard.ts",
+					"report.ts",
+					"stall.ts",
+					"templates.ts",
+					"use-watch-player.ts",
+					"watch-types.ts"
+				],
+				"looseComponents": [
+					"player-chrome.tsx",
+					"player-frame.tsx",
+					"watch-page.tsx",
+					"watch-panels.tsx"
+				],
+				"components": false
+			},
+			{
+				"folder": "src/features/parda/player/adapters",
+				"layer": "parda",
+				"odd": [
+					"index.ts"
+				],
+				"looseComponents": [],
+				"components": false
+			},
+			{
+				"folder": "src/features/parda/profiles",
+				"layer": "parda",
+				"odd": [
+					"options.ts"
+				],
+				"looseComponents": [
+					"profile-avatar.tsx",
+					"profile-form.tsx",
+					"profiles-page.tsx"
+				],
+				"components": false
+			},
+			{
+				"folder": "src/features/parda/schedule",
+				"layer": "parda",
+				"odd": [
+					"days.ts",
+					"load.ts"
+				],
+				"looseComponents": [
+					"bell.tsx",
+					"schedule-page.tsx"
+				],
+				"components": false
+			},
+			{
+				"folder": "src/features/parda/search",
+				"layer": "parda",
+				"odd": [
+					"load.ts",
+					"recent.ts"
+				],
+				"looseComponents": [
+					"hit-grid.tsx",
+					"search-button.tsx",
+					"search-overlay.tsx",
+					"search-page.tsx",
+					"search.stories.tsx"
+				],
+				"components": false
+			},
+			{
+				"folder": "src/features/parda/shell",
+				"layer": "parda",
+				"odd": [],
+				"looseComponents": [
+					"guest-banner.tsx",
+					"notice-banner.tsx",
+					"parda-frame.tsx",
+					"parda-mark.tsx",
+					"parda-shell.stories.tsx",
+					"parda-user-menu.tsx",
+					"section.tsx"
+				],
+				"components": false
+			},
+			{
+				"folder": "src/features/parda/title",
+				"layer": "parda",
+				"odd": [
+					"head.ts",
+					"load.ts"
+				],
+				"looseComponents": [
+					"episodes.tsx",
+					"gallery.tsx",
+					"parda-collection-page.tsx",
+					"parda-credits-page.tsx",
+					"parda-person-page.tsx",
+					"parda-title-page.tsx",
+					"title-hero.tsx",
+					"title-sections.tsx",
+					"video-dialog.tsx"
+				],
+				"components": false
+			},
+			{
+				"folder": "src/features/rbac",
+				"layer": "core",
+				"odd": [
+					"permissions.ts",
+					"route-guard.ts"
+				],
+				"looseComponents": [
+					"can.tsx"
+				],
+				"components": true
+			},
+			{
+				"folder": "src/features/taskline",
+				"layer": "taskline",
+				"odd": [
+					"automation-rules.ts",
+					"brand.ts",
+					"colors.ts",
+					"fields.ts",
+					"filters.ts",
+					"freshness.ts",
+					"import.ts",
+					"notifications.ts",
+					"recurrence.ts",
+					"saved-views.ts",
+					"settings.ts",
+					"template-definition.ts"
+				],
+				"looseComponents": [],
+				"components": false
+			},
+			{
+				"folder": "src/features/taskline/admin",
+				"layer": "taskline",
+				"odd": [],
+				"looseComponents": [
+					"taskline-admin.stories.tsx"
+				],
+				"components": false
+			},
+			{
+				"folder": "src/features/taskline/admin/activity",
+				"layer": "taskline",
+				"odd": [],
+				"looseComponents": [
+					"activity-page.tsx"
+				],
+				"components": false
+			},
+			{
+				"folder": "src/features/taskline/admin/automations",
+				"layer": "taskline",
+				"odd": [],
+				"looseComponents": [
+					"automations-page.tsx"
+				],
+				"components": false
+			},
+			{
+				"folder": "src/features/taskline/admin/fields",
+				"layer": "taskline",
+				"odd": [],
+				"looseComponents": [
+					"fields-page.tsx"
+				],
+				"components": false
+			},
+			{
+				"folder": "src/features/taskline/admin/members",
+				"layer": "taskline",
+				"odd": [],
+				"looseComponents": [
+					"invitation-list.tsx",
+					"member-dialogs.tsx",
+					"member-list.tsx"
+				],
+				"components": false
+			},
+			{
+				"folder": "src/features/taskline/admin/overview",
+				"layer": "taskline",
+				"odd": [],
+				"looseComponents": [
+					"overview-page.tsx"
+				],
+				"components": false
+			},
+			{
+				"folder": "src/features/taskline/admin/projects",
+				"layer": "taskline",
+				"odd": [],
+				"looseComponents": [
+					"delete-project-dialog.tsx",
+					"new-project-page.tsx",
+					"project-details.tsx",
+					"project-layout.tsx",
+					"project-list.tsx",
+					"project-tabs.tsx"
+				],
+				"components": false
+			},
+			{
+				"folder": "src/features/taskline/admin/reports",
+				"layer": "taskline",
+				"odd": [],
+				"looseComponents": [
+					"reports-page.tsx"
+				],
+				"components": false
+			},
+			{
+				"folder": "src/features/taskline/admin/settings",
+				"layer": "taskline",
+				"odd": [],
+				"looseComponents": [
+					"settings-page.tsx"
+				],
+				"components": false
+			},
+			{
+				"folder": "src/features/taskline/admin/templates",
+				"layer": "taskline",
+				"odd": [],
+				"looseComponents": [
+					"save-template-dialog.tsx",
+					"template-dialog.tsx",
+					"templates-page.tsx"
+				],
+				"components": false
+			},
+			{
+				"folder": "src/features/taskline/admin/time",
+				"layer": "taskline",
+				"odd": [],
+				"looseComponents": [
+					"time-dialogs.tsx",
+					"time-list.tsx",
+					"utilization-page.tsx"
+				],
+				"components": false
+			},
+			{
+				"folder": "src/features/taskline/admin/workflows",
+				"layer": "taskline",
+				"odd": [],
+				"looseComponents": [
+					"workflows-page.tsx"
+				],
+				"components": false
+			},
+			{
+				"folder": "src/features/taskline/auth",
+				"layer": "taskline",
+				"odd": [],
+				"looseComponents": [
+					"taskline-account.tsx",
+					"taskline-sign-in.tsx",
+					"taskline-sign-up.tsx"
+				],
+				"components": false
+			},
+			{
+				"folder": "src/features/taskline/automations",
+				"layer": "taskline",
+				"odd": [
+					"describe.ts",
+					"form.ts",
+					"recurrence-text.ts"
+				],
+				"looseComponents": [
+					"automation-dialog.tsx",
+					"automation-runs.tsx",
+					"automations-editor.tsx",
+					"automations.stories.tsx",
+					"recurrence-dialog.tsx",
+					"repeat-field.tsx"
+				],
+				"components": false
+			},
+			{
+				"folder": "src/features/taskline/board",
+				"layer": "taskline",
+				"odd": [
+					"collections.ts",
+					"moves.ts"
+				],
+				"looseComponents": [
+					"board-page.tsx",
+					"board.stories.tsx",
+					"board.tsx"
+				],
+				"components": false
+			},
+			{
+				"folder": "src/features/taskline/calendar",
+				"layer": "taskline",
+				"odd": [
+					"grid.ts"
+				],
+				"looseComponents": [
+					"calendar-page.tsx",
+					"calendar.stories.tsx",
+					"calendar.tsx"
+				],
+				"components": false
+			},
+			{
+				"folder": "src/features/taskline/custom-fields",
+				"layer": "taskline",
+				"odd": [],
+				"looseComponents": [
+					"field-dialog.tsx",
+					"fields-editor.tsx",
+					"task-field-editors.tsx"
+				],
+				"components": false
+			},
+			{
+				"folder": "src/features/taskline/find",
+				"layer": "taskline",
+				"odd": [],
+				"looseComponents": [
+					"search-page.tsx"
+				],
+				"components": false
+			},
+			{
+				"folder": "src/features/taskline/home",
+				"layer": "taskline",
+				"odd": [],
+				"looseComponents": [
+					"taskline-home.tsx"
+				],
+				"components": false
+			},
+			{
+				"folder": "src/features/taskline/inbox",
+				"layer": "taskline",
+				"odd": [],
+				"looseComponents": [
+					"inbox-page.tsx",
+					"inbox.stories.tsx",
+					"notify-settings.tsx"
+				],
+				"components": false
+			},
+			{
+				"folder": "src/features/taskline/landing",
+				"layer": "taskline",
+				"odd": [],
+				"looseComponents": [
+					"taskline-landing.tsx"
+				],
+				"components": false
+			},
+			{
+				"folder": "src/features/taskline/list",
+				"layer": "taskline",
+				"odd": [],
+				"looseComponents": [
+					"import-dialog.tsx",
+					"list-page.tsx"
+				],
+				"components": false
+			},
+			{
+				"folder": "src/features/taskline/projects",
+				"layer": "taskline",
+				"odd": [],
+				"looseComponents": [
+					"create-project-dialog.tsx",
+					"project-directory.tsx",
+					"project-layout.tsx",
+					"project-overview.tsx",
+					"project-update-dialog.tsx",
+					"project-updates.tsx",
+					"task-filters.tsx"
+				],
+				"components": false
+			},
+			{
+				"folder": "src/features/taskline/reports",
+				"layer": "taskline",
+				"odd": [
+					"metrics.ts"
+				],
+				"looseComponents": [
+					"report-parts.tsx",
+					"reports-page.tsx",
+					"reports.stories.tsx"
+				],
+				"components": false
+			},
+			{
+				"folder": "src/features/taskline/settings",
+				"layer": "taskline",
+				"odd": [],
+				"looseComponents": [
+					"automations-settings.tsx",
+					"fields-settings.tsx",
+					"general-settings.tsx",
+					"labels-settings.tsx",
+					"members-settings.tsx",
+					"settings-layout.tsx",
+					"trash-settings.tsx",
+					"workflow-settings.tsx"
+				],
+				"components": false
+			},
+			{
+				"folder": "src/features/taskline/shell",
+				"layer": "taskline",
+				"odd": [],
+				"looseComponents": [
+					"new-task-dialog.tsx",
+					"public-frame.tsx",
+					"section.tsx",
+					"shell-layout.tsx",
+					"shortcuts-dialog.tsx",
+					"taskline-art.tsx",
+					"taskline-mark.tsx",
+					"taskline-palette.tsx",
+					"taskline-shell.stories.tsx",
+					"taskline-shell.tsx",
+					"taskline-sidebar.tsx",
+					"taskline-user-menu.tsx"
+				],
+				"components": false
+			},
+			{
+				"folder": "src/features/taskline/sprints",
+				"layer": "taskline",
+				"odd": [
+					"burndown.ts",
+					"moves.ts"
+				],
+				"looseComponents": [
+					"active-sprints.tsx",
+					"backlog-page.tsx",
+					"backlog.stories.tsx",
+					"backlog.tsx",
+					"sprint-bits.tsx",
+					"sprint-dialogs.tsx",
+					"sprint-report.tsx"
+				],
+				"components": false
+			},
+			{
+				"folder": "src/features/taskline/task",
+				"layer": "taskline",
+				"odd": [
+					"uploads.ts"
+				],
+				"looseComponents": [
+					"activity.tsx",
+					"conversation.tsx",
+					"task-bits.tsx",
+					"task-link.tsx",
+					"task-page.tsx",
+					"task-panel.stories.tsx",
+					"task-panel.tsx",
+					"task-sheet.tsx"
+				],
+				"components": false
+			},
+			{
+				"folder": "src/features/taskline/time",
+				"layer": "taskline",
+				"odd": [
+					"duration.ts",
+					"sheet.ts"
+				],
+				"looseComponents": [
+					"entry-form.tsx",
+					"project-time.tsx",
+					"task-time.tsx",
+					"time.stories.tsx",
+					"timer.tsx",
+					"timesheet-page.tsx",
+					"timesheet.tsx"
+				],
+				"components": false
+			},
+			{
+				"folder": "src/features/taskline/timeline",
+				"layer": "taskline",
+				"odd": [
+					"layout.ts"
+				],
+				"looseComponents": [
+					"dependencies.tsx",
+					"milestone-dialog.tsx",
+					"milestones-page.tsx",
+					"timeline-page.tsx",
+					"timeline.stories.tsx",
+					"timeline.tsx"
+				],
+				"components": false
+			}
+		]
+	},
+	"fileNames": {
+		"notKebab": [
+			"src/lib/env/client.schema.ts"
+		]
+	},
+	"components": {
+		"total": 467,
+		"withRole": 176,
+		"byRole": {
+			"page": 86,
+			"dialog": 32,
+			"list": 21,
+			"form": 15,
+			"field": 6,
+			"menu": 6,
+			"panel": 5,
+			"sheet": 3,
+			"card": 1,
+			"detail": 1
+		},
+		"otherLastWords": {
+			"section": 18,
+			"settings": 12,
+			"filters": 9,
+			"dialogs": 8,
+			"columns": 7,
+			"home": 7,
+			"frame": 6,
+			"layout": 6,
+			"banner": 5,
+			"board": 5,
+			"button": 5,
+			"editor": 4,
+			"in": 4,
+			"up": 4,
+			"header": 3,
+			"line": 3,
+			"link": 3,
+			"mark": 3,
+			"palette": 3,
+			"time": 3,
+			"about": 2,
+			"account": 2,
+			"art": 2,
+			"avatar": 2,
+			"bits": 2,
+			"body": 2,
+			"cards": 2,
+			"email": 2,
+			"fields": 2,
+			"gallery": 2,
+			"heatmap": 2,
+			"hero": 2,
+			"image": 2,
+			"input": 2,
+			"landing": 2,
+			"lines": 2,
+			"links": 2,
+			"name": 2,
+			"overview": 2,
+			"pages": 2,
+			"pending": 2,
+			"picker": 2,
+			"pickers": 2,
+			"plate": 2,
+			"progress": 2,
+			"rail": 2,
+			"rails": 2,
+			"row": 2,
+			"sections": 2,
+			"shell": 2,
+			"switch": 2,
+			"tabs": 2,
+			"thread": 2,
+			"updates": 2,
+			"actions": 1,
+			"activity": 1,
+			"analyses": 1,
+			"availability": 1,
+			"backlog": 1,
+			"badge": 1,
+			"badges": 1,
+			"balances": 1,
+			"bar": 1,
+			"bell": 1,
+			"billboard": 1,
+			"block": 1,
+			"blocks": 1,
+			"builder": 1,
+			"buttons": 1,
+			"calendar": 1,
+			"can": 1,
+			"canvas": 1,
+			"cell": 1,
+			"chart": 1,
+			"chat": 1,
+			"check": 1,
+			"choice": 1,
+			"choices": 1,
+			"chrome": 1,
+			"clock": 1,
+			"components": 1,
+			"composer": 1,
+			"controls": 1,
+			"conversation": 1,
+			"currency": 1,
+			"dashboard": 1,
+			"dependencies": 1,
+			"details": 1,
+			"diagram": 1,
+			"directory": 1,
+			"dot": 1,
+			"editors": 1,
+			"empty": 1,
+			"episodes": 1,
+			"footer": 1,
+			"found": 1,
+			"games": 1,
+			"graph": 1,
+			"grid": 1,
+			"groups": 1,
+			"heading": 1,
+			"helpers": 1,
+			"history": 1,
+			"hub": 1,
+			"icon": 1,
+			"inbox": 1,
+			"ledger": 1,
+			"library": 1,
+			"material": 1,
+			"matrix": 1,
+			"meter": 1,
+			"moderation": 1,
+			"money": 1,
+			"mountain": 1,
+			"nav": 1,
+			"note": 1,
+			"notice": 1,
+			"notices": 1,
+			"onboarding": 1,
+			"overlay": 1,
+			"pair": 1,
+			"panels": 1,
+			"parts": 1,
+			"picture": 1,
+			"play": 1,
+			"players": 1,
+			"project": 1,
+			"quote": 1,
+			"range": 1,
+			"relief": 1,
+			"renderer": 1,
+			"report": 1,
+			"results": 1,
+			"runs": 1,
+			"screens": 1,
+			"shapes": 1,
+			"shared": 1,
+			"showcase": 1,
+			"sidebar": 1,
+			"sky": 1,
+			"solver": 1,
+			"sprints": 1,
+			"statement": 1,
+			"strip": 1,
+			"tab": 1,
+			"table": 1,
+			"tile": 1,
+			"timeline": 1,
+			"timer": 1,
+			"timesheet": 1,
+			"todos": 1,
+			"together": 1,
+			"tools": 1,
+			"totals": 1,
+			"trends": 1,
+			"unconfigured": 1,
+			"view": 1,
+			"viewer": 1,
+			"wordmark": 1
+		}
+	},
+	"hooks": {
+		"total": 84,
+		"elsewhere": [
+			{
+				"file": "src/components/data-table/row-actions.tsx",
+				"name": "usePermittedActions",
+				"line": 37
+			},
+			{
+				"file": "src/components/dialogs/confirm.tsx",
+				"name": "useConfirm",
+				"line": 33
+			},
+			{
+				"file": "src/components/errors/section-home.tsx",
+				"name": "useSectionHome",
+				"line": 17
+			},
+			{
+				"file": "src/components/forms/field-shell.tsx",
+				"name": "useFieldA11y",
+				"line": 43
+			},
+			{
+				"file": "src/components/forms/fields/async-combobox-field.tsx",
+				"name": "useAsyncOptions",
+				"line": 43
+			},
+			{
+				"file": "src/components/forms/form-meta.tsx",
+				"name": "useFormMeta",
+				"line": 21
+			},
+			{
+				"file": "src/components/forms/index.ts",
+				"name": "useAppForm",
+				"line": 76
+			},
+			{
+				"file": "src/components/layout/skip-link.tsx",
+				"name": "useInsideMain",
+				"line": 16
+			},
+			{
+				"file": "src/features/auth/components/bot-check.tsx",
+				"name": "useTurnstile",
+				"line": 73
+			},
+			{
+				"file": "src/features/chaal/board/game-controls.tsx",
+				"name": "useBoardKeys",
+				"line": 71
+			},
+			{
+				"file": "src/features/chaal/community/header.tsx",
+				"name": "useAreaOn",
+				"line": 83
+			},
+			{
+				"file": "src/features/chaal/community/header.tsx",
+				"name": "useLichessFor",
+				"line": 140
+			},
+			{
+				"file": "src/features/chaal/live/fair-play.ts",
+				"name": "useFairPlay",
+				"line": 39
+			},
+			{
+				"file": "src/features/chaal/live/store.ts",
+				"name": "useLive",
+				"line": 202
+			},
+			{
+				"file": "src/features/chaal/shell/live-notices.tsx",
+				"name": "useWaiting",
+				"line": 24
+			},
+			{
+				"file": "src/features/chaal/shell/live-notices.tsx",
+				"name": "useLiveNotices",
+				"line": 128
+			},
+			{
+				"file": "src/features/chaal/shell/zen.ts",
+				"name": "useZen",
+				"line": 14
+			},
+			{
+				"file": "src/features/chaal/shell/zen.ts",
+				"name": "useZenKey",
+				"line": 22
+			},
+			{
+				"file": "src/features/kharcha/shell/actions.tsx",
+				"name": "useKharchaActions",
+				"line": 54
+			},
+			{
+				"file": "src/features/kharcha/shell/actions.tsx",
+				"name": "useKharchaUserId",
+				"line": 64
+			},
+			{
+				"file": "src/features/parda/library/save-buttons.tsx",
+				"name": "useSaved",
+				"line": 30
+			},
+			{
+				"file": "src/features/parda/library/title-progress.tsx",
+				"name": "useTitleProgress",
+				"line": 71
+			},
+			{
+				"file": "src/features/parda/player/picture-in-picture.ts",
+				"name": "usePictureInPicture",
+				"line": 21
+			},
+			{
+				"file": "src/features/parda/player/redirect-guard.ts",
+				"name": "useRedirectGuard",
+				"line": 11
+			},
+			{
+				"file": "src/features/parda/search/recent.ts",
+				"name": "useRememberViewed",
+				"line": 87
+			},
+			{
+				"file": "src/features/rbac/can.tsx",
+				"name": "usePermissions",
+				"line": 14
+			},
+			{
+				"file": "src/features/rbac/can.tsx",
+				"name": "useCan",
+				"line": 20
+			},
+			{
+				"file": "src/features/rbac/can.tsx",
+				"name": "useActor",
+				"line": 37
+			},
+			{
+				"file": "src/features/taskline/freshness.ts",
+				"name": "useProjectFreshness",
+				"line": 12
+			},
+			{
+				"file": "src/features/taskline/saved-views.ts",
+				"name": "useSavedViews",
+				"line": 15
+			},
+			{
+				"file": "src/features/taskline/shell/taskline-sidebar.tsx",
+				"name": "useCurrentWorkspace",
+				"line": 55
+			},
+			{
+				"file": "src/lib/section-brand.ts",
+				"name": "useSectionBrand",
+				"line": 44
+			},
+			{
+				"file": "src/lib/session-scope.ts",
+				"name": "useSessionSkipped",
+				"line": 27
+			},
+			{
+				"file": "src/lib/stores/hooks.ts",
+				"name": "usePreferencesStore",
+				"line": 6
+			},
+			{
+				"file": "src/lib/stores/hooks.ts",
+				"name": "usePreferences",
+				"line": 9
+			},
+			{
+				"file": "src/lib/stores/hooks.ts",
+				"name": "useTheme",
+				"line": 12
+			},
+			{
+				"file": "src/lib/stores/hooks.ts",
+				"name": "useAppearance",
+				"line": 18
+			},
+			{
+				"file": "src/lib/stores/hooks.ts",
+				"name": "useSidebar",
+				"line": 32
+			},
+			{
+				"file": "src/lib/stores/hooks.ts",
+				"name": "useTablePreferences",
+				"line": 48
+			}
+		]
+	},
+	"exports": {
+		"keys": {
+			"suffixes": {
+				"Keys": 21,
+				"CONSTANT": 2
+			},
+			"other": [
+				{
+					"file": "src/features/rbac/keys.ts",
+					"name": "RBAC_REFRESH"
+				},
+				{
+					"file": "src/features/taskline/admin/keys.ts",
+					"name": "ALL_TASKLINE_ADMIN"
+				}
+			]
+		},
+		"queries": {
+			"suffixes": {
+				"Options": 218,
+				"Mutations": 19,
+				"Page": 14,
+				"Keys": 13,
+				"Account": 6,
+				"Calls": 5,
+				"Section": 4,
+				"CONSTANT": 3,
+				"Mutation": 3,
+				"Input": 2,
+				"Kharcha": 2,
+				"Of": 2,
+				"Shown": 2,
+				"Source": 2,
+				"Auth": 1,
+				"Free": 1,
+				"Game": 1,
+				"Library": 1,
+				"Perf": 1,
+				"Search": 1,
+				"Studies": 1,
+				"Taskline": 1,
+				"Teams": 1
+			},
+			"other": [
+				{
+					"file": "src/features/admin/queries.ts",
+					"name": "adminKeys"
+				},
+				{
+					"file": "src/features/admin/queries.ts",
+					"name": "dashboardQueryOptions"
+				},
+				{
+					"file": "src/features/apps/admin/queries.ts",
+					"name": "appsUsageQueryOptions"
+				},
+				{
+					"file": "src/features/apps/forms/queries.ts",
+					"name": "formsKeys"
+				},
+				{
+					"file": "src/features/apps/forms/queries.ts",
+					"name": "formsListQueryOptions"
+				},
+				{
+					"file": "src/features/apps/forms/queries.ts",
+					"name": "formQueryOptions"
+				},
+				{
+					"file": "src/features/apps/forms/queries.ts",
+					"name": "formResultsQueryOptions"
+				},
+				{
+					"file": "src/features/apps/forms/queries.ts",
+					"name": "publicFormQueryOptions"
+				},
+				{
+					"file": "src/features/apps/habits/queries.ts",
+					"name": "habitsKeys"
+				},
+				{
+					"file": "src/features/apps/habits/queries.ts",
+					"name": "habitsOverviewQueryOptions"
+				},
+				{
+					"file": "src/features/apps/habits/queries.ts",
+					"name": "habitQueryOptions"
+				},
+				{
+					"file": "src/features/apps/links/admin/queries.ts",
+					"name": "linkModerationQueryOptions"
+				},
+				{
+					"file": "src/features/apps/links/queries.ts",
+					"name": "linksKeys"
+				},
+				{
+					"file": "src/features/apps/links/queries.ts",
+					"name": "linksListQueryOptions"
+				},
+				{
+					"file": "src/features/apps/links/queries.ts",
+					"name": "linkStatsQueryOptions"
+				},
+				{
+					"file": "src/features/apps/notes/queries.ts",
+					"name": "notesKeys"
+				},
+				{
+					"file": "src/features/apps/notes/queries.ts",
+					"name": "notesListQueryOptions"
+				},
+				{
+					"file": "src/features/apps/notes/queries.ts",
+					"name": "notesSearchQueryOptions"
+				},
+				{
+					"file": "src/features/apps/notes/queries.ts",
+					"name": "noteQueryOptions"
+				},
+				{
+					"file": "src/features/apps/notes/queries.ts",
+					"name": "sharedNoteQueryOptions"
+				},
+				{
+					"file": "src/features/audit/queries.ts",
+					"name": "auditListQueryOptions"
+				},
+				{
+					"file": "src/features/auth/queries.ts",
+					"name": "authKeys"
+				},
+				{
+					"file": "src/features/auth/queries.ts",
+					"name": "sessionQueryOptions"
+				},
+				{
+					"file": "src/features/auth/queries.ts",
+					"name": "authFeaturesQueryOptions"
+				},
+				{
+					"file": "src/features/auth/queries.ts",
+					"name": "accountSessionsQueryOptions"
+				},
+				{
+					"file": "src/features/auth/queries.ts",
+					"name": "accountSecurityQueryOptions"
+				},
+				{
+					"file": "src/features/auth/queries.ts",
+					"name": "refreshAuth"
+				},
+				{
+					"file": "src/features/chaal/admin/queries.ts",
+					"name": "chaalLabQueryOptions"
+				},
+				{
+					"file": "src/features/chaal/admin/queries.ts",
+					"name": "checkPublicLaneMutationOptions"
+				},
+				{
+					"file": "src/features/chaal/admin/queries.ts",
+					"name": "chaalAdminSettingsQueryOptions"
+				},
+				{
+					"file": "src/features/chaal/admin/queries.ts",
+					"name": "chaalConnectionsQueryOptions"
+				},
+				{
+					"file": "src/features/chaal/admin/queries.ts",
+					"name": "chaalBlocksQueryOptions"
+				},
+				{
+					"file": "src/features/chaal/admin/queries.ts",
+					"name": "chaalHealthQueryOptions"
+				},
+				{
+					"file": "src/features/chaal/admin/queries.ts",
+					"name": "chaalOverviewQueryOptions"
+				},
+				{
+					"file": "src/features/chaal/admin/queries.ts",
+					"name": "chaalCurationQueryOptions"
+				},
+				{
+					"file": "src/features/chaal/analysis/queries.ts",
+					"name": "cloudEvalQueryOptions"
+				},
+				{
+					"file": "src/features/chaal/analysis/queries.ts",
+					"name": "explorerQueryOptions"
+				},
+				{
+					"file": "src/features/chaal/analysis/queries.ts",
+					"name": "tablebaseQueryOptions"
+				},
+				{
+					"file": "src/features/chaal/analysis/queries.ts",
+					"name": "importLichessGame"
+				},
+				{
+					"file": "src/features/chaal/analysis/queries.ts",
+					"name": "analysesQueryOptions"
+				},
+				{
+					"file": "src/features/chaal/analysis/queries.ts",
+					"name": "analysisQueryOptions"
+				},
+				{
+					"file": "src/features/chaal/analysis/queries.ts",
+					"name": "saveAnalysisMutationOptions"
+				},
+				{
+					"file": "src/features/chaal/analysis/queries.ts",
+					"name": "deleteAnalysisMutationOptions"
+				},
+				{
+					"file": "src/features/chaal/events/queries.ts",
+					"name": "tournamentsQueryOptions"
+				},
+				{
+					"file": "src/features/chaal/events/queries.ts",
+					"name": "arenaQueryOptions"
+				},
+				{
+					"file": "src/features/chaal/events/queries.ts",
+					"name": "swissQueryOptions"
+				},
+				{
+					"file": "src/features/chaal/events/queries.ts",
+					"name": "tournamentCalls"
+				},
+				{
+					"file": "src/features/chaal/events/queries.ts",
+					"name": "loadTournamentsPage"
+				},
+				{
+					"file": "src/features/chaal/events/queries.ts",
+					"name": "loadTournamentPage"
+				},
+				{
+					"file": "src/features/chaal/home/queries.ts",
+					"name": "chaalHomeQueryOptions"
+				},
+				{
+					"file": "src/features/chaal/local/queries.ts",
+					"name": "localGamesQueryOptions"
+				},
+				{
+					"file": "src/features/chaal/local/queries.ts",
+					"name": "localGameQueryOptions"
+				},
+				{
+					"file": "src/features/chaal/local/queries.ts",
+					"name": "saveLocalGameOnAccount"
+				},
+				{
+					"file": "src/features/chaal/local/queries.ts",
+					"name": "deleteLocalGameOnAccount"
+				},
+				{
+					"file": "src/features/chaal/local/queries.ts",
+					"name": "importLocalGamesToAccount"
+				},
+				{
+					"file": "src/features/chaal/play/queries.ts",
+					"name": "challengesQueryOptions"
+				},
+				{
+					"file": "src/features/chaal/play/queries.ts",
+					"name": "liveGameQueryOptions"
+				},
+				{
+					"file": "src/features/chaal/play/queries.ts",
+					"name": "chatQueryOptions"
+				},
+				{
+					"file": "src/features/chaal/play/queries.ts",
+					"name": "playCalls"
+				},
+				{
+					"file": "src/features/chaal/players/queries.ts",
+					"name": "DEFAULT_LEADERBOARD"
+				},
+				{
+					"file": "src/features/chaal/players/queries.ts",
+					"name": "leaderboardQueryOptions"
+				},
+				{
+					"file": "src/features/chaal/players/queries.ts",
+					"name": "playerQueryOptions"
+				},
+				{
+					"file": "src/features/chaal/players/queries.ts",
+					"name": "ratingHistoryQueryOptions"
+				},
+				{
+					"file": "src/features/chaal/players/queries.ts",
+					"name": "perfStatsQueryOptions"
+				},
+				{
+					"file": "src/features/chaal/players/queries.ts",
+					"name": "activityQueryOptions"
+				},
+				{
+					"file": "src/features/chaal/players/queries.ts",
+					"name": "playerGamesQueryOptions"
+				},
+				{
+					"file": "src/features/chaal/players/queries.ts",
+					"name": "playerSearchQueryOptions"
+				},
+				{
+					"file": "src/features/chaal/players/queries.ts",
+					"name": "followingQueryOptions"
+				},
+				{
+					"file": "src/features/chaal/players/queries.ts",
+					"name": "replayQueryOptions"
+				},
+				{
+					"file": "src/features/chaal/players/queries.ts",
+					"name": "followCalls"
+				},
+				{
+					"file": "src/features/chaal/players/queries.ts",
+					"name": "gamesInputOf"
+				},
+				{
+					"file": "src/features/chaal/players/queries.ts",
+					"name": "mainPerf"
+				},
+				{
+					"file": "src/features/chaal/players/queries.ts",
+					"name": "loadPlayersPage"
+				},
+				{
+					"file": "src/features/chaal/players/queries.ts",
+					"name": "latestGamesInput"
+				},
+				{
+					"file": "src/features/chaal/players/queries.ts",
+					"name": "loadPlayerPage"
+				},
+				{
+					"file": "src/features/chaal/puzzles/queries.ts",
+					"name": "dailyPuzzleQueryOptions"
+				},
+				{
+					"file": "src/features/chaal/puzzles/queries.ts",
+					"name": "puzzleQueryOptions"
+				},
+				{
+					"file": "src/features/chaal/puzzles/queries.ts",
+					"name": "puzzleBatchQueryOptions"
+				},
+				{
+					"file": "src/features/chaal/puzzles/queries.ts",
+					"name": "puzzleProgressQueryOptions"
+				},
+				{
+					"file": "src/features/chaal/puzzles/queries.ts",
+					"name": "puzzleReplayQueryOptions"
+				},
+				{
+					"file": "src/features/chaal/puzzles/queries.ts",
+					"name": "recordAttemptOnAccount"
+				},
+				{
+					"file": "src/features/chaal/puzzles/queries.ts",
+					"name": "importAttemptsToAccount"
+				},
+				{
+					"file": "src/features/chaal/puzzles/queries.ts",
+					"name": "angleOf"
+				},
+				{
+					"file": "src/features/chaal/puzzles/queries.ts",
+					"name": "trainingInput"
+				},
+				{
+					"file": "src/features/chaal/puzzles/queries.ts",
+					"name": "STREAK_FIRST"
+				},
+				{
+					"file": "src/features/chaal/puzzles/queries.ts",
+					"name": "loadPuzzlesPage"
+				},
+				{
+					"file": "src/features/chaal/puzzles/queries.ts",
+					"name": "loadPuzzlePage"
+				},
+				{
+					"file": "src/features/chaal/queries.ts",
+					"name": "chaalStatusQueryOptions"
+				},
+				{
+					"file": "src/features/chaal/queries.ts",
+					"name": "chaalConnectionQueryOptions"
+				},
+				{
+					"file": "src/features/chaal/queries.ts",
+					"name": "disconnectChaalMutationOptions"
+				},
+				{
+					"file": "src/features/chaal/settings/queries.ts",
+					"name": "chaalPreferencesQueryOptions"
+				},
+				{
+					"file": "src/features/chaal/studies/queries.ts",
+					"name": "studiesByQueryOptions"
+				},
+				{
+					"file": "src/features/chaal/studies/queries.ts",
+					"name": "myStudiesQueryOptions"
+				},
+				{
+					"file": "src/features/chaal/studies/queries.ts",
+					"name": "studyQueryOptions"
+				},
+				{
+					"file": "src/features/chaal/studies/queries.ts",
+					"name": "studyChapterQueryOptions"
+				},
+				{
+					"file": "src/features/chaal/studies/queries.ts",
+					"name": "studyCalls"
+				},
+				{
+					"file": "src/features/chaal/studies/queries.ts",
+					"name": "canUseStudies"
+				},
+				{
+					"file": "src/features/chaal/studies/queries.ts",
+					"name": "studiesAccount"
+				},
+				{
+					"file": "src/features/chaal/studies/queries.ts",
+					"name": "loadStudiesPage"
+				},
+				{
+					"file": "src/features/chaal/studies/queries.ts",
+					"name": "loadStudyPage"
+				},
+				{
+					"file": "src/features/chaal/studies/queries.ts",
+					"name": "chapterShown"
+				},
+				{
+					"file": "src/features/chaal/teams/queries.ts",
+					"name": "teamsQueryOptions"
+				},
+				{
+					"file": "src/features/chaal/teams/queries.ts",
+					"name": "teamSearchQueryOptions"
+				},
+				{
+					"file": "src/features/chaal/teams/queries.ts",
+					"name": "myTeamsQueryOptions"
+				},
+				{
+					"file": "src/features/chaal/teams/queries.ts",
+					"name": "teamQueryOptions"
+				},
+				{
+					"file": "src/features/chaal/teams/queries.ts",
+					"name": "teamCalls"
+				},
+				{
+					"file": "src/features/chaal/teams/queries.ts",
+					"name": "canUseTeams"
+				},
+				{
+					"file": "src/features/chaal/teams/queries.ts",
+					"name": "loadTeamsPage"
+				},
+				{
+					"file": "src/features/chaal/teams/queries.ts",
+					"name": "loadTeamPage"
+				},
+				{
+					"file": "src/features/chaal/watch/queries.ts",
+					"name": "tvQueryOptions"
+				},
+				{
+					"file": "src/features/chaal/watch/queries.ts",
+					"name": "streamersQueryOptions"
+				},
+				{
+					"file": "src/features/chaal/watch/queries.ts",
+					"name": "broadcastsQueryOptions"
+				},
+				{
+					"file": "src/features/chaal/watch/queries.ts",
+					"name": "officialBroadcastsQueryOptions"
+				},
+				{
+					"file": "src/features/chaal/watch/queries.ts",
+					"name": "broadcastSearchQueryOptions"
+				},
+				{
+					"file": "src/features/chaal/watch/queries.ts",
+					"name": "broadcastTourQueryOptions"
+				},
+				{
+					"file": "src/features/chaal/watch/queries.ts",
+					"name": "broadcastRoundQueryOptions"
+				},
+				{
+					"file": "src/features/chaal/watch/queries.ts",
+					"name": "broadcastGameQueryOptions"
+				},
+				{
+					"file": "src/features/chaal/watch/queries.ts",
+					"name": "loadWatchPage"
+				},
+				{
+					"file": "src/features/chaal/watch/queries.ts",
+					"name": "loadChannelPage"
+				},
+				{
+					"file": "src/features/chaal/watch/queries.ts",
+					"name": "loadBroadcastsPage"
+				},
+				{
+					"file": "src/features/chaal/watch/queries.ts",
+					"name": "loadBroadcastPage"
+				},
+				{
+					"file": "src/features/chaal/watch/queries.ts",
+					"name": "roundShown"
+				},
+				{
+					"file": "src/features/dev/examples/queries.ts",
+					"name": "exampleKeys"
+				},
+				{
+					"file": "src/features/dev/examples/queries.ts",
+					"name": "exampleSnapshotQueryOptions"
+				},
+				{
+					"file": "src/features/dev/examples/queries.ts",
+					"name": "exampleTasksQueryOptions"
+				},
+				{
+					"file": "src/features/dev/examples/queries.ts",
+					"name": "kitComponentsQueryOptions"
+				},
+				{
+					"file": "src/features/dev/examples/queries.ts",
+					"name": "exampleTaskQueryOptions"
+				},
+				{
+					"file": "src/features/dev/examples/queries.ts",
+					"name": "exampleMessagesQueryOptions"
+				},
+				{
+					"file": "src/features/dev/examples/queries.ts",
+					"name": "OPTIMISTIC_SEARCH"
+				},
+				{
+					"file": "src/features/flags/queries.ts",
+					"name": "homeFlagsQueryOptions"
+				},
+				{
+					"file": "src/features/kharcha/admin/queries.ts",
+					"name": "kharchaAdminKeys"
+				},
+				{
+					"file": "src/features/kharcha/admin/queries.ts",
+					"name": "kharchaOverviewQueryOptions"
+				},
+				{
+					"file": "src/features/kharcha/admin/queries.ts",
+					"name": "kharchaAdminSettingsQueryOptions"
+				},
+				{
+					"file": "src/features/kharcha/admin/queries.ts",
+					"name": "kharchaSendersQueryOptions"
+				},
+				{
+					"file": "src/features/kharcha/queries.ts",
+					"name": "kharchaKeys"
+				},
+				{
+					"file": "src/features/kharcha/queries.ts",
+					"name": "kharchaMeQueryOptions"
+				},
+				{
+					"file": "src/features/kharcha/queries.ts",
+					"name": "kharchaHomeQueryOptions"
+				},
+				{
+					"file": "src/features/kharcha/queries.ts",
+					"name": "kharchaSpendQueryOptions"
+				},
+				{
+					"file": "src/features/kharcha/queries.ts",
+					"name": "kharchaSpendChartQueryOptions"
+				},
+				{
+					"file": "src/features/kharcha/queries.ts",
+					"name": "exportKharcha"
+				},
+				{
+					"file": "src/features/kharcha/queries.ts",
+					"name": "kharchaExpenseQueryOptions"
+				},
+				{
+					"file": "src/features/kharcha/queries.ts",
+					"name": "kharchaListsQueryOptions"
+				},
+				{
+					"file": "src/features/kharcha/queries.ts",
+					"name": "kharchaMerchantsQueryOptions"
+				},
+				{
+					"file": "src/features/kharcha/queries.ts",
+					"name": "kharchaPeopleQueryOptions"
+				},
+				{
+					"file": "src/features/kharcha/queries.ts",
+					"name": "kharchaFriendsQueryOptions"
+				},
+				{
+					"file": "src/features/kharcha/queries.ts",
+					"name": "kharchaGroupsQueryOptions"
+				},
+				{
+					"file": "src/features/kharcha/queries.ts",
+					"name": "kharchaGroupQueryOptions"
+				},
+				{
+					"file": "src/features/kharcha/queries.ts",
+					"name": "kharchaGroupThreadQueryOptions"
+				},
+				{
+					"file": "src/features/kharcha/queries.ts",
+					"name": "kharchaFriendThreadQueryOptions"
+				},
+				{
+					"file": "src/features/kharcha/queries.ts",
+					"name": "kharchaGroupTotalsQueryOptions"
+				},
+				{
+					"file": "src/features/kharcha/queries.ts",
+					"name": "kharchaSettleUpQueryOptions"
+				},
+				{
+					"file": "src/features/kharcha/queries.ts",
+					"name": "kharchaPaymentQueryOptions"
+				},
+				{
+					"file": "src/features/kharcha/queries.ts",
+					"name": "kharchaJoinQueryOptions"
+				},
+				{
+					"file": "src/features/kharcha/queries.ts",
+					"name": "kharchaUploadsQueryOptions"
+				},
+				{
+					"file": "src/features/kharcha/queries.ts",
+					"name": "kharchaRevQueryOptions"
+				},
+				{
+					"file": "src/features/kharcha/queries.ts",
+					"name": "refreshKharcha"
+				},
+				{
+					"file": "src/features/kharcha/queries.ts",
+					"name": "kharchaBudgetsQueryOptions"
+				},
+				{
+					"file": "src/features/kharcha/queries.ts",
+					"name": "kharchaRecurringQueryOptions"
+				},
+				{
+					"file": "src/features/kharcha/queries.ts",
+					"name": "kharchaOverviewQueryOptions"
+				},
+				{
+					"file": "src/features/kharcha/queries.ts",
+					"name": "kharchaTrendsQueryOptions"
+				},
+				{
+					"file": "src/features/kharcha/queries.ts",
+					"name": "kharchaStatementQueryOptions"
+				},
+				{
+					"file": "src/features/media/queries.ts",
+					"name": "mediaKeys"
+				},
+				{
+					"file": "src/features/media/queries.ts",
+					"name": "mediaListQueryOptions"
+				},
+				{
+					"file": "src/features/parda/admin/queries.ts",
+					"name": "pardaLabSourcesQueryOptions"
+				},
+				{
+					"file": "src/features/parda/admin/queries.ts",
+					"name": "pardaSourcesQueryOptions"
+				},
+				{
+					"file": "src/features/parda/admin/queries.ts",
+					"name": "pardaSourceQueryOptions"
+				},
+				{
+					"file": "src/features/parda/admin/queries.ts",
+					"name": "pardaTakedownsQueryOptions"
+				},
+				{
+					"file": "src/features/parda/admin/queries.ts",
+					"name": "pardaReportsQueryOptions"
+				},
+				{
+					"file": "src/features/parda/admin/queries.ts",
+					"name": "pardaSettingsQueryOptions"
+				},
+				{
+					"file": "src/features/parda/admin/queries.ts",
+					"name": "pardaOverviewQueryOptions"
+				},
+				{
+					"file": "src/features/parda/admin/queries.ts",
+					"name": "pardaBillboardsQueryOptions"
+				},
+				{
+					"file": "src/features/parda/admin/queries.ts",
+					"name": "pardaBillboardQueryOptions"
+				},
+				{
+					"file": "src/features/parda/admin/queries.ts",
+					"name": "pardaCollectionsQueryOptions"
+				},
+				{
+					"file": "src/features/parda/admin/queries.ts",
+					"name": "pardaAdminCollectionQueryOptions"
+				},
+				{
+					"file": "src/features/parda/admin/queries.ts",
+					"name": "pardaLayoutQueryOptions"
+				},
+				{
+					"file": "src/features/parda/admin/queries.ts",
+					"name": "searchTitleOptions"
+				},
+				{
+					"file": "src/features/parda/admin/queries.ts",
+					"name": "openLabPlayerMutationOptions"
+				},
+				{
+					"file": "src/features/parda/library/queries.ts",
+					"name": "pardaViewerQueryOptions"
+				},
+				{
+					"file": "src/features/parda/library/queries.ts",
+					"name": "pardaContinueQueryOptions"
+				},
+				{
+					"file": "src/features/parda/library/queries.ts",
+					"name": "pardaTitleProgressQueryOptions"
+				},
+				{
+					"file": "src/features/parda/library/queries.ts",
+					"name": "pardaWatchQueryOptions"
+				},
+				{
+					"file": "src/features/parda/library/queries.ts",
+					"name": "pardaSavedQueryOptions"
+				},
+				{
+					"file": "src/features/parda/library/queries.ts",
+					"name": "pardaShelfQueryOptions"
+				},
+				{
+					"file": "src/features/parda/library/queries.ts",
+					"name": "pardaHistoryQueryOptions"
+				},
+				{
+					"file": "src/features/parda/library/queries.ts",
+					"name": "pardaForYouQueryOptions"
+				},
+				{
+					"file": "src/features/parda/library/queries.ts",
+					"name": "pardaProfilesQueryOptions"
+				},
+				{
+					"file": "src/features/parda/library/queries.ts",
+					"name": "refreshLibrary"
+				},
+				{
+					"file": "src/features/parda/party/queries.ts",
+					"name": "pardaPartyQueryOptions"
+				},
+				{
+					"file": "src/features/parda/queries.ts",
+					"name": "pardaPageQueryOptions"
+				},
+				{
+					"file": "src/features/parda/queries.ts",
+					"name": "pardaRailQueryOptions"
+				},
+				{
+					"file": "src/features/parda/queries.ts",
+					"name": "pardaTitleQueryOptions"
+				},
+				{
+					"file": "src/features/parda/queries.ts",
+					"name": "pardaSeasonQueryOptions"
+				},
+				{
+					"file": "src/features/parda/queries.ts",
+					"name": "pardaCreditsQueryOptions"
+				},
+				{
+					"file": "src/features/parda/queries.ts",
+					"name": "pardaPersonQueryOptions"
+				},
+				{
+					"file": "src/features/parda/queries.ts",
+					"name": "pardaCollectionQueryOptions"
+				},
+				{
+					"file": "src/features/parda/queries.ts",
+					"name": "pardaCuratedQueryOptions"
+				},
+				{
+					"file": "src/features/parda/queries.ts",
+					"name": "pardaBannerQueryOptions"
+				},
+				{
+					"file": "src/features/parda/schedule/queries.ts",
+					"name": "pardaInboxQueryOptions"
+				},
+				{
+					"file": "src/features/parda/schedule/queries.ts",
+					"name": "pardaFollowingQueryOptions"
+				},
+				{
+					"file": "src/features/parda/schedule/queries.ts",
+					"name": "pardaAnimeWeekQueryOptions"
+				},
+				{
+					"file": "src/features/parda/search/queries.ts",
+					"name": "pardaSearchQueryOptions"
+				},
+				{
+					"file": "src/features/parda/search/queries.ts",
+					"name": "pardaSuggestQueryOptions"
+				},
+				{
+					"file": "src/features/parda/search/queries.ts",
+					"name": "pardaDiscoverQueryOptions"
+				},
+				{
+					"file": "src/features/portfolio/admin/queries.ts",
+					"name": "profileQueryOptions"
+				},
+				{
+					"file": "src/features/portfolio/admin/queries.ts",
+					"name": "projectListQueryOptions"
+				},
+				{
+					"file": "src/features/portfolio/admin/queries.ts",
+					"name": "projectOrderQueryOptions"
+				},
+				{
+					"file": "src/features/portfolio/admin/queries.ts",
+					"name": "projectDetailQueryOptions"
+				},
+				{
+					"file": "src/features/portfolio/admin/queries.ts",
+					"name": "postListQueryOptions"
+				},
+				{
+					"file": "src/features/portfolio/admin/queries.ts",
+					"name": "postDetailQueryOptions"
+				},
+				{
+					"file": "src/features/portfolio/admin/queries.ts",
+					"name": "messageListQueryOptions"
+				},
+				{
+					"file": "src/features/portfolio/admin/queries.ts",
+					"name": "experienceSection"
+				},
+				{
+					"file": "src/features/portfolio/admin/queries.ts",
+					"name": "skillSection"
+				},
+				{
+					"file": "src/features/portfolio/admin/queries.ts",
+					"name": "processSection"
+				},
+				{
+					"file": "src/features/portfolio/admin/queries.ts",
+					"name": "testimonialSection"
+				},
+				{
+					"file": "src/features/portfolio/queries.ts",
+					"name": "portfolioKeys"
+				},
+				{
+					"file": "src/features/portfolio/queries.ts",
+					"name": "profileQueryOptions"
+				},
+				{
+					"file": "src/features/portfolio/queries.ts",
+					"name": "homeQueryOptions"
+				},
+				{
+					"file": "src/features/portfolio/queries.ts",
+					"name": "workQueryOptions"
+				},
+				{
+					"file": "src/features/portfolio/queries.ts",
+					"name": "projectQueryOptions"
+				},
+				{
+					"file": "src/features/portfolio/queries.ts",
+					"name": "aboutQueryOptions"
+				},
+				{
+					"file": "src/features/portfolio/queries.ts",
+					"name": "journalQueryOptions"
+				},
+				{
+					"file": "src/features/portfolio/queries.ts",
+					"name": "postQueryOptions"
+				},
+				{
+					"file": "src/features/portfolio/queries.ts",
+					"name": "appCaseStudiesQueryOptions"
+				},
+				{
+					"file": "src/features/rbac/queries.ts",
+					"name": "rolesQueryOptions"
+				},
+				{
+					"file": "src/features/rbac/queries.ts",
+					"name": "roleOptionsQueryOptions"
+				},
+				{
+					"file": "src/features/rbac/queries.ts",
+					"name": "usersListQueryOptions"
+				},
+				{
+					"file": "src/features/stack/queries.ts",
+					"name": "stackKeys"
+				},
+				{
+					"file": "src/features/stack/queries.ts",
+					"name": "stackListQueryOptions"
+				},
+				{
+					"file": "src/features/taskline/admin/queries.ts",
+					"name": "tasklineOverviewQueryOptions"
+				},
+				{
+					"file": "src/features/taskline/admin/queries.ts",
+					"name": "adminProjectListQueryOptions"
+				},
+				{
+					"file": "src/features/taskline/admin/queries.ts",
+					"name": "adminProjectQueryOptions"
+				},
+				{
+					"file": "src/features/taskline/admin/queries.ts",
+					"name": "memberOptionsQueryOptions"
+				},
+				{
+					"file": "src/features/taskline/admin/queries.ts",
+					"name": "adminMemberListQueryOptions"
+				},
+				{
+					"file": "src/features/taskline/admin/queries.ts",
+					"name": "invitationsQueryOptions"
+				},
+				{
+					"file": "src/features/taskline/admin/queries.ts",
+					"name": "adminWorkspaceQueryOptions"
+				},
+				{
+					"file": "src/features/taskline/admin/queries.ts",
+					"name": "adminAutomationsQueryOptions"
+				},
+				{
+					"file": "src/features/taskline/admin/queries.ts",
+					"name": "adminTemplatesQueryOptions"
+				},
+				{
+					"file": "src/features/taskline/admin/queries.ts",
+					"name": "adminTemplateChoicesQueryOptions"
+				},
+				{
+					"file": "src/features/taskline/admin/queries.ts",
+					"name": "adminReportsQueryOptions"
+				},
+				{
+					"file": "src/features/taskline/admin/queries.ts",
+					"name": "adminAutomationPreviewSource"
+				},
+				{
+					"file": "src/features/taskline/admin/queries.ts",
+					"name": "adminFieldsQueryOptions"
+				},
+				{
+					"file": "src/features/taskline/admin/queries.ts",
+					"name": "adminWorkflowsQueryOptions"
+				},
+				{
+					"file": "src/features/taskline/admin/queries.ts",
+					"name": "adminActivityQueryOptions"
+				},
+				{
+					"file": "src/features/taskline/admin/queries.ts",
+					"name": "activityOptionsQueryOptions"
+				},
+				{
+					"file": "src/features/taskline/admin/queries.ts",
+					"name": "adminTimeListQueryOptions"
+				},
+				{
+					"file": "src/features/taskline/admin/queries.ts",
+					"name": "timeOptionsQueryOptions"
+				},
+				{
+					"file": "src/features/taskline/admin/queries.ts",
+					"name": "utilizationQueryOptions"
+				},
+				{
+					"file": "src/features/taskline/admin/queries.ts",
+					"name": "accountSearch"
+				},
+				{
+					"file": "src/features/taskline/admin/queries.ts",
+					"name": "isProjectKeyFree"
+				},
+				{
+					"file": "src/features/taskline/queries.ts",
+					"name": "tasklineKeys"
+				},
+				{
+					"file": "src/features/taskline/queries.ts",
+					"name": "projectAutomationsQueryOptions"
+				},
+				{
+					"file": "src/features/taskline/queries.ts",
+					"name": "automationPreviewSource"
+				},
+				{
+					"file": "src/features/taskline/queries.ts",
+					"name": "timesheetQueryOptions"
+				},
+				{
+					"file": "src/features/taskline/queries.ts",
+					"name": "projectTimeQueryOptions"
+				},
+				{
+					"file": "src/features/taskline/queries.ts",
+					"name": "templatesQueryOptions"
+				},
+				{
+					"file": "src/features/taskline/queries.ts",
+					"name": "projectReportsQueryOptions"
+				},
+				{
+					"file": "src/features/taskline/queries.ts",
+					"name": "projectUpdatesQueryOptions"
+				},
+				{
+					"file": "src/features/taskline/queries.ts",
+					"name": "sprintReportQueryOptions"
+				},
+				{
+					"file": "src/features/taskline/queries.ts",
+					"name": "savedViewsQueryOptions"
+				},
+				{
+					"file": "src/features/taskline/queries.ts",
+					"name": "searchQueryOptions"
+				},
+				{
+					"file": "src/features/taskline/queries.ts",
+					"name": "findTasksQueryOptions"
+				},
+				{
+					"file": "src/features/taskline/queries.ts",
+					"name": "inboxQueryOptions"
+				},
+				{
+					"file": "src/features/taskline/queries.ts",
+					"name": "unreadQueryOptions"
+				},
+				{
+					"file": "src/features/taskline/queries.ts",
+					"name": "notifySettingsQueryOptions"
+				},
+				{
+					"file": "src/features/taskline/queries.ts",
+					"name": "tasklineNavQueryOptions"
+				},
+				{
+					"file": "src/features/taskline/queries.ts",
+					"name": "myTasksQueryOptions"
+				},
+				{
+					"file": "src/features/taskline/queries.ts",
+					"name": "workspaceQueryOptions"
+				},
+				{
+					"file": "src/features/taskline/queries.ts",
+					"name": "workspaceMembersQueryOptions"
+				},
+				{
+					"file": "src/features/taskline/queries.ts",
+					"name": "projectsQueryOptions"
+				},
+				{
+					"file": "src/features/taskline/queries.ts",
+					"name": "projectTasksQueryOptions"
+				},
+				{
+					"file": "src/features/taskline/queries.ts",
+					"name": "projectMembersQueryOptions"
+				},
+				{
+					"file": "src/features/taskline/queries.ts",
+					"name": "projectActivityQueryOptions"
+				},
+				{
+					"file": "src/features/taskline/queries.ts",
+					"name": "projectTrashQueryOptions"
+				},
+				{
+					"file": "src/features/taskline/queries.ts",
+					"name": "taskPageQueryOptions"
+				},
+				{
+					"file": "src/features/taskline/queries.ts",
+					"name": "taskQueryOptions"
+				},
+				{
+					"file": "src/features/taskline/queries.ts",
+					"name": "projectRevQueryOptions"
+				},
+				{
+					"file": "src/features/taskline/queries.ts",
+					"name": "refreshTaskline"
+				},
+				{
+					"file": "src/features/taskline/queries.ts",
+					"name": "starProjectMutation"
+				},
+				{
+					"file": "src/features/taskline/queries.ts",
+					"name": "createProjectMutation"
+				},
+				{
+					"file": "src/features/taskline/queries.ts",
+					"name": "startSandboxMutation"
+				},
+				{
+					"file": "src/features/test-crud/queries.ts",
+					"name": "testCrudListQueryOptions"
+				},
+				{
+					"file": "src/features/test-crud/queries.ts",
+					"name": "testCrudTagsQueryOptions"
+				},
+				{
+					"file": "src/features/test-crud/queries.ts",
+					"name": "testCrudDetailQueryOptions"
+				},
+				{
+					"file": "src/features/test-crud/queries.ts",
+					"name": "publicTestCrudListQueryOptions"
+				},
+				{
+					"file": "src/features/test-crud/queries.ts",
+					"name": "publicTestCrudDetailQueryOptions"
+				}
+			]
+		},
+		"collections": {
+			"suffixes": {
+				"Rows": 24,
+				"Collection": 5,
+				"CONSTANT": 1,
+				"Task": 1
+			},
+			"other": [
+				{
+					"file": "src/features/apps/habits/collections.ts",
+					"name": "checkinsCollection"
+				},
+				{
+					"file": "src/features/apps/notes/collections.ts",
+					"name": "notesCollection"
+				},
+				{
+					"file": "src/features/dev/examples/collection.ts",
+					"name": "exampleTasksCollection"
+				},
+				{
+					"file": "src/features/taskline/board/collections.ts",
+					"name": "projectTaskCollection"
+				},
+				{
+					"file": "src/features/taskline/board/collections.ts",
+					"name": "draftTask"
+				},
+				{
+					"file": "src/features/taskline/board/collections.ts",
+					"name": "DRAFT_RANK"
+				},
+				{
+					"file": "src/lib/crud/collection.ts",
+					"name": "crudCollection"
+				}
+			],
+			"files": [
+				"src/features/apps/habits/collections.ts",
+				"src/features/apps/links/admin/collection.ts",
+				"src/features/apps/notes/collections.ts",
+				"src/features/chaal/admin/collection.ts",
+				"src/features/dev/examples/collection.ts",
+				"src/features/kharcha/admin/collection.ts",
+				"src/features/media/collection.ts",
+				"src/features/parda/admin/collection.ts",
+				"src/features/portfolio/admin/collection.ts",
+				"src/features/rbac/collection.ts",
+				"src/features/taskline/admin/collection.ts",
+				"src/features/taskline/board/collections.ts",
+				"src/features/test-crud/collection.ts",
+				"src/lib/crud/collection.ts"
+			]
+		},
+		"schemas": {
+			"suffixes": {
+				"Input": 258,
+				"CONSTANT": 124,
+				"Schema": 65,
+				"Item": 13,
+				"Detail": 5,
+				"Id": 4,
+				"Ref": 4,
+				"Key": 2,
+				"Slug": 2,
+				"Card": 1,
+				"Changes": 1,
+				"Color": 1,
+				"Form": 1,
+				"Mode": 1,
+				"Pace": 1,
+				"Page": 1,
+				"Problem": 1,
+				"Record": 1,
+				"Row": 1,
+				"split": 1,
+				"Summary": 1,
+				"Target": 1,
+				"Time": 1,
+				"Title": 1,
+				"Usage": 1,
+				"Username": 1,
+				"ws": 1,
+				"Zone": 1
+			}
+		},
+		"types": {
+			"suffixes": {
+				"Input": 138,
+				"Page": 27,
+				"Data": 25,
+				"Item": 24,
+				"Summary": 24,
+				"View": 18,
+				"Values": 17,
+				"Detail": 14,
+				"Result": 13,
+				"Kind": 12,
+				"Row": 10,
+				"State": 9,
+				"Stats": 7,
+				"Status": 7,
+				"Task": 7,
+				"Day": 6,
+				"Game": 6,
+				"Overview": 6,
+				"Player": 6,
+				"Type": 6,
+				"Entry": 5,
+				"Member": 5,
+				"Settings": 5,
+				"Color": 4,
+				"Count": 4,
+				"List": 4,
+				"Mode": 4,
+				"Person": 4,
+				"Search": 4,
+				"Template": 4,
+				"Value": 4,
+				"Action": 3,
+				"Activity": 3,
+				"Can": 3,
+				"Connection": 3,
+				"Health": 3,
+				"Option": 3,
+				"Record": 3,
+				"Ref": 3,
+				"Role": 3,
+				"Series": 3,
+				"Source": 3,
+				"Standing": 3,
+				"Target": 3,
+				"Time": 3,
+				"Title": 3,
+				"Adapter": 2,
+				"Analysis": 2,
+				"Automations": 2,
+				"Block": 2,
+				"Category": 2,
+				"Choice": 2,
+				"Condition": 2,
+				"Content": 2,
+				"Counts": 2,
+				"Dto": 2,
+				"Featured": 2,
+				"Field": 2,
+				"Games": 2,
+				"Hit": 2,
+				"Invite": 2,
+				"Label": 2,
+				"Layout": 2,
+				"Line": 2,
+				"Me": 2,
+				"Media": 2,
+				"Move": 2,
+				"Note": 2,
+				"Options": 2,
+				"Perf": 2,
+				"Priority": 2,
+				"Profile": 2,
+				"Progress": 2,
+				"Project": 2,
+				"Provider": 2,
+				"Pulse": 2,
+				"Rating": 2,
+				"Reason": 2,
+				"Replay": 2,
+				"Report": 2,
+				"Reports": 2,
+				"Slide": 2,
+				"Sort": 2,
+				"Study": 2,
+				"Suggestion": 2,
+				"Tasks": 2,
+				"Thread": 2,
+				"Totals": 2,
+				"Update": 2,
+				"Usage": 2,
+				"Workspace": 2,
+				"Actor": 1,
+				"Amount": 1,
+				"Arena": 1,
+				"Asset": 1,
+				"Attachment": 1,
+				"Attempt": 1,
+				"Automation": 1,
+				"Balance": 1,
+				"Balances": 1,
+				"Batch": 1,
+				"Billboard": 1,
+				"Board": 1,
+				"Broadcasts": 1,
+				"Bucket": 1,
+				"Card": 1,
+				"Carry": 1,
+				"Case": 1,
+				"Challenge": 1,
+				"Challenges": 1,
+				"Changes": 1,
+				"Chapter": 1,
+				"Chart": 1,
+				"Check": 1,
+				"Checkin": 1,
+				"Chip": 1,
+				"Clock": 1,
+				"Collection": 1,
+				"Command": 1,
+				"Comment": 1,
+				"Cover": 1,
+				"Crosstable": 1,
+				"Cta": 1,
+				"Cue": 1,
+				"Curation": 1,
+				"Dashboard": 1,
+				"Database": 1,
+				"Date": 1,
+				"Db": 1,
+				"Dependencies": 1,
+				"Dependency": 1,
+				"Device": 1,
+				"Difficulty": 1,
+				"Email": 1,
+				"Endpoint": 1,
+				"Episode": 1,
+				"Error": 1,
+				"Eval": 1,
+				"Event": 1,
+				"Experience": 1,
+				"Explorer": 1,
+				"Export": 1,
+				"Facts": 1,
+				"Fields": 1,
+				"Form": 1,
+				"Freq": 1,
+				"Glicko": 1,
+				"Handle": 1,
+				"Head": 1,
+				"Home": 1,
+				"Hour": 1,
+				"Icon": 1,
+				"Info": 1,
+				"Invitation": 1,
+				"Join": 1,
+				"Judgement": 1,
+				"Key": 1,
+				"Keyword": 1,
+				"Leaderboard": 1,
+				"Links": 1,
+				"Lists": 1,
+				"Location": 1,
+				"Match": 1,
+				"Message": 1,
+				"Metric": 1,
+				"Milestone": 1,
+				"Mine": 1,
+				"Moment": 1,
+				"Name": 1,
+				"Nav": 1,
+				"Opening": 1,
+				"Opponent": 1,
+				"Outcome": 1,
+				"Payment": 1,
+				"Ping": 1,
+				"Playing": 1,
+				"Podium": 1,
+				"Position": 1,
+				"Post": 1,
+				"Preview": 1,
+				"Problem": 1,
+				"Props": 1,
+				"Providers": 1,
+				"Puzzle": 1,
+				"Quotas": 1,
+				"Rail": 1,
+				"Range": 1,
+				"Recurrence": 1,
+				"Relation": 1,
+				"Response": 1,
+				"Results": 1,
+				"Rev": 1,
+				"Review": 1,
+				"Round": 1,
+				"Run": 1,
+				"Sandbox": 1,
+				"Schedule": 1,
+				"Score": 1,
+				"Security": 1,
+				"Seek": 1,
+				"Sender": 1,
+				"Setup": 1,
+				"Skill": 1,
+				"Snapshot": 1,
+				"Speed": 1,
+				"Sprint": 1,
+				"Start": 1,
+				"Statement": 1,
+				"Step": 1,
+				"Streamer": 1,
+				"Swiss": 1,
+				"Tablebase": 1,
+				"Takedown": 1,
+				"Talk": 1,
+				"Tally": 1,
+				"Team": 1,
+				"Teams": 1,
+				"Templates": 1,
+				"Testimonial": 1,
+				"Ticket": 1,
+				"Timer": 1,
+				"Timesheet": 1,
+				"Titles": 1,
+				"Todo": 1,
+				"Tour": 1,
+				"Tournaments": 1,
+				"Trends": 1,
+				"Trigger": 1,
+				"Tv": 1,
+				"Tx": 1,
+				"Up": 1,
+				"Utilization": 1,
+				"Velocity": 1,
+				"Video": 1,
+				"Viewer": 1,
+				"Views": 1,
+				"Visibility": 1,
+				"Week": 1,
+				"Workflows": 1,
+				"Workload": 1
+			}
+		}
+	},
+	"server": {
+		"folders": 94,
+		"pairs": [
+			"src/server/account",
+			"src/server/apps/forms",
+			"src/server/apps/habits",
+			"src/server/apps/links",
+			"src/server/apps/notes",
+			"src/server/attachments",
+			"src/server/audit",
+			"src/server/chaal/connect",
+			"src/server/kharcha/expenses",
+			"src/server/kharcha/lists",
+			"src/server/media",
+			"src/server/parda/library",
+			"src/server/parda/notify",
+			"src/server/parda/party",
+			"src/server/parda/profiles",
+			"src/server/rbac",
+			"src/server/taskline/automations",
+			"src/server/taskline/collab",
+			"src/server/taskline/fields",
+			"src/server/taskline/home",
+			"src/server/taskline/projects",
+			"src/server/taskline/search",
+			"src/server/taskline/sprints",
+			"src/server/taskline/tasks",
+			"src/server/taskline/templates",
+			"src/server/taskline/time",
+			"src/server/taskline/timeline",
+			"src/server/taskline/views",
+			"src/server/taskline/workflow",
+			"src/server/taskline/workspace",
+			"src/server/test-crud"
+		],
+		"serviceOnly": [
+			"src/server/chaal/analysis",
+			"src/server/chaal/events",
+			"src/server/chaal/local",
+			"src/server/chaal/play",
+			"src/server/chaal/players",
+			"src/server/chaal/puzzles",
+			"src/server/chaal/studies",
+			"src/server/chaal/teams",
+			"src/server/chaal/watch",
+			"src/server/guests",
+			"src/server/kharcha/budgets",
+			"src/server/kharcha/conversations",
+			"src/server/kharcha/friends",
+			"src/server/kharcha/groups",
+			"src/server/kharcha/home",
+			"src/server/kharcha/insights",
+			"src/server/kharcha/invites",
+			"src/server/kharcha/me",
+			"src/server/kharcha/payments",
+			"src/server/kharcha/receipts",
+			"src/server/kharcha/recurring",
+			"src/server/kharcha/settle",
+			"src/server/kharcha/spend",
+			"src/server/kharcha/threads",
+			"src/server/parda/catalog",
+			"src/server/taskline/reports"
+		],
+		"prefixed": [
+			"src/server/parda/library/saved-repository.ts",
+			"src/server/portfolio/messages-repository.ts",
+			"src/server/portfolio/messages-service.ts",
+			"src/server/portfolio/posts-repository.ts",
+			"src/server/portfolio/posts-service.ts",
+			"src/server/portfolio/profile-repository.ts",
+			"src/server/portfolio/profile-service.ts",
+			"src/server/portfolio/projects-repository.ts",
+			"src/server/portfolio/projects-service.ts",
+			"src/server/portfolio/sections-repository.ts",
+			"src/server/portfolio/sections-service.ts"
+		],
+		"otherNames": {
+			"portfolio: repository": 5,
+			"portfolio: service": 5,
+			"taskline: rules": 4,
+			"kharcha: settings": 3,
+			"parda: curation": 3,
+			"parda: requests": 3,
+			"parda: search": 3,
+			"chaal: activity": 2,
+			"chaal: context": 2,
+			"chaal: curation": 2,
+			"chaal: manifest": 2,
+			"chaal: oauth": 2,
+			"chaal: settings": 2,
+			"chaal: stream": 2,
+			"core: attachments": 2,
+			"core: auth": 2,
+			"core: crud": 2,
+			"core: env": 2,
+			"core: index": 2,
+			"core: manifest": 2,
+			"core: types": 2,
+			"kharcha: activity": 2,
+			"kharcha: ledger": 2,
+			"kharcha: manifest": 2,
+			"parda: context": 2,
+			"parda: manifest": 2,
+			"parda: probe": 2,
+			"parda: ranking": 2,
+			"parda: saved": 2,
+			"parda: sources": 2,
+			"taskline: activity": 2,
+			"taskline: manifest": 2,
+			"taskline: time": 2,
+			"apps: clicks": 1,
+			"apps: cookie": 1,
+			"apps: data": 1,
+			"apps: forms": 1,
+			"apps: guests": 1,
+			"apps: habits": 1,
+			"apps: hooks": 1,
+			"apps: links": 1,
+			"apps: notes": 1,
+			"apps: ownership": 1,
+			"apps: redirect": 1,
+			"apps: registry": 1,
+			"apps: usage": 1,
+			"chaal: analysis": 1,
+			"chaal: attempt": 1,
+			"chaal: blocks": 1,
+			"chaal: cache": 1,
+			"chaal: chaal": 1,
+			"chaal: client": 1,
+			"chaal: connection": 1,
+			"chaal: connections": 1,
+			"chaal: controls": 1,
+			"chaal: cooldown": 1,
+			"chaal: counters": 1,
+			"chaal: cron": 1,
+			"chaal: daily": 1,
+			"chaal: data": 1,
+			"chaal: game": 1,
+			"chaal: health": 1,
+			"chaal: home": 1,
+			"chaal: lab": 1,
+			"chaal: lanes": 1,
+			"chaal: lichess": 1,
+			"chaal: overview": 1,
+			"chaal: preference": 1,
+			"chaal: preferences": 1,
+			"chaal: schemas": 1,
+			"chaal: stat": 1,
+			"chaal: stats": 1,
+			"chaal: status": 1,
+			"chaal: store": 1,
+			"chaal: vault": 1,
+			"chaal: viewer": 1,
+			"core: audit": 1,
+			"core: client": 1,
+			"core: cloudinary": 1,
+			"core: columns": 1,
+			"core: concurrency": 1,
+			"core: config": 1,
+			"core: console": 1,
+			"core: contact": 1,
+			"core: dashboard": 1,
+			"core: data": 1,
+			"core: emails": 1,
+			"core: health": 1,
+			"core: hooks": 1,
+			"core: idempotency": 1,
+			"core: images": 1,
+			"core: invite": 1,
+			"core: ip": 1,
+			"core: jobs": 1,
+			"core: layout": 1,
+			"core: limit": 1,
+			"core: list": 1,
+			"core: locale": 1,
+			"core: log": 1,
+			"core: lru": 1,
+			"core: password": 1,
+			"core: paths": 1,
+			"core: policy": 1,
+			"core: posthog": 1,
+			"core: preview": 1,
+			"core: query": 1,
+			"core: quota": 1,
+			"core: rbac": 1,
+			"core: record": 1,
+			"core: render": 1,
+			"core: report": 1,
+			"core: resend": 1,
+			"core: response": 1,
+			"core: robots": 1,
+			"core: sanitize": 1,
+			"core: scope": 1,
+			"core: send": 1,
+			"core: services": 1,
+			"core: session": 1,
+			"core: sessions": 1,
+			"core: sitemap": 1,
+			"core: status": 1,
+			"core: store": 1,
+			"core: string": 1,
+			"core: tasks": 1,
+			"core: turnstile": 1,
+			"kharcha: access": 1,
+			"kharcha: bulk": 1,
+			"kharcha: compile": 1,
+			"kharcha: conversation": 1,
+			"kharcha: cron": 1,
+			"kharcha: daily": 1,
+			"kharcha: data": 1,
+			"kharcha: deliver": 1,
+			"kharcha: emails": 1,
+			"kharcha: expense": 1,
+			"kharcha: forget": 1,
+			"kharcha: group": 1,
+			"kharcha: import": 1,
+			"kharcha: inbox": 1,
+			"kharcha: invite": 1,
+			"kharcha: kharcha": 1,
+			"kharcha: lines": 1,
+			"kharcha: lists": 1,
+			"kharcha: mail": 1,
+			"kharcha: overview": 1,
+			"kharcha: payment": 1,
+			"kharcha: people": 1,
+			"kharcha: person": 1,
+			"kharcha: plan": 1,
+			"kharcha: produce": 1,
+			"kharcha: rev": 1,
+			"kharcha: rules": 1,
+			"kharcha: saved": 1,
+			"kharcha: senders": 1,
+			"kharcha: spend": 1,
+			"kharcha: totals": 1,
+			"kharcha: unsubscribe": 1,
+			"parda: alerts": 1,
+			"parda: cache": 1,
+			"parda: catalog": 1,
+			"parda: check": 1,
+			"parda: client": 1,
+			"parda: controls": 1,
+			"parda: cron": 1,
+			"parda: csp": 1,
+			"parda: daily": 1,
+			"parda: data": 1,
+			"parda: digest": 1,
+			"parda: discover": 1,
+			"parda: emails": 1,
+			"parda: hubs": 1,
+			"parda: lab": 1,
+			"parda: library": 1,
+			"parda: limits": 1,
+			"parda: mappers": 1,
+			"parda: overview": 1,
+			"parda: page": 1,
+			"parda: pages": 1,
+			"parda: parda": 1,
+			"parda: party": 1,
+			"parda: people": 1,
+			"parda: placeholder": 1,
+			"parda: playable": 1,
+			"parda: playback": 1,
+			"parda: player": 1,
+			"parda: plays": 1,
+			"parda: rails": 1,
+			"parda: refresh": 1,
+			"parda: reports": 1,
+			"parda: repository": 1,
+			"parda: rules": 1,
+			"parda: schedule": 1,
+			"parda: settings": 1,
+			"parda: sitemap": 1,
+			"parda: stats": 1,
+			"parda: store": 1,
+			"parda: takedowns": 1,
+			"parda: token": 1,
+			"parda: watch": 1,
+			"portfolio: portfolio": 1,
+			"portfolio: public": 1,
+			"taskline: access": 1,
+			"taskline: automation": 1,
+			"taskline: automations": 1,
+			"taskline: builtin": 1,
+			"taskline: collab": 1,
+			"taskline: cron": 1,
+			"taskline: deliver": 1,
+			"taskline: emails": 1,
+			"taskline: engine": 1,
+			"taskline: field": 1,
+			"taskline: fields": 1,
+			"taskline: hooks": 1,
+			"taskline: import": 1,
+			"taskline: inbox": 1,
+			"taskline: invitations": 1,
+			"taskline: members": 1,
+			"taskline: milestone": 1,
+			"taskline: overview": 1,
+			"taskline: produce": 1,
+			"taskline: project": 1,
+			"taskline: projects": 1,
+			"taskline: recurrence": 1,
+			"taskline: reports": 1,
+			"taskline: rev": 1,
+			"taskline: sandbox": 1,
+			"taskline: scope": 1,
+			"taskline: settings": 1,
+			"taskline: sprint": 1,
+			"taskline: task": 1,
+			"taskline: taskline": 1,
+			"taskline: team": 1,
+			"taskline: template": 1,
+			"taskline: templates": 1,
+			"taskline: updates": 1,
+			"taskline: views": 1,
+			"taskline: workspace": 1
+		}
+	},
+	"tests": {
+		"total": 207,
+		"byFolder": {
+			"tests/server": 89,
+			"tests/unit": 80,
+			"tests/components": 34,
+			"tests/i18n": 3,
+			"tests/email": 1
+		},
+		"notNamedAfterAFeature": [
+			"tests/components/attachments/image-gallery-field.test.tsx",
+			"tests/components/chaal/quick-pair.test.tsx",
+			"tests/components/dialogs/confirm.test.tsx",
+			"tests/components/errors/error-page.test.tsx",
+			"tests/components/filters/filter-bar.test.tsx",
+			"tests/components/forms/choice-fields.test.tsx",
+			"tests/components/forms/date-fields.test.tsx",
+			"tests/components/forms/file-fields.test.tsx",
+			"tests/components/forms/form-components.test.tsx",
+			"tests/components/forms/misc-fields.test.tsx",
+			"tests/components/forms/number-fields.test.tsx",
+			"tests/components/forms/text-fields.test.tsx",
+			"tests/components/layout/navigation-progress.test.tsx",
+			"tests/components/layout/preferences-ui.test.tsx",
+			"tests/components/layout/section-headers.test.tsx",
+			"tests/components/navigation/route-masking.test.tsx",
+			"tests/components/rbac/can.test.tsx",
+			"tests/components/taskline/backlog.test.tsx",
+			"tests/components/taskline/timesheet.test.tsx",
+			"tests/i18n/locale-routing.test.ts",
+			"tests/i18n/message-parity.test.ts",
+			"tests/i18n/message-usage.test.ts",
+			"tests/server/csp-report.test.ts",
+			"tests/server/error-status.test.ts",
+			"tests/server/example-tasks.test.ts",
+			"tests/server/guarded-functions.test.ts",
+			"tests/server/guards.test.ts",
+			"tests/server/idempotency.test.ts",
+			"tests/server/recipes.test.ts",
+			"tests/server/request-scope.test.ts",
+			"tests/server/route-guards.test.ts",
+			"tests/server/seed-demo.test.ts",
+			"tests/server/sitemap.test.ts",
+			"tests/unit/commit-msg.test.ts",
+			"tests/unit/contour-art.test.ts",
+			"tests/unit/csp.test.ts",
+			"tests/unit/currency.test.ts",
+			"tests/unit/design-tokens.test.ts",
+			"tests/unit/e2e-pages.test.ts",
+			"tests/unit/form-method.test.ts",
+			"tests/unit/habit-streaks.test.ts",
+			"tests/unit/himal-tokens.test.ts",
+			"tests/unit/hotkeys.test.ts",
+			"tests/unit/intl.test.ts",
+			"tests/unit/lru-cache.test.ts",
+			"tests/unit/preferences.test.ts",
+			"tests/unit/route-seo.test.ts",
+			"tests/unit/strip-markers.test.ts",
+			"tests/unit/terrain.test.ts"
+		]
+	}
+}

@@ -1,0 +1,380 @@
+[
+	{
+		"label": "typecheck-cold",
+		"command": "pnpm typecheck",
+		"startedAt": "2026-11-14T13:48:34.761Z",
+		"wallMs": 105217,
+		"exitCode": 0,
+		"peakTreeMb": 3466,
+		"peakProcesses": 6,
+		"leastFreeMb": 2430,
+		"busyBeforePercent": 4,
+		"samples": 66,
+		"machine": {
+			"platform": "win32 10.0.26200",
+			"node": "v24.11.0",
+			"threads": 12,
+			"memoryMb": 12012
+		}
+	},
+	{
+		"label": "typecheck-warm",
+		"command": "pnpm typecheck",
+		"startedAt": "2026-11-14T13:50:21.084Z",
+		"wallMs": 57820,
+		"exitCode": 0,
+		"peakTreeMb": 1873,
+		"peakProcesses": 6,
+		"leastFreeMb": 4155,
+		"busyBeforePercent": 12,
+		"samples": 37,
+		"machine": {
+			"platform": "win32 10.0.26200",
+			"node": "v24.11.0",
+			"threads": 12,
+			"memoryMb": 12012
+		}
+	},
+	{
+		"label": "knip",
+		"command": "pnpm knip",
+		"startedAt": "2026-11-14T13:51:35.868Z",
+		"wallMs": 7350,
+		"exitCode": 0,
+		"peakTreeMb": 575,
+		"peakProcesses": 4,
+		"leastFreeMb": 5340,
+		"busyBeforePercent": 6,
+		"samples": 5,
+		"machine": {
+			"platform": "win32 10.0.26200",
+			"node": "v24.11.0",
+			"threads": 12,
+			"memoryMb": 12012
+		}
+	},
+	{
+		"label": "i18n-check",
+		"command": "pnpm i18n:check",
+		"startedAt": "2026-11-14T13:51:44.317Z",
+		"wallMs": 5884,
+		"exitCode": 0,
+		"peakTreeMb": 718,
+		"peakProcesses": 4,
+		"leastFreeMb": 5271,
+		"busyBeforePercent": 4,
+		"samples": 4,
+		"machine": {
+			"platform": "win32 10.0.26200",
+			"node": "v24.11.0",
+			"threads": 12,
+			"memoryMb": 12012
+		}
+	},
+	{
+		"label": "test",
+		"command": "pnpm exec vitest run --project unit --maxWorkers=4 --reporter=default --reporter=json --outputFile.json=.data/audit/vitest-unit.json",
+		"startedAt": "2026-11-14T13:52:06.683Z",
+		"wallMs": 205603,
+		"exitCode": 0,
+		"peakTreeMb": 4460,
+		"peakProcesses": 11,
+		"leastFreeMb": 1996,
+		"busyBeforePercent": 11,
+		"samples": 130,
+		"machine": {
+			"platform": "win32 10.0.26200",
+			"node": "v24.11.0",
+			"threads": 12,
+			"memoryMb": 12012
+		}
+	},
+	{
+		"label": "check",
+		"command": "pnpm check",
+		"startedAt": "2026-11-14T13:55:42.567Z",
+		"wallMs": 14590,
+		"exitCode": 0,
+		"peakTreeMb": 299,
+		"peakProcesses": 5,
+		"leastFreeMb": 6078,
+		"busyBeforePercent": 10,
+		"samples": 8,
+		"machine": {
+			"platform": "win32 10.0.26200",
+			"node": "v24.11.0",
+			"threads": 12,
+			"memoryMb": 12012
+		}
+	},
+	{
+		"label": "storybook-en-light",
+		"command": "pnpm exec vitest run --project storybook --maxWorkers=4 --reporter=default --reporter=json --outputFile.json=.data/audit/vitest-storybook.json",
+		"startedAt": "2026-11-14T13:55:58.277Z",
+		"wallMs": 55307,
+		"exitCode": 0,
+		"peakTreeMb": 7319,
+		"peakProcesses": 20,
+		"leastFreeMb": 39,
+		"busyBeforePercent": 7,
+		"samples": 34,
+		"machine": {
+			"platform": "win32 10.0.26200",
+			"node": "v24.11.0",
+			"threads": 12,
+			"memoryMb": 12012
+		}
+	},
+	{
+		"label": "storybook-ne-dark",
+		"command": "pnpm exec vitest run --project storybook-dark-ne --maxWorkers=4 --reporter=default --reporter=json --outputFile.json=.data/audit/vitest-storybook-ne.json",
+		"startedAt": "2026-11-14T13:56:54.727Z",
+		"wallMs": 52614,
+		"exitCode": 0,
+		"peakTreeMb": 7247,
+		"peakProcesses": 20,
+		"leastFreeMb": 537,
+		"busyBeforePercent": 12,
+		"samples": 33,
+		"machine": {
+			"platform": "win32 10.0.26200",
+			"node": "v24.11.0",
+			"threads": 12,
+			"memoryMb": 12012
+		}
+	},
+	{
+		"label": "build",
+		"command": "pnpm build",
+		"startedAt": "2026-11-14T13:57:54.416Z",
+		"wallMs": 94240,
+		"exitCode": 0,
+		"peakTreeMb": 4722,
+		"peakProcesses": 4,
+		"leastFreeMb": 2113,
+		"busyBeforePercent": 3,
+		"samples": 59,
+		"machine": {
+			"platform": "win32 10.0.26200",
+			"node": "v24.11.0",
+			"threads": 12,
+			"memoryMb": 12012
+		}
+	},
+	{
+		"label": "bundle",
+		"command": "node scripts/check-bundle.ts",
+		"startedAt": "2026-11-14T13:59:29.753Z",
+		"wallMs": 1983,
+		"exitCode": 0,
+		"peakTreeMb": 77,
+		"peakProcesses": 2,
+		"leastFreeMb": 6751,
+		"busyBeforePercent": 5,
+		"samples": 1,
+		"machine": {
+			"platform": "win32 10.0.26200",
+			"node": "v24.11.0",
+			"threads": 12,
+			"memoryMb": 12012
+		}
+	},
+	{
+		"label": "build-storybook",
+		"command": "pnpm build-storybook",
+		"startedAt": "2026-11-14T13:59:32.856Z",
+		"wallMs": 75865,
+		"exitCode": 0,
+		"peakTreeMb": 2923,
+		"peakProcesses": 7,
+		"leastFreeMb": 3797,
+		"busyBeforePercent": 6,
+		"samples": 48,
+		"machine": {
+			"platform": "win32 10.0.26200",
+			"node": "v24.11.0",
+			"threads": 12,
+			"memoryMb": 12012
+		}
+	},
+	{
+		"label": "e2e-01",
+		"command": "pnpm exec playwright test --workers=2 --shard=1/10 --reporter=list,json",
+		"startedAt": "2026-11-14T14:02:33.576Z",
+		"wallMs": 630859,
+		"exitCode": 0,
+		"peakTreeMb": 3581,
+		"peakProcesses": 29,
+		"leastFreeMb": 505,
+		"busyBeforePercent": 15,
+		"samples": 387,
+		"machine": {
+			"platform": "win32 10.0.26200",
+			"node": "v24.11.0",
+			"threads": 12,
+			"memoryMb": 12012
+		}
+	},
+	{
+		"label": "e2e-02",
+		"command": "pnpm exec playwright test --workers=2 --shard=2/10 --reporter=list,json",
+		"startedAt": "2026-11-14T14:13:05.567Z",
+		"wallMs": 343419,
+		"exitCode": 0,
+		"peakTreeMb": 3248,
+		"peakProcesses": 28,
+		"leastFreeMb": 2273,
+		"busyBeforePercent": 21,
+		"samples": 212,
+		"machine": {
+			"platform": "win32 10.0.26200",
+			"node": "v24.11.0",
+			"threads": 12,
+			"memoryMb": 12012
+		}
+	},
+	{
+		"label": "e2e-03",
+		"command": "pnpm exec playwright test --workers=2 --shard=3/10 --reporter=list,json",
+		"startedAt": "2026-11-14T14:18:50.112Z",
+		"wallMs": 435996,
+		"exitCode": 0,
+		"peakTreeMb": 4192,
+		"peakProcesses": 27,
+		"leastFreeMb": 1875,
+		"busyBeforePercent": 15,
+		"samples": 270,
+		"machine": {
+			"platform": "win32 10.0.26200",
+			"node": "v24.11.0",
+			"threads": 12,
+			"memoryMb": 12012
+		}
+	},
+	{
+		"label": "e2e-04",
+		"command": "pnpm exec playwright test --workers=2 --shard=4/10 --reporter=list,json",
+		"startedAt": "2026-11-14T14:26:07.217Z",
+		"wallMs": 457772,
+		"exitCode": 0,
+		"peakTreeMb": 3820,
+		"peakProcesses": 27,
+		"leastFreeMb": 2164,
+		"busyBeforePercent": 13,
+		"samples": 283,
+		"machine": {
+			"platform": "win32 10.0.26200",
+			"node": "v24.11.0",
+			"threads": 12,
+			"memoryMb": 12012
+		}
+	},
+	{
+		"label": "e2e-05",
+		"command": "pnpm exec playwright test --workers=2 --shard=5/10 --reporter=list,json",
+		"startedAt": "2026-11-14T14:33:46.090Z",
+		"wallMs": 442036,
+		"exitCode": 0,
+		"peakTreeMb": 3619,
+		"peakProcesses": 28,
+		"leastFreeMb": 2274,
+		"busyBeforePercent": 16,
+		"samples": 274,
+		"machine": {
+			"platform": "win32 10.0.26200",
+			"node": "v24.11.0",
+			"threads": 12,
+			"memoryMb": 12012
+		}
+	},
+	{
+		"label": "e2e-06",
+		"command": "pnpm exec playwright test --workers=2 --shard=6/10 --reporter=list,json",
+		"startedAt": "2026-11-14T14:41:09.225Z",
+		"wallMs": 467070,
+		"exitCode": 0,
+		"peakTreeMb": 4567,
+		"peakProcesses": 27,
+		"leastFreeMb": 1561,
+		"busyBeforePercent": 15,
+		"samples": 290,
+		"machine": {
+			"platform": "win32 10.0.26200",
+			"node": "v24.11.0",
+			"threads": 12,
+			"memoryMb": 12012
+		}
+	},
+	{
+		"label": "e2e-07",
+		"command": "pnpm exec playwright test --workers=2 --shard=7/10 --reporter=list,json",
+		"startedAt": "2026-11-14T14:48:57.406Z",
+		"wallMs": 384854,
+		"exitCode": 0,
+		"peakTreeMb": 3972,
+		"peakProcesses": 27,
+		"leastFreeMb": 1929,
+		"busyBeforePercent": 8,
+		"samples": 239,
+		"machine": {
+			"platform": "win32 10.0.26200",
+			"node": "v24.11.0",
+			"threads": 12,
+			"memoryMb": 12012
+		}
+	},
+	{
+		"label": "e2e-08",
+		"command": "pnpm exec playwright test --workers=2 --shard=8/10 --reporter=list,json",
+		"startedAt": "2026-11-14T14:55:23.359Z",
+		"wallMs": 441779,
+		"exitCode": 0,
+		"peakTreeMb": 4336,
+		"peakProcesses": 30,
+		"leastFreeMb": 1564,
+		"busyBeforePercent": 10,
+		"samples": 273,
+		"machine": {
+			"platform": "win32 10.0.26200",
+			"node": "v24.11.0",
+			"threads": 12,
+			"memoryMb": 12012
+		}
+	},
+	{
+		"label": "e2e-09",
+		"command": "pnpm exec playwright test --workers=2 --shard=9/10 --reporter=list,json",
+		"startedAt": "2026-11-14T15:02:46.276Z",
+		"wallMs": 364764,
+		"exitCode": 0,
+		"peakTreeMb": 3683,
+		"peakProcesses": 26,
+		"leastFreeMb": 2205,
+		"busyBeforePercent": 12,
+		"samples": 226,
+		"machine": {
+			"platform": "win32 10.0.26200",
+			"node": "v24.11.0",
+			"threads": 12,
+			"memoryMb": 12012
+		}
+	},
+	{
+		"label": "e2e-10",
+		"command": "pnpm exec playwright test --workers=2 --shard=10/10 --reporter=list,json",
+		"startedAt": "2026-11-14T15:08:52.175Z",
+		"wallMs": 437268,
+		"exitCode": 0,
+		"peakTreeMb": 4098,
+		"peakProcesses": 26,
+		"leastFreeMb": 1796,
+		"busyBeforePercent": 11,
+		"samples": 270,
+		"machine": {
+			"platform": "win32 10.0.26200",
+			"node": "v24.11.0",
+			"threads": 12,
+			"memoryMb": 12012
+		}
+	}
+]

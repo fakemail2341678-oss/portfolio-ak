@@ -6,6 +6,7 @@
 import { KHARCHA_DEMO_INVITE_TOKEN } from "../scripts/lib/kharcha-seed.ts"; // @kharcha
 import { E2E } from "./harness/config.ts";
 import { pardaFixturePath } from "./harness/tmdb.ts"; // @parda
+import { auditWidths } from "./support/audit.ts";
 import { type Harness, RESOURCE_STATUS, signedIn, test } from "./support/fixtures.ts";
 import {
 	localizedPath,
@@ -18,7 +19,8 @@ import {
 import { reviewPage } from "./support/review.ts";
 
 const THEMES = ["light", "dark"] as const;
-const WIDTHS = [390, 768, 1280] as const;
+/** An audit run (AUDIT_WIDTHS, e2e/support/audit.ts) replaces the widths; the review's are these three. */
+const WIDTHS = auditWidths([390, 768, 1280]);
 const LOCALES = ["en", "ne"] as const;
 
 let sitemapPaths: Promise<string[]> | undefined;

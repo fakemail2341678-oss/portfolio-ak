@@ -1,0 +1,689 @@
+{
+	"generated": "node scripts/audit/copies.ts",
+	"minLines": 12,
+	"minTokens": 90,
+	"total": {
+		"lines": 239327,
+		"tokens": 2583280,
+		"sources": 2261,
+		"clones": 46,
+		"duplicatedLines": 1032,
+		"duplicatedTokens": 11580,
+		"percentage": 0.43,
+		"percentageTokens": 0.45,
+		"newDuplicatedLines": 0,
+		"newClones": 0
+	},
+	"byLayers": {
+		"kharcha and taskline": 11,
+		"within apps": 6,
+		"core and taskline": 5,
+		"parda and taskline": 4,
+		"within chaal": 4,
+		"within taskline": 4,
+		"within core": 3,
+		"chaal and kharcha": 2,
+		"chaal and taskline": 2,
+		"within parda": 2,
+		"apps and kharcha": 1,
+		"chaal and parda": 1,
+		"within kharcha": 1
+	},
+	"acrossLayers": {
+		"copies": 26,
+		"lines": 634,
+		"list": [
+			{
+				"lines": 57,
+				"tokens": 548,
+				"first": "src/features/kharcha/spend/import-page.tsx:185-241",
+				"second": "src/features/taskline/list/import-dialog.tsx:179-240",
+				"pair": "kharcha and taskline",
+				"across": true,
+				"sameFile": false
+			},
+			{
+				"lines": 40,
+				"tokens": 442,
+				"first": "src/features/chaal/shell/chaal-palette.tsx:223-262",
+				"second": "src/features/taskline/shell/taskline-palette.tsx:243-193",
+				"pair": "chaal and taskline",
+				"across": true,
+				"sameFile": false
+			},
+			{
+				"lines": 39,
+				"tokens": 427,
+				"first": "src/features/kharcha/shell/kharcha-palette.tsx:150-188",
+				"second": "src/features/taskline/shell/taskline-palette.tsx:240-276",
+				"pair": "kharcha and taskline",
+				"across": true,
+				"sameFile": false
+			},
+			{
+				"lines": 39,
+				"tokens": 428,
+				"first": "src/components/admin-shell/command-menu.tsx:135-173",
+				"second": "src/features/taskline/shell/taskline-palette.tsx:240-276",
+				"pair": "core and taskline",
+				"across": true,
+				"sameFile": false
+			},
+			{
+				"lines": 39,
+				"tokens": 426,
+				"first": "src/components/admin-shell/command-menu.tsx:143-181",
+				"second": "src/features/taskline/shell/taskline-palette.tsx:246-284",
+				"pair": "core and taskline",
+				"across": true,
+				"sameFile": false
+			},
+			{
+				"lines": 37,
+				"tokens": 438,
+				"first": "src/features/chaal/shell/chaal-palette.tsx:221-257",
+				"second": "src/features/taskline/shell/taskline-palette.tsx:239-276",
+				"pair": "chaal and taskline",
+				"across": true,
+				"sameFile": false
+			},
+			{
+				"lines": 32,
+				"tokens": 339,
+				"first": "src/features/kharcha/shell/kharcha-palette.tsx:156-187",
+				"second": "src/features/taskline/shell/taskline-palette.tsx:245-276",
+				"pair": "kharcha and taskline",
+				"across": true,
+				"sameFile": false
+			},
+			{
+				"lines": 27,
+				"tokens": 316,
+				"first": "src/server/kharcha/rev.ts:40-66",
+				"second": "src/server/taskline/rev.ts:56-52",
+				"pair": "kharcha and taskline",
+				"across": true,
+				"sameFile": false
+			},
+			{
+				"lines": 22,
+				"tokens": 340,
+				"first": "src/server/email/templates/parda-emails.tsx:20-41",
+				"second": "src/server/email/templates/taskline-emails.tsx:79-100",
+				"pair": "parda and taskline",
+				"across": true,
+				"sameFile": false
+			},
+			{
+				"lines": 21,
+				"tokens": 189,
+				"first": "src/features/kharcha/shell/kharcha-user-menu.tsx:85-105",
+				"second": "src/features/taskline/shell/taskline-user-menu.tsx:92-112",
+				"pair": "kharcha and taskline",
+				"across": true,
+				"sameFile": false
+			},
+			{
+				"lines": 21,
+				"tokens": 249,
+				"first": "src/components/admin-shell/user-menu.tsx:48-68",
+				"second": "src/features/taskline/shell/taskline-user-menu.tsx:56-76",
+				"pair": "core and taskline",
+				"across": true,
+				"sameFile": false
+			},
+			{
+				"lines": 20,
+				"tokens": 209,
+				"first": "src/features/kharcha/auth/kharcha-sign-in.tsx:27-46",
+				"second": "src/features/taskline/auth/taskline-sign-in.tsx:27-46",
+				"pair": "kharcha and taskline",
+				"across": true,
+				"sameFile": false
+			},
+			{
+				"lines": 20,
+				"tokens": 280,
+				"first": "src/server/routes/cron-guests.ts:15-34",
+				"second": "src/server/routes/cron-kharcha.ts:14-33",
+				"pair": "apps and kharcha",
+				"across": true,
+				"sameFile": false
+			},
+			{
+				"lines": 20,
+				"tokens": 280,
+				"first": "src/server/routes/cron-chaal.ts:11-30",
+				"second": "src/server/routes/cron-kharcha.ts:14-33",
+				"pair": "chaal and kharcha",
+				"across": true,
+				"sameFile": false
+			},
+			{
+				"lines": 19,
+				"tokens": 193,
+				"first": "src/features/kharcha/spend/import-page.tsx:253-271",
+				"second": "src/features/taskline/list/import-dialog.tsx:275-293",
+				"pair": "kharcha and taskline",
+				"across": true,
+				"sameFile": false
+			},
+			{
+				"lines": 19,
+				"tokens": 267,
+				"first": "src/server/routes/cron-parda.ts:13-31",
+				"second": "src/server/routes/cron-taskline.ts:15-33",
+				"pair": "parda and taskline",
+				"across": true,
+				"sameFile": false
+			},
+			{
+				"lines": 19,
+				"tokens": 267,
+				"first": "src/server/routes/cron-kharcha.ts:15-33",
+				"second": "src/server/routes/cron-taskline.ts:15-33",
+				"pair": "kharcha and taskline",
+				"across": true,
+				"sameFile": false
+			},
+			{
+				"lines": 19,
+				"tokens": 267,
+				"first": "src/server/routes/cron-attachments.ts:14-32",
+				"second": "src/server/routes/cron-taskline.ts:15-33",
+				"pair": "core and taskline",
+				"across": true,
+				"sameFile": false
+			},
+			{
+				"lines": 19,
+				"tokens": 190,
+				"first": "src/routes/_auth/login.tsx:24-42",
+				"second": "src/features/taskline/auth/taskline-sign-in.tsx:28-46",
+				"pair": "core and taskline",
+				"across": true,
+				"sameFile": false
+			},
+			{
+				"lines": 18,
+				"tokens": 237,
+				"first": "src/server/email/templates/kharcha-emails.tsx:135-152",
+				"second": "src/server/email/templates/taskline-emails.tsx:43-60",
+				"pair": "kharcha and taskline",
+				"across": true,
+				"sameFile": false
+			},
+			{
+				"lines": 18,
+				"tokens": 152,
+				"first": "src/features/kharcha/shell/shortcuts-dialog.tsx:31-48",
+				"second": "src/features/taskline/shell/shortcuts-dialog.tsx:30-47",
+				"pair": "kharcha and taskline",
+				"across": true,
+				"sameFile": false
+			},
+			{
+				"lines": 16,
+				"tokens": 158,
+				"first": "src/features/chaal/shell/chaal-user-menu.tsx:135-150",
+				"second": "src/features/kharcha/shell/kharcha-user-menu.tsx:103-118",
+				"pair": "chaal and kharcha",
+				"across": true,
+				"sameFile": false
+			},
+			{
+				"lines": 14,
+				"tokens": 229,
+				"first": "src/server/taskline/rev.ts:69-82",
+				"second": "src/server/parda/admin/context.ts:39-52",
+				"pair": "parda and taskline",
+				"across": true,
+				"sameFile": false
+			},
+			{
+				"lines": 13,
+				"tokens": 158,
+				"first": "src/server/db/schema/chaal/curation.ts:36-48",
+				"second": "src/server/db/schema/parda/curation.ts:38-50",
+				"pair": "chaal and parda",
+				"across": true,
+				"sameFile": false
+			},
+			{
+				"lines": 13,
+				"tokens": 128,
+				"first": "src/features/kharcha/expenses/expense-sheet.tsx:36-48",
+				"second": "src/features/taskline/task/task-sheet.tsx:38-50",
+				"pair": "kharcha and taskline",
+				"across": true,
+				"sameFile": false
+			},
+			{
+				"lines": 13,
+				"tokens": 162,
+				"first": "src/server/routes/cron-taskline.ts:17-29",
+				"second": "src/server/parda/player/probe.ts:138-150",
+				"pair": "parda and taskline",
+				"across": true,
+				"sameFile": false
+			}
+		]
+	},
+	"largestWithinALayer": [
+		{
+			"lines": 53,
+			"tokens": 382,
+			"first": "src/features/taskline/task/task-link.tsx:35-87",
+			"second": "src/features/taskline/task/task-link.tsx:24-58",
+			"pair": "within taskline",
+			"across": false,
+			"sameFile": true
+		},
+		{
+			"lines": 46,
+			"tokens": 382,
+			"first": "src/components/forms/fields/async-combobox-field.tsx:220-265",
+			"second": "src/components/forms/fields/choice-fields.tsx:186-232",
+			"pair": "within core",
+			"across": false,
+			"sameFile": false
+		},
+		{
+			"lines": 42,
+			"tokens": 352,
+			"first": "src/components/forms/fields/async-combobox-field.tsx:224-265",
+			"second": "src/components/forms/fields/choice-fields.tsx:190-234",
+			"pair": "within core",
+			"across": false,
+			"sameFile": false
+		},
+		{
+			"lines": 37,
+			"tokens": 303,
+			"first": "src/features/chaal/game/replay-page.tsx:99-135",
+			"second": "src/features/chaal/watch/spectate-board.tsx:130-166",
+			"pair": "within chaal",
+			"across": false,
+			"sameFile": false
+		},
+		{
+			"lines": 29,
+			"tokens": 223,
+			"first": "src/features/chaal/community/header.tsx:39-67",
+			"second": "src/features/chaal/watch/watch-header.tsx:31-63",
+			"pair": "within chaal",
+			"across": false,
+			"sameFile": false
+		},
+		{
+			"lines": 19,
+			"tokens": 211,
+			"first": "src/features/parda/library/for-you-rails.tsx:35-53",
+			"second": "src/features/parda/title/title-sections.tsx:83-117",
+			"pair": "within parda",
+			"across": false,
+			"sameFile": false
+		},
+		{
+			"lines": 17,
+			"tokens": 149,
+			"first": "src/features/taskline/admin/overview/overview-page.tsx:31-47",
+			"second": "src/features/taskline/admin/reports/reports-page.tsx:24-40",
+			"pair": "within taskline",
+			"across": false,
+			"sameFile": false
+		},
+		{
+			"lines": 17,
+			"tokens": 183,
+			"first": "src/features/apps/links/components/links-home.tsx:62-78",
+			"second": "src/features/apps/notes/components/notes-home.tsx:68-84",
+			"pair": "within apps",
+			"across": false,
+			"sameFile": false
+		},
+		{
+			"lines": 17,
+			"tokens": 144,
+			"first": "src/features/apps/links/components/links-home.tsx:82-98",
+			"second": "src/features/apps/notes/components/notes-home.tsx:88-104",
+			"pair": "within apps",
+			"across": false,
+			"sameFile": false
+		},
+		{
+			"lines": 17,
+			"tokens": 183,
+			"first": "src/features/apps/habits/components/habits-home.tsx:66-82",
+			"second": "src/features/apps/notes/components/notes-home.tsx:68-84",
+			"pair": "within apps",
+			"across": false,
+			"sameFile": false
+		},
+		{
+			"lines": 17,
+			"tokens": 144,
+			"first": "src/features/apps/habits/components/habits-home.tsx:86-102",
+			"second": "src/features/apps/notes/components/notes-home.tsx:88-104",
+			"pair": "within apps",
+			"across": false,
+			"sameFile": false
+		},
+		{
+			"lines": 17,
+			"tokens": 183,
+			"first": "src/features/apps/forms/components/forms-home.tsx:61-77",
+			"second": "src/features/apps/notes/components/notes-home.tsx:68-84",
+			"pair": "within apps",
+			"across": false,
+			"sameFile": false
+		},
+		{
+			"lines": 17,
+			"tokens": 144,
+			"first": "src/features/apps/forms/components/forms-home.tsx:81-97",
+			"second": "src/features/apps/notes/components/notes-home.tsx:88-104",
+			"pair": "within apps",
+			"across": false,
+			"sameFile": false
+		},
+		{
+			"lines": 17,
+			"tokens": 160,
+			"first": "src/features/taskline/board/board.tsx:407-423",
+			"second": "src/features/taskline/sprints/backlog.tsx:338-354",
+			"pair": "within taskline",
+			"across": false,
+			"sameFile": false
+		},
+		{
+			"lines": 15,
+			"tokens": 188,
+			"first": "src/features/chaal/watch/broadcast-page.tsx:482-496",
+			"second": "src/features/chaal/watch/spectate-board.tsx:127-140",
+			"pair": "within chaal",
+			"across": false,
+			"sameFile": false
+		},
+		{
+			"lines": 14,
+			"tokens": 234,
+			"first": "src/features/taskline/board/board.tsx:101-114",
+			"second": "src/features/taskline/sprints/backlog.tsx:94-107",
+			"pair": "within taskline",
+			"across": false,
+			"sameFile": false
+		},
+		{
+			"lines": 14,
+			"tokens": 155,
+			"first": "src/features/chaal/events/tournament-page.tsx:585-598",
+			"second": "src/features/chaal/events/tournament-page.tsx:418-431",
+			"pair": "within chaal",
+			"across": false,
+			"sameFile": true
+		},
+		{
+			"lines": 13,
+			"tokens": 172,
+			"first": "src/features/parda/title/types.ts:72-84",
+			"second": "src/server/parda/tmdb/mappers.ts:57-69",
+			"pair": "within parda",
+			"across": false,
+			"sameFile": false
+		},
+		{
+			"lines": 13,
+			"tokens": 221,
+			"first": "src/features/media/components/media-library.tsx:60-72",
+			"second": "src/features/media/components/media-picker.tsx:70-82",
+			"pair": "within core",
+			"across": false,
+			"sameFile": false
+		},
+		{
+			"lines": 13,
+			"tokens": 148,
+			"first": "src/features/kharcha/expenses/expense-dialog.tsx:331-343",
+			"second": "src/features/kharcha/settle/settle-dialog.tsx:309-321",
+			"pair": "within kharcha",
+			"across": false,
+			"sameFile": false
+		}
+	],
+	"samePathAcrossProducts": [
+		{
+			"path": "src/features/<product>/admin/collection.ts",
+			"products": [
+				"taskline",
+				"parda",
+				"chaal",
+				"kharcha"
+			]
+		},
+		{
+			"path": "src/features/<product>/admin/labels.ts",
+			"products": [
+				"taskline",
+				"parda",
+				"chaal"
+			]
+		},
+		{
+			"path": "src/features/<product>/admin/overview/overview-page.tsx",
+			"products": [
+				"taskline",
+				"parda",
+				"chaal",
+				"kharcha"
+			]
+		},
+		{
+			"path": "src/features/<product>/admin/queries.ts",
+			"products": [
+				"taskline",
+				"parda",
+				"chaal",
+				"kharcha"
+			]
+		},
+		{
+			"path": "src/features/<product>/admin/schema.ts",
+			"products": [
+				"taskline",
+				"parda",
+				"chaal",
+				"kharcha"
+			]
+		},
+		{
+			"path": "src/features/<product>/admin/search.ts",
+			"products": [
+				"taskline",
+				"parda",
+				"chaal"
+			]
+		},
+		{
+			"path": "src/features/<product>/admin/settings/settings-page.tsx",
+			"products": [
+				"taskline",
+				"parda",
+				"chaal",
+				"kharcha"
+			]
+		},
+		{
+			"path": "src/features/<product>/auth/<product>-sign-in.tsx",
+			"products": [
+				"taskline",
+				"parda",
+				"chaal",
+				"kharcha"
+			]
+		},
+		{
+			"path": "src/features/<product>/auth/<product>-sign-up.tsx",
+			"products": [
+				"taskline",
+				"parda",
+				"chaal",
+				"kharcha"
+			]
+		},
+		{
+			"path": "src/features/<product>/brand.ts",
+			"products": [
+				"taskline",
+				"parda",
+				"chaal",
+				"kharcha"
+			]
+		},
+		{
+			"path": "src/features/<product>/home/<product>-home.tsx",
+			"products": [
+				"taskline",
+				"chaal",
+				"kharcha"
+			]
+		},
+		{
+			"path": "src/features/<product>/lib/fonts.ts",
+			"products": [
+				"parda",
+				"chaal",
+				"kharcha"
+			]
+		},
+		{
+			"path": "src/features/<product>/links.ts",
+			"products": [
+				"taskline",
+				"parda",
+				"chaal",
+				"kharcha"
+			]
+		},
+		{
+			"path": "src/features/<product>/queries.ts",
+			"products": [
+				"taskline",
+				"parda",
+				"chaal",
+				"kharcha"
+			]
+		},
+		{
+			"path": "src/features/<product>/schema.ts",
+			"products": [
+				"taskline",
+				"chaal",
+				"kharcha"
+			]
+		},
+		{
+			"path": "src/features/<product>/search.ts",
+			"products": [
+				"taskline",
+				"parda",
+				"chaal",
+				"kharcha"
+			]
+		},
+		{
+			"path": "src/features/<product>/shell/<product>-mark.tsx",
+			"products": [
+				"taskline",
+				"parda",
+				"chaal"
+			]
+		},
+		{
+			"path": "src/features/<product>/shell/<product>-palette.tsx",
+			"products": [
+				"taskline",
+				"chaal",
+				"kharcha"
+			]
+		},
+		{
+			"path": "src/features/<product>/shell/<product>-user-menu.tsx",
+			"products": [
+				"taskline",
+				"parda",
+				"chaal",
+				"kharcha"
+			]
+		},
+		{
+			"path": "src/features/<product>/shell/section.tsx",
+			"products": [
+				"taskline",
+				"parda",
+				"chaal",
+				"kharcha"
+			]
+		},
+		{
+			"path": "src/features/<product>/shell/shortcuts-dialog.tsx",
+			"products": [
+				"taskline",
+				"chaal",
+				"kharcha"
+			]
+		},
+		{
+			"path": "src/server/<product>/activity.ts",
+			"products": [
+				"taskline",
+				"chaal",
+				"kharcha"
+			]
+		},
+		{
+			"path": "src/server/<product>/admin/overview.ts",
+			"products": [
+				"taskline",
+				"parda",
+				"chaal",
+				"kharcha"
+			]
+		},
+		{
+			"path": "src/server/<product>/admin/settings.ts",
+			"products": [
+				"taskline",
+				"parda",
+				"chaal",
+				"kharcha"
+			]
+		},
+		{
+			"path": "src/server/<product>/cron.ts",
+			"products": [
+				"taskline",
+				"parda",
+				"chaal",
+				"kharcha"
+			]
+		},
+		{
+			"path": "src/server/<product>/guest-data.ts",
+			"products": [
+				"parda",
+				"chaal",
+				"kharcha"
+			]
+		},
+		{
+			"path": "src/server/<product>/manifest.ts",
+			"products": [
+				"taskline",
+				"parda",
+				"chaal",
+				"kharcha"
+			]
+		}
+	]
+}

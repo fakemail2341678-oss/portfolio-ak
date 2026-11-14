@@ -1,0 +1,326 @@
+{
+	"generated": "node scripts/audit/old-plan.ts",
+	"rows": [
+		{
+			"part": "1",
+			"task": "1",
+			"name": "Scaffold and tooling",
+			"files": 56,
+			"lines": 6688,
+			"coverage": 0,
+			"counts": {},
+			"closes": "99, 100, 103"
+		},
+		{
+			"part": "1",
+			"task": "2",
+			"name": "Environment validation",
+			"files": 4,
+			"lines": 332,
+			"coverage": 94.6,
+			"counts": {
+				"bare errors": 1
+			},
+			"closes": "103"
+		},
+		{
+			"part": "1",
+			"task": "3",
+			"name": "Database",
+			"files": 61,
+			"lines": 4832,
+			"coverage": 68.6,
+			"counts": {
+				"files with timers": 1
+			},
+			"closes": "104"
+		},
+		{
+			"part": "1",
+			"task": "4",
+			"name": "Internationalisation",
+			"files": 6,
+			"lines": 723,
+			"coverage": 97.4,
+			"counts": {},
+			"closes": "100, 110"
+		},
+		{
+			"part": "1",
+			"task": "5",
+			"name": "Router, SSR and server functions",
+			"files": 28,
+			"lines": 1323,
+			"coverage": 70.4,
+			"counts": {
+				"routes reading with no loader": 1,
+				"silent catches": 1
+			},
+			"closes": "103, 106"
+		},
+		{
+			"part": "1",
+			"task": "6",
+			"name": "Email",
+			"files": 13,
+			"lines": 1217,
+			"coverage": 90.1,
+			"counts": {
+				"bare errors": 1
+			},
+			"closes": "103, 110"
+		},
+		{
+			"part": "1",
+			"task": "7",
+			"name": "Authentication",
+			"files": 40,
+			"lines": 3014,
+			"coverage": 22.8,
+			"counts": {
+				"POST without a validator": 1,
+				"routes reading with no loader": 1,
+				"effects": 1
+			},
+			"closes": "103, 110"
+		},
+		{
+			"part": "1",
+			"task": "8–9",
+			"name": "Form system",
+			"files": 28,
+			"lines": 4042,
+			"coverage": 75.4,
+			"counts": {
+				"effects": 8,
+				"double casts": 2,
+				"files with key handlers": 3
+			},
+			"closes": "107"
+		},
+		{
+			"part": "1",
+			"task": "10",
+			"name": "State and reactive data",
+			"files": 15,
+			"lines": 1024,
+			"coverage": 82.2,
+			"counts": {
+				"useQuery with no reason": 1,
+				"effects": 2,
+				"double casts": 2,
+				"files with timers": 2,
+				"files with key handlers": 1
+			},
+			"closes": "105, 106"
+		},
+		{
+			"part": "1",
+			"task": "11–12",
+			"name": "Test CRUD",
+			"files": 26,
+			"lines": 1701,
+			"coverage": 57.9,
+			"counts": {
+				"routes reading with no loader": 1
+			},
+			"closes": "110"
+		},
+		{
+			"part": "1",
+			"task": "13",
+			"name": "Observability",
+			"files": 9,
+			"lines": 432,
+			"coverage": 57.1,
+			"counts": {
+				"bare errors": 1,
+				"silent catches": 2
+			},
+			"closes": "103"
+		},
+		{
+			"part": "1",
+			"task": "14–15",
+			"name": "Storybook and tests",
+			"files": 112,
+			"lines": 6554,
+			"coverage": null,
+			"counts": {},
+			"closes": "99, 123"
+		},
+		{
+			"part": "2",
+			"task": "18",
+			"name": "Page building blocks",
+			"files": 42,
+			"lines": 2807,
+			"coverage": 46.7,
+			"counts": {
+				"useQuery with no reason": 1,
+				"effects": 7,
+				"files with timers": 2
+			},
+			"closes": "107"
+		},
+		{
+			"part": "2",
+			"task": "19",
+			"name": "Filters, search params, tables",
+			"files": 11,
+			"lines": 1531,
+			"coverage": 45.2,
+			"counts": {
+				"effects": 4,
+				"files with timers": 1,
+				"files with key handlers": 1
+			},
+			"closes": "106"
+		},
+		{
+			"part": "2",
+			"task": "20",
+			"name": "RBAC",
+			"files": 23,
+			"lines": 2081,
+			"coverage": 58.4,
+			"counts": {
+				"loose components": 1,
+				"useQuery with no reason": 2,
+				"bare errors": 2
+			},
+			"closes": "110"
+		},
+		{
+			"part": "2",
+			"task": "21",
+			"name": "Attachments",
+			"files": 11,
+			"lines": 1144,
+			"coverage": 92.5,
+			"counts": {
+				"bare errors": 4,
+				"silent catches": 1,
+				"effects": 2
+			},
+			"closes": "110"
+		},
+		{
+			"part": "2",
+			"task": "22",
+			"name": "SEO",
+			"files": 8,
+			"lines": 370,
+			"coverage": 87.1,
+			"counts": {
+				"double casts": 1
+			},
+			"closes": "106, 110"
+		},
+		{
+			"part": "2",
+			"task": "23",
+			"name": "Module examples and /dev",
+			"files": 47,
+			"lines": 4100,
+			"coverage": 21.9,
+			"counts": {
+				"loose components": 4,
+				"POST without a validator": 4,
+				"writes to make optimistic": 9,
+				"useQuery with no reason": 2,
+				"routes reading with no loader": 3,
+				"bare errors": 2,
+				"effects": 2,
+				"files with timers": 4
+			},
+			"closes": "109"
+		},
+		{
+			"part": "3",
+			"task": "28",
+			"name": "Server routes, health, request tracing",
+			"files": 26,
+			"lines": 1072,
+			"coverage": 40.5,
+			"counts": {
+				"silent catches": 4
+			},
+			"closes": "103"
+		},
+		{
+			"part": "3",
+			"task": "29–30",
+			"name": "Account, audit log, admin users",
+			"files": 25,
+			"lines": 2123,
+			"coverage": 58.1,
+			"counts": {
+				"routes reading with no loader": 1
+			},
+			"closes": "110"
+		},
+		{
+			"part": "4",
+			"task": "36–37",
+			"name": "Shells and the admin kit",
+			"files": 9,
+			"lines": 797,
+			"coverage": 87.5,
+			"counts": {
+				"useQuery with no reason": 2,
+				"effects": 2
+			},
+			"closes": "107"
+		},
+		{
+			"part": "4",
+			"task": "38",
+			"name": "The CRUD standard",
+			"files": 6,
+			"lines": 650,
+			"coverage": 1.9,
+			"counts": {
+				"writes to make optimistic": 2
+			},
+			"closes": "100, 105"
+		},
+		{
+			"part": "4",
+			"task": "39–40",
+			"name": "Portfolio and media",
+			"files": 177,
+			"lines": 13760,
+			"coverage": 55.4,
+			"counts": {
+				"writes to make optimistic": 3,
+				"useQuery with no reason": 2,
+				"routes reading with no loader": 2,
+				"bare errors": 1,
+				"effects": 2,
+				"files with timers": 1,
+				"files with key handlers": 1
+			},
+			"closes": "120–122"
+		},
+		{
+			"part": "4",
+			"task": "41–44",
+			"name": "Apps platform, Notes, Links, Habits, Forms",
+			"files": 101,
+			"lines": 9144,
+			"coverage": 47,
+			"counts": {
+				"loose components": 1,
+				"folded verbs": 1,
+				"POST without a validator": 2,
+				"writes to make optimistic": 13,
+				"useQuery with no reason": 2,
+				"bare errors": 6,
+				"silent catches": 1,
+				"files with key handlers": 1
+			},
+			"closes": "111"
+		}
+	]
+}

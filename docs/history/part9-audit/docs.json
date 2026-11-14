@@ -1,0 +1,79 @@
+{
+	"generated": "node scripts/audit/docs.ts",
+	"paths": {
+		"checked": 683,
+		"missing": []
+	},
+	"commands": [],
+	"decisions": {
+		"entries": 294,
+		"indexLines": 294,
+		"indexLabel": "294",
+		"missingFromIndex": [],
+		"skipped": [
+			168
+		],
+		"citedWithoutEntry": []
+	},
+	"guides": {
+		"unlisted": [],
+		"gone": []
+	},
+	"durations": [
+		{
+			"doc": "docs/guides/chaal.md",
+			"line": 172,
+			"text": "- **Following a game** (`watch/spectate.ts`, `SpectateBoard`): the game page shows a game the replay's export says is still being played, standard and not the viewer's own live game, when watch is on. `spectatedFrom(repl"
+		},
+		{
+			"doc": "docs/guides/chaal.md",
+			"line": 216,
+			"text": "- **Health:** the calls, errors and 429s by hour (24 hours or 7 days) and by endpoint class from `ch_api_stat`, the cooldowns running now (the public lane's and each connection's), the last 50 of `ch_api_error`'s 500 fai"
+		},
+		{
+			"doc": "docs/guides/chaal.md",
+			"line": 306,
+			"text": "1. **Streams through Nitro:** unbuffered in the production build (the e2e flow sees a pushed event at once). On Vercel, 300 s per function on Hobby (800 s possible on Pro); the route closes at 270 s. Time it on the deplo"
+		},
+		{
+			"doc": "docs/guides/chaal.md",
+			"line": 510,
+			"text": "- **The admin's settings write invalidates only the server functions' controls:** the Nitro routes (the streams, OAuth) are their own bundle with their own `chaalControls`, and other instances have theirs, so they see a "
+		},
+		{
+			"doc": "docs/guides/deployment.md",
+			"line": 37,
+			"text": "**Parda's source probe** (decision 0238) is a GitHub Actions workflow, not a Vercel cron: `.github/workflows/parda-probe.yml` runs `pnpm parda:probe` daily at 01:40 UTC. Set `PARDA_PROBE_SECRET` (16+ random characters) i"
+		},
+		{
+			"doc": "docs/guides/kharcha.md",
+			"line": 282,
+			"text": "- **Lazy views in stories need time:** the table and the chart load on demand, so their stories wait up to 5 s for them (`findByTestId(…, {}, { timeout: 5000 })`)."
+		},
+		{
+			"doc": "docs/guides/routing-data.md",
+			"line": 125,
+			"text": "- **Dev-only pages** live under `src/routes/dev/`: the layout 404s unless `DEV_ROUTES` (`src/lib/dev-routes.ts`: `vite dev`, or a build with `VITE_DEV_ROUTES=true`, which the e2e harness uses and production refuses; 0162"
+		},
+		{
+			"doc": "docs/guides/testing.md",
+			"line": 37,
+			"text": "- **Timeouts:** unit tests have 15 s (jsdom interaction tests are slow on a busy machine). Import heavy modules at the top of a test file, not inside a test: module loading doesn't count against the timeout there."
+		},
+		{
+			"doc": "docs/guides/testing.md",
+			"line": 52,
+			"text": "- **No docgen** (0280): `typescript: { reactDocgen: false }`. It only inferred the Controls panel's props and took nearly all of every build (over 10 minutes); the full build takes 1 min 16 s (0295; about 20 s when 0280 "
+		},
+		{
+			"doc": "docs/guides/testing.md",
+			"line": 65,
+			"text": "| `pnpm test:e2e` | Everything (73 minutes with 2 workers on the owner's machine, 0295; CI splits it into 3 shards) |"
+		},
+		{
+			"doc": "docs/guides/testing.md",
+			"line": 99,
+			"text": "- **Test CRUD:** create, edit, publish (its `/dev/test-crud` page appears) and delete (it 404s), as admin."
+		}
+	]
+}

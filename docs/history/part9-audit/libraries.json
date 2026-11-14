@@ -1,0 +1,1101 @@
+{
+	"generated": "node scripts/audit/libraries.ts",
+	"behind": {
+		"current": 45,
+		"minor": 30,
+		"patch": 27,
+		"major": 7
+	},
+	"rows": [
+		{
+			"name": "@axe-core/playwright",
+			"declared": "4.14.0",
+			"installed": "4.14.0",
+			"latest": "4.14.0",
+			"behind": "current",
+			"deprecated": false,
+			"dev": true,
+			"importedBy": 0
+		},
+		{
+			"name": "@babel/core",
+			"declared": "^7.29.7",
+			"installed": "7.29.7",
+			"latest": "8.1.2",
+			"behind": "major",
+			"deprecated": false,
+			"dev": true,
+			"importedBy": 0
+		},
+		{
+			"name": "@better-auth/drizzle-adapter",
+			"declared": "^1.7.6",
+			"installed": "1.7.6",
+			"latest": "1.7.23",
+			"behind": "patch",
+			"deprecated": false,
+			"dev": false,
+			"importedBy": 1
+		},
+		{
+			"name": "@biomejs/biome",
+			"declared": "2.4.5",
+			"installed": "2.4.5",
+			"latest": "2.6.7",
+			"behind": "minor",
+			"deprecated": false,
+			"dev": true,
+			"importedBy": 0
+		},
+		{
+			"name": "@dnd-kit/dom",
+			"declared": "0.5.1",
+			"installed": "0.5.1",
+			"latest": "0.5.3",
+			"behind": "patch",
+			"deprecated": false,
+			"dev": false,
+			"importedBy": 5
+		},
+		{
+			"name": "@dnd-kit/react",
+			"declared": "0.5.1",
+			"installed": "0.5.1",
+			"latest": "0.5.3",
+			"behind": "patch",
+			"deprecated": false,
+			"dev": false,
+			"importedBy": 5
+		},
+		{
+			"name": "@electric-sql/pglite",
+			"declared": "^0.5.8",
+			"installed": "0.5.8",
+			"latest": "0.5.16",
+			"behind": "patch",
+			"deprecated": false,
+			"dev": true,
+			"importedBy": 0
+		},
+		{
+			"name": "@fontsource-variable/anek-devanagari",
+			"declared": "5.3.0",
+			"installed": "5.3.0",
+			"latest": "5.3.0",
+			"behind": "current",
+			"deprecated": false,
+			"dev": false,
+			"importedBy": 1
+		},
+		{
+			"name": "@fontsource-variable/eczar",
+			"declared": "5.3.0",
+			"installed": "5.3.0",
+			"latest": "5.3.0",
+			"behind": "current",
+			"deprecated": false,
+			"dev": false,
+			"importedBy": 1
+		},
+		{
+			"name": "@fontsource-variable/inter",
+			"declared": "^5.3.0",
+			"installed": "5.3.0",
+			"latest": "5.3.0",
+			"behind": "current",
+			"deprecated": false,
+			"dev": false,
+			"importedBy": 5
+		},
+		{
+			"name": "@fontsource-variable/jetbrains-mono",
+			"declared": "^5.3.0",
+			"installed": "5.3.0",
+			"latest": "5.3.0",
+			"behind": "current",
+			"deprecated": false,
+			"dev": false,
+			"importedBy": 0
+		},
+		{
+			"name": "@fontsource-variable/noto-sans-devanagari",
+			"declared": "^5.3.0",
+			"installed": "5.3.0",
+			"latest": "5.3.0",
+			"behind": "current",
+			"deprecated": false,
+			"dev": false,
+			"importedBy": 5
+		},
+		{
+			"name": "@fontsource/anek-devanagari",
+			"declared": "5.3.0",
+			"installed": "5.3.0",
+			"latest": "5.3.0",
+			"behind": "current",
+			"deprecated": false,
+			"dev": false,
+			"importedBy": 1
+		},
+		{
+			"name": "@fontsource/laila",
+			"declared": "5.3.0",
+			"installed": "5.3.0",
+			"latest": "5.3.0",
+			"behind": "current",
+			"deprecated": false,
+			"dev": false,
+			"importedBy": 1
+		},
+		{
+			"name": "@fontsource/mukta",
+			"declared": "^5.3.0",
+			"installed": "5.3.0",
+			"latest": "5.3.0",
+			"behind": "current",
+			"deprecated": false,
+			"dev": false,
+			"importedBy": 1
+		},
+		{
+			"name": "@inlang/cli",
+			"declared": "3.4.4",
+			"installed": "3.4.4",
+			"latest": "3.6.0",
+			"behind": "minor",
+			"deprecated": false,
+			"dev": true,
+			"importedBy": 0
+		},
+		{
+			"name": "@inlang/paraglide-js",
+			"declared": "^2.25.4",
+			"installed": "2.25.4",
+			"latest": "3.2.2",
+			"behind": "major",
+			"deprecated": false,
+			"dev": true,
+			"importedBy": 0
+		},
+		{
+			"name": "@inlang/plugin-m-function-matcher",
+			"declared": "2.3.4",
+			"installed": "2.3.4",
+			"latest": "2.4.3",
+			"behind": "minor",
+			"deprecated": false,
+			"dev": true,
+			"importedBy": 0
+		},
+		{
+			"name": "@inlang/plugin-message-format",
+			"declared": "4.5.5",
+			"installed": "4.5.5",
+			"latest": "4.6.0",
+			"behind": "minor",
+			"deprecated": false,
+			"dev": true,
+			"importedBy": 0
+		},
+		{
+			"name": "@playwright/test",
+			"declared": "1.64.0",
+			"installed": "1.64.0",
+			"latest": "1.65.1",
+			"behind": "minor",
+			"deprecated": false,
+			"dev": true,
+			"importedBy": 0
+		},
+		{
+			"name": "@rolldown/plugin-babel",
+			"declared": "^0.2.4",
+			"installed": "0.2.4",
+			"latest": "0.3.1",
+			"behind": "minor",
+			"deprecated": false,
+			"dev": true,
+			"importedBy": 0
+		},
+		{
+			"name": "@sentry/tanstackstart-react",
+			"declared": "11.4.0",
+			"installed": "11.4.0",
+			"latest": "11.12.0",
+			"behind": "minor",
+			"deprecated": false,
+			"dev": false,
+			"importedBy": 7
+		},
+		{
+			"name": "@storybook/addon-a11y",
+			"declared": "10.6.1",
+			"installed": "10.6.1",
+			"latest": "10.6.7",
+			"behind": "patch",
+			"deprecated": false,
+			"dev": true,
+			"importedBy": 0
+		},
+		{
+			"name": "@storybook/addon-vitest",
+			"declared": "10.6.1",
+			"installed": "10.6.1",
+			"latest": "10.6.7",
+			"behind": "patch",
+			"deprecated": false,
+			"dev": true,
+			"importedBy": 0
+		},
+		{
+			"name": "@storybook/react-vite",
+			"declared": "10.6.1",
+			"installed": "10.6.1",
+			"latest": "10.6.7",
+			"behind": "patch",
+			"deprecated": false,
+			"dev": true,
+			"importedBy": 78
+		},
+		{
+			"name": "@t3-oss/env-core",
+			"declared": "^0.13.11",
+			"installed": "0.13.11",
+			"latest": "0.13.11",
+			"behind": "current",
+			"deprecated": false,
+			"dev": false,
+			"importedBy": 3
+		},
+		{
+			"name": "@tailwindcss/typography",
+			"declared": "^0.5.20",
+			"installed": "0.5.20",
+			"latest": "0.5.20",
+			"behind": "current",
+			"deprecated": false,
+			"dev": true,
+			"importedBy": 0
+		},
+		{
+			"name": "@tailwindcss/vite",
+			"declared": "^4.3.3",
+			"installed": "4.3.3",
+			"latest": "4.3.5",
+			"behind": "patch",
+			"deprecated": false,
+			"dev": false,
+			"importedBy": 0
+		},
+		{
+			"name": "@tanstack/devtools-vite",
+			"declared": "^0.8.5",
+			"installed": "0.8.5",
+			"latest": "0.8.6",
+			"behind": "patch",
+			"deprecated": false,
+			"dev": true,
+			"importedBy": 0
+		},
+		{
+			"name": "@tanstack/query-db-collection",
+			"declared": "^1.3.5",
+			"installed": "1.3.5",
+			"latest": "1.5.2",
+			"behind": "minor",
+			"deprecated": false,
+			"dev": false,
+			"importedBy": 4
+		},
+		{
+			"name": "@tanstack/react-db",
+			"declared": "^0.5.4",
+			"installed": "0.5.4",
+			"latest": "1.0.0-rc.1.5",
+			"behind": "major",
+			"deprecated": false,
+			"dev": false,
+			"importedBy": 16
+		},
+		{
+			"name": "@tanstack/react-devtools",
+			"declared": "^0.10.13",
+			"installed": "0.10.13",
+			"latest": "0.10.14",
+			"behind": "patch",
+			"deprecated": false,
+			"dev": false,
+			"importedBy": 1
+		},
+		{
+			"name": "@tanstack/react-form",
+			"declared": "^1.33.5",
+			"installed": "1.33.5",
+			"latest": "1.33.5",
+			"behind": "current",
+			"deprecated": false,
+			"dev": false,
+			"importedBy": 66
+		},
+		{
+			"name": "@tanstack/react-form-devtools",
+			"declared": "^0.2.34",
+			"installed": "0.2.34",
+			"latest": "0.2.34",
+			"behind": "current",
+			"deprecated": false,
+			"dev": false,
+			"importedBy": 1
+		},
+		{
+			"name": "@tanstack/react-query",
+			"declared": "^5.104.5",
+			"installed": "5.104.5",
+			"latest": "5.107.1",
+			"behind": "minor",
+			"deprecated": false,
+			"dev": false,
+			"importedBy": 317
+		},
+		{
+			"name": "@tanstack/react-query-devtools",
+			"declared": "^5.104.5",
+			"installed": "5.104.5",
+			"latest": "5.107.1",
+			"behind": "minor",
+			"deprecated": false,
+			"dev": false,
+			"importedBy": 1
+		},
+		{
+			"name": "@tanstack/react-router",
+			"declared": "^1.170.40",
+			"installed": "1.170.40",
+			"latest": "1.170.46",
+			"behind": "patch",
+			"deprecated": false,
+			"dev": false,
+			"importedBy": 545
+		},
+		{
+			"name": "@tanstack/react-router-devtools",
+			"declared": "^1.167.2",
+			"installed": "1.167.2",
+			"latest": "1.167.3",
+			"behind": "patch",
+			"deprecated": false,
+			"dev": false,
+			"importedBy": 1
+		},
+		{
+			"name": "@tanstack/react-router-ssr-query",
+			"declared": "^1.167.3",
+			"installed": "1.167.3",
+			"latest": "1.167.3",
+			"behind": "current",
+			"deprecated": false,
+			"dev": false,
+			"importedBy": 1
+		},
+		{
+			"name": "@tanstack/react-start",
+			"declared": "^1.168.59",
+			"installed": "1.168.59",
+			"latest": "1.169.5",
+			"behind": "minor",
+			"deprecated": false,
+			"dev": false,
+			"importedBy": 144
+		},
+		{
+			"name": "@tanstack/react-store",
+			"declared": "^0.11.2",
+			"installed": "0.11.2",
+			"latest": "0.11.2",
+			"behind": "current",
+			"deprecated": false,
+			"dev": false,
+			"importedBy": 2
+		},
+		{
+			"name": "@tanstack/react-table",
+			"declared": "^9.3.1",
+			"installed": "9.3.1",
+			"latest": "9.3.1",
+			"behind": "current",
+			"deprecated": false,
+			"dev": false,
+			"importedBy": 1
+		},
+		{
+			"name": "@testing-library/dom",
+			"declared": "^10.4.2",
+			"installed": "10.4.2",
+			"latest": "10.4.2",
+			"behind": "current",
+			"deprecated": false,
+			"dev": true,
+			"importedBy": 0
+		},
+		{
+			"name": "@testing-library/jest-dom",
+			"declared": "^7.0.1",
+			"installed": "7.0.1",
+			"latest": "7.0.1",
+			"behind": "current",
+			"deprecated": false,
+			"dev": true,
+			"importedBy": 0
+		},
+		{
+			"name": "@testing-library/react",
+			"declared": "^16.3.3",
+			"installed": "16.3.3",
+			"latest": "16.3.3",
+			"behind": "current",
+			"deprecated": false,
+			"dev": true,
+			"importedBy": 0
+		},
+		{
+			"name": "@testing-library/user-event",
+			"declared": "^14.6.7",
+			"installed": "14.6.7",
+			"latest": "14.6.10",
+			"behind": "patch",
+			"deprecated": false,
+			"dev": true,
+			"importedBy": 0
+		},
+		{
+			"name": "@tiptap/core",
+			"declared": "^3.32.2",
+			"installed": "3.32.2",
+			"latest": "3.34.0",
+			"behind": "minor",
+			"deprecated": false,
+			"dev": false,
+			"importedBy": 0
+		},
+		{
+			"name": "@tiptap/extension-mention",
+			"declared": "^3.32.2",
+			"installed": "3.32.2",
+			"latest": "3.34.0",
+			"behind": "minor",
+			"deprecated": false,
+			"dev": false,
+			"importedBy": 1
+		},
+		{
+			"name": "@tiptap/pm",
+			"declared": "^3.32.2",
+			"installed": "3.32.2",
+			"latest": "3.34.0",
+			"behind": "minor",
+			"deprecated": false,
+			"dev": false,
+			"importedBy": 0
+		},
+		{
+			"name": "@tiptap/react",
+			"declared": "^3.32.2",
+			"installed": "3.32.2",
+			"latest": "3.34.0",
+			"behind": "minor",
+			"deprecated": false,
+			"dev": false,
+			"importedBy": 2
+		},
+		{
+			"name": "@tiptap/starter-kit",
+			"declared": "^3.32.2",
+			"installed": "3.32.2",
+			"latest": "3.34.0",
+			"behind": "minor",
+			"deprecated": false,
+			"dev": false,
+			"importedBy": 1
+		},
+		{
+			"name": "@tiptap/suggestion",
+			"declared": "^3.32.2",
+			"installed": "3.32.2",
+			"latest": "3.34.0",
+			"behind": "minor",
+			"deprecated": false,
+			"dev": false,
+			"importedBy": 1
+		},
+		{
+			"name": "@types/babel__core",
+			"declared": "^7.20.5",
+			"installed": "7.20.5",
+			"latest": "7.20.5",
+			"behind": "current",
+			"deprecated": false,
+			"dev": true,
+			"importedBy": 0
+		},
+		{
+			"name": "@types/jsdom",
+			"declared": "^30.0.0",
+			"installed": "30.0.0",
+			"latest": "30.0.0",
+			"behind": "current",
+			"deprecated": false,
+			"dev": true,
+			"importedBy": 0
+		},
+		{
+			"name": "@types/node",
+			"declared": "^22.20.4",
+			"installed": "22.20.4",
+			"latest": "26.6.6",
+			"behind": "major",
+			"deprecated": false,
+			"dev": true,
+			"importedBy": 0
+		},
+		{
+			"name": "@types/pg",
+			"declared": "^8.23.1",
+			"installed": "8.23.1",
+			"latest": "8.23.1",
+			"behind": "current",
+			"deprecated": false,
+			"dev": true,
+			"importedBy": 0
+		},
+		{
+			"name": "@types/react",
+			"declared": "^19.3.0",
+			"installed": "19.3.0",
+			"latest": "19.3.0",
+			"behind": "current",
+			"deprecated": false,
+			"dev": true,
+			"importedBy": 0
+		},
+		{
+			"name": "@types/react-dom",
+			"declared": "^19.3.0",
+			"installed": "19.3.0",
+			"latest": "19.3.0",
+			"behind": "current",
+			"deprecated": false,
+			"dev": true,
+			"importedBy": 0
+		},
+		{
+			"name": "@types/sanitize-html",
+			"declared": "^2.16.2",
+			"installed": "2.16.2",
+			"latest": "2.16.2",
+			"behind": "current",
+			"deprecated": false,
+			"dev": true,
+			"importedBy": 0
+		},
+		{
+			"name": "@types/ws",
+			"declared": "^8.18.2",
+			"installed": "8.18.2",
+			"latest": "8.18.2",
+			"behind": "current",
+			"deprecated": false,
+			"dev": true,
+			"importedBy": 0
+		},
+		{
+			"name": "@vercel/analytics",
+			"declared": "^2.0.1",
+			"installed": "2.0.1",
+			"latest": "2.0.1",
+			"behind": "current",
+			"deprecated": false,
+			"dev": false,
+			"importedBy": 1
+		},
+		{
+			"name": "@vercel/functions",
+			"declared": "^3.9.9",
+			"installed": "3.9.9",
+			"latest": "3.11.3",
+			"behind": "minor",
+			"deprecated": false,
+			"dev": false,
+			"importedBy": 9
+		},
+		{
+			"name": "@vitejs/plugin-react",
+			"declared": "^6.1.1",
+			"installed": "6.1.1",
+			"latest": "6.3.0",
+			"behind": "minor",
+			"deprecated": false,
+			"dev": true,
+			"importedBy": 0
+		},
+		{
+			"name": "@vitest/browser",
+			"declared": "5.0.3",
+			"installed": "5.0.3",
+			"latest": "5.1.0",
+			"behind": "minor",
+			"deprecated": false,
+			"dev": true,
+			"importedBy": 0
+		},
+		{
+			"name": "@vitest/browser-playwright",
+			"declared": "5.0.3",
+			"installed": "5.0.3",
+			"latest": "5.1.0",
+			"behind": "minor",
+			"deprecated": false,
+			"dev": true,
+			"importedBy": 0
+		},
+		{
+			"name": "@vitest/coverage-v8",
+			"declared": "5.0.3",
+			"installed": "5.0.3",
+			"latest": "5.1.0",
+			"behind": "minor",
+			"deprecated": false,
+			"dev": true,
+			"importedBy": 0
+		},
+		{
+			"name": "ably",
+			"declared": "^2.30.0",
+			"installed": "2.30.0",
+			"latest": "2.30.0",
+			"behind": "current",
+			"deprecated": false,
+			"dev": false,
+			"importedBy": 1
+		},
+		{
+			"name": "auth",
+			"declared": "^1.7.6",
+			"installed": "1.7.6",
+			"latest": "1.7.23",
+			"behind": "patch",
+			"deprecated": false,
+			"dev": true,
+			"importedBy": 0
+		},
+		{
+			"name": "babel-plugin-react-compiler",
+			"declared": "1.0.0",
+			"installed": "1.0.0",
+			"latest": "1.0.0",
+			"behind": "current",
+			"deprecated": false,
+			"dev": true,
+			"importedBy": 0
+		},
+		{
+			"name": "better-auth",
+			"declared": "^1.7.6",
+			"installed": "1.7.6",
+			"latest": "1.7.23",
+			"behind": "patch",
+			"deprecated": false,
+			"dev": false,
+			"importedBy": 6
+		},
+		{
+			"name": "chess.js",
+			"declared": "1.4.0",
+			"installed": "1.4.0",
+			"latest": "1.4.0",
+			"behind": "current",
+			"deprecated": false,
+			"dev": false,
+			"importedBy": 2
+		},
+		{
+			"name": "class-variance-authority",
+			"declared": "^0.7.1",
+			"installed": "0.7.1",
+			"latest": "0.7.1",
+			"behind": "current",
+			"deprecated": false,
+			"dev": false,
+			"importedBy": 10
+		},
+		{
+			"name": "clsx",
+			"declared": "^2.1.1",
+			"installed": "2.1.1",
+			"latest": "2.1.1",
+			"behind": "current",
+			"deprecated": false,
+			"dev": false,
+			"importedBy": 2
+		},
+		{
+			"name": "cmdk",
+			"declared": "^1.1.1",
+			"installed": "1.1.1",
+			"latest": "1.1.1",
+			"behind": "current",
+			"deprecated": false,
+			"dev": false,
+			"importedBy": 1
+		},
+		{
+			"name": "drizzle-kit",
+			"declared": "^0.31.11",
+			"installed": "0.31.11",
+			"latest": "0.31.11",
+			"behind": "current",
+			"deprecated": false,
+			"dev": true,
+			"importedBy": 0
+		},
+		{
+			"name": "drizzle-orm",
+			"declared": "^0.45.3",
+			"installed": "0.45.3",
+			"latest": "0.45.4",
+			"behind": "patch",
+			"deprecated": false,
+			"dev": false,
+			"importedBy": 211
+		},
+		{
+			"name": "input-otp",
+			"declared": "^1.5.0",
+			"installed": "1.5.0",
+			"latest": "1.5.0",
+			"behind": "current",
+			"deprecated": false,
+			"dev": false,
+			"importedBy": 2
+		},
+		{
+			"name": "jsdom",
+			"declared": "^30.1.1",
+			"installed": "30.1.1",
+			"latest": "31.0.1",
+			"behind": "major",
+			"deprecated": false,
+			"dev": true,
+			"importedBy": 0
+		},
+		{
+			"name": "knip",
+			"declared": "^6.42.0",
+			"installed": "6.42.0",
+			"latest": "6.45.1",
+			"behind": "minor",
+			"deprecated": false,
+			"dev": true,
+			"importedBy": 0
+		},
+		{
+			"name": "lefthook",
+			"declared": "^2.2.2",
+			"installed": "2.2.2",
+			"latest": "2.2.2",
+			"behind": "current",
+			"deprecated": false,
+			"dev": true,
+			"importedBy": 0
+		},
+		{
+			"name": "libphonenumber-js",
+			"declared": "^1.13.14",
+			"installed": "1.13.14",
+			"latest": "1.13.16",
+			"behind": "patch",
+			"deprecated": false,
+			"dev": false,
+			"importedBy": 3
+		},
+		{
+			"name": "lucide-react",
+			"declared": "^0.577.0",
+			"installed": "0.577.0",
+			"latest": "1.73.0",
+			"behind": "major",
+			"deprecated": false,
+			"dev": false,
+			"importedBy": 289
+		},
+		{
+			"name": "nitro",
+			"declared": "3.0.261029-rc",
+			"installed": "3.0.261029-rc",
+			"latest": "3.0.261103-rc",
+			"behind": "patch",
+			"deprecated": false,
+			"dev": false,
+			"importedBy": 17
+		},
+		{
+			"name": "pg",
+			"declared": "^8.23.0",
+			"installed": "8.23.0",
+			"latest": "8.23.1",
+			"behind": "patch",
+			"deprecated": false,
+			"dev": false,
+			"importedBy": 1
+		},
+		{
+			"name": "playwright",
+			"declared": "1.64.0",
+			"installed": "1.64.0",
+			"latest": "1.65.1",
+			"behind": "minor",
+			"deprecated": false,
+			"dev": true,
+			"importedBy": 0
+		},
+		{
+			"name": "posthog-js",
+			"declared": "1.437.0",
+			"installed": "1.437.0",
+			"latest": "1.449.2",
+			"behind": "minor",
+			"deprecated": false,
+			"dev": false,
+			"importedBy": 1
+		},
+		{
+			"name": "posthog-node",
+			"declared": "5.55.0",
+			"installed": "5.55.0",
+			"latest": "5.73.1",
+			"behind": "minor",
+			"deprecated": false,
+			"dev": false,
+			"importedBy": 1
+		},
+		{
+			"name": "radix-ui",
+			"declared": "^1.6.7",
+			"installed": "1.6.7",
+			"latest": "1.8.1",
+			"behind": "minor",
+			"deprecated": false,
+			"dev": false,
+			"importedBy": 29
+		},
+		{
+			"name": "react",
+			"declared": "^19.3.0",
+			"installed": "19.3.0",
+			"latest": "19.3.1",
+			"behind": "patch",
+			"deprecated": false,
+			"dev": false,
+			"importedBy": 411
+		},
+		{
+			"name": "react-day-picker",
+			"declared": "^10.0.2",
+			"installed": "10.0.2",
+			"latest": "10.0.2",
+			"behind": "current",
+			"deprecated": false,
+			"dev": false,
+			"importedBy": 2
+		},
+		{
+			"name": "react-dom",
+			"declared": "^19.3.0",
+			"installed": "19.3.0",
+			"latest": "19.3.1",
+			"behind": "patch",
+			"deprecated": false,
+			"dev": false,
+			"importedBy": 3
+		},
+		{
+			"name": "react-email",
+			"declared": "^6.11.0",
+			"installed": "6.11.0",
+			"latest": "6.11.13",
+			"behind": "patch",
+			"deprecated": false,
+			"dev": false,
+			"importedBy": 6
+		},
+		{
+			"name": "recharts",
+			"declared": "^3.10.1",
+			"installed": "3.10.1",
+			"latest": "3.10.1",
+			"behind": "current",
+			"deprecated": false,
+			"dev": false,
+			"importedBy": 3
+		},
+		{
+			"name": "resend",
+			"declared": "^6.30.0",
+			"installed": "6.30.0",
+			"latest": "6.38.1",
+			"behind": "minor",
+			"deprecated": false,
+			"dev": false,
+			"importedBy": 1
+		},
+		{
+			"name": "sanitize-html",
+			"declared": "^2.18.0",
+			"installed": "2.18.0",
+			"latest": "2.18.2",
+			"behind": "patch",
+			"deprecated": false,
+			"dev": false,
+			"importedBy": 1
+		},
+		{
+			"name": "schema-dts",
+			"declared": "^2.1.0",
+			"installed": "2.1.0",
+			"latest": "2.1.0",
+			"behind": "current",
+			"deprecated": false,
+			"dev": true,
+			"importedBy": 3
+		},
+		{
+			"name": "sonner",
+			"declared": "^2.0.8",
+			"installed": "2.0.8",
+			"latest": "2.0.8",
+			"behind": "current",
+			"deprecated": false,
+			"dev": false,
+			"importedBy": 148
+		},
+		{
+			"name": "stockfish",
+			"declared": "19.0.1",
+			"installed": "19.0.1",
+			"latest": "19.0.1",
+			"behind": "current",
+			"deprecated": false,
+			"dev": true,
+			"importedBy": 0
+		},
+		{
+			"name": "storybook",
+			"declared": "10.6.1",
+			"installed": "10.6.1",
+			"latest": "10.6.7",
+			"behind": "patch",
+			"deprecated": false,
+			"dev": true,
+			"importedBy": 72
+		},
+		{
+			"name": "tailwind-merge",
+			"declared": "^3.7.0",
+			"installed": "3.7.0",
+			"latest": "3.7.0",
+			"behind": "current",
+			"deprecated": false,
+			"dev": false,
+			"importedBy": 2
+		},
+		{
+			"name": "tailwindcss",
+			"declared": "^4.3.3",
+			"installed": "4.3.3",
+			"latest": "4.3.5",
+			"behind": "patch",
+			"deprecated": false,
+			"dev": false,
+			"importedBy": 0
+		},
+		{
+			"name": "tw-animate-css",
+			"declared": "^1.4.0",
+			"installed": "1.4.0",
+			"latest": "1.4.0",
+			"behind": "current",
+			"deprecated": false,
+			"dev": false,
+			"importedBy": 0
+		},
+		{
+			"name": "typescript",
+			"declared": "^6.0.3",
+			"installed": "6.0.3",
+			"latest": "7.0.2",
+			"behind": "major",
+			"deprecated": false,
+			"dev": true,
+			"importedBy": 0
+		},
+		{
+			"name": "uqr",
+			"declared": "^0.1.3",
+			"installed": "0.1.3",
+			"latest": "0.1.3",
+			"behind": "current",
+			"deprecated": false,
+			"dev": false,
+			"importedBy": 2
+		},
+		{
+			"name": "vite",
+			"declared": "^8.3.1",
+			"installed": "8.3.1",
+			"latest": "8.3.8",
+			"behind": "patch",
+			"deprecated": false,
+			"dev": true,
+			"importedBy": 0
+		},
+		{
+			"name": "vitest",
+			"declared": "^5.0.3",
+			"installed": "5.0.3",
+			"latest": "5.1.0",
+			"behind": "minor",
+			"deprecated": false,
+			"dev": true,
+			"importedBy": 0
+		},
+		{
+			"name": "web-vitals",
+			"declared": "^6.2.3",
+			"installed": "6.2.3",
+			"latest": "6.2.3",
+			"behind": "current",
+			"deprecated": false,
+			"dev": false,
+			"importedBy": 1
+		},
+		{
+			"name": "ws",
+			"declared": "^8.22.1",
+			"installed": "8.22.1",
+			"latest": "8.23.0",
+			"behind": "minor",
+			"deprecated": false,
+			"dev": true,
+			"importedBy": 0
+		},
+		{
+			"name": "zod",
+			"declared": "^4.6.5",
+			"installed": "4.6.5",
+			"latest": "4.6.7",
+			"behind": "patch",
+			"deprecated": false,
+			"dev": false,
+			"importedBy": 166
+		}
+	]
+}

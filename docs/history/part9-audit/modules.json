@@ -1,0 +1,628 @@
+{
+	"generated": "node scripts/audit/modules.ts",
+	"modules": [
+		{
+			"file": "src/server/chaal/lichess/schemas.ts",
+			"lines": 2047,
+			"exports": 53,
+			"importedBy": 0,
+			"timers": 0
+		},
+		{
+			"file": "src/server/chaal/lichess/client.ts",
+			"lines": 313,
+			"exports": 6,
+			"importedBy": 0,
+			"timers": 1
+		},
+		{
+			"file": "src/lib/i18n/intl.ts",
+			"lines": 297,
+			"exports": 15,
+			"importedBy": 304,
+			"timers": 0
+		},
+		{
+			"file": "src/lib/validation.ts",
+			"lines": 276,
+			"exports": 27,
+			"importedBy": 64,
+			"timers": 0
+		},
+		{
+			"file": "src/server/env.ts",
+			"lines": 218,
+			"exports": 3,
+			"importedBy": 22,
+			"timers": 0
+		},
+		{
+			"file": "src/server/http/csp-report.ts",
+			"lines": 205,
+			"exports": 5,
+			"importedBy": 1,
+			"timers": 0
+		},
+		{
+			"file": "src/lib/stores/preferences.ts",
+			"lines": 200,
+			"exports": 13,
+			"importedBy": 15,
+			"timers": 0
+		},
+		{
+			"file": "src/lib/fractional-index.ts",
+			"lines": 178,
+			"exports": 6,
+			"importedBy": 15,
+			"timers": 0
+		},
+		{
+			"file": "src/lib/seo.ts",
+			"lines": 162,
+			"exports": 10,
+			"importedBy": 102,
+			"timers": 0
+		},
+		{
+			"file": "src/lib/errors.ts",
+			"lines": 147,
+			"exports": 9,
+			"importedBy": 136,
+			"timers": 0
+		},
+		{
+			"file": "src/lib/csv.ts",
+			"lines": 144,
+			"exports": 8,
+			"importedBy": 16,
+			"timers": 0
+		},
+		{
+			"file": "src/lib/i18n/date-only.ts",
+			"lines": 136,
+			"exports": 11,
+			"importedBy": 115,
+			"timers": 0
+		},
+		{
+			"file": "src/middleware/security-headers.ts",
+			"lines": 118,
+			"exports": 1,
+			"importedBy": 1,
+			"timers": 0
+		},
+		{
+			"file": "src/lib/crud/collection.ts",
+			"lines": 113,
+			"exports": 3,
+			"importedBy": 34,
+			"timers": 0
+		},
+		{
+			"file": "src/lib/list/params.ts",
+			"lines": 107,
+			"exports": 10,
+			"importedBy": 41,
+			"timers": 0
+		},
+		{
+			"file": "src/lib/i18n/currency.ts",
+			"lines": 100,
+			"exports": 10,
+			"importedBy": 32,
+			"timers": 0
+		},
+		{
+			"file": "src/lib/crud/route.ts",
+			"lines": 99,
+			"exports": 4,
+			"importedBy": 85,
+			"timers": 0
+		},
+		{
+			"file": "src/hooks/use-hotkeys.ts",
+			"lines": 98,
+			"exports": 3,
+			"importedBy": 17,
+			"timers": 0
+		},
+		{
+			"file": "src/lib/crud/filters.ts",
+			"lines": 97,
+			"exports": 6,
+			"importedBy": 15,
+			"timers": 0
+		},
+		{
+			"file": "src/lib/http/csp.ts",
+			"lines": 96,
+			"exports": 6,
+			"importedBy": 5,
+			"timers": 0
+		},
+		{
+			"file": "src/lib/observability/analytics.ts",
+			"lines": 95,
+			"exports": 9,
+			"importedBy": 5,
+			"timers": 0
+		},
+		{
+			"file": "src/lib/i18n/localized.ts",
+			"lines": 94,
+			"exports": 5,
+			"importedBy": 56,
+			"timers": 0
+		},
+		{
+			"file": "src/lib/i18n/intl-ne.ts",
+			"lines": 93,
+			"exports": 7,
+			"importedBy": 1,
+			"timers": 0
+		},
+		{
+			"file": "src/middleware/auth.ts",
+			"lines": 89,
+			"exports": 5,
+			"importedBy": 41,
+			"timers": 0
+		},
+		{
+			"file": "src/hooks/use-list-page.ts",
+			"lines": 88,
+			"exports": 3,
+			"importedBy": 19,
+			"timers": 0
+		},
+		{
+			"file": "src/lib/breadcrumbs.ts",
+			"lines": 86,
+			"exports": 5,
+			"importedBy": 132,
+			"timers": 0
+		},
+		{
+			"file": "src/server/chaal/lichess/counters.ts",
+			"lines": 81,
+			"exports": 2,
+			"importedBy": 0,
+			"timers": 0
+		},
+		{
+			"file": "src/server/cache/lru.ts",
+			"lines": 77,
+			"exports": 1,
+			"importedBy": 2,
+			"timers": 0
+		},
+		{
+			"file": "src/server/chaal/lichess/cache.ts",
+			"lines": 75,
+			"exports": 3,
+			"importedBy": 0,
+			"timers": 0
+		},
+		{
+			"file": "src/lib/query.ts",
+			"lines": 71,
+			"exports": 4,
+			"importedBy": 131,
+			"timers": 0
+		},
+		{
+			"file": "src/lib/observability/sentry-client.ts",
+			"lines": 69,
+			"exports": 4,
+			"importedBy": 2,
+			"timers": 0
+		},
+		{
+			"file": "src/server/chaal/lichess/cooldown.ts",
+			"lines": 67,
+			"exports": 1,
+			"importedBy": 0,
+			"timers": 0
+		},
+		{
+			"file": "src/lib/stores/hooks.ts",
+			"lines": 64,
+			"exports": 6,
+			"importedBy": 15,
+			"timers": 0
+		},
+		{
+			"file": "src/middleware/parda.ts",
+			"lines": 64,
+			"exports": 3,
+			"importedBy": 8,
+			"timers": 0
+		},
+		{
+			"file": "src/server/http/request-scope.ts",
+			"lines": 64,
+			"exports": 5,
+			"importedBy": 4,
+			"timers": 0
+		},
+		{
+			"file": "src/lib/crud/schema.ts",
+			"lines": 63,
+			"exports": 3,
+			"importedBy": 28,
+			"timers": 0
+		},
+		{
+			"file": "src/lib/env/client.schema.ts",
+			"lines": 63,
+			"exports": 4,
+			"importedBy": 1,
+			"timers": 0
+		},
+		{
+			"file": "src/lib/section-brand.ts",
+			"lines": 63,
+			"exports": 3,
+			"importedBy": 5,
+			"timers": 0
+		},
+		{
+			"file": "src/server/http/rate-limit.ts",
+			"lines": 63,
+			"exports": 2,
+			"importedBy": 17,
+			"timers": 0
+		},
+		{
+			"file": "src/lib/tanstack-db.ts",
+			"lines": 56,
+			"exports": 3,
+			"importedBy": 6,
+			"timers": 0
+		},
+		{
+			"file": "src/middleware/chaal.ts",
+			"lines": 53,
+			"exports": 3,
+			"importedBy": 20,
+			"timers": 0
+		},
+		{
+			"file": "src/lib/list/url.ts",
+			"lines": 48,
+			"exports": 3,
+			"importedBy": 1,
+			"timers": 0
+		},
+		{
+			"file": "src/middleware/taskline.ts",
+			"lines": 48,
+			"exports": 2,
+			"importedBy": 15,
+			"timers": 0
+		},
+		{
+			"file": "src/server/chaal/lichess/lanes.ts",
+			"lines": 48,
+			"exports": 5,
+			"importedBy": 0,
+			"timers": 0
+		},
+		{
+			"file": "src/lib/observability/web-vitals.ts",
+			"lines": 47,
+			"exports": 3,
+			"importedBy": 1,
+			"timers": 0
+		},
+		{
+			"file": "src/middleware/kharcha.ts",
+			"lines": 47,
+			"exports": 2,
+			"importedBy": 15,
+			"timers": 0
+		},
+		{
+			"file": "src/server/services.ts",
+			"lines": 47,
+			"exports": 2,
+			"importedBy": 31,
+			"timers": 0
+		},
+		{
+			"file": "src/lib/env/shared.ts",
+			"lines": 46,
+			"exports": 4,
+			"importedBy": 0,
+			"timers": 0
+		},
+		{
+			"file": "src/middleware/errors.ts",
+			"lines": 46,
+			"exports": 2,
+			"importedBy": 1,
+			"timers": 0
+		},
+		{
+			"file": "src/hooks/use-minute-clock.ts",
+			"lines": 45,
+			"exports": 1,
+			"importedBy": 9,
+			"timers": 1
+		},
+		{
+			"file": "src/lib/fonts.ts",
+			"lines": 42,
+			"exports": 1,
+			"importedBy": 8,
+			"timers": 0
+		},
+		{
+			"file": "src/middleware/session-expiry.ts",
+			"lines": 42,
+			"exports": 1,
+			"importedBy": 1,
+			"timers": 0
+		},
+		{
+			"file": "src/lib/observability/sentry.ts",
+			"lines": 41,
+			"exports": 4,
+			"importedBy": 0,
+			"timers": 0
+		},
+		{
+			"file": "src/lib/session.ts",
+			"lines": 40,
+			"exports": 0,
+			"importedBy": 18,
+			"timers": 0
+		},
+		{
+			"file": "src/middleware/apps.ts",
+			"lines": 40,
+			"exports": 2,
+			"importedBy": 4,
+			"timers": 0
+		},
+		{
+			"file": "src/lib/list/paging.ts",
+			"lines": 38,
+			"exports": 4,
+			"importedBy": 31,
+			"timers": 0
+		},
+		{
+			"file": "src/middleware/logging.ts",
+			"lines": 36,
+			"exports": 2,
+			"importedBy": 0,
+			"timers": 0
+		},
+		{
+			"file": "src/middleware/services.ts",
+			"lines": 30,
+			"exports": 2,
+			"importedBy": 41,
+			"timers": 0
+		},
+		{
+			"file": "src/middleware/short-links.ts",
+			"lines": 30,
+			"exports": 1,
+			"importedBy": 1,
+			"timers": 0
+		},
+		{
+			"file": "src/lib/guests.ts",
+			"lines": 29,
+			"exports": 4,
+			"importedBy": 18,
+			"timers": 0
+		},
+		{
+			"file": "src/lib/session-scope.ts",
+			"lines": 28,
+			"exports": 2,
+			"importedBy": 3,
+			"timers": 0
+		},
+		{
+			"file": "src/server/http/turnstile.ts",
+			"lines": 28,
+			"exports": 1,
+			"importedBy": 3,
+			"timers": 0
+		},
+		{
+			"file": "src/lib/crud/keys.ts",
+			"lines": 27,
+			"exports": 1,
+			"importedBy": 7,
+			"timers": 0
+		},
+		{
+			"file": "src/server/http/error-status.ts",
+			"lines": 27,
+			"exports": 2,
+			"importedBy": 1,
+			"timers": 0
+		},
+		{
+			"file": "src/hooks/use-media-query.ts",
+			"lines": 23,
+			"exports": 1,
+			"importedBy": 2,
+			"timers": 0
+		},
+		{
+			"file": "src/lib/structured-data.ts",
+			"lines": 23,
+			"exports": 1,
+			"importedBy": 1,
+			"timers": 0
+		},
+		{
+			"file": "src/lib/auth-client.ts",
+			"lines": 22,
+			"exports": 1,
+			"importedBy": 21,
+			"timers": 0
+		},
+		{
+			"file": "src/lib/zod.ts",
+			"lines": 22,
+			"exports": 2,
+			"importedBy": 0,
+			"timers": 0
+		},
+		{
+			"file": "src/middleware/sentry.ts",
+			"lines": 22,
+			"exports": 1,
+			"importedBy": 1,
+			"timers": 0
+		},
+		{
+			"file": "src/lib/concurrency.ts",
+			"lines": 20,
+			"exports": 3,
+			"importedBy": 17,
+			"timers": 0
+		},
+		{
+			"file": "src/server/log.ts",
+			"lines": 20,
+			"exports": 2,
+			"importedBy": 42,
+			"timers": 0
+		},
+		{
+			"file": "src/hooks/use-list-query.ts",
+			"lines": 19,
+			"exports": 1,
+			"importedBy": 7,
+			"timers": 0
+		},
+		{
+			"file": "src/lib/http/redirect.ts",
+			"lines": 18,
+			"exports": 2,
+			"importedBy": 11,
+			"timers": 0
+		},
+		{
+			"file": "src/lib/phone.ts",
+			"lines": 18,
+			"exports": 1,
+			"importedBy": 3,
+			"timers": 0
+		},
+		{
+			"file": "src/lib/slug.ts",
+			"lines": 17,
+			"exports": 3,
+			"importedBy": 8,
+			"timers": 0
+		},
+		{
+			"file": "src/lib/start/http-status.ts",
+			"lines": 17,
+			"exports": 1,
+			"importedBy": 11,
+			"timers": 0
+		},
+		{
+			"file": "src/lib/utils.ts",
+			"lines": 17,
+			"exports": 1,
+			"importedBy": 133,
+			"timers": 0
+		},
+		{
+			"file": "src/middleware/dev.ts",
+			"lines": 15,
+			"exports": 2,
+			"importedBy": 5,
+			"timers": 0
+		},
+		{
+			"file": "src/lib/http/cache-control.ts",
+			"lines": 14,
+			"exports": 1,
+			"importedBy": 1,
+			"timers": 0
+		},
+		{
+			"file": "src/middleware/locale.ts",
+			"lines": 14,
+			"exports": 1,
+			"importedBy": 1,
+			"timers": 0
+		},
+		{
+			"file": "src/middleware/robots.ts",
+			"lines": 14,
+			"exports": 1,
+			"importedBy": 3,
+			"timers": 0
+		},
+		{
+			"file": "src/lib/observability/log-line.ts",
+			"lines": 13,
+			"exports": 1,
+			"importedBy": 2,
+			"timers": 0
+		},
+		{
+			"file": "src/lib/start/read-preferences.ts",
+			"lines": 13,
+			"exports": 1,
+			"importedBy": 0,
+			"timers": 0
+		},
+		{
+			"file": "src/hooks/use-debounced-value.ts",
+			"lines": 12,
+			"exports": 1,
+			"importedBy": 8,
+			"timers": 1
+		},
+		{
+			"file": "src/middleware/csrf.ts",
+			"lines": 11,
+			"exports": 1,
+			"importedBy": 1,
+			"timers": 0
+		},
+		{
+			"file": "src/lib/dev-routes.ts",
+			"lines": 10,
+			"exports": 1,
+			"importedBy": 3,
+			"timers": 0
+		},
+		{
+			"file": "src/lib/safe-html.ts",
+			"lines": 8,
+			"exports": 0,
+			"importedBy": 13,
+			"timers": 0
+		},
+		{
+			"file": "src/lib/env/client.ts",
+			"lines": 5,
+			"exports": 1,
+			"importedBy": 10,
+			"timers": 0
+		},
+		{
+			"file": "src/lib/i18n/locale-header.ts",
+			"lines": 3,
+			"exports": 1,
+			"importedBy": 1,
+			"timers": 0
+		}
+	]
+}

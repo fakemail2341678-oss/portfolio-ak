@@ -1,0 +1,5961 @@
+{
+	"generated": "node scripts/audit/reads.ts",
+	"hooks": {
+		"useQuery": 197,
+		"useSuspenseQuery": 180,
+		"useLiveQuery": 2
+	},
+	"useQuery": {
+		"total": 197,
+		"byLayer": {
+			"chaal": 107,
+			"kharcha": 27,
+			"parda": 27,
+			"taskline": 17,
+			"core": 12,
+			"apps": 4,
+			"dev": 2,
+			"portfolio": 1
+		},
+		"byReason": {
+			"none": 135,
+			"enabled: after an interaction": 60,
+			"a comment": 2
+		},
+		"list": [
+			{
+				"file": "src/components/admin-shell/user-menu.tsx",
+				"line": 28,
+				"layer": "core",
+				"hook": "useQuery",
+				"reason": "none",
+				"comment": ""
+			},
+			{
+				"file": "src/components/app-header/app-header.tsx",
+				"line": 19,
+				"layer": "core",
+				"hook": "useQuery",
+				"reason": "none",
+				"comment": ""
+			},
+			{
+				"file": "src/components/dialogs/query-dialog.tsx",
+				"line": 42,
+				"layer": "core",
+				"hook": "useQuery",
+				"reason": "none",
+				"comment": ""
+			},
+			{
+				"file": "src/components/forms/fields/async-combobox-field.tsx",
+				"line": 49,
+				"layer": "core",
+				"hook": "useQuery",
+				"reason": "enabled: after an interaction",
+				"comment": ""
+			},
+			{
+				"file": "src/components/layout/impersonation-banner.tsx",
+				"line": 19,
+				"layer": "core",
+				"hook": "useQuery",
+				"reason": "enabled: after an interaction",
+				"comment": "Not on pages that skip the session (the portfolio): it would be fetched after hydration."
+			},
+			{
+				"file": "src/components/layout/observability.tsx",
+				"line": 33,
+				"layer": "core",
+				"hook": "useQuery",
+				"reason": "enabled: after an interaction",
+				"comment": "Not on pages that skip the session (the portfolio): it would be fetched after hydration."
+			},
+			{
+				"file": "src/components/layout/site-header.tsx",
+				"line": 26,
+				"layer": "core",
+				"hook": "useQuery",
+				"reason": "a comment",
+				"comment": "Filled by the root route's beforeLoad, so it's available during SSR and hydration."
+			},
+			{
+				"file": "src/features/apps/components/apps-layout.tsx",
+				"line": 55,
+				"layer": "apps",
+				"hook": "useQuery",
+				"reason": "none",
+				"comment": ""
+			},
+			{
+				"file": "src/features/apps/components/apps-layout.tsx",
+				"line": 59,
+				"layer": "apps",
+				"hook": "useQuery",
+				"reason": "a comment",
+				"comment": "portfolio:start"
+			},
+			{
+				"file": "src/features/apps/components/apps-layout.tsx",
+				"line": 141,
+				"layer": "apps",
+				"hook": "useQuery",
+				"reason": "none",
+				"comment": ""
+			},
+			{
+				"file": "src/features/apps/notes/components/notes-home.tsx",
+				"line": 140,
+				"layer": "apps",
+				"hook": "useQuery",
+				"reason": "enabled: after an interaction",
+				"comment": "The loader has read the matches of `q` (when there is one), so this renders on the server too."
+			},
+			{
+				"file": "src/features/attachments/components/image-gallery-field.tsx",
+				"line": 60,
+				"layer": "core",
+				"hook": "useQuery",
+				"reason": "enabled: after an interaction",
+				"comment": ""
+			},
+			{
+				"file": "src/features/chaal/analysis/analysis-page.tsx",
+				"line": 89,
+				"layer": "chaal",
+				"hook": "useQuery",
+				"reason": "none",
+				"comment": ""
+			},
+			{
+				"file": "src/features/chaal/analysis/analysis-page.tsx",
+				"line": 90,
+				"layer": "chaal",
+				"hook": "useQuery",
+				"reason": "enabled: after an interaction",
+				"comment": ""
+			},
+			{
+				"file": "src/features/chaal/analysis/analysis-page.tsx",
+				"line": 114,
+				"layer": "chaal",
+				"hook": "useQuery",
+				"reason": "none",
+				"comment": ""
+			},
+			{
+				"file": "src/features/chaal/analysis/analysis-page.tsx",
+				"line": 115,
+				"layer": "chaal",
+				"hook": "useQuery",
+				"reason": "enabled: after an interaction",
+				"comment": ""
+			},
+			{
+				"file": "src/features/chaal/analysis/analysis-page.tsx",
+				"line": 131,
+				"layer": "chaal",
+				"hook": "useQuery",
+				"reason": "enabled: after an interaction",
+				"comment": ""
+			},
+			{
+				"file": "src/features/chaal/analysis/analysis-page.tsx",
+				"line": 166,
+				"layer": "chaal",
+				"hook": "useQuery",
+				"reason": "enabled: after an interaction",
+				"comment": ""
+			},
+			{
+				"file": "src/features/chaal/analysis/analysis-page.tsx",
+				"line": 180,
+				"layer": "chaal",
+				"hook": "useQuery",
+				"reason": "enabled: after an interaction",
+				"comment": ""
+			},
+			{
+				"file": "src/features/chaal/analysis/my-analyses.tsx",
+				"line": 38,
+				"layer": "chaal",
+				"hook": "useQuery",
+				"reason": "enabled: after an interaction",
+				"comment": ""
+			},
+			{
+				"file": "src/features/chaal/community/header.tsx",
+				"line": 84,
+				"layer": "chaal",
+				"hook": "useQuery",
+				"reason": "none",
+				"comment": ""
+			},
+			{
+				"file": "src/features/chaal/community/header.tsx",
+				"line": 141,
+				"layer": "chaal",
+				"hook": "useQuery",
+				"reason": "none",
+				"comment": ""
+			},
+			{
+				"file": "src/features/chaal/community/header.tsx",
+				"line": 142,
+				"layer": "chaal",
+				"hook": "useQuery",
+				"reason": "none",
+				"comment": ""
+			},
+			{
+				"file": "src/features/chaal/community/header.tsx",
+				"line": 144,
+				"layer": "chaal",
+				"hook": "useQuery",
+				"reason": "enabled: after an interaction",
+				"comment": "Without a session there is no connection to ask about (the call would be refused)."
+			},
+			{
+				"file": "src/features/chaal/connect/use-connect.ts",
+				"line": 39,
+				"layer": "chaal",
+				"hook": "useQuery",
+				"reason": "none",
+				"comment": ""
+			},
+			{
+				"file": "src/features/chaal/connect/use-ensure-session.ts",
+				"line": 16,
+				"layer": "chaal",
+				"hook": "useQuery",
+				"reason": "none",
+				"comment": ""
+			},
+			{
+				"file": "src/features/chaal/events/tournament-page.tsx",
+				"line": 72,
+				"layer": "chaal",
+				"hook": "useQuery",
+				"reason": "none",
+				"comment": ""
+			},
+			{
+				"file": "src/features/chaal/events/tournament-page.tsx",
+				"line": 187,
+				"layer": "chaal",
+				"hook": "useQuery",
+				"reason": "none",
+				"comment": ""
+			},
+			{
+				"file": "src/features/chaal/events/tournament-page.tsx",
+				"line": 507,
+				"layer": "chaal",
+				"hook": "useQuery",
+				"reason": "none",
+				"comment": ""
+			},
+			{
+				"file": "src/features/chaal/events/tournament-page.tsx",
+				"line": 548,
+				"layer": "chaal",
+				"hook": "useQuery",
+				"reason": "none",
+				"comment": ""
+			},
+			{
+				"file": "src/features/chaal/events/tournaments-page.tsx",
+				"line": 73,
+				"layer": "chaal",
+				"hook": "useQuery",
+				"reason": "none",
+				"comment": ""
+			},
+			{
+				"file": "src/features/chaal/game/game-page.tsx",
+				"line": 35,
+				"layer": "chaal",
+				"hook": "useQuery",
+				"reason": "none",
+				"comment": ""
+			},
+			{
+				"file": "src/features/chaal/game/game-page.tsx",
+				"line": 36,
+				"layer": "chaal",
+				"hook": "useQuery",
+				"reason": "none",
+				"comment": ""
+			},
+			{
+				"file": "src/features/chaal/game/game-page.tsx",
+				"line": 37,
+				"layer": "chaal",
+				"hook": "useQuery",
+				"reason": "enabled: after an interaction",
+				"comment": ""
+			},
+			{
+				"file": "src/features/chaal/game/game-page.tsx",
+				"line": 40,
+				"layer": "chaal",
+				"hook": "useQuery",
+				"reason": "enabled: after an interaction",
+				"comment": ""
+			},
+			{
+				"file": "src/features/chaal/game/game-page.tsx",
+				"line": 44,
+				"layer": "chaal",
+				"hook": "useQuery",
+				"reason": "enabled: after an interaction",
+				"comment": ""
+			},
+			{
+				"file": "src/features/chaal/game/game-page.tsx",
+				"line": 151,
+				"layer": "chaal",
+				"hook": "useQuery",
+				"reason": "none",
+				"comment": ""
+			},
+			{
+				"file": "src/features/chaal/game/live-chat.tsx",
+				"line": 28,
+				"layer": "chaal",
+				"hook": "useQuery",
+				"reason": "none",
+				"comment": ""
+			},
+			{
+				"file": "src/features/chaal/game/live-game-page.tsx",
+				"line": 93,
+				"layer": "chaal",
+				"hook": "useQuery",
+				"reason": "none",
+				"comment": ""
+			},
+			{
+				"file": "src/features/chaal/home/chaal-home.tsx",
+				"line": 116,
+				"layer": "chaal",
+				"hook": "useQuery",
+				"reason": "none",
+				"comment": ""
+			},
+			{
+				"file": "src/features/chaal/home/chaal-home.tsx",
+				"line": 117,
+				"layer": "chaal",
+				"hook": "useQuery",
+				"reason": "none",
+				"comment": ""
+			},
+			{
+				"file": "src/features/chaal/home/chaal-home.tsx",
+				"line": 118,
+				"layer": "chaal",
+				"hook": "useQuery",
+				"reason": "enabled: after an interaction",
+				"comment": ""
+			},
+			{
+				"file": "src/features/chaal/live/use-live-events.ts",
+				"line": 13,
+				"layer": "chaal",
+				"hook": "useQuery",
+				"reason": "none",
+				"comment": ""
+			},
+			{
+				"file": "src/features/chaal/live/use-live-events.ts",
+				"line": 14,
+				"layer": "chaal",
+				"hook": "useQuery",
+				"reason": "none",
+				"comment": ""
+			},
+			{
+				"file": "src/features/chaal/live/use-live-events.ts",
+				"line": 15,
+				"layer": "chaal",
+				"hook": "useQuery",
+				"reason": "enabled: after an interaction",
+				"comment": ""
+			},
+			{
+				"file": "src/features/chaal/local/game-history.tsx",
+				"line": 31,
+				"layer": "chaal",
+				"hook": "useQuery",
+				"reason": "enabled: after an interaction",
+				"comment": ""
+			},
+			{
+				"file": "src/features/chaal/local/local-game-page.tsx",
+				"line": 55,
+				"layer": "chaal",
+				"hook": "useQuery",
+				"reason": "none",
+				"comment": ""
+			},
+			{
+				"file": "src/features/chaal/local/local-game-page.tsx",
+				"line": 57,
+				"layer": "chaal",
+				"hook": "useQuery",
+				"reason": "enabled: after an interaction",
+				"comment": ""
+			},
+			{
+				"file": "src/features/chaal/local/play-hub.tsx",
+				"line": 43,
+				"layer": "chaal",
+				"hook": "useQuery",
+				"reason": "none",
+				"comment": ""
+			},
+			{
+				"file": "src/features/chaal/local/play-hub.tsx",
+				"line": 44,
+				"layer": "chaal",
+				"hook": "useQuery",
+				"reason": "none",
+				"comment": ""
+			},
+			{
+				"file": "src/features/chaal/local/use-local-games.ts",
+				"line": 31,
+				"layer": "chaal",
+				"hook": "useQuery",
+				"reason": "none",
+				"comment": ""
+			},
+			{
+				"file": "src/features/chaal/local/use-start.ts",
+				"line": 20,
+				"layer": "chaal",
+				"hook": "useQuery",
+				"reason": "none",
+				"comment": ""
+			},
+			{
+				"file": "src/features/chaal/play/online-play.tsx",
+				"line": 52,
+				"layer": "chaal",
+				"hook": "useQuery",
+				"reason": "none",
+				"comment": ""
+			},
+			{
+				"file": "src/features/chaal/play/online-play.tsx",
+				"line": 53,
+				"layer": "chaal",
+				"hook": "useQuery",
+				"reason": "none",
+				"comment": ""
+			},
+			{
+				"file": "src/features/chaal/play/online-play.tsx",
+				"line": 54,
+				"layer": "chaal",
+				"hook": "useQuery",
+				"reason": "enabled: after an interaction",
+				"comment": ""
+			},
+			{
+				"file": "src/features/chaal/play/online-play.tsx",
+				"line": 92,
+				"layer": "chaal",
+				"hook": "useQuery",
+				"reason": "none",
+				"comment": ""
+			},
+			{
+				"file": "src/features/chaal/play/online-play.tsx",
+				"line": 188,
+				"layer": "chaal",
+				"hook": "useQuery",
+				"reason": "none",
+				"comment": ""
+			},
+			{
+				"file": "src/features/chaal/play/online-play.tsx",
+				"line": 267,
+				"layer": "chaal",
+				"hook": "useQuery",
+				"reason": "none",
+				"comment": ""
+			},
+			{
+				"file": "src/features/chaal/play/online-play.tsx",
+				"line": 571,
+				"layer": "chaal",
+				"hook": "useQuery",
+				"reason": "enabled: after an interaction",
+				"comment": ""
+			},
+			{
+				"file": "src/features/chaal/players/player-games.tsx",
+				"line": 25,
+				"layer": "chaal",
+				"hook": "useQuery",
+				"reason": "none",
+				"comment": ""
+			},
+			{
+				"file": "src/features/chaal/players/player-page.tsx",
+				"line": 54,
+				"layer": "chaal",
+				"hook": "useQuery",
+				"reason": "none",
+				"comment": ""
+			},
+			{
+				"file": "src/features/chaal/players/player-page.tsx",
+				"line": 55,
+				"layer": "chaal",
+				"hook": "useQuery",
+				"reason": "none",
+				"comment": ""
+			},
+			{
+				"file": "src/features/chaal/players/players-page.tsx",
+				"line": 28,
+				"layer": "chaal",
+				"hook": "useQuery",
+				"reason": "none",
+				"comment": ""
+			},
+			{
+				"file": "src/features/chaal/players/players-page.tsx",
+				"line": 29,
+				"layer": "chaal",
+				"hook": "useQuery",
+				"reason": "none",
+				"comment": ""
+			},
+			{
+				"file": "src/features/chaal/players/players-page.tsx",
+				"line": 162,
+				"layer": "chaal",
+				"hook": "useQuery",
+				"reason": "none",
+				"comment": ""
+			},
+			{
+				"file": "src/features/chaal/players/players-page.tsx",
+				"line": 163,
+				"layer": "chaal",
+				"hook": "useQuery",
+				"reason": "enabled: after an interaction",
+				"comment": ""
+			},
+			{
+				"file": "src/features/chaal/players/players-page.tsx",
+				"line": 165,
+				"layer": "chaal",
+				"hook": "useQuery",
+				"reason": "enabled: after an interaction",
+				"comment": ""
+			},
+			{
+				"file": "src/features/chaal/puzzles/puzzles-page.tsx",
+				"line": 79,
+				"layer": "chaal",
+				"hook": "useQuery",
+				"reason": "none",
+				"comment": ""
+			},
+			{
+				"file": "src/features/chaal/puzzles/puzzles-page.tsx",
+				"line": 81,
+				"layer": "chaal",
+				"hook": "useQuery",
+				"reason": "none",
+				"comment": ""
+			},
+			{
+				"file": "src/features/chaal/puzzles/puzzles-page.tsx",
+				"line": 83,
+				"layer": "chaal",
+				"hook": "useQuery",
+				"reason": "enabled: after an interaction",
+				"comment": ""
+			},
+			{
+				"file": "src/features/chaal/puzzles/puzzles-page.tsx",
+				"line": 189,
+				"layer": "chaal",
+				"hook": "useQuery",
+				"reason": "none",
+				"comment": ""
+			},
+			{
+				"file": "src/features/chaal/puzzles/puzzles-page.tsx",
+				"line": 236,
+				"layer": "chaal",
+				"hook": "useQuery",
+				"reason": "none",
+				"comment": ""
+			},
+			{
+				"file": "src/features/chaal/puzzles/puzzles-page.tsx",
+				"line": 271,
+				"layer": "chaal",
+				"hook": "useQuery",
+				"reason": "none",
+				"comment": ""
+			},
+			{
+				"file": "src/features/chaal/puzzles/puzzles-page.tsx",
+				"line": 335,
+				"layer": "chaal",
+				"hook": "useQuery",
+				"reason": "enabled: after an interaction",
+				"comment": ""
+			},
+			{
+				"file": "src/features/chaal/puzzles/puzzles-page.tsx",
+				"line": 339,
+				"layer": "chaal",
+				"hook": "useQuery",
+				"reason": "enabled: after an interaction",
+				"comment": ""
+			},
+			{
+				"file": "src/features/chaal/puzzles/puzzles-page.tsx",
+				"line": 467,
+				"layer": "chaal",
+				"hook": "useQuery",
+				"reason": "enabled: after an interaction",
+				"comment": ""
+			},
+			{
+				"file": "src/features/chaal/puzzles/use-attempts.ts",
+				"line": 21,
+				"layer": "chaal",
+				"hook": "useQuery",
+				"reason": "none",
+				"comment": ""
+			},
+			{
+				"file": "src/features/chaal/puzzles/use-attempts.ts",
+				"line": 44,
+				"layer": "chaal",
+				"hook": "useQuery",
+				"reason": "none",
+				"comment": ""
+			},
+			{
+				"file": "src/features/chaal/settings/chaal-settings.tsx",
+				"line": 300,
+				"layer": "chaal",
+				"hook": "useQuery",
+				"reason": "none",
+				"comment": ""
+			},
+			{
+				"file": "src/features/chaal/settings/chaal-settings.tsx",
+				"line": 301,
+				"layer": "chaal",
+				"hook": "useQuery",
+				"reason": "none",
+				"comment": ""
+			},
+			{
+				"file": "src/features/chaal/settings/chaal-settings.tsx",
+				"line": 302,
+				"layer": "chaal",
+				"hook": "useQuery",
+				"reason": "enabled: after an interaction",
+				"comment": ""
+			},
+			{
+				"file": "src/features/chaal/settings/use-preferences.ts",
+				"line": 27,
+				"layer": "chaal",
+				"hook": "useQuery",
+				"reason": "none",
+				"comment": ""
+			},
+			{
+				"file": "src/features/chaal/settings/use-preferences.ts",
+				"line": 29,
+				"layer": "chaal",
+				"hook": "useQuery",
+				"reason": "enabled: after an interaction",
+				"comment": ""
+			},
+			{
+				"file": "src/features/chaal/settings/use-preferences.ts",
+				"line": 31,
+				"layer": "chaal",
+				"hook": "useQuery",
+				"reason": "none",
+				"comment": ""
+			},
+			{
+				"file": "src/features/chaal/settings/use-preferences.ts",
+				"line": 65,
+				"layer": "chaal",
+				"hook": "useQuery",
+				"reason": "none",
+				"comment": ""
+			},
+			{
+				"file": "src/features/chaal/settings/use-preferences.ts",
+				"line": 67,
+				"layer": "chaal",
+				"hook": "useQuery",
+				"reason": "enabled: after an interaction",
+				"comment": ""
+			},
+			{
+				"file": "src/features/chaal/shell/chaal-palette.tsx",
+				"line": 65,
+				"layer": "chaal",
+				"hook": "useQuery",
+				"reason": "none",
+				"comment": ""
+			},
+			{
+				"file": "src/features/chaal/shell/chaal-palette.tsx",
+				"line": 66,
+				"layer": "chaal",
+				"hook": "useQuery",
+				"reason": "none",
+				"comment": ""
+			},
+			{
+				"file": "src/features/chaal/shell/chaal-palette.tsx",
+				"line": 67,
+				"layer": "chaal",
+				"hook": "useQuery",
+				"reason": "enabled: after an interaction",
+				"comment": ""
+			},
+			{
+				"file": "src/features/chaal/shell/chaal-user-menu.tsx",
+				"line": 74,
+				"layer": "chaal",
+				"hook": "useQuery",
+				"reason": "none",
+				"comment": ""
+			},
+			{
+				"file": "src/features/chaal/shell/chaal-user-menu.tsx",
+				"line": 75,
+				"layer": "chaal",
+				"hook": "useQuery",
+				"reason": "none",
+				"comment": ""
+			},
+			{
+				"file": "src/features/chaal/shell/chaal-user-menu.tsx",
+				"line": 76,
+				"layer": "chaal",
+				"hook": "useQuery",
+				"reason": "enabled: after an interaction",
+				"comment": ""
+			},
+			{
+				"file": "src/features/chaal/shell/notice-banner.tsx",
+				"line": 14,
+				"layer": "chaal",
+				"hook": "useQuery",
+				"reason": "none",
+				"comment": ""
+			},
+			{
+				"file": "src/features/chaal/shell/palette-players.tsx",
+				"line": 19,
+				"layer": "chaal",
+				"hook": "useQuery",
+				"reason": "enabled: after an interaction",
+				"comment": ""
+			},
+			{
+				"file": "src/features/chaal/studies/save-dialog.tsx",
+				"line": 49,
+				"layer": "chaal",
+				"hook": "useQuery",
+				"reason": "enabled: after an interaction",
+				"comment": ""
+			},
+			{
+				"file": "src/features/chaal/studies/studies-page.tsx",
+				"line": 161,
+				"layer": "chaal",
+				"hook": "useQuery",
+				"reason": "none",
+				"comment": ""
+			},
+			{
+				"file": "src/features/chaal/studies/studies-page.tsx",
+				"line": 182,
+				"layer": "chaal",
+				"hook": "useQuery",
+				"reason": "enabled: after an interaction",
+				"comment": ""
+			},
+			{
+				"file": "src/features/chaal/studies/study-page.tsx",
+				"line": 35,
+				"layer": "chaal",
+				"hook": "useQuery",
+				"reason": "none",
+				"comment": ""
+			},
+			{
+				"file": "src/features/chaal/studies/study-page.tsx",
+				"line": 110,
+				"layer": "chaal",
+				"hook": "useQuery",
+				"reason": "none",
+				"comment": ""
+			},
+			{
+				"file": "src/features/chaal/teams/team-page.tsx",
+				"line": 34,
+				"layer": "chaal",
+				"hook": "useQuery",
+				"reason": "none",
+				"comment": ""
+			},
+			{
+				"file": "src/features/chaal/teams/team-page.tsx",
+				"line": 148,
+				"layer": "chaal",
+				"hook": "useQuery",
+				"reason": "none",
+				"comment": ""
+			},
+			{
+				"file": "src/features/chaal/teams/teams-page.tsx",
+				"line": 122,
+				"layer": "chaal",
+				"hook": "useQuery",
+				"reason": "none",
+				"comment": ""
+			},
+			{
+				"file": "src/features/chaal/teams/teams-page.tsx",
+				"line": 149,
+				"layer": "chaal",
+				"hook": "useQuery",
+				"reason": "none",
+				"comment": ""
+			},
+			{
+				"file": "src/features/chaal/teams/teams-page.tsx",
+				"line": 177,
+				"layer": "chaal",
+				"hook": "useQuery",
+				"reason": "enabled: after an interaction",
+				"comment": ""
+			},
+			{
+				"file": "src/features/chaal/watch/broadcast-page.tsx",
+				"line": 63,
+				"layer": "chaal",
+				"hook": "useQuery",
+				"reason": "none",
+				"comment": ""
+			},
+			{
+				"file": "src/features/chaal/watch/broadcast-page.tsx",
+				"line": 64,
+				"layer": "chaal",
+				"hook": "useQuery",
+				"reason": "none",
+				"comment": ""
+			},
+			{
+				"file": "src/features/chaal/watch/broadcast-page.tsx",
+				"line": 238,
+				"layer": "chaal",
+				"hook": "useQuery",
+				"reason": "none",
+				"comment": ""
+			},
+			{
+				"file": "src/features/chaal/watch/broadcast-page.tsx",
+				"line": 434,
+				"layer": "chaal",
+				"hook": "useQuery",
+				"reason": "none",
+				"comment": ""
+			},
+			{
+				"file": "src/features/chaal/watch/broadcasts-page.tsx",
+				"line": 29,
+				"layer": "chaal",
+				"hook": "useQuery",
+				"reason": "none",
+				"comment": ""
+			},
+			{
+				"file": "src/features/chaal/watch/broadcasts-page.tsx",
+				"line": 119,
+				"layer": "chaal",
+				"hook": "useQuery",
+				"reason": "none",
+				"comment": ""
+			},
+			{
+				"file": "src/features/chaal/watch/broadcasts-page.tsx",
+				"line": 150,
+				"layer": "chaal",
+				"hook": "useQuery",
+				"reason": "none",
+				"comment": ""
+			},
+			{
+				"file": "src/features/chaal/watch/broadcasts-page.tsx",
+				"line": 163,
+				"layer": "chaal",
+				"hook": "useQuery",
+				"reason": "none",
+				"comment": ""
+			},
+			{
+				"file": "src/features/chaal/watch/channel-page.tsx",
+				"line": 41,
+				"layer": "chaal",
+				"hook": "useQuery",
+				"reason": "none",
+				"comment": ""
+			},
+			{
+				"file": "src/features/chaal/watch/channel-page.tsx",
+				"line": 42,
+				"layer": "chaal",
+				"hook": "useQuery",
+				"reason": "none",
+				"comment": ""
+			},
+			{
+				"file": "src/features/chaal/watch/spectate-board.tsx",
+				"line": 54,
+				"layer": "chaal",
+				"hook": "useQuery",
+				"reason": "none",
+				"comment": ""
+			},
+			{
+				"file": "src/features/chaal/watch/tv-page.tsx",
+				"line": 32,
+				"layer": "chaal",
+				"hook": "useQuery",
+				"reason": "none",
+				"comment": ""
+			},
+			{
+				"file": "src/features/chaal/watch/tv-page.tsx",
+				"line": 33,
+				"layer": "chaal",
+				"hook": "useQuery",
+				"reason": "none",
+				"comment": ""
+			},
+			{
+				"file": "src/features/chaal/watch/tv-page.tsx",
+				"line": 190,
+				"layer": "chaal",
+				"hook": "useQuery",
+				"reason": "none",
+				"comment": ""
+			},
+			{
+				"file": "src/features/chaal/watch/tv-page.tsx",
+				"line": 239,
+				"layer": "chaal",
+				"hook": "useQuery",
+				"reason": "none",
+				"comment": ""
+			},
+			{
+				"file": "src/features/kharcha/expenses/expense-dialog.tsx",
+				"line": 108,
+				"layer": "kharcha",
+				"hook": "useQuery",
+				"reason": "none",
+				"comment": ""
+			},
+			{
+				"file": "src/features/kharcha/expenses/expense-dialog.tsx",
+				"line": 109,
+				"layer": "kharcha",
+				"hook": "useQuery",
+				"reason": "none",
+				"comment": ""
+			},
+			{
+				"file": "src/features/kharcha/expenses/expense-dialog.tsx",
+				"line": 110,
+				"layer": "kharcha",
+				"hook": "useQuery",
+				"reason": "none",
+				"comment": ""
+			},
+			{
+				"file": "src/features/kharcha/expenses/expense-dialog.tsx",
+				"line": 111,
+				"layer": "kharcha",
+				"hook": "useQuery",
+				"reason": "none",
+				"comment": ""
+			},
+			{
+				"file": "src/features/kharcha/expenses/expense-dialog.tsx",
+				"line": 128,
+				"layer": "kharcha",
+				"hook": "useQuery",
+				"reason": "enabled: after an interaction",
+				"comment": ""
+			},
+			{
+				"file": "src/features/kharcha/expenses/expense-panel.tsx",
+				"line": 44,
+				"layer": "kharcha",
+				"hook": "useQuery",
+				"reason": "none",
+				"comment": ""
+			},
+			{
+				"file": "src/features/kharcha/expenses/expense-sheet.tsx",
+				"line": 24,
+				"layer": "kharcha",
+				"hook": "useQuery",
+				"reason": "none",
+				"comment": ""
+			},
+			{
+				"file": "src/features/kharcha/expenses/receipts-field.tsx",
+				"line": 41,
+				"layer": "kharcha",
+				"hook": "useQuery",
+				"reason": "none",
+				"comment": ""
+			},
+			{
+				"file": "src/features/kharcha/groups/group-settings.tsx",
+				"line": 79,
+				"layer": "kharcha",
+				"hook": "useQuery",
+				"reason": "none",
+				"comment": ""
+			},
+			{
+				"file": "src/features/kharcha/groups/group-settings.tsx",
+				"line": 201,
+				"layer": "kharcha",
+				"hook": "useQuery",
+				"reason": "none",
+				"comment": ""
+			},
+			{
+				"file": "src/features/kharcha/groups/group-settings.tsx",
+				"line": 336,
+				"layer": "kharcha",
+				"hook": "useQuery",
+				"reason": "none",
+				"comment": ""
+			},
+			{
+				"file": "src/features/kharcha/join/join-page.tsx",
+				"line": 34,
+				"layer": "kharcha",
+				"hook": "useQuery",
+				"reason": "none",
+				"comment": ""
+			},
+			{
+				"file": "src/features/kharcha/settle/settle-dialog.tsx",
+				"line": 91,
+				"layer": "kharcha",
+				"hook": "useQuery",
+				"reason": "enabled: after an interaction",
+				"comment": ""
+			},
+			{
+				"file": "src/features/kharcha/settle/settle-dialog.tsx",
+				"line": 95,
+				"layer": "kharcha",
+				"hook": "useQuery",
+				"reason": "enabled: after an interaction",
+				"comment": ""
+			},
+			{
+				"file": "src/features/kharcha/settle/settle-dialog.tsx",
+				"line": 127,
+				"layer": "kharcha",
+				"hook": "useQuery",
+				"reason": "none",
+				"comment": ""
+			},
+			{
+				"file": "src/features/kharcha/shell/actions.tsx",
+				"line": 65,
+				"layer": "kharcha",
+				"hook": "useQuery",
+				"reason": "none",
+				"comment": ""
+			},
+			{
+				"file": "src/features/kharcha/shell/create-dialogs.tsx",
+				"line": 207,
+				"layer": "kharcha",
+				"hook": "useQuery",
+				"reason": "none",
+				"comment": ""
+			},
+			{
+				"file": "src/features/kharcha/shell/kharcha-palette.tsx",
+				"line": 56,
+				"layer": "kharcha",
+				"hook": "useQuery",
+				"reason": "none",
+				"comment": ""
+			},
+			{
+				"file": "src/features/kharcha/shell/kharcha-shell.tsx",
+				"line": 90,
+				"layer": "kharcha",
+				"hook": "useQuery",
+				"reason": "none",
+				"comment": ""
+			},
+			{
+				"file": "src/features/kharcha/shell/kharcha-shell.tsx",
+				"line": 92,
+				"layer": "kharcha",
+				"hook": "useQuery",
+				"reason": "enabled: after an interaction",
+				"comment": ""
+			},
+			{
+				"file": "src/features/kharcha/shell/kharcha-shell.tsx",
+				"line": 249,
+				"layer": "kharcha",
+				"hook": "useQuery",
+				"reason": "enabled: after an interaction",
+				"comment": ""
+			},
+			{
+				"file": "src/features/kharcha/shell/kharcha-user-menu.tsx",
+				"line": 35,
+				"layer": "kharcha",
+				"hook": "useQuery",
+				"reason": "none",
+				"comment": ""
+			},
+			{
+				"file": "src/features/kharcha/shell/public-frame.tsx",
+				"line": 16,
+				"layer": "kharcha",
+				"hook": "useQuery",
+				"reason": "none",
+				"comment": ""
+			},
+			{
+				"file": "src/features/kharcha/spend/spend-page.tsx",
+				"line": 111,
+				"layer": "kharcha",
+				"hook": "useQuery",
+				"reason": "none",
+				"comment": ""
+			},
+			{
+				"file": "src/features/kharcha/spend/spend-page.tsx",
+				"line": 113,
+				"layer": "kharcha",
+				"hook": "useQuery",
+				"reason": "enabled: after an interaction",
+				"comment": ""
+			},
+			{
+				"file": "src/features/kharcha/spend/spend-page.tsx",
+				"line": 114,
+				"layer": "kharcha",
+				"hook": "useQuery",
+				"reason": "enabled: after an interaction",
+				"comment": ""
+			},
+			{
+				"file": "src/features/kharcha/spend/spend-page.tsx",
+				"line": 115,
+				"layer": "kharcha",
+				"hook": "useQuery",
+				"reason": "enabled: after an interaction",
+				"comment": ""
+			},
+			{
+				"file": "src/features/media/components/media-picker.tsx",
+				"line": 61,
+				"layer": "core",
+				"hook": "useQuery",
+				"reason": "none",
+				"comment": ""
+			},
+			{
+				"file": "src/features/parda/library/continue-rail.tsx",
+				"line": 110,
+				"layer": "parda",
+				"hook": "useQuery",
+				"reason": "none",
+				"comment": ""
+			},
+			{
+				"file": "src/features/parda/library/continue-rail.tsx",
+				"line": 149,
+				"layer": "parda",
+				"hook": "useQuery",
+				"reason": "none",
+				"comment": ""
+			},
+			{
+				"file": "src/features/parda/library/for-you-rails.tsx",
+				"line": 69,
+				"layer": "parda",
+				"hook": "useQuery",
+				"reason": "none",
+				"comment": ""
+			},
+			{
+				"file": "src/features/parda/library/for-you-rails.tsx",
+				"line": 70,
+				"layer": "parda",
+				"hook": "useQuery",
+				"reason": "enabled: after an interaction",
+				"comment": ""
+			},
+			{
+				"file": "src/features/parda/library/library-page.tsx",
+				"line": 415,
+				"layer": "parda",
+				"hook": "useQuery",
+				"reason": "none",
+				"comment": ""
+			},
+			{
+				"file": "src/features/parda/library/save-buttons.tsx",
+				"line": 31,
+				"layer": "parda",
+				"hook": "useQuery",
+				"reason": "none",
+				"comment": ""
+			},
+			{
+				"file": "src/features/parda/library/save-buttons.tsx",
+				"line": 32,
+				"layer": "parda",
+				"hook": "useQuery",
+				"reason": "enabled: after an interaction",
+				"comment": ""
+			},
+			{
+				"file": "src/features/parda/library/title-progress.tsx",
+				"line": 72,
+				"layer": "parda",
+				"hook": "useQuery",
+				"reason": "none",
+				"comment": ""
+			},
+			{
+				"file": "src/features/parda/library/title-progress.tsx",
+				"line": 73,
+				"layer": "parda",
+				"hook": "useQuery",
+				"reason": "enabled: after an interaction",
+				"comment": ""
+			},
+			{
+				"file": "src/features/parda/library/title-progress.tsx",
+				"line": 93,
+				"layer": "parda",
+				"hook": "useQuery",
+				"reason": "none",
+				"comment": ""
+			},
+			{
+				"file": "src/features/parda/library/use-viewer-session.ts",
+				"line": 44,
+				"layer": "parda",
+				"hook": "useQuery",
+				"reason": "none",
+				"comment": ""
+			},
+			{
+				"file": "src/features/parda/library/use-viewer-session.ts",
+				"line": 69,
+				"layer": "parda",
+				"hook": "useQuery",
+				"reason": "none",
+				"comment": ""
+			},
+			{
+				"file": "src/features/parda/party/use-party-room.ts",
+				"line": 57,
+				"layer": "parda",
+				"hook": "useQuery",
+				"reason": "none",
+				"comment": ""
+			},
+			{
+				"file": "src/features/parda/player/use-watch-player.ts",
+				"line": 65,
+				"layer": "parda",
+				"hook": "useQuery",
+				"reason": "none",
+				"comment": ""
+			},
+			{
+				"file": "src/features/parda/player/watch-panels.tsx",
+				"line": 97,
+				"layer": "parda",
+				"hook": "useQuery",
+				"reason": "enabled: after an interaction",
+				"comment": ""
+			},
+			{
+				"file": "src/features/parda/profiles/profiles-page.tsx",
+				"line": 319,
+				"layer": "parda",
+				"hook": "useQuery",
+				"reason": "none",
+				"comment": ""
+			},
+			{
+				"file": "src/features/parda/schedule/bell.tsx",
+				"line": 78,
+				"layer": "parda",
+				"hook": "useQuery",
+				"reason": "none",
+				"comment": ""
+			},
+			{
+				"file": "src/features/parda/schedule/bell.tsx",
+				"line": 79,
+				"layer": "parda",
+				"hook": "useQuery",
+				"reason": "enabled: after an interaction",
+				"comment": ""
+			},
+			{
+				"file": "src/features/parda/schedule/schedule-page.tsx",
+				"line": 93,
+				"layer": "parda",
+				"hook": "useQuery",
+				"reason": "none",
+				"comment": ""
+			},
+			{
+				"file": "src/features/parda/schedule/schedule-page.tsx",
+				"line": 94,
+				"layer": "parda",
+				"hook": "useQuery",
+				"reason": "enabled: after an interaction",
+				"comment": ""
+			},
+			{
+				"file": "src/features/parda/search/search-overlay.tsx",
+				"line": 88,
+				"layer": "parda",
+				"hook": "useQuery",
+				"reason": "enabled: after an interaction",
+				"comment": ""
+			},
+			{
+				"file": "src/features/parda/search/search-overlay.tsx",
+				"line": 93,
+				"layer": "parda",
+				"hook": "useQuery",
+				"reason": "enabled: after an interaction",
+				"comment": ""
+			},
+			{
+				"file": "src/features/parda/shell/guest-banner.tsx",
+				"line": 17,
+				"layer": "parda",
+				"hook": "useQuery",
+				"reason": "none",
+				"comment": ""
+			},
+			{
+				"file": "src/features/parda/shell/guest-banner.tsx",
+				"line": 19,
+				"layer": "parda",
+				"hook": "useQuery",
+				"reason": "enabled: after an interaction",
+				"comment": ""
+			},
+			{
+				"file": "src/features/parda/shell/notice-banner.tsx",
+				"line": 13,
+				"layer": "parda",
+				"hook": "useQuery",
+				"reason": "none",
+				"comment": ""
+			},
+			{
+				"file": "src/features/parda/shell/parda-user-menu.tsx",
+				"line": 41,
+				"layer": "parda",
+				"hook": "useQuery",
+				"reason": "none",
+				"comment": ""
+			},
+			{
+				"file": "src/features/parda/shell/parda-user-menu.tsx",
+				"line": 42,
+				"layer": "parda",
+				"hook": "useQuery",
+				"reason": "enabled: after an interaction",
+				"comment": ""
+			},
+			{
+				"file": "src/features/portfolio/admin/components/project-reorder-dialog.tsx",
+				"line": 30,
+				"layer": "portfolio",
+				"hook": "useQuery",
+				"reason": "none",
+				"comment": ""
+			},
+			{
+				"file": "src/features/rbac/can.tsx",
+				"line": 15,
+				"layer": "core",
+				"hook": "useQuery",
+				"reason": "none",
+				"comment": ""
+			},
+			{
+				"file": "src/features/rbac/can.tsx",
+				"line": 38,
+				"layer": "core",
+				"hook": "useQuery",
+				"reason": "none",
+				"comment": ""
+			},
+			{
+				"file": "src/features/taskline/automations/automation-dialog.tsx",
+				"line": 475,
+				"layer": "taskline",
+				"hook": "useQuery",
+				"reason": "none",
+				"comment": ""
+			},
+			{
+				"file": "src/features/taskline/find/search-page.tsx",
+				"line": 33,
+				"layer": "taskline",
+				"hook": "useQuery",
+				"reason": "enabled: after an interaction",
+				"comment": "The loader filled it on the server (an empty question asks nothing)."
+			},
+			{
+				"file": "src/features/taskline/freshness.ts",
+				"line": 14,
+				"layer": "taskline",
+				"hook": "useQuery",
+				"reason": "none",
+				"comment": ""
+			},
+			{
+				"file": "src/features/taskline/projects/create-project-dialog.tsx",
+				"line": 52,
+				"layer": "taskline",
+				"hook": "useQuery",
+				"reason": "none",
+				"comment": ""
+			},
+			{
+				"file": "src/features/taskline/saved-views.ts",
+				"line": 17,
+				"layer": "taskline",
+				"hook": "useQuery",
+				"reason": "none",
+				"comment": ""
+			},
+			{
+				"file": "src/features/taskline/shell/public-frame.tsx",
+				"line": 16,
+				"layer": "taskline",
+				"hook": "useQuery",
+				"reason": "none",
+				"comment": ""
+			},
+			{
+				"file": "src/features/taskline/shell/shell-layout.tsx",
+				"line": 22,
+				"layer": "taskline",
+				"hook": "useQuery",
+				"reason": "none",
+				"comment": ""
+			},
+			{
+				"file": "src/features/taskline/shell/shell-layout.tsx",
+				"line": 24,
+				"layer": "taskline",
+				"hook": "useQuery",
+				"reason": "enabled: after an interaction",
+				"comment": "The loader read it; a 404 rendered in the loader's place fetches it here."
+			},
+			{
+				"file": "src/features/taskline/shell/taskline-palette.tsx",
+				"line": 70,
+				"layer": "taskline",
+				"hook": "useQuery",
+				"reason": "enabled: after an interaction",
+				"comment": ""
+			},
+			{
+				"file": "src/features/taskline/shell/taskline-shell.tsx",
+				"line": 36,
+				"layer": "taskline",
+				"hook": "useQuery",
+				"reason": "none",
+				"comment": ""
+			},
+			{
+				"file": "src/features/taskline/shell/taskline-sidebar.tsx",
+				"line": 72,
+				"layer": "taskline",
+				"hook": "useQuery",
+				"reason": "none",
+				"comment": ""
+			},
+			{
+				"file": "src/features/taskline/shell/taskline-sidebar.tsx",
+				"line": 75,
+				"layer": "taskline",
+				"hook": "useQuery",
+				"reason": "enabled: after an interaction",
+				"comment": "Polled every minute (PLAN 11.5); it appears after hydration, absolutely placed, so nothing moves."
+			},
+			{
+				"file": "src/features/taskline/shell/taskline-user-menu.tsx",
+				"line": 36,
+				"layer": "taskline",
+				"hook": "useQuery",
+				"reason": "none",
+				"comment": ""
+			},
+			{
+				"file": "src/features/taskline/task/conversation.tsx",
+				"line": 73,
+				"layer": "taskline",
+				"hook": "useQuery",
+				"reason": "none",
+				"comment": ""
+			},
+			{
+				"file": "src/features/taskline/task/task-sheet.tsx",
+				"line": 28,
+				"layer": "taskline",
+				"hook": "useQuery",
+				"reason": "none",
+				"comment": ""
+			},
+			{
+				"file": "src/features/taskline/time/timer.tsx",
+				"line": 95,
+				"layer": "taskline",
+				"hook": "useQuery",
+				"reason": "enabled: after an interaction",
+				"comment": ""
+			},
+			{
+				"file": "src/features/taskline/timeline/dependencies.tsx",
+				"line": 168,
+				"layer": "taskline",
+				"hook": "useQuery",
+				"reason": "enabled: after an interaction",
+				"comment": ""
+			},
+			{
+				"file": "src/hooks/use-list-query.ts",
+				"line": 15,
+				"layer": "core",
+				"hook": "useQuery",
+				"reason": "none",
+				"comment": ""
+			},
+			{
+				"file": "src/routes/dev/examples/masking/index.tsx",
+				"line": 67,
+				"layer": "dev",
+				"hook": "useQuery",
+				"reason": "none",
+				"comment": ""
+			},
+			{
+				"file": "src/routes/dev/examples/optimistic.tsx",
+				"line": 46,
+				"layer": "dev",
+				"hook": "useQuery",
+				"reason": "none",
+				"comment": ""
+			}
+		]
+	},
+	"routes": {
+		"total": 257,
+		"withLoader": 181,
+		"readingWithoutLoader": [
+			{
+				"file": "src/routes/__root.tsx",
+				"pageReads": {
+					"useQuery": 2
+				}
+			},
+			{
+				"file": "src/routes/_admin/admin/parda/billboard/new.tsx",
+				"pageReads": {
+					"useSuspenseQuery": 1
+				}
+			},
+			{
+				"file": "src/routes/_admin/admin/parda/collections/new.tsx",
+				"pageReads": {
+					"useSuspenseQuery": 1
+				}
+			},
+			{
+				"file": "src/routes/_admin/admin/parda/sources/new.tsx",
+				"pageReads": {
+					"useSuspenseQuery": 1
+				}
+			},
+			{
+				"file": "src/routes/_admin/admin/portfolio/journal/new.tsx",
+				"pageReads": {
+					"useSuspenseQuery": 1
+				}
+			},
+			{
+				"file": "src/routes/_admin/admin/portfolio/projects/new.tsx",
+				"pageReads": {
+					"useSuspenseQuery": 1
+				}
+			},
+			{
+				"file": "src/routes/_admin/admin/taskline/projects/$id/labels.tsx",
+				"pageReads": {
+					"useSuspenseQuery": 4
+				}
+			},
+			{
+				"file": "src/routes/_admin/admin/taskline/projects/$id/workflow.tsx",
+				"pageReads": {
+					"useSuspenseQuery": 4
+				}
+			},
+			{
+				"file": "src/routes/_admin/admin/test-crud/new.tsx",
+				"pageReads": {
+					"useSuspenseQuery": 1
+				}
+			},
+			{
+				"file": "src/routes/_authed.tsx",
+				"pageReads": {
+					"useQuery": 1
+				}
+			},
+			{
+				"file": "src/routes/_chaal/app/chaal/settings.tsx",
+				"pageReads": {
+					"useQuery": 3
+				}
+			},
+			{
+				"file": "src/routes/_taskline/app/taskline/_shell/$ws/p/$key/backlog.tsx",
+				"pageReads": {
+					"useSuspenseQuery": 1
+				}
+			},
+			{
+				"file": "src/routes/_taskline/app/taskline/_shell/$ws/p/$key/board.tsx",
+				"pageReads": {
+					"useSuspenseQuery": 2
+				}
+			},
+			{
+				"file": "src/routes/_taskline/app/taskline/_shell/$ws/p/$key/calendar.tsx",
+				"pageReads": {
+					"useSuspenseQuery": 2
+				}
+			},
+			{
+				"file": "src/routes/_taskline/app/taskline/_shell/$ws/p/$key/milestones.tsx",
+				"pageReads": {
+					"useSuspenseQuery": 1
+				}
+			},
+			{
+				"file": "src/routes/_taskline/app/taskline/_shell/$ws/p/$key/settings/fields.tsx",
+				"pageReads": {
+					"useSuspenseQuery": 1
+				}
+			},
+			{
+				"file": "src/routes/_taskline/app/taskline/_shell/$ws/p/$key/settings/general.tsx",
+				"pageReads": {
+					"useSuspenseQuery": 1
+				}
+			},
+			{
+				"file": "src/routes/_taskline/app/taskline/_shell/$ws/p/$key/settings/labels.tsx",
+				"pageReads": {
+					"useSuspenseQuery": 1
+				}
+			},
+			{
+				"file": "src/routes/_taskline/app/taskline/_shell/$ws/p/$key/settings/workflow.tsx",
+				"pageReads": {
+					"useSuspenseQuery": 1
+				}
+			},
+			{
+				"file": "src/routes/_taskline/app/taskline/_shell/$ws/p/$key/timeline.tsx",
+				"pageReads": {
+					"useSuspenseQuery": 2
+				}
+			},
+			{
+				"file": "src/routes/dev/examples/attachments.tsx",
+				"pageReads": {
+					"useQuery": 3
+				}
+			},
+			{
+				"file": "src/routes/dev/examples/permissions.tsx",
+				"pageReads": {
+					"useQuery": 2
+				}
+			},
+			{
+				"file": "src/routes/dev/route.tsx",
+				"pageReads": {
+					"useQuery": 1
+				}
+			}
+		],
+		"heavyImports": [
+			{
+				"file": "src/routes/__root.tsx",
+				"imports": [
+					"@/features/auth/queries"
+				]
+			},
+			{
+				"file": "src/routes/_auth/forgot-password.tsx",
+				"imports": [
+					"@/features/auth/queries"
+				]
+			},
+			{
+				"file": "src/routes/_auth/login.tsx",
+				"imports": [
+					"@/features/auth/queries"
+				]
+			},
+			{
+				"file": "src/routes/_auth/register.tsx",
+				"imports": [
+					"@/features/auth/queries"
+				]
+			},
+			{
+				"file": "src/routes/_auth/sign-in-code.tsx",
+				"imports": [
+					"@/features/auth/queries"
+				]
+			},
+			{
+				"file": "src/routes/_authed/account.tsx",
+				"imports": [
+					"@/features/auth/queries"
+				]
+			},
+			{
+				"file": "src/routes/_authed/account_.delete.tsx",
+				"imports": [
+					"@/features/auth/queries"
+				]
+			},
+			{
+				"file": "src/routes/_chaal/app/chaal/sign-in.tsx",
+				"imports": [
+					"@/features/auth/queries"
+				]
+			},
+			{
+				"file": "src/routes/_chaal/app/chaal/sign-up.tsx",
+				"imports": [
+					"@/features/auth/queries"
+				]
+			},
+			{
+				"file": "src/routes/_kharcha/app/kharcha/_shell/account.tsx",
+				"imports": [
+					"@/features/auth/queries"
+				]
+			},
+			{
+				"file": "src/routes/_kharcha/app/kharcha/sign-in.tsx",
+				"imports": [
+					"@/features/auth/queries"
+				]
+			},
+			{
+				"file": "src/routes/_kharcha/app/kharcha/sign-up.tsx",
+				"imports": [
+					"@/features/auth/queries"
+				]
+			},
+			{
+				"file": "src/routes/_parda/app/parda/sign-in.tsx",
+				"imports": [
+					"@/features/auth/queries"
+				]
+			},
+			{
+				"file": "src/routes/_parda/app/parda/sign-up.tsx",
+				"imports": [
+					"@/features/auth/queries"
+				]
+			},
+			{
+				"file": "src/routes/_site.tsx",
+				"imports": [
+					"@/features/portfolio/queries"
+				]
+			},
+			{
+				"file": "src/routes/_site/contact.tsx",
+				"imports": [
+					"@/features/auth/queries"
+				]
+			},
+			{
+				"file": "src/routes/_taskline/app/taskline/_shell/account.tsx",
+				"imports": [
+					"@/features/auth/queries"
+				]
+			},
+			{
+				"file": "src/routes/_taskline/app/taskline/sign-in.tsx",
+				"imports": [
+					"@/features/auth/queries"
+				]
+			},
+			{
+				"file": "src/routes/_taskline/app/taskline/sign-up.tsx",
+				"imports": [
+					"@/features/auth/queries"
+				]
+			},
+			{
+				"file": "src/routes/dev/examples/analytics.tsx",
+				"imports": [
+					"@/features/flags/queries"
+				]
+			},
+			{
+				"file": "src/routes/dev/examples/attachments.tsx",
+				"imports": [
+					"@/features/attachments/schema"
+				]
+			},
+			{
+				"file": "src/routes/dev/examples/contact.tsx",
+				"imports": [
+					"@/features/auth/queries"
+				]
+			},
+			{
+				"file": "src/routes/dev/examples/data-table.tsx",
+				"imports": [
+					"@/features/dev/examples/queries",
+					"@/features/dev/examples/schema"
+				]
+			},
+			{
+				"file": "src/routes/dev/examples/errors.tsx",
+				"imports": [
+					"@/features/dev/examples/schema"
+				]
+			},
+			{
+				"file": "src/routes/dev/examples/filters.tsx",
+				"imports": [
+					"@/features/dev/examples/queries",
+					"@/features/dev/examples/schema"
+				]
+			},
+			{
+				"file": "src/routes/dev/examples/forms.tsx",
+				"imports": [
+					"@/features/dev/examples/schema"
+				]
+			},
+			{
+				"file": "src/routes/dev/examples/idempotency.tsx",
+				"imports": [
+					"@/features/dev/examples/queries"
+				]
+			},
+			{
+				"file": "src/routes/dev/examples/list-extras.tsx",
+				"imports": [
+					"@/features/dev/examples/queries",
+					"@/features/dev/examples/schema"
+				]
+			},
+			{
+				"file": "src/routes/dev/examples/loader-query.tsx",
+				"imports": [
+					"@/features/dev/examples/queries"
+				]
+			},
+			{
+				"file": "src/routes/dev/examples/masking/$id.tsx",
+				"imports": [
+					"@/features/dev/examples/queries",
+					"@/features/dev/examples/schema"
+				]
+			},
+			{
+				"file": "src/routes/dev/examples/masking/index.tsx",
+				"imports": [
+					"@/features/dev/examples/queries",
+					"@/features/dev/examples/schema"
+				]
+			},
+			{
+				"file": "src/routes/dev/examples/optimistic.tsx",
+				"imports": [
+					"@/features/dev/examples/collection",
+					"@/features/dev/examples/queries"
+				]
+			},
+			{
+				"file": "src/routes/dev/index.tsx",
+				"imports": [
+					"@/features/flags/queries"
+				]
+			},
+			{
+				"file": "src/routes/dev/stack.tsx",
+				"imports": [
+					"@/features/stack/queries",
+					"@/features/stack/schema"
+				]
+			},
+			{
+				"file": "src/routes/dev/test-crud/$slug.tsx",
+				"imports": [
+					"@/features/test-crud/queries"
+				]
+			},
+			{
+				"file": "src/routes/dev/test-crud/index.tsx",
+				"imports": [
+					"@/features/test-crud/queries"
+				]
+			},
+			{
+				"file": "src/routes/f/$slug.tsx",
+				"imports": [
+					"@/features/auth/queries"
+				]
+			}
+		],
+		"list": [
+			{
+				"file": "src/routes/__root.tsx",
+				"layer": "core",
+				"loader": false,
+				"loaderCalls": [],
+				"search": false,
+				"head": true,
+				"states": [
+					"errorComponent",
+					"notFoundComponent"
+				],
+				"heavyImports": [
+					"@/features/auth/queries"
+				],
+				"pageReads": {
+					"useQuery": 2
+				}
+			},
+			{
+				"file": "src/routes/_admin.tsx",
+				"layer": "core",
+				"loader": false,
+				"loaderCalls": [],
+				"search": false,
+				"head": true,
+				"states": [],
+				"heavyImports": [],
+				"pageReads": {}
+			},
+			{
+				"file": "src/routes/_admin/admin/apps.tsx",
+				"layer": "apps",
+				"loader": true,
+				"loaderCalls": [
+					"ensureQuery"
+				],
+				"search": false,
+				"head": true,
+				"states": [],
+				"heavyImports": [],
+				"pageReads": {
+					"useSuspenseQuery": 1
+				}
+			},
+			{
+				"file": "src/routes/_admin/admin/audit/index.tsx",
+				"layer": "core",
+				"loader": true,
+				"loaderCalls": [
+					"listLoader"
+				],
+				"search": false,
+				"head": true,
+				"states": [],
+				"heavyImports": [],
+				"pageReads": {}
+			},
+			{
+				"file": "src/routes/_admin/admin/audit/route.tsx",
+				"layer": "core",
+				"loader": false,
+				"loaderCalls": [],
+				"search": false,
+				"head": false,
+				"states": [],
+				"heavyImports": [],
+				"pageReads": {}
+			},
+			{
+				"file": "src/routes/_admin/admin/chaal/blocks/index.tsx",
+				"layer": "chaal",
+				"loader": true,
+				"loaderCalls": [
+					"listLoader"
+				],
+				"search": false,
+				"head": true,
+				"states": [
+					"pendingComponent"
+				],
+				"heavyImports": [],
+				"pageReads": {}
+			},
+			{
+				"file": "src/routes/_admin/admin/chaal/connections.tsx",
+				"layer": "chaal",
+				"loader": true,
+				"loaderCalls": [
+					"listLoader"
+				],
+				"search": false,
+				"head": true,
+				"states": [
+					"pendingComponent"
+				],
+				"heavyImports": [],
+				"pageReads": {}
+			},
+			{
+				"file": "src/routes/_admin/admin/chaal/curation.tsx",
+				"layer": "chaal",
+				"loader": true,
+				"loaderCalls": [
+					"ensureQuery"
+				],
+				"search": true,
+				"head": true,
+				"states": [],
+				"heavyImports": [],
+				"pageReads": {
+					"useSuspenseQuery": 1
+				}
+			},
+			{
+				"file": "src/routes/_admin/admin/chaal/health.tsx",
+				"layer": "chaal",
+				"loader": true,
+				"loaderCalls": [
+					"ensureQuery"
+				],
+				"search": true,
+				"head": true,
+				"states": [],
+				"heavyImports": [],
+				"pageReads": {
+					"useSuspenseQuery": 1
+				}
+			},
+			{
+				"file": "src/routes/_admin/admin/chaal/index.tsx",
+				"layer": "chaal",
+				"loader": true,
+				"loaderCalls": [
+					"ensureQuery"
+				],
+				"search": true,
+				"head": true,
+				"states": [],
+				"heavyImports": [],
+				"pageReads": {
+					"useSuspenseQuery": 1
+				}
+			},
+			{
+				"file": "src/routes/_admin/admin/chaal/lab.tsx",
+				"layer": "chaal",
+				"loader": true,
+				"loaderCalls": [
+					"ensureQuery"
+				],
+				"search": true,
+				"head": true,
+				"states": [],
+				"heavyImports": [],
+				"pageReads": {
+					"useSuspenseQuery": 5
+				}
+			},
+			{
+				"file": "src/routes/_admin/admin/chaal/route.tsx",
+				"layer": "chaal",
+				"loader": false,
+				"loaderCalls": [],
+				"search": false,
+				"head": false,
+				"states": [],
+				"heavyImports": [],
+				"pageReads": {}
+			},
+			{
+				"file": "src/routes/_admin/admin/chaal/settings.tsx",
+				"layer": "chaal",
+				"loader": true,
+				"loaderCalls": [
+					"ensureQuery"
+				],
+				"search": false,
+				"head": true,
+				"states": [],
+				"heavyImports": [],
+				"pageReads": {
+					"useSuspenseQuery": 1
+				}
+			},
+			{
+				"file": "src/routes/_admin/admin/index.tsx",
+				"layer": "core",
+				"loader": true,
+				"loaderCalls": [
+					"ensureQuery"
+				],
+				"search": false,
+				"head": true,
+				"states": [],
+				"heavyImports": [],
+				"pageReads": {
+					"useSuspenseQuery": 1
+				}
+			},
+			{
+				"file": "src/routes/_admin/admin/kharcha/index.tsx",
+				"layer": "kharcha",
+				"loader": true,
+				"loaderCalls": [
+					"ensureQuery"
+				],
+				"search": false,
+				"head": true,
+				"states": [],
+				"heavyImports": [],
+				"pageReads": {
+					"useSuspenseQuery": 1
+				}
+			},
+			{
+				"file": "src/routes/_admin/admin/kharcha/route.tsx",
+				"layer": "kharcha",
+				"loader": false,
+				"loaderCalls": [],
+				"search": false,
+				"head": false,
+				"states": [],
+				"heavyImports": [],
+				"pageReads": {}
+			},
+			{
+				"file": "src/routes/_admin/admin/kharcha/senders.tsx",
+				"layer": "kharcha",
+				"loader": true,
+				"loaderCalls": [
+					"ensureQuery"
+				],
+				"search": false,
+				"head": true,
+				"states": [],
+				"heavyImports": [],
+				"pageReads": {
+					"useSuspenseQuery": 1
+				}
+			},
+			{
+				"file": "src/routes/_admin/admin/kharcha/settings.tsx",
+				"layer": "kharcha",
+				"loader": true,
+				"loaderCalls": [
+					"ensureQuery"
+				],
+				"search": false,
+				"head": true,
+				"states": [],
+				"heavyImports": [],
+				"pageReads": {
+					"useSuspenseQuery": 1
+				}
+			},
+			{
+				"file": "src/routes/_admin/admin/links.tsx",
+				"layer": "apps",
+				"loader": true,
+				"loaderCalls": [
+					"listLoader"
+				],
+				"search": false,
+				"head": true,
+				"states": [],
+				"heavyImports": [],
+				"pageReads": {}
+			},
+			{
+				"file": "src/routes/_admin/admin/media.tsx",
+				"layer": "core",
+				"loader": true,
+				"loaderCalls": [
+					"listLoader"
+				],
+				"search": false,
+				"head": true,
+				"states": [],
+				"heavyImports": [],
+				"pageReads": {}
+			},
+			{
+				"file": "src/routes/_admin/admin/parda/billboard/$id.tsx",
+				"layer": "parda",
+				"loader": true,
+				"loaderCalls": [],
+				"search": false,
+				"head": true,
+				"states": [],
+				"heavyImports": [],
+				"pageReads": {
+					"useSuspenseQuery": 1
+				}
+			},
+			{
+				"file": "src/routes/_admin/admin/parda/billboard/index.tsx",
+				"layer": "parda",
+				"loader": true,
+				"loaderCalls": [
+					"ensureQuery"
+				],
+				"search": true,
+				"head": true,
+				"states": [
+					"pendingComponent"
+				],
+				"heavyImports": [],
+				"pageReads": {
+					"useSuspenseQuery": 1
+				}
+			},
+			{
+				"file": "src/routes/_admin/admin/parda/billboard/new.tsx",
+				"layer": "parda",
+				"loader": false,
+				"loaderCalls": [],
+				"search": true,
+				"head": true,
+				"states": [],
+				"heavyImports": [],
+				"pageReads": {
+					"useSuspenseQuery": 1
+				}
+			},
+			{
+				"file": "src/routes/_admin/admin/parda/billboard/route.tsx",
+				"layer": "parda",
+				"loader": false,
+				"loaderCalls": [],
+				"search": false,
+				"head": false,
+				"states": [],
+				"heavyImports": [],
+				"pageReads": {}
+			},
+			{
+				"file": "src/routes/_admin/admin/parda/collections/$id.tsx",
+				"layer": "parda",
+				"loader": true,
+				"loaderCalls": [],
+				"search": false,
+				"head": true,
+				"states": [],
+				"heavyImports": [],
+				"pageReads": {
+					"useSuspenseQuery": 1
+				}
+			},
+			{
+				"file": "src/routes/_admin/admin/parda/collections/index.tsx",
+				"layer": "parda",
+				"loader": true,
+				"loaderCalls": [
+					"ensureQuery"
+				],
+				"search": false,
+				"head": true,
+				"states": [
+					"pendingComponent"
+				],
+				"heavyImports": [],
+				"pageReads": {
+					"useSuspenseQuery": 1
+				}
+			},
+			{
+				"file": "src/routes/_admin/admin/parda/collections/new.tsx",
+				"layer": "parda",
+				"loader": false,
+				"loaderCalls": [],
+				"search": false,
+				"head": true,
+				"states": [],
+				"heavyImports": [],
+				"pageReads": {
+					"useSuspenseQuery": 1
+				}
+			},
+			{
+				"file": "src/routes/_admin/admin/parda/collections/route.tsx",
+				"layer": "parda",
+				"loader": false,
+				"loaderCalls": [],
+				"search": false,
+				"head": false,
+				"states": [],
+				"heavyImports": [],
+				"pageReads": {}
+			},
+			{
+				"file": "src/routes/_admin/admin/parda/index.tsx",
+				"layer": "parda",
+				"loader": true,
+				"loaderCalls": [
+					"ensureQuery"
+				],
+				"search": true,
+				"head": true,
+				"states": [],
+				"heavyImports": [],
+				"pageReads": {
+					"useSuspenseQuery": 1
+				}
+			},
+			{
+				"file": "src/routes/_admin/admin/parda/layout.tsx",
+				"layer": "parda",
+				"loader": true,
+				"loaderCalls": [
+					"ensureQuery"
+				],
+				"search": true,
+				"head": true,
+				"states": [],
+				"heavyImports": [],
+				"pageReads": {
+					"useSuspenseQuery": 1
+				}
+			},
+			{
+				"file": "src/routes/_admin/admin/parda/player-lab.tsx",
+				"layer": "parda",
+				"loader": true,
+				"loaderCalls": [
+					"ensureQuery"
+				],
+				"search": true,
+				"head": true,
+				"states": [],
+				"heavyImports": [],
+				"pageReads": {
+					"useSuspenseQuery": 1
+				}
+			},
+			{
+				"file": "src/routes/_admin/admin/parda/reports.tsx",
+				"layer": "parda",
+				"loader": true,
+				"loaderCalls": [
+					"ensureQuery",
+					"listLoader"
+				],
+				"search": false,
+				"head": true,
+				"states": [
+					"pendingComponent"
+				],
+				"heavyImports": [],
+				"pageReads": {
+					"useSuspenseQuery": 1
+				}
+			},
+			{
+				"file": "src/routes/_admin/admin/parda/route.tsx",
+				"layer": "parda",
+				"loader": false,
+				"loaderCalls": [],
+				"search": false,
+				"head": false,
+				"states": [],
+				"heavyImports": [],
+				"pageReads": {}
+			},
+			{
+				"file": "src/routes/_admin/admin/parda/settings.tsx",
+				"layer": "parda",
+				"loader": true,
+				"loaderCalls": [
+					"ensureQuery"
+				],
+				"search": false,
+				"head": true,
+				"states": [],
+				"heavyImports": [],
+				"pageReads": {
+					"useSuspenseQuery": 1
+				}
+			},
+			{
+				"file": "src/routes/_admin/admin/parda/sources/$id.tsx",
+				"layer": "parda",
+				"loader": true,
+				"loaderCalls": [],
+				"search": false,
+				"head": true,
+				"states": [],
+				"heavyImports": [],
+				"pageReads": {
+					"useSuspenseQuery": 1
+				}
+			},
+			{
+				"file": "src/routes/_admin/admin/parda/sources/index.tsx",
+				"layer": "parda",
+				"loader": true,
+				"loaderCalls": [
+					"ensureQuery"
+				],
+				"search": false,
+				"head": true,
+				"states": [
+					"pendingComponent"
+				],
+				"heavyImports": [],
+				"pageReads": {
+					"useSuspenseQuery": 1
+				}
+			},
+			{
+				"file": "src/routes/_admin/admin/parda/sources/new.tsx",
+				"layer": "parda",
+				"loader": false,
+				"loaderCalls": [],
+				"search": false,
+				"head": true,
+				"states": [],
+				"heavyImports": [],
+				"pageReads": {
+					"useSuspenseQuery": 1
+				}
+			},
+			{
+				"file": "src/routes/_admin/admin/parda/sources/route.tsx",
+				"layer": "parda",
+				"loader": false,
+				"loaderCalls": [],
+				"search": false,
+				"head": false,
+				"states": [],
+				"heavyImports": [],
+				"pageReads": {}
+			},
+			{
+				"file": "src/routes/_admin/admin/parda/titles/index.tsx",
+				"layer": "parda",
+				"loader": true,
+				"loaderCalls": [
+					"listLoader"
+				],
+				"search": false,
+				"head": true,
+				"states": [
+					"pendingComponent"
+				],
+				"heavyImports": [],
+				"pageReads": {}
+			},
+			{
+				"file": "src/routes/_admin/admin/parda/titles/new.tsx",
+				"layer": "parda",
+				"loader": false,
+				"loaderCalls": [],
+				"search": false,
+				"head": true,
+				"states": [],
+				"heavyImports": [],
+				"pageReads": {}
+			},
+			{
+				"file": "src/routes/_admin/admin/parda/titles/route.tsx",
+				"layer": "parda",
+				"loader": false,
+				"loaderCalls": [],
+				"search": false,
+				"head": false,
+				"states": [],
+				"heavyImports": [],
+				"pageReads": {}
+			},
+			{
+				"file": "src/routes/_admin/admin/portfolio/experience.tsx",
+				"layer": "portfolio",
+				"loader": true,
+				"loaderCalls": [
+					"ensureQuery"
+				],
+				"search": false,
+				"head": true,
+				"states": [],
+				"heavyImports": [],
+				"pageReads": {}
+			},
+			{
+				"file": "src/routes/_admin/admin/portfolio/journal/$id.tsx",
+				"layer": "portfolio",
+				"loader": true,
+				"loaderCalls": [],
+				"search": false,
+				"head": true,
+				"states": [],
+				"heavyImports": [],
+				"pageReads": {
+					"useSuspenseQuery": 1
+				}
+			},
+			{
+				"file": "src/routes/_admin/admin/portfolio/journal/index.tsx",
+				"layer": "portfolio",
+				"loader": true,
+				"loaderCalls": [
+					"listLoader"
+				],
+				"search": false,
+				"head": true,
+				"states": [
+					"pendingComponent"
+				],
+				"heavyImports": [],
+				"pageReads": {}
+			},
+			{
+				"file": "src/routes/_admin/admin/portfolio/journal/new.tsx",
+				"layer": "portfolio",
+				"loader": false,
+				"loaderCalls": [],
+				"search": false,
+				"head": true,
+				"states": [],
+				"heavyImports": [],
+				"pageReads": {
+					"useSuspenseQuery": 1
+				}
+			},
+			{
+				"file": "src/routes/_admin/admin/portfolio/journal/route.tsx",
+				"layer": "portfolio",
+				"loader": false,
+				"loaderCalls": [],
+				"search": false,
+				"head": false,
+				"states": [],
+				"heavyImports": [],
+				"pageReads": {}
+			},
+			{
+				"file": "src/routes/_admin/admin/portfolio/messages.tsx",
+				"layer": "portfolio",
+				"loader": true,
+				"loaderCalls": [
+					"listLoader"
+				],
+				"search": false,
+				"head": true,
+				"states": [
+					"pendingComponent"
+				],
+				"heavyImports": [],
+				"pageReads": {}
+			},
+			{
+				"file": "src/routes/_admin/admin/portfolio/process.tsx",
+				"layer": "portfolio",
+				"loader": true,
+				"loaderCalls": [
+					"ensureQuery"
+				],
+				"search": false,
+				"head": true,
+				"states": [],
+				"heavyImports": [],
+				"pageReads": {}
+			},
+			{
+				"file": "src/routes/_admin/admin/portfolio/profile.tsx",
+				"layer": "portfolio",
+				"loader": true,
+				"loaderCalls": [],
+				"search": false,
+				"head": true,
+				"states": [],
+				"heavyImports": [],
+				"pageReads": {
+					"useSuspenseQuery": 1
+				}
+			},
+			{
+				"file": "src/routes/_admin/admin/portfolio/projects/$id.tsx",
+				"layer": "portfolio",
+				"loader": true,
+				"loaderCalls": [],
+				"search": false,
+				"head": true,
+				"states": [],
+				"heavyImports": [],
+				"pageReads": {
+					"useSuspenseQuery": 1
+				}
+			},
+			{
+				"file": "src/routes/_admin/admin/portfolio/projects/index.tsx",
+				"layer": "portfolio",
+				"loader": true,
+				"loaderCalls": [
+					"listLoader"
+				],
+				"search": false,
+				"head": true,
+				"states": [
+					"pendingComponent"
+				],
+				"heavyImports": [],
+				"pageReads": {
+					"useSuspenseQuery": 1
+				}
+			},
+			{
+				"file": "src/routes/_admin/admin/portfolio/projects/new.tsx",
+				"layer": "portfolio",
+				"loader": false,
+				"loaderCalls": [],
+				"search": false,
+				"head": true,
+				"states": [],
+				"heavyImports": [],
+				"pageReads": {
+					"useSuspenseQuery": 1
+				}
+			},
+			{
+				"file": "src/routes/_admin/admin/portfolio/projects/route.tsx",
+				"layer": "portfolio",
+				"loader": false,
+				"loaderCalls": [],
+				"search": false,
+				"head": false,
+				"states": [],
+				"heavyImports": [],
+				"pageReads": {}
+			},
+			{
+				"file": "src/routes/_admin/admin/portfolio/skills.tsx",
+				"layer": "portfolio",
+				"loader": true,
+				"loaderCalls": [
+					"ensureQuery"
+				],
+				"search": false,
+				"head": true,
+				"states": [],
+				"heavyImports": [],
+				"pageReads": {}
+			},
+			{
+				"file": "src/routes/_admin/admin/portfolio/testimonials.tsx",
+				"layer": "portfolio",
+				"loader": true,
+				"loaderCalls": [
+					"ensureQuery"
+				],
+				"search": false,
+				"head": true,
+				"states": [],
+				"heavyImports": [],
+				"pageReads": {}
+			},
+			{
+				"file": "src/routes/_admin/admin/roles/index.tsx",
+				"layer": "core",
+				"loader": true,
+				"loaderCalls": [
+					"ensureQuery"
+				],
+				"search": false,
+				"head": true,
+				"states": [],
+				"heavyImports": [],
+				"pageReads": {
+					"useSuspenseQuery": 1
+				}
+			},
+			{
+				"file": "src/routes/_admin/admin/roles/permissions.tsx",
+				"layer": "core",
+				"loader": true,
+				"loaderCalls": [
+					"ensureQuery"
+				],
+				"search": false,
+				"head": true,
+				"states": [],
+				"heavyImports": [],
+				"pageReads": {
+					"useSuspenseQuery": 1
+				}
+			},
+			{
+				"file": "src/routes/_admin/admin/roles/route.tsx",
+				"layer": "core",
+				"loader": false,
+				"loaderCalls": [],
+				"search": false,
+				"head": false,
+				"states": [],
+				"heavyImports": [],
+				"pageReads": {}
+			},
+			{
+				"file": "src/routes/_admin/admin/route.tsx",
+				"layer": "core",
+				"loader": false,
+				"loaderCalls": [],
+				"search": false,
+				"head": false,
+				"states": [],
+				"heavyImports": [],
+				"pageReads": {}
+			},
+			{
+				"file": "src/routes/_admin/admin/settings.appearance.tsx",
+				"layer": "core",
+				"loader": false,
+				"loaderCalls": [],
+				"search": false,
+				"head": true,
+				"states": [],
+				"heavyImports": [],
+				"pageReads": {}
+			},
+			{
+				"file": "src/routes/_admin/admin/taskline/activity.tsx",
+				"layer": "taskline",
+				"loader": true,
+				"loaderCalls": [
+					"ensureQuery",
+					"listLoader"
+				],
+				"search": false,
+				"head": true,
+				"states": [],
+				"heavyImports": [],
+				"pageReads": {
+					"useSuspenseQuery": 1
+				}
+			},
+			{
+				"file": "src/routes/_admin/admin/taskline/automations.tsx",
+				"layer": "taskline",
+				"loader": true,
+				"loaderCalls": [
+					"ensureQuery"
+				],
+				"search": false,
+				"head": true,
+				"states": [],
+				"heavyImports": [],
+				"pageReads": {
+					"useSuspenseQuery": 1
+				}
+			},
+			{
+				"file": "src/routes/_admin/admin/taskline/fields.tsx",
+				"layer": "taskline",
+				"loader": true,
+				"loaderCalls": [
+					"ensureQuery"
+				],
+				"search": false,
+				"head": true,
+				"states": [],
+				"heavyImports": [],
+				"pageReads": {
+					"useSuspenseQuery": 1
+				}
+			},
+			{
+				"file": "src/routes/_admin/admin/taskline/index.tsx",
+				"layer": "taskline",
+				"loader": true,
+				"loaderCalls": [
+					"ensureQuery"
+				],
+				"search": false,
+				"head": true,
+				"states": [],
+				"heavyImports": [],
+				"pageReads": {
+					"useSuspenseQuery": 1
+				}
+			},
+			{
+				"file": "src/routes/_admin/admin/taskline/invitations.tsx",
+				"layer": "taskline",
+				"loader": true,
+				"loaderCalls": [
+					"ensureQuery"
+				],
+				"search": false,
+				"head": true,
+				"states": [],
+				"heavyImports": [],
+				"pageReads": {
+					"useSuspenseQuery": 1
+				}
+			},
+			{
+				"file": "src/routes/_admin/admin/taskline/members.tsx",
+				"layer": "taskline",
+				"loader": true,
+				"loaderCalls": [
+					"ensureQuery",
+					"listLoader"
+				],
+				"search": false,
+				"head": true,
+				"states": [],
+				"heavyImports": [],
+				"pageReads": {
+					"useSuspenseQuery": 1
+				}
+			},
+			{
+				"file": "src/routes/_admin/admin/taskline/projects/$id/index.tsx",
+				"layer": "taskline",
+				"loader": true,
+				"loaderCalls": [
+					"ensureQuery"
+				],
+				"search": false,
+				"head": false,
+				"states": [],
+				"heavyImports": [],
+				"pageReads": {
+					"useSuspenseQuery": 2
+				}
+			},
+			{
+				"file": "src/routes/_admin/admin/taskline/projects/$id/labels.tsx",
+				"layer": "taskline",
+				"loader": false,
+				"loaderCalls": [],
+				"search": false,
+				"head": false,
+				"states": [],
+				"heavyImports": [],
+				"pageReads": {
+					"useSuspenseQuery": 4
+				}
+			},
+			{
+				"file": "src/routes/_admin/admin/taskline/projects/$id/members.tsx",
+				"layer": "taskline",
+				"loader": true,
+				"loaderCalls": [
+					"ensureQuery"
+				],
+				"search": false,
+				"head": false,
+				"states": [],
+				"heavyImports": [],
+				"pageReads": {
+					"useSuspenseQuery": 4
+				}
+			},
+			{
+				"file": "src/routes/_admin/admin/taskline/projects/$id/route.tsx",
+				"layer": "taskline",
+				"loader": true,
+				"loaderCalls": [],
+				"search": false,
+				"head": true,
+				"states": [],
+				"heavyImports": [],
+				"pageReads": {
+					"useSuspenseQuery": 1
+				}
+			},
+			{
+				"file": "src/routes/_admin/admin/taskline/projects/$id/workflow.tsx",
+				"layer": "taskline",
+				"loader": false,
+				"loaderCalls": [],
+				"search": false,
+				"head": false,
+				"states": [],
+				"heavyImports": [],
+				"pageReads": {
+					"useSuspenseQuery": 4
+				}
+			},
+			{
+				"file": "src/routes/_admin/admin/taskline/projects/index.tsx",
+				"layer": "taskline",
+				"loader": true,
+				"loaderCalls": [
+					"ensureQuery",
+					"listLoader"
+				],
+				"search": false,
+				"head": true,
+				"states": [],
+				"heavyImports": [],
+				"pageReads": {
+					"useSuspenseQuery": 1
+				}
+			},
+			{
+				"file": "src/routes/_admin/admin/taskline/projects/new.tsx",
+				"layer": "taskline",
+				"loader": true,
+				"loaderCalls": [
+					"ensureQuery"
+				],
+				"search": false,
+				"head": true,
+				"states": [],
+				"heavyImports": [],
+				"pageReads": {
+					"useSuspenseQuery": 2
+				}
+			},
+			{
+				"file": "src/routes/_admin/admin/taskline/projects/route.tsx",
+				"layer": "taskline",
+				"loader": false,
+				"loaderCalls": [],
+				"search": false,
+				"head": false,
+				"states": [],
+				"heavyImports": [],
+				"pageReads": {}
+			},
+			{
+				"file": "src/routes/_admin/admin/taskline/reports.tsx",
+				"layer": "taskline",
+				"loader": true,
+				"loaderCalls": [
+					"ensureQuery"
+				],
+				"search": true,
+				"head": true,
+				"states": [],
+				"heavyImports": [],
+				"pageReads": {
+					"useSuspenseQuery": 1
+				}
+			},
+			{
+				"file": "src/routes/_admin/admin/taskline/route.tsx",
+				"layer": "taskline",
+				"loader": false,
+				"loaderCalls": [],
+				"search": false,
+				"head": false,
+				"states": [],
+				"heavyImports": [],
+				"pageReads": {}
+			},
+			{
+				"file": "src/routes/_admin/admin/taskline/settings.tsx",
+				"layer": "taskline",
+				"loader": true,
+				"loaderCalls": [
+					"ensureQuery"
+				],
+				"search": false,
+				"head": true,
+				"states": [],
+				"heavyImports": [],
+				"pageReads": {
+					"useSuspenseQuery": 1
+				}
+			},
+			{
+				"file": "src/routes/_admin/admin/taskline/templates.tsx",
+				"layer": "taskline",
+				"loader": true,
+				"loaderCalls": [
+					"ensureQuery"
+				],
+				"search": false,
+				"head": true,
+				"states": [],
+				"heavyImports": [],
+				"pageReads": {
+					"useSuspenseQuery": 1
+				}
+			},
+			{
+				"file": "src/routes/_admin/admin/taskline/timesheets/index.tsx",
+				"layer": "taskline",
+				"loader": true,
+				"loaderCalls": [
+					"ensureQuery",
+					"listLoader"
+				],
+				"search": false,
+				"head": true,
+				"states": [],
+				"heavyImports": [],
+				"pageReads": {
+					"useSuspenseQuery": 1
+				}
+			},
+			{
+				"file": "src/routes/_admin/admin/taskline/timesheets/route.tsx",
+				"layer": "taskline",
+				"loader": false,
+				"loaderCalls": [],
+				"search": false,
+				"head": false,
+				"states": [],
+				"heavyImports": [],
+				"pageReads": {}
+			},
+			{
+				"file": "src/routes/_admin/admin/taskline/timesheets/utilization.tsx",
+				"layer": "taskline",
+				"loader": true,
+				"loaderCalls": [
+					"ensureQuery"
+				],
+				"search": true,
+				"head": true,
+				"states": [],
+				"heavyImports": [],
+				"pageReads": {
+					"useSuspenseQuery": 2
+				}
+			},
+			{
+				"file": "src/routes/_admin/admin/taskline/workflows.tsx",
+				"layer": "taskline",
+				"loader": true,
+				"loaderCalls": [
+					"ensureQuery"
+				],
+				"search": false,
+				"head": true,
+				"states": [],
+				"heavyImports": [],
+				"pageReads": {
+					"useSuspenseQuery": 1
+				}
+			},
+			{
+				"file": "src/routes/_admin/admin/test-crud/$id.tsx",
+				"layer": "core",
+				"loader": true,
+				"loaderCalls": [],
+				"search": false,
+				"head": true,
+				"states": [],
+				"heavyImports": [],
+				"pageReads": {
+					"useSuspenseQuery": 1
+				}
+			},
+			{
+				"file": "src/routes/_admin/admin/test-crud/index.tsx",
+				"layer": "core",
+				"loader": true,
+				"loaderCalls": [
+					"ensureQuery",
+					"listLoader"
+				],
+				"search": false,
+				"head": true,
+				"states": [
+					"pendingComponent"
+				],
+				"heavyImports": [],
+				"pageReads": {}
+			},
+			{
+				"file": "src/routes/_admin/admin/test-crud/new.tsx",
+				"layer": "core",
+				"loader": false,
+				"loaderCalls": [],
+				"search": false,
+				"head": true,
+				"states": [],
+				"heavyImports": [],
+				"pageReads": {
+					"useSuspenseQuery": 1
+				}
+			},
+			{
+				"file": "src/routes/_admin/admin/test-crud/route.tsx",
+				"layer": "core",
+				"loader": false,
+				"loaderCalls": [],
+				"search": false,
+				"head": false,
+				"states": [],
+				"heavyImports": [],
+				"pageReads": {}
+			},
+			{
+				"file": "src/routes/_admin/admin/users/index.tsx",
+				"layer": "core",
+				"loader": true,
+				"loaderCalls": [
+					"ensureQuery",
+					"listLoader"
+				],
+				"search": false,
+				"head": true,
+				"states": [],
+				"heavyImports": [],
+				"pageReads": {}
+			},
+			{
+				"file": "src/routes/_admin/admin/users/route.tsx",
+				"layer": "core",
+				"loader": false,
+				"loaderCalls": [],
+				"search": false,
+				"head": false,
+				"states": [],
+				"heavyImports": [],
+				"pageReads": {}
+			},
+			{
+				"file": "src/routes/_apps.tsx",
+				"layer": "apps",
+				"loader": true,
+				"loaderCalls": [
+					"ensureQuery"
+				],
+				"search": false,
+				"head": true,
+				"states": [],
+				"heavyImports": [],
+				"pageReads": {
+					"useQuery": 3
+				}
+			},
+			{
+				"file": "src/routes/_apps/apps/forms/$formId/index.tsx",
+				"layer": "apps",
+				"loader": true,
+				"loaderCalls": [],
+				"search": false,
+				"head": true,
+				"states": [],
+				"heavyImports": [],
+				"pageReads": {
+					"useSuspenseQuery": 1
+				}
+			},
+			{
+				"file": "src/routes/_apps/apps/forms/$formId/results.tsx",
+				"layer": "apps",
+				"loader": true,
+				"loaderCalls": [],
+				"search": false,
+				"head": true,
+				"states": [],
+				"heavyImports": [],
+				"pageReads": {
+					"useSuspenseQuery": 1
+				}
+			},
+			{
+				"file": "src/routes/_apps/apps/forms/index.tsx",
+				"layer": "apps",
+				"loader": true,
+				"loaderCalls": [
+					"ensureQuery"
+				],
+				"search": false,
+				"head": true,
+				"states": [],
+				"heavyImports": [],
+				"pageReads": {
+					"useSuspenseQuery": 1
+				}
+			},
+			{
+				"file": "src/routes/_apps/apps/habits/$habitId.tsx",
+				"layer": "apps",
+				"loader": true,
+				"loaderCalls": [],
+				"search": false,
+				"head": true,
+				"states": [],
+				"heavyImports": [],
+				"pageReads": {
+					"useSuspenseQuery": 1
+				}
+			},
+			{
+				"file": "src/routes/_apps/apps/habits/index.tsx",
+				"layer": "apps",
+				"loader": true,
+				"loaderCalls": [
+					"ensureQuery"
+				],
+				"search": false,
+				"head": true,
+				"states": [],
+				"heavyImports": [],
+				"pageReads": {
+					"useSuspenseQuery": 1
+				}
+			},
+			{
+				"file": "src/routes/_apps/apps/index.tsx",
+				"layer": "apps",
+				"loader": false,
+				"loaderCalls": [],
+				"search": false,
+				"head": true,
+				"states": [],
+				"heavyImports": [],
+				"pageReads": {}
+			},
+			{
+				"file": "src/routes/_apps/apps/links/$linkId.tsx",
+				"layer": "apps",
+				"loader": true,
+				"loaderCalls": [],
+				"search": false,
+				"head": true,
+				"states": [],
+				"heavyImports": [],
+				"pageReads": {
+					"useSuspenseQuery": 1
+				}
+			},
+			{
+				"file": "src/routes/_apps/apps/links/index.tsx",
+				"layer": "apps",
+				"loader": true,
+				"loaderCalls": [
+					"ensureQuery"
+				],
+				"search": false,
+				"head": true,
+				"states": [],
+				"heavyImports": [],
+				"pageReads": {
+					"useSuspenseQuery": 1
+				}
+			},
+			{
+				"file": "src/routes/_apps/apps/notes/$noteId.tsx",
+				"layer": "apps",
+				"loader": true,
+				"loaderCalls": [],
+				"search": false,
+				"head": true,
+				"states": [],
+				"heavyImports": [],
+				"pageReads": {
+					"useSuspenseQuery": 1
+				}
+			},
+			{
+				"file": "src/routes/_apps/apps/notes/index.tsx",
+				"layer": "apps",
+				"loader": true,
+				"loaderCalls": [
+					"ensureQuery"
+				],
+				"search": false,
+				"head": true,
+				"states": [],
+				"heavyImports": [],
+				"pageReads": {
+					"useQuery": 1,
+					"useSuspenseQuery": 1
+				}
+			},
+			{
+				"file": "src/routes/_apps/apps/notes/s/$token.tsx",
+				"layer": "apps",
+				"loader": true,
+				"loaderCalls": [],
+				"search": false,
+				"head": true,
+				"states": [],
+				"heavyImports": [],
+				"pageReads": {
+					"useSuspenseQuery": 1
+				}
+			},
+			{
+				"file": "src/routes/_auth.tsx",
+				"layer": "core",
+				"loader": false,
+				"loaderCalls": [],
+				"search": true,
+				"head": true,
+				"states": [],
+				"heavyImports": [],
+				"pageReads": {}
+			},
+			{
+				"file": "src/routes/_auth/forgot-password.tsx",
+				"layer": "core",
+				"loader": true,
+				"loaderCalls": [
+					"ensureQuery"
+				],
+				"search": false,
+				"head": true,
+				"states": [],
+				"heavyImports": [
+					"@/features/auth/queries"
+				],
+				"pageReads": {}
+			},
+			{
+				"file": "src/routes/_auth/login.tsx",
+				"layer": "core",
+				"loader": true,
+				"loaderCalls": [
+					"ensureQuery"
+				],
+				"search": false,
+				"head": true,
+				"states": [],
+				"heavyImports": [
+					"@/features/auth/queries"
+				],
+				"pageReads": {}
+			},
+			{
+				"file": "src/routes/_auth/register.tsx",
+				"layer": "core",
+				"loader": true,
+				"loaderCalls": [
+					"ensureQuery"
+				],
+				"search": false,
+				"head": true,
+				"states": [],
+				"heavyImports": [
+					"@/features/auth/queries"
+				],
+				"pageReads": {}
+			},
+			{
+				"file": "src/routes/_auth/sign-in-code.tsx",
+				"layer": "core",
+				"loader": true,
+				"loaderCalls": [
+					"ensureQuery"
+				],
+				"search": false,
+				"head": true,
+				"states": [],
+				"heavyImports": [
+					"@/features/auth/queries"
+				],
+				"pageReads": {}
+			},
+			{
+				"file": "src/routes/_auth/upgrade.tsx",
+				"layer": "core",
+				"loader": false,
+				"loaderCalls": [],
+				"search": false,
+				"head": true,
+				"states": [],
+				"heavyImports": [],
+				"pageReads": {}
+			},
+			{
+				"file": "src/routes/_authed.tsx",
+				"layer": "core",
+				"loader": false,
+				"loaderCalls": [],
+				"search": false,
+				"head": true,
+				"states": [],
+				"heavyImports": [],
+				"pageReads": {
+					"useQuery": 1
+				}
+			},
+			{
+				"file": "src/routes/_authed/account.tsx",
+				"layer": "core",
+				"loader": true,
+				"loaderCalls": [
+					"ensureQuery"
+				],
+				"search": true,
+				"head": true,
+				"states": [],
+				"heavyImports": [
+					"@/features/auth/queries"
+				],
+				"pageReads": {
+					"useSuspenseQuery": 2
+				}
+			},
+			{
+				"file": "src/routes/_authed/account_.delete.tsx",
+				"layer": "core",
+				"loader": false,
+				"loaderCalls": [],
+				"search": true,
+				"head": true,
+				"states": [],
+				"heavyImports": [
+					"@/features/auth/queries"
+				],
+				"pageReads": {}
+			},
+			{
+				"file": "src/routes/_chaal/app/chaal/$.tsx",
+				"layer": "chaal",
+				"loader": true,
+				"loaderCalls": [],
+				"search": false,
+				"head": false,
+				"states": [
+					"notFoundComponent"
+				],
+				"heavyImports": [],
+				"pageReads": {}
+			},
+			{
+				"file": "src/routes/_chaal/app/chaal/about.tsx",
+				"layer": "chaal",
+				"loader": false,
+				"loaderCalls": [],
+				"search": false,
+				"head": true,
+				"states": [],
+				"heavyImports": [],
+				"pageReads": {}
+			},
+			{
+				"file": "src/routes/_chaal/app/chaal/analysis.tsx",
+				"layer": "chaal",
+				"loader": true,
+				"loaderCalls": [
+					"ensureQuery"
+				],
+				"search": true,
+				"head": true,
+				"states": [],
+				"heavyImports": [],
+				"pageReads": {
+					"useQuery": 7
+				}
+			},
+			{
+				"file": "src/routes/_chaal/app/chaal/broadcasts/$id.tsx",
+				"layer": "chaal",
+				"loader": true,
+				"loaderCalls": [],
+				"search": true,
+				"head": true,
+				"states": [],
+				"heavyImports": [],
+				"pageReads": {
+					"useQuery": 4
+				}
+			},
+			{
+				"file": "src/routes/_chaal/app/chaal/broadcasts/index.tsx",
+				"layer": "chaal",
+				"loader": true,
+				"loaderCalls": [],
+				"search": true,
+				"head": true,
+				"states": [],
+				"heavyImports": [],
+				"pageReads": {
+					"useQuery": 4
+				}
+			},
+			{
+				"file": "src/routes/_chaal/app/chaal/game/$id.tsx",
+				"layer": "chaal",
+				"loader": true,
+				"loaderCalls": [],
+				"search": false,
+				"head": true,
+				"states": [],
+				"heavyImports": [],
+				"pageReads": {
+					"useQuery": 6
+				}
+			},
+			{
+				"file": "src/routes/_chaal/app/chaal/index.tsx",
+				"layer": "chaal",
+				"loader": true,
+				"loaderCalls": [
+					"ensureQuery"
+				],
+				"search": false,
+				"head": true,
+				"states": [],
+				"heavyImports": [],
+				"pageReads": {
+					"useQuery": 3,
+					"useSuspenseQuery": 1
+				}
+			},
+			{
+				"file": "src/routes/_chaal/app/chaal/local/$id.tsx",
+				"layer": "chaal",
+				"loader": true,
+				"loaderCalls": [
+					"ensureQuery"
+				],
+				"search": false,
+				"head": true,
+				"states": [],
+				"heavyImports": [],
+				"pageReads": {
+					"useQuery": 2
+				}
+			},
+			{
+				"file": "src/routes/_chaal/app/chaal/play.tsx",
+				"layer": "chaal",
+				"loader": true,
+				"loaderCalls": [
+					"ensureQuery"
+				],
+				"search": true,
+				"head": true,
+				"states": [],
+				"heavyImports": [],
+				"pageReads": {
+					"useQuery": 2
+				}
+			},
+			{
+				"file": "src/routes/_chaal/app/chaal/players/$username.tsx",
+				"layer": "chaal",
+				"loader": true,
+				"loaderCalls": [],
+				"search": true,
+				"head": true,
+				"states": [],
+				"heavyImports": [],
+				"pageReads": {
+					"useQuery": 2,
+					"useSuspenseQuery": 4
+				}
+			},
+			{
+				"file": "src/routes/_chaal/app/chaal/players/index.tsx",
+				"layer": "chaal",
+				"loader": true,
+				"loaderCalls": [],
+				"search": true,
+				"head": true,
+				"states": [],
+				"heavyImports": [],
+				"pageReads": {
+					"useQuery": 5
+				}
+			},
+			{
+				"file": "src/routes/_chaal/app/chaal/puzzles/$id.tsx",
+				"layer": "chaal",
+				"loader": true,
+				"loaderCalls": [],
+				"search": false,
+				"head": true,
+				"states": [],
+				"heavyImports": [],
+				"pageReads": {
+					"useQuery": 9
+				}
+			},
+			{
+				"file": "src/routes/_chaal/app/chaal/puzzles/index.tsx",
+				"layer": "chaal",
+				"loader": true,
+				"loaderCalls": [],
+				"search": true,
+				"head": true,
+				"states": [],
+				"heavyImports": [],
+				"pageReads": {
+					"useQuery": 9
+				}
+			},
+			{
+				"file": "src/routes/_chaal/app/chaal/settings.tsx",
+				"layer": "chaal",
+				"loader": false,
+				"loaderCalls": [],
+				"search": true,
+				"head": true,
+				"states": [],
+				"heavyImports": [],
+				"pageReads": {
+					"useQuery": 3
+				}
+			},
+			{
+				"file": "src/routes/_chaal/app/chaal/sign-in.tsx",
+				"layer": "chaal",
+				"loader": true,
+				"loaderCalls": [
+					"ensureQuery"
+				],
+				"search": true,
+				"head": true,
+				"states": [],
+				"heavyImports": [
+					"@/features/auth/queries"
+				],
+				"pageReads": {}
+			},
+			{
+				"file": "src/routes/_chaal/app/chaal/sign-up.tsx",
+				"layer": "chaal",
+				"loader": true,
+				"loaderCalls": [
+					"ensureQuery"
+				],
+				"search": true,
+				"head": true,
+				"states": [],
+				"heavyImports": [
+					"@/features/auth/queries"
+				],
+				"pageReads": {}
+			},
+			{
+				"file": "src/routes/_chaal/app/chaal/studies/$id.tsx",
+				"layer": "chaal",
+				"loader": true,
+				"loaderCalls": [],
+				"search": true,
+				"head": true,
+				"states": [],
+				"heavyImports": [],
+				"pageReads": {
+					"useQuery": 2
+				}
+			},
+			{
+				"file": "src/routes/_chaal/app/chaal/studies/index.tsx",
+				"layer": "chaal",
+				"loader": true,
+				"loaderCalls": [],
+				"search": true,
+				"head": true,
+				"states": [],
+				"heavyImports": [],
+				"pageReads": {
+					"useQuery": 2
+				}
+			},
+			{
+				"file": "src/routes/_chaal/app/chaal/teams/$id.tsx",
+				"layer": "chaal",
+				"loader": true,
+				"loaderCalls": [],
+				"search": false,
+				"head": true,
+				"states": [],
+				"heavyImports": [],
+				"pageReads": {
+					"useQuery": 2
+				}
+			},
+			{
+				"file": "src/routes/_chaal/app/chaal/teams/index.tsx",
+				"layer": "chaal",
+				"loader": true,
+				"loaderCalls": [],
+				"search": true,
+				"head": true,
+				"states": [],
+				"heavyImports": [],
+				"pageReads": {
+					"useQuery": 3
+				}
+			},
+			{
+				"file": "src/routes/_chaal/app/chaal/tournaments/$id.tsx",
+				"layer": "chaal",
+				"loader": true,
+				"loaderCalls": [],
+				"search": true,
+				"head": true,
+				"states": [],
+				"heavyImports": [],
+				"pageReads": {
+					"useQuery": 4
+				}
+			},
+			{
+				"file": "src/routes/_chaal/app/chaal/tournaments/index.tsx",
+				"layer": "chaal",
+				"loader": true,
+				"loaderCalls": [],
+				"search": true,
+				"head": true,
+				"states": [],
+				"heavyImports": [],
+				"pageReads": {
+					"useQuery": 1
+				}
+			},
+			{
+				"file": "src/routes/_chaal/app/chaal/watch/$channel.tsx",
+				"layer": "chaal",
+				"loader": true,
+				"loaderCalls": [],
+				"search": false,
+				"head": true,
+				"states": [],
+				"heavyImports": [],
+				"pageReads": {
+					"useQuery": 2
+				}
+			},
+			{
+				"file": "src/routes/_chaal/app/chaal/watch/index.tsx",
+				"layer": "chaal",
+				"loader": true,
+				"loaderCalls": [],
+				"search": false,
+				"head": true,
+				"states": [],
+				"heavyImports": [],
+				"pageReads": {
+					"useQuery": 4
+				}
+			},
+			{
+				"file": "src/routes/_chaal/route.tsx",
+				"layer": "chaal",
+				"loader": true,
+				"loaderCalls": [
+					"ensureQuery"
+				],
+				"search": false,
+				"head": true,
+				"states": [
+					"notFoundComponent"
+				],
+				"heavyImports": [],
+				"pageReads": {}
+			},
+			{
+				"file": "src/routes/_kharcha/app/kharcha/_shell/account.tsx",
+				"layer": "kharcha",
+				"loader": true,
+				"loaderCalls": [
+					"ensureQuery"
+				],
+				"search": false,
+				"head": true,
+				"states": [],
+				"heavyImports": [
+					"@/features/auth/queries"
+				],
+				"pageReads": {}
+			},
+			{
+				"file": "src/routes/_kharcha/app/kharcha/_shell/e.$expenseId.tsx",
+				"layer": "kharcha",
+				"loader": true,
+				"loaderCalls": [
+					"ensureQuery"
+				],
+				"search": false,
+				"head": true,
+				"states": [],
+				"heavyImports": [],
+				"pageReads": {
+					"useSuspenseQuery": 1
+				}
+			},
+			{
+				"file": "src/routes/_kharcha/app/kharcha/_shell/f.$personId.tsx",
+				"layer": "kharcha",
+				"loader": true,
+				"loaderCalls": [
+					"ensureQuery"
+				],
+				"search": true,
+				"head": true,
+				"states": [],
+				"heavyImports": [],
+				"pageReads": {
+					"useSuspenseQuery": 1
+				}
+			},
+			{
+				"file": "src/routes/_kharcha/app/kharcha/_shell/g.$groupId.tsx",
+				"layer": "kharcha",
+				"loader": true,
+				"loaderCalls": [
+					"ensureQuery"
+				],
+				"search": true,
+				"head": true,
+				"states": [],
+				"heavyImports": [],
+				"pageReads": {
+					"useSuspenseQuery": 1
+				}
+			},
+			{
+				"file": "src/routes/_kharcha/app/kharcha/_shell/home.tsx",
+				"layer": "kharcha",
+				"loader": true,
+				"loaderCalls": [
+					"ensureQuery"
+				],
+				"search": false,
+				"head": true,
+				"states": [],
+				"heavyImports": [],
+				"pageReads": {
+					"useSuspenseQuery": 2
+				}
+			},
+			{
+				"file": "src/routes/_kharcha/app/kharcha/_shell/import.tsx",
+				"layer": "kharcha",
+				"loader": true,
+				"loaderCalls": [
+					"ensureQuery"
+				],
+				"search": false,
+				"head": true,
+				"states": [],
+				"heavyImports": [],
+				"pageReads": {
+					"useSuspenseQuery": 1
+				}
+			},
+			{
+				"file": "src/routes/_kharcha/app/kharcha/_shell/insights.$tab.tsx",
+				"layer": "kharcha",
+				"loader": true,
+				"loaderCalls": [
+					"ensureQuery"
+				],
+				"search": true,
+				"head": true,
+				"states": [],
+				"heavyImports": [],
+				"pageReads": {}
+			},
+			{
+				"file": "src/routes/_kharcha/app/kharcha/_shell/people.tsx",
+				"layer": "kharcha",
+				"loader": true,
+				"loaderCalls": [
+					"ensureQuery"
+				],
+				"search": true,
+				"head": true,
+				"states": [],
+				"heavyImports": [],
+				"pageReads": {
+					"useSuspenseQuery": 1
+				}
+			},
+			{
+				"file": "src/routes/_kharcha/app/kharcha/_shell/route.tsx",
+				"layer": "kharcha",
+				"loader": true,
+				"loaderCalls": [
+					"ensureQuery"
+				],
+				"search": false,
+				"head": false,
+				"states": [
+					"notFoundComponent"
+				],
+				"heavyImports": [],
+				"pageReads": {}
+			},
+			{
+				"file": "src/routes/_kharcha/app/kharcha/_shell/settings.$tab.tsx",
+				"layer": "kharcha",
+				"loader": true,
+				"loaderCalls": [
+					"ensureQuery"
+				],
+				"search": false,
+				"head": true,
+				"states": [],
+				"heavyImports": [],
+				"pageReads": {
+					"useSuspenseQuery": 1
+				}
+			},
+			{
+				"file": "src/routes/_kharcha/app/kharcha/_shell/spend.tsx",
+				"layer": "kharcha",
+				"loader": true,
+				"loaderCalls": [
+					"ensureQuery"
+				],
+				"search": true,
+				"head": true,
+				"states": [],
+				"heavyImports": [],
+				"pageReads": {
+					"useQuery": 4,
+					"useSuspenseQuery": 2
+				}
+			},
+			{
+				"file": "src/routes/_kharcha/app/kharcha/index.tsx",
+				"layer": "kharcha",
+				"loader": false,
+				"loaderCalls": [],
+				"search": false,
+				"head": true,
+				"states": [],
+				"heavyImports": [],
+				"pageReads": {}
+			},
+			{
+				"file": "src/routes/_kharcha/app/kharcha/join.$token.tsx",
+				"layer": "kharcha",
+				"loader": true,
+				"loaderCalls": [
+					"ensureQuery"
+				],
+				"search": false,
+				"head": true,
+				"states": [],
+				"heavyImports": [],
+				"pageReads": {
+					"useQuery": 1,
+					"useSuspenseQuery": 1
+				}
+			},
+			{
+				"file": "src/routes/_kharcha/app/kharcha/sign-in.tsx",
+				"layer": "kharcha",
+				"loader": true,
+				"loaderCalls": [
+					"ensureQuery"
+				],
+				"search": true,
+				"head": true,
+				"states": [],
+				"heavyImports": [
+					"@/features/auth/queries"
+				],
+				"pageReads": {}
+			},
+			{
+				"file": "src/routes/_kharcha/app/kharcha/sign-up.tsx",
+				"layer": "kharcha",
+				"loader": true,
+				"loaderCalls": [
+					"ensureQuery"
+				],
+				"search": true,
+				"head": true,
+				"states": [],
+				"heavyImports": [
+					"@/features/auth/queries"
+				],
+				"pageReads": {}
+			},
+			{
+				"file": "src/routes/_kharcha/apps/expenses/$.tsx",
+				"layer": "kharcha",
+				"loader": false,
+				"loaderCalls": [],
+				"search": true,
+				"head": false,
+				"states": [],
+				"heavyImports": [],
+				"pageReads": {}
+			},
+			{
+				"file": "src/routes/_kharcha/route.tsx",
+				"layer": "kharcha",
+				"loader": false,
+				"loaderCalls": [],
+				"search": false,
+				"head": true,
+				"states": [
+					"notFoundComponent"
+				],
+				"heavyImports": [],
+				"pageReads": {}
+			},
+			{
+				"file": "src/routes/_parda/app/parda/$.tsx",
+				"layer": "parda",
+				"loader": true,
+				"loaderCalls": [],
+				"search": false,
+				"head": false,
+				"states": [
+					"notFoundComponent"
+				],
+				"heavyImports": [],
+				"pageReads": {}
+			},
+			{
+				"file": "src/routes/_parda/app/parda/$hub.tsx",
+				"layer": "parda",
+				"loader": true,
+				"loaderCalls": [],
+				"search": false,
+				"head": true,
+				"states": [],
+				"heavyImports": [],
+				"pageReads": {
+					"useSuspenseQuery": 1
+				}
+			},
+			{
+				"file": "src/routes/_parda/app/parda/$type/$id/credits.tsx",
+				"layer": "parda",
+				"loader": true,
+				"loaderCalls": [],
+				"search": false,
+				"head": true,
+				"states": [],
+				"heavyImports": [],
+				"pageReads": {
+					"useSuspenseQuery": 1
+				}
+			},
+			{
+				"file": "src/routes/_parda/app/parda/$type/$id/index.tsx",
+				"layer": "parda",
+				"loader": true,
+				"loaderCalls": [],
+				"search": true,
+				"head": true,
+				"states": [],
+				"heavyImports": [],
+				"pageReads": {
+					"useSuspenseQuery": 1
+				}
+			},
+			{
+				"file": "src/routes/_parda/app/parda/about.tsx",
+				"layer": "parda",
+				"loader": false,
+				"loaderCalls": [],
+				"search": false,
+				"head": true,
+				"states": [],
+				"heavyImports": [],
+				"pageReads": {}
+			},
+			{
+				"file": "src/routes/_parda/app/parda/account.tsx",
+				"layer": "parda",
+				"loader": true,
+				"loaderCalls": [
+					"ensureQuery"
+				],
+				"search": true,
+				"head": true,
+				"states": [],
+				"heavyImports": [],
+				"pageReads": {}
+			},
+			{
+				"file": "src/routes/_parda/app/parda/c/$slug.tsx",
+				"layer": "parda",
+				"loader": true,
+				"loaderCalls": [],
+				"search": false,
+				"head": true,
+				"states": [],
+				"heavyImports": [],
+				"pageReads": {
+					"useSuspenseQuery": 2
+				}
+			},
+			{
+				"file": "src/routes/_parda/app/parda/collection/$id.tsx",
+				"layer": "parda",
+				"loader": true,
+				"loaderCalls": [],
+				"search": false,
+				"head": true,
+				"states": [],
+				"heavyImports": [],
+				"pageReads": {
+					"useSuspenseQuery": 2
+				}
+			},
+			{
+				"file": "src/routes/_parda/app/parda/discover.tsx",
+				"layer": "parda",
+				"loader": true,
+				"loaderCalls": [],
+				"search": true,
+				"head": true,
+				"states": [],
+				"heavyImports": [],
+				"pageReads": {
+					"useSuspenseQuery": 1
+				}
+			},
+			{
+				"file": "src/routes/_parda/app/parda/index.tsx",
+				"layer": "parda",
+				"loader": true,
+				"loaderCalls": [],
+				"search": false,
+				"head": true,
+				"states": [],
+				"heavyImports": [],
+				"pageReads": {
+					"useSuspenseQuery": 1
+				}
+			},
+			{
+				"file": "src/routes/_parda/app/parda/library/$tab.tsx",
+				"layer": "parda",
+				"loader": true,
+				"loaderCalls": [],
+				"search": true,
+				"head": true,
+				"states": [],
+				"heavyImports": [],
+				"pageReads": {
+					"useQuery": 1,
+					"useSuspenseQuery": 2
+				}
+			},
+			{
+				"file": "src/routes/_parda/app/parda/party/$code.tsx",
+				"layer": "parda",
+				"loader": true,
+				"loaderCalls": [],
+				"search": false,
+				"head": true,
+				"states": [],
+				"heavyImports": [],
+				"pageReads": {
+					"useSuspenseQuery": 1
+				}
+			},
+			{
+				"file": "src/routes/_parda/app/parda/person/$id.tsx",
+				"layer": "parda",
+				"loader": true,
+				"loaderCalls": [],
+				"search": false,
+				"head": true,
+				"states": [],
+				"heavyImports": [],
+				"pageReads": {
+					"useSuspenseQuery": 1
+				}
+			},
+			{
+				"file": "src/routes/_parda/app/parda/profiles.tsx",
+				"layer": "parda",
+				"loader": true,
+				"loaderCalls": [
+					"ensureQuery"
+				],
+				"search": false,
+				"head": true,
+				"states": [],
+				"heavyImports": [],
+				"pageReads": {
+					"useQuery": 1,
+					"useSuspenseQuery": 1
+				}
+			},
+			{
+				"file": "src/routes/_parda/app/parda/schedule.tsx",
+				"layer": "parda",
+				"loader": true,
+				"loaderCalls": [],
+				"search": false,
+				"head": true,
+				"states": [],
+				"heavyImports": [],
+				"pageReads": {
+					"useQuery": 2,
+					"useSuspenseQuery": 1
+				}
+			},
+			{
+				"file": "src/routes/_parda/app/parda/search.tsx",
+				"layer": "parda",
+				"loader": true,
+				"loaderCalls": [],
+				"search": true,
+				"head": true,
+				"states": [],
+				"heavyImports": [],
+				"pageReads": {
+					"useSuspenseQuery": 1
+				}
+			},
+			{
+				"file": "src/routes/_parda/app/parda/sign-in.tsx",
+				"layer": "parda",
+				"loader": true,
+				"loaderCalls": [
+					"ensureQuery"
+				],
+				"search": true,
+				"head": true,
+				"states": [],
+				"heavyImports": [
+					"@/features/auth/queries"
+				],
+				"pageReads": {}
+			},
+			{
+				"file": "src/routes/_parda/app/parda/sign-up.tsx",
+				"layer": "parda",
+				"loader": true,
+				"loaderCalls": [
+					"ensureQuery"
+				],
+				"search": true,
+				"head": true,
+				"states": [],
+				"heavyImports": [
+					"@/features/auth/queries"
+				],
+				"pageReads": {}
+			},
+			{
+				"file": "src/routes/_parda/app/parda/surprise.tsx",
+				"layer": "parda",
+				"loader": true,
+				"loaderCalls": [],
+				"search": true,
+				"head": false,
+				"states": [],
+				"heavyImports": [],
+				"pageReads": {}
+			},
+			{
+				"file": "src/routes/_parda/app/parda/watch/$type/$id.tsx",
+				"layer": "parda",
+				"loader": true,
+				"loaderCalls": [],
+				"search": true,
+				"head": true,
+				"states": [],
+				"heavyImports": [],
+				"pageReads": {
+					"useSuspenseQuery": 1
+				}
+			},
+			{
+				"file": "src/routes/_parda/route.tsx",
+				"layer": "parda",
+				"loader": true,
+				"loaderCalls": [
+					"ensureQuery"
+				],
+				"search": false,
+				"head": true,
+				"states": [
+					"notFoundComponent"
+				],
+				"heavyImports": [],
+				"pageReads": {}
+			},
+			{
+				"file": "src/routes/_public.tsx",
+				"layer": "core",
+				"loader": false,
+				"loaderCalls": [],
+				"search": false,
+				"head": true,
+				"states": [],
+				"heavyImports": [],
+				"pageReads": {}
+			},
+			{
+				"file": "src/routes/_public/health.tsx",
+				"layer": "core",
+				"loader": true,
+				"loaderCalls": [],
+				"search": false,
+				"head": true,
+				"states": [],
+				"heavyImports": [],
+				"pageReads": {}
+			},
+			{
+				"file": "src/routes/_public/reset-password.tsx",
+				"layer": "core",
+				"loader": false,
+				"loaderCalls": [],
+				"search": true,
+				"head": true,
+				"states": [],
+				"heavyImports": [],
+				"pageReads": {}
+			},
+			{
+				"file": "src/routes/_public/verify-email.tsx",
+				"layer": "core",
+				"loader": false,
+				"loaderCalls": [],
+				"search": true,
+				"head": true,
+				"states": [],
+				"heavyImports": [],
+				"pageReads": {}
+			},
+			{
+				"file": "src/routes/_site.tsx",
+				"layer": "portfolio",
+				"loader": true,
+				"loaderCalls": [
+					"ensureQuery"
+				],
+				"search": false,
+				"head": true,
+				"states": [
+					"notFoundComponent"
+				],
+				"heavyImports": [
+					"@/features/portfolio/queries"
+				],
+				"pageReads": {}
+			},
+			{
+				"file": "src/routes/_site/about.tsx",
+				"layer": "portfolio",
+				"loader": true,
+				"loaderCalls": [
+					"ensureQuery"
+				],
+				"search": false,
+				"head": true,
+				"states": [],
+				"heavyImports": [],
+				"pageReads": {
+					"useSuspenseQuery": 2
+				}
+			},
+			{
+				"file": "src/routes/_site/contact.tsx",
+				"layer": "portfolio",
+				"loader": true,
+				"loaderCalls": [
+					"ensureQuery"
+				],
+				"search": false,
+				"head": true,
+				"states": [],
+				"heavyImports": [
+					"@/features/auth/queries"
+				],
+				"pageReads": {
+					"useSuspenseQuery": 2
+				}
+			},
+			{
+				"file": "src/routes/_site/index.tsx",
+				"layer": "portfolio",
+				"loader": true,
+				"loaderCalls": [
+					"ensureQuery"
+				],
+				"search": false,
+				"head": true,
+				"states": [],
+				"heavyImports": [],
+				"pageReads": {
+					"useSuspenseQuery": 2
+				}
+			},
+			{
+				"file": "src/routes/_site/journal/$slug.tsx",
+				"layer": "portfolio",
+				"loader": true,
+				"loaderCalls": [
+					"ensureQuery"
+				],
+				"search": true,
+				"head": true,
+				"states": [],
+				"heavyImports": [],
+				"pageReads": {
+					"useSuspenseQuery": 1
+				}
+			},
+			{
+				"file": "src/routes/_site/journal/index.tsx",
+				"layer": "portfolio",
+				"loader": true,
+				"loaderCalls": [
+					"ensureQuery"
+				],
+				"search": false,
+				"head": true,
+				"states": [],
+				"heavyImports": [],
+				"pageReads": {
+					"useSuspenseQuery": 1
+				}
+			},
+			{
+				"file": "src/routes/_site/work/$slug.tsx",
+				"layer": "portfolio",
+				"loader": true,
+				"loaderCalls": [
+					"ensureQuery"
+				],
+				"search": true,
+				"head": true,
+				"states": [],
+				"heavyImports": [],
+				"pageReads": {
+					"useSuspenseQuery": 1
+				}
+			},
+			{
+				"file": "src/routes/_site/work/index.tsx",
+				"layer": "portfolio",
+				"loader": true,
+				"loaderCalls": [
+					"ensureQuery"
+				],
+				"search": true,
+				"head": true,
+				"states": [],
+				"heavyImports": [],
+				"pageReads": {
+					"useSuspenseQuery": 1
+				}
+			},
+			{
+				"file": "src/routes/_taskline/app/taskline/_shell/$ws/index.tsx",
+				"layer": "taskline",
+				"loader": false,
+				"loaderCalls": [],
+				"search": false,
+				"head": false,
+				"states": [],
+				"heavyImports": [],
+				"pageReads": {}
+			},
+			{
+				"file": "src/routes/_taskline/app/taskline/_shell/$ws/p/$key/backlog.tsx",
+				"layer": "taskline",
+				"loader": false,
+				"loaderCalls": [],
+				"search": true,
+				"head": true,
+				"states": [],
+				"heavyImports": [],
+				"pageReads": {
+					"useSuspenseQuery": 1
+				}
+			},
+			{
+				"file": "src/routes/_taskline/app/taskline/_shell/$ws/p/$key/board.tsx",
+				"layer": "taskline",
+				"loader": false,
+				"loaderCalls": [],
+				"search": false,
+				"head": true,
+				"states": [],
+				"heavyImports": [],
+				"pageReads": {
+					"useSuspenseQuery": 2
+				}
+			},
+			{
+				"file": "src/routes/_taskline/app/taskline/_shell/$ws/p/$key/calendar.tsx",
+				"layer": "taskline",
+				"loader": false,
+				"loaderCalls": [],
+				"search": false,
+				"head": true,
+				"states": [],
+				"heavyImports": [],
+				"pageReads": {
+					"useSuspenseQuery": 2
+				}
+			},
+			{
+				"file": "src/routes/_taskline/app/taskline/_shell/$ws/p/$key/index.tsx",
+				"layer": "taskline",
+				"loader": true,
+				"loaderCalls": [],
+				"search": false,
+				"head": true,
+				"states": [],
+				"heavyImports": [],
+				"pageReads": {
+					"useSuspenseQuery": 3
+				}
+			},
+			{
+				"file": "src/routes/_taskline/app/taskline/_shell/$ws/p/$key/list.tsx",
+				"layer": "taskline",
+				"loader": true,
+				"loaderCalls": [
+					"loadList"
+				],
+				"search": false,
+				"head": true,
+				"states": [],
+				"heavyImports": [],
+				"pageReads": {
+					"useSuspenseQuery": 2
+				}
+			},
+			{
+				"file": "src/routes/_taskline/app/taskline/_shell/$ws/p/$key/milestones.tsx",
+				"layer": "taskline",
+				"loader": false,
+				"loaderCalls": [],
+				"search": true,
+				"head": true,
+				"states": [],
+				"heavyImports": [],
+				"pageReads": {
+					"useSuspenseQuery": 1
+				}
+			},
+			{
+				"file": "src/routes/_taskline/app/taskline/_shell/$ws/p/$key/reports.tsx",
+				"layer": "taskline",
+				"loader": true,
+				"loaderCalls": [
+					"ensureQuery"
+				],
+				"search": true,
+				"head": true,
+				"states": [],
+				"heavyImports": [],
+				"pageReads": {
+					"useSuspenseQuery": 1
+				}
+			},
+			{
+				"file": "src/routes/_taskline/app/taskline/_shell/$ws/p/$key/route.tsx",
+				"layer": "taskline",
+				"loader": true,
+				"loaderCalls": [],
+				"search": false,
+				"head": true,
+				"states": [],
+				"heavyImports": [],
+				"pageReads": {
+					"useSuspenseQuery": 3
+				}
+			},
+			{
+				"file": "src/routes/_taskline/app/taskline/_shell/$ws/p/$key/settings/automations.tsx",
+				"layer": "taskline",
+				"loader": true,
+				"loaderCalls": [
+					"ensureQuery"
+				],
+				"search": false,
+				"head": true,
+				"states": [],
+				"heavyImports": [],
+				"pageReads": {
+					"useSuspenseQuery": 2
+				}
+			},
+			{
+				"file": "src/routes/_taskline/app/taskline/_shell/$ws/p/$key/settings/fields.tsx",
+				"layer": "taskline",
+				"loader": false,
+				"loaderCalls": [],
+				"search": false,
+				"head": true,
+				"states": [],
+				"heavyImports": [],
+				"pageReads": {
+					"useSuspenseQuery": 1
+				}
+			},
+			{
+				"file": "src/routes/_taskline/app/taskline/_shell/$ws/p/$key/settings/general.tsx",
+				"layer": "taskline",
+				"loader": false,
+				"loaderCalls": [],
+				"search": false,
+				"head": true,
+				"states": [],
+				"heavyImports": [],
+				"pageReads": {
+					"useSuspenseQuery": 1
+				}
+			},
+			{
+				"file": "src/routes/_taskline/app/taskline/_shell/$ws/p/$key/settings/index.tsx",
+				"layer": "taskline",
+				"loader": false,
+				"loaderCalls": [],
+				"search": false,
+				"head": false,
+				"states": [],
+				"heavyImports": [],
+				"pageReads": {}
+			},
+			{
+				"file": "src/routes/_taskline/app/taskline/_shell/$ws/p/$key/settings/labels.tsx",
+				"layer": "taskline",
+				"loader": false,
+				"loaderCalls": [],
+				"search": false,
+				"head": true,
+				"states": [],
+				"heavyImports": [],
+				"pageReads": {
+					"useSuspenseQuery": 1
+				}
+			},
+			{
+				"file": "src/routes/_taskline/app/taskline/_shell/$ws/p/$key/settings/members.tsx",
+				"layer": "taskline",
+				"loader": true,
+				"loaderCalls": [
+					"ensureQuery"
+				],
+				"search": false,
+				"head": true,
+				"states": [],
+				"heavyImports": [],
+				"pageReads": {
+					"useSuspenseQuery": 2
+				}
+			},
+			{
+				"file": "src/routes/_taskline/app/taskline/_shell/$ws/p/$key/settings/route.tsx",
+				"layer": "taskline",
+				"loader": true,
+				"loaderCalls": [],
+				"search": false,
+				"head": false,
+				"states": [],
+				"heavyImports": [],
+				"pageReads": {}
+			},
+			{
+				"file": "src/routes/_taskline/app/taskline/_shell/$ws/p/$key/settings/trash.tsx",
+				"layer": "taskline",
+				"loader": true,
+				"loaderCalls": [
+					"ensureQuery"
+				],
+				"search": false,
+				"head": true,
+				"states": [],
+				"heavyImports": [],
+				"pageReads": {
+					"useSuspenseQuery": 2
+				}
+			},
+			{
+				"file": "src/routes/_taskline/app/taskline/_shell/$ws/p/$key/settings/workflow.tsx",
+				"layer": "taskline",
+				"loader": false,
+				"loaderCalls": [],
+				"search": false,
+				"head": true,
+				"states": [],
+				"heavyImports": [],
+				"pageReads": {
+					"useSuspenseQuery": 1
+				}
+			},
+			{
+				"file": "src/routes/_taskline/app/taskline/_shell/$ws/p/$key/sprints/$sprintId.tsx",
+				"layer": "taskline",
+				"loader": true,
+				"loaderCalls": [],
+				"search": true,
+				"head": true,
+				"states": [],
+				"heavyImports": [],
+				"pageReads": {
+					"useSuspenseQuery": 2
+				}
+			},
+			{
+				"file": "src/routes/_taskline/app/taskline/_shell/$ws/p/$key/time.tsx",
+				"layer": "taskline",
+				"loader": true,
+				"loaderCalls": [
+					"ensureQuery"
+				],
+				"search": true,
+				"head": true,
+				"states": [],
+				"heavyImports": [],
+				"pageReads": {
+					"useSuspenseQuery": 2
+				}
+			},
+			{
+				"file": "src/routes/_taskline/app/taskline/_shell/$ws/p/$key/timeline.tsx",
+				"layer": "taskline",
+				"loader": false,
+				"loaderCalls": [],
+				"search": false,
+				"head": true,
+				"states": [],
+				"heavyImports": [],
+				"pageReads": {
+					"useSuspenseQuery": 2
+				}
+			},
+			{
+				"file": "src/routes/_taskline/app/taskline/_shell/$ws/projects.tsx",
+				"layer": "taskline",
+				"loader": true,
+				"loaderCalls": [
+					"ensureQuery"
+				],
+				"search": true,
+				"head": true,
+				"states": [],
+				"heavyImports": [],
+				"pageReads": {
+					"useSuspenseQuery": 2
+				}
+			},
+			{
+				"file": "src/routes/_taskline/app/taskline/_shell/$ws/route.tsx",
+				"layer": "taskline",
+				"loader": true,
+				"loaderCalls": [],
+				"search": false,
+				"head": false,
+				"states": [],
+				"heavyImports": [],
+				"pageReads": {}
+			},
+			{
+				"file": "src/routes/_taskline/app/taskline/_shell/$ws/search.tsx",
+				"layer": "taskline",
+				"loader": true,
+				"loaderCalls": [
+					"ensureQuery"
+				],
+				"search": true,
+				"head": true,
+				"states": [],
+				"heavyImports": [],
+				"pageReads": {
+					"useQuery": 1
+				}
+			},
+			{
+				"file": "src/routes/_taskline/app/taskline/_shell/$ws/t/$ref.tsx",
+				"layer": "taskline",
+				"loader": true,
+				"loaderCalls": [],
+				"search": false,
+				"head": true,
+				"states": [],
+				"heavyImports": [],
+				"pageReads": {
+					"useSuspenseQuery": 2
+				}
+			},
+			{
+				"file": "src/routes/_taskline/app/taskline/_shell/$ws/timesheet.tsx",
+				"layer": "taskline",
+				"loader": true,
+				"loaderCalls": [
+					"ensureQuery"
+				],
+				"search": true,
+				"head": true,
+				"states": [],
+				"heavyImports": [],
+				"pageReads": {
+					"useSuspenseQuery": 2
+				}
+			},
+			{
+				"file": "src/routes/_taskline/app/taskline/_shell/account.tsx",
+				"layer": "taskline",
+				"loader": true,
+				"loaderCalls": [
+					"ensureQuery"
+				],
+				"search": false,
+				"head": true,
+				"states": [],
+				"heavyImports": [
+					"@/features/auth/queries"
+				],
+				"pageReads": {}
+			},
+			{
+				"file": "src/routes/_taskline/app/taskline/_shell/home.tsx",
+				"layer": "taskline",
+				"loader": true,
+				"loaderCalls": [
+					"ensureQuery"
+				],
+				"search": true,
+				"head": true,
+				"states": [],
+				"heavyImports": [],
+				"pageReads": {
+					"useSuspenseQuery": 2
+				}
+			},
+			{
+				"file": "src/routes/_taskline/app/taskline/_shell/inbox.tsx",
+				"layer": "taskline",
+				"loader": true,
+				"loaderCalls": [
+					"ensureQuery"
+				],
+				"search": true,
+				"head": true,
+				"states": [],
+				"heavyImports": [],
+				"pageReads": {
+					"useSuspenseQuery": 1
+				}
+			},
+			{
+				"file": "src/routes/_taskline/app/taskline/_shell/route.tsx",
+				"layer": "taskline",
+				"loader": true,
+				"loaderCalls": [
+					"ensureQuery"
+				],
+				"search": false,
+				"head": false,
+				"states": [
+					"notFoundComponent"
+				],
+				"heavyImports": [],
+				"pageReads": {
+					"useQuery": 2
+				}
+			},
+			{
+				"file": "src/routes/_taskline/app/taskline/_shell/settings.tsx",
+				"layer": "taskline",
+				"loader": true,
+				"loaderCalls": [
+					"ensureQuery"
+				],
+				"search": false,
+				"head": true,
+				"states": [],
+				"heavyImports": [],
+				"pageReads": {
+					"useSuspenseQuery": 1
+				}
+			},
+			{
+				"file": "src/routes/_taskline/app/taskline/index.tsx",
+				"layer": "taskline",
+				"loader": false,
+				"loaderCalls": [],
+				"search": false,
+				"head": true,
+				"states": [],
+				"heavyImports": [],
+				"pageReads": {}
+			},
+			{
+				"file": "src/routes/_taskline/app/taskline/sign-in.tsx",
+				"layer": "taskline",
+				"loader": true,
+				"loaderCalls": [
+					"ensureQuery"
+				],
+				"search": true,
+				"head": true,
+				"states": [],
+				"heavyImports": [
+					"@/features/auth/queries"
+				],
+				"pageReads": {}
+			},
+			{
+				"file": "src/routes/_taskline/app/taskline/sign-up.tsx",
+				"layer": "taskline",
+				"loader": true,
+				"loaderCalls": [
+					"ensureQuery"
+				],
+				"search": true,
+				"head": true,
+				"states": [],
+				"heavyImports": [
+					"@/features/auth/queries"
+				],
+				"pageReads": {}
+			},
+			{
+				"file": "src/routes/_taskline/apps/kanban/$boardId.tsx",
+				"layer": "taskline",
+				"loader": false,
+				"loaderCalls": [],
+				"search": false,
+				"head": false,
+				"states": [],
+				"heavyImports": [],
+				"pageReads": {}
+			},
+			{
+				"file": "src/routes/_taskline/apps/kanban/index.tsx",
+				"layer": "taskline",
+				"loader": false,
+				"loaderCalls": [],
+				"search": false,
+				"head": false,
+				"states": [],
+				"heavyImports": [],
+				"pageReads": {}
+			},
+			{
+				"file": "src/routes/_taskline/route.tsx",
+				"layer": "taskline",
+				"loader": false,
+				"loaderCalls": [],
+				"search": false,
+				"head": true,
+				"states": [
+					"notFoundComponent"
+				],
+				"heavyImports": [],
+				"pageReads": {}
+			},
+			{
+				"file": "src/routes/dev/examples/analytics.tsx",
+				"layer": "dev",
+				"loader": true,
+				"loaderCalls": [
+					"ensureQuery"
+				],
+				"search": false,
+				"head": true,
+				"states": [],
+				"heavyImports": [
+					"@/features/flags/queries"
+				],
+				"pageReads": {}
+			},
+			{
+				"file": "src/routes/dev/examples/attachments.tsx",
+				"layer": "dev",
+				"loader": false,
+				"loaderCalls": [],
+				"search": false,
+				"head": true,
+				"states": [],
+				"heavyImports": [
+					"@/features/attachments/schema"
+				],
+				"pageReads": {
+					"useQuery": 3
+				}
+			},
+			{
+				"file": "src/routes/dev/examples/background-jobs.tsx",
+				"layer": "dev",
+				"loader": false,
+				"loaderCalls": [],
+				"search": false,
+				"head": true,
+				"states": [],
+				"heavyImports": [],
+				"pageReads": {}
+			},
+			{
+				"file": "src/routes/dev/examples/caching.tsx",
+				"layer": "dev",
+				"loader": false,
+				"loaderCalls": [],
+				"search": false,
+				"head": true,
+				"states": [],
+				"heavyImports": [],
+				"pageReads": {}
+			},
+			{
+				"file": "src/routes/dev/examples/components.tsx",
+				"layer": "dev",
+				"loader": true,
+				"loaderCalls": [
+					"ensureQuery"
+				],
+				"search": false,
+				"head": true,
+				"states": [],
+				"heavyImports": [],
+				"pageReads": {
+					"useSuspenseQuery": 1
+				}
+			},
+			{
+				"file": "src/routes/dev/examples/contact.tsx",
+				"layer": "dev",
+				"loader": true,
+				"loaderCalls": [
+					"ensureQuery"
+				],
+				"search": false,
+				"head": true,
+				"states": [],
+				"heavyImports": [
+					"@/features/auth/queries"
+				],
+				"pageReads": {}
+			},
+			{
+				"file": "src/routes/dev/examples/data-table.tsx",
+				"layer": "dev",
+				"loader": true,
+				"loaderCalls": [
+					"loadList"
+				],
+				"search": true,
+				"head": true,
+				"states": [],
+				"heavyImports": [
+					"@/features/dev/examples/queries",
+					"@/features/dev/examples/schema"
+				],
+				"pageReads": {}
+			},
+			{
+				"file": "src/routes/dev/examples/errors.tsx",
+				"layer": "dev",
+				"loader": true,
+				"loaderCalls": [],
+				"search": true,
+				"head": true,
+				"states": [
+					"errorComponent"
+				],
+				"heavyImports": [
+					"@/features/dev/examples/schema"
+				],
+				"pageReads": {}
+			},
+			{
+				"file": "src/routes/dev/examples/fields.tsx",
+				"layer": "dev",
+				"loader": false,
+				"loaderCalls": [],
+				"search": false,
+				"head": true,
+				"states": [],
+				"heavyImports": [],
+				"pageReads": {}
+			},
+			{
+				"file": "src/routes/dev/examples/filters.tsx",
+				"layer": "dev",
+				"loader": true,
+				"loaderCalls": [
+					"loadList"
+				],
+				"search": true,
+				"head": true,
+				"states": [],
+				"heavyImports": [
+					"@/features/dev/examples/queries",
+					"@/features/dev/examples/schema"
+				],
+				"pageReads": {}
+			},
+			{
+				"file": "src/routes/dev/examples/forms.tsx",
+				"layer": "dev",
+				"loader": false,
+				"loaderCalls": [],
+				"search": false,
+				"head": true,
+				"states": [],
+				"heavyImports": [
+					"@/features/dev/examples/schema"
+				],
+				"pageReads": {}
+			},
+			{
+				"file": "src/routes/dev/examples/i18n.tsx",
+				"layer": "dev",
+				"loader": false,
+				"loaderCalls": [],
+				"search": false,
+				"head": true,
+				"states": [],
+				"heavyImports": [],
+				"pageReads": {}
+			},
+			{
+				"file": "src/routes/dev/examples/idempotency.tsx",
+				"layer": "dev",
+				"loader": true,
+				"loaderCalls": [
+					"ensureQuery"
+				],
+				"search": false,
+				"head": true,
+				"states": [],
+				"heavyImports": [
+					"@/features/dev/examples/queries"
+				],
+				"pageReads": {}
+			},
+			{
+				"file": "src/routes/dev/examples/index.tsx",
+				"layer": "dev",
+				"loader": false,
+				"loaderCalls": [],
+				"search": false,
+				"head": true,
+				"states": [],
+				"heavyImports": [],
+				"pageReads": {}
+			},
+			{
+				"file": "src/routes/dev/examples/list-extras.tsx",
+				"layer": "dev",
+				"loader": true,
+				"loaderCalls": [
+					"loadList"
+				],
+				"search": true,
+				"head": true,
+				"states": [],
+				"heavyImports": [
+					"@/features/dev/examples/queries",
+					"@/features/dev/examples/schema"
+				],
+				"pageReads": {}
+			},
+			{
+				"file": "src/routes/dev/examples/loader-query.tsx",
+				"layer": "dev",
+				"loader": true,
+				"loaderCalls": [
+					"ensureQuery"
+				],
+				"search": false,
+				"head": true,
+				"states": [],
+				"heavyImports": [
+					"@/features/dev/examples/queries"
+				],
+				"pageReads": {}
+			},
+			{
+				"file": "src/routes/dev/examples/masking/$id.tsx",
+				"layer": "dev",
+				"loader": true,
+				"loaderCalls": [
+					"ensureQuery"
+				],
+				"search": false,
+				"head": true,
+				"states": [],
+				"heavyImports": [
+					"@/features/dev/examples/queries",
+					"@/features/dev/examples/schema"
+				],
+				"pageReads": {}
+			},
+			{
+				"file": "src/routes/dev/examples/masking/index.tsx",
+				"layer": "dev",
+				"loader": true,
+				"loaderCalls": [
+					"ensureQuery"
+				],
+				"search": true,
+				"head": true,
+				"states": [],
+				"heavyImports": [
+					"@/features/dev/examples/queries",
+					"@/features/dev/examples/schema"
+				],
+				"pageReads": {}
+			},
+			{
+				"file": "src/routes/dev/examples/masking/route.tsx",
+				"layer": "dev",
+				"loader": false,
+				"loaderCalls": [],
+				"search": false,
+				"head": false,
+				"states": [],
+				"heavyImports": [],
+				"pageReads": {}
+			},
+			{
+				"file": "src/routes/dev/examples/optimistic.tsx",
+				"layer": "dev",
+				"loader": true,
+				"loaderCalls": [
+					"ensureQuery"
+				],
+				"search": false,
+				"head": true,
+				"states": [],
+				"heavyImports": [
+					"@/features/dev/examples/collection",
+					"@/features/dev/examples/queries"
+				],
+				"pageReads": {}
+			},
+			{
+				"file": "src/routes/dev/examples/permissions.tsx",
+				"layer": "dev",
+				"loader": false,
+				"loaderCalls": [],
+				"search": false,
+				"head": true,
+				"states": [],
+				"heavyImports": [],
+				"pageReads": {
+					"useQuery": 2
+				}
+			},
+			{
+				"file": "src/routes/dev/examples/preferences.tsx",
+				"layer": "dev",
+				"loader": false,
+				"loaderCalls": [],
+				"search": false,
+				"head": true,
+				"states": [],
+				"heavyImports": [],
+				"pageReads": {}
+			},
+			{
+				"file": "src/routes/dev/examples/route.tsx",
+				"layer": "dev",
+				"loader": false,
+				"loaderCalls": [],
+				"search": false,
+				"head": false,
+				"states": [],
+				"heavyImports": [],
+				"pageReads": {}
+			},
+			{
+				"file": "src/routes/dev/examples/seo.tsx",
+				"layer": "dev",
+				"loader": false,
+				"loaderCalls": [],
+				"search": false,
+				"head": true,
+				"states": [],
+				"heavyImports": [],
+				"pageReads": {}
+			},
+			{
+				"file": "src/routes/dev/examples/streaming.tsx",
+				"layer": "dev",
+				"loader": true,
+				"loaderCalls": [],
+				"search": false,
+				"head": true,
+				"states": [],
+				"heavyImports": [],
+				"pageReads": {}
+			},
+			{
+				"file": "src/routes/dev/forms.tsx",
+				"layer": "dev",
+				"loader": false,
+				"loaderCalls": [],
+				"search": false,
+				"head": true,
+				"states": [],
+				"heavyImports": [],
+				"pageReads": {}
+			},
+			{
+				"file": "src/routes/dev/index.tsx",
+				"layer": "dev",
+				"loader": true,
+				"loaderCalls": [
+					"ensureQuery"
+				],
+				"search": false,
+				"head": true,
+				"states": [],
+				"heavyImports": [
+					"@/features/flags/queries"
+				],
+				"pageReads": {}
+			},
+			{
+				"file": "src/routes/dev/route.tsx",
+				"layer": "dev",
+				"loader": false,
+				"loaderCalls": [],
+				"search": false,
+				"head": true,
+				"states": [],
+				"heavyImports": [],
+				"pageReads": {
+					"useQuery": 1
+				}
+			},
+			{
+				"file": "src/routes/dev/stack.tsx",
+				"layer": "dev",
+				"loader": true,
+				"loaderCalls": [
+					"loadList"
+				],
+				"search": true,
+				"head": true,
+				"states": [
+					"pendingComponent"
+				],
+				"heavyImports": [
+					"@/features/stack/queries",
+					"@/features/stack/schema"
+				],
+				"pageReads": {}
+			},
+			{
+				"file": "src/routes/dev/test-crud/$slug.tsx",
+				"layer": "dev",
+				"loader": true,
+				"loaderCalls": [
+					"ensureQuery"
+				],
+				"search": false,
+				"head": true,
+				"states": [],
+				"heavyImports": [
+					"@/features/test-crud/queries"
+				],
+				"pageReads": {}
+			},
+			{
+				"file": "src/routes/dev/test-crud/index.tsx",
+				"layer": "dev",
+				"loader": true,
+				"loaderCalls": [
+					"loadList"
+				],
+				"search": true,
+				"head": true,
+				"states": [
+					"pendingComponent"
+				],
+				"heavyImports": [
+					"@/features/test-crud/queries"
+				],
+				"pageReads": {}
+			},
+			{
+				"file": "src/routes/dev/test-crud/route.tsx",
+				"layer": "dev",
+				"loader": false,
+				"loaderCalls": [],
+				"search": false,
+				"head": false,
+				"states": [],
+				"heavyImports": [],
+				"pageReads": {}
+			},
+			{
+				"file": "src/routes/f/$slug.tsx",
+				"layer": "apps",
+				"loader": true,
+				"loaderCalls": [
+					"ensureQuery"
+				],
+				"search": false,
+				"head": true,
+				"states": [],
+				"heavyImports": [
+					"@/features/auth/queries"
+				],
+				"pageReads": {
+					"useSuspenseQuery": 2
+				}
+			},
+			{
+				"file": "src/routes/l/$slug.ts",
+				"layer": "apps",
+				"loader": false,
+				"loaderCalls": [],
+				"search": false,
+				"head": true,
+				"states": [],
+				"heavyImports": [],
+				"pageReads": {}
+			},
+			{
+				"file": "src/routes/robots[.]txt.ts",
+				"layer": "core",
+				"loader": false,
+				"loaderCalls": [],
+				"search": false,
+				"head": false,
+				"states": [],
+				"heavyImports": [],
+				"pageReads": {}
+			},
+			{
+				"file": "src/routes/sitemap[.]xml.ts",
+				"layer": "core",
+				"loader": false,
+				"loaderCalls": [],
+				"search": false,
+				"head": false,
+				"states": [],
+				"heavyImports": [],
+				"pageReads": {}
+			}
+		]
+	},
+	"lists": {
+		"byContract": {
+			"no input": 31,
+			"the list contract (listSchema)": 16,
+			"no paging": 12,
+			"paging of its own": 5
+		},
+		"list": [
+			{
+				"name": "listForms",
+				"file": "src/functions/apps/forms.ts",
+				"layer": "apps",
+				"input": "",
+				"contract": "no input"
+			},
+			{
+				"name": "listLinksForModeration",
+				"file": "src/functions/apps/links-admin.ts",
+				"layer": "apps",
+				"input": "linkModerationList.input",
+				"contract": "the list contract (listSchema)"
+			},
+			{
+				"name": "listLinks",
+				"file": "src/functions/apps/links.ts",
+				"layer": "apps",
+				"input": "",
+				"contract": "no input"
+			},
+			{
+				"name": "listNotes",
+				"file": "src/functions/apps/notes.ts",
+				"layer": "apps",
+				"input": "",
+				"contract": "no input"
+			},
+			{
+				"name": "listAuditEvents",
+				"file": "src/functions/audit.ts",
+				"layer": "core",
+				"input": "auditList.input",
+				"contract": "the list contract (listSchema)"
+			},
+			{
+				"name": "listMySessions",
+				"file": "src/functions/auth.ts",
+				"layer": "core",
+				"input": "",
+				"contract": "no input"
+			},
+			{
+				"name": "listChaalBlocks",
+				"file": "src/functions/chaal-admin/blocks.ts",
+				"layer": "chaal",
+				"input": "chaalBlockList.input",
+				"contract": "the list contract (listSchema)"
+			},
+			{
+				"name": "listChaalConnections",
+				"file": "src/functions/chaal-admin/connections.ts",
+				"layer": "chaal",
+				"input": "chaalConnectionList.input",
+				"contract": "the list contract (listSchema)"
+			},
+			{
+				"name": "listChaalAnalyses",
+				"file": "src/functions/chaal/analyses.ts",
+				"layer": "chaal",
+				"input": "",
+				"contract": "no input"
+			},
+			{
+				"name": "listChaalLocalGames",
+				"file": "src/functions/chaal/local-games.ts",
+				"layer": "chaal",
+				"input": "",
+				"contract": "no input"
+			},
+			{
+				"name": "listExampleTasks",
+				"file": "src/functions/examples.ts",
+				"layer": "dev",
+				"input": "exampleTaskSearchSchema",
+				"contract": "paging of its own"
+			},
+			{
+				"name": "listExampleMessages",
+				"file": "src/functions/examples.ts",
+				"layer": "dev",
+				"input": "",
+				"contract": "no input"
+			},
+			{
+				"name": "listKharchaSenders",
+				"file": "src/functions/kharcha-admin/senders.ts",
+				"layer": "kharcha",
+				"input": "",
+				"contract": "no input"
+			},
+			{
+				"name": "listKharchaBudgets",
+				"file": "src/functions/kharcha/budgets.ts",
+				"layer": "kharcha",
+				"input": "",
+				"contract": "no input"
+			},
+			{
+				"name": "listKharchaSpend",
+				"file": "src/functions/kharcha/expenses.ts",
+				"layer": "kharcha",
+				"input": "spendListInput",
+				"contract": "paging of its own"
+			},
+			{
+				"name": "listKharchaFriends",
+				"file": "src/functions/kharcha/friends.ts",
+				"layer": "kharcha",
+				"input": "",
+				"contract": "no input"
+			},
+			{
+				"name": "listKharchaGroups",
+				"file": "src/functions/kharcha/groups.ts",
+				"layer": "kharcha",
+				"input": "",
+				"contract": "no input"
+			},
+			{
+				"name": "listKharchaRecurring",
+				"file": "src/functions/kharcha/recurring.ts",
+				"layer": "kharcha",
+				"input": "",
+				"contract": "no input"
+			},
+			{
+				"name": "listKharchaPeople",
+				"file": "src/functions/kharcha/threads.ts",
+				"layer": "kharcha",
+				"input": "peopleInput",
+				"contract": "no paging"
+			},
+			{
+				"name": "listMedia",
+				"file": "src/functions/media.ts",
+				"layer": "core",
+				"input": "mediaList.input",
+				"contract": "the list contract (listSchema)"
+			},
+			{
+				"name": "listPardaBillboards",
+				"file": "src/functions/parda-admin/curation.ts",
+				"layer": "parda",
+				"input": "",
+				"contract": "no input"
+			},
+			{
+				"name": "listPardaCollections",
+				"file": "src/functions/parda-admin/curation.ts",
+				"layer": "parda",
+				"input": "",
+				"contract": "no input"
+			},
+			{
+				"name": "listPardaLabSources",
+				"file": "src/functions/parda-admin/player-lab.ts",
+				"layer": "parda",
+				"input": "",
+				"contract": "no input"
+			},
+			{
+				"name": "listPardaReports",
+				"file": "src/functions/parda-admin/reports.ts",
+				"layer": "parda",
+				"input": "pardaReportList.input",
+				"contract": "the list contract (listSchema)"
+			},
+			{
+				"name": "listPardaSources",
+				"file": "src/functions/parda-admin/sources.ts",
+				"layer": "parda",
+				"input": "",
+				"contract": "no input"
+			},
+			{
+				"name": "listPardaTakedowns",
+				"file": "src/functions/parda-admin/titles.ts",
+				"layer": "parda",
+				"input": "pardaTakedownList.input",
+				"contract": "the list contract (listSchema)"
+			},
+			{
+				"name": "listContactMessages",
+				"file": "src/functions/portfolio-messages.ts",
+				"layer": "portfolio",
+				"input": "messageList.input",
+				"contract": "the list contract (listSchema)"
+			},
+			{
+				"name": "listExperience",
+				"file": "src/functions/portfolio-sections.ts",
+				"layer": "portfolio",
+				"input": "",
+				"contract": "no input"
+			},
+			{
+				"name": "listSkills",
+				"file": "src/functions/portfolio-sections.ts",
+				"layer": "portfolio",
+				"input": "",
+				"contract": "no input"
+			},
+			{
+				"name": "listProcessSteps",
+				"file": "src/functions/portfolio-sections.ts",
+				"layer": "portfolio",
+				"input": "",
+				"contract": "no input"
+			},
+			{
+				"name": "listTestimonials",
+				"file": "src/functions/portfolio-sections.ts",
+				"layer": "portfolio",
+				"input": "",
+				"contract": "no input"
+			},
+			{
+				"name": "listProjects",
+				"file": "src/functions/portfolio.ts",
+				"layer": "portfolio",
+				"input": "projectList.input",
+				"contract": "the list contract (listSchema)"
+			},
+			{
+				"name": "listProjectOrder",
+				"file": "src/functions/portfolio.ts",
+				"layer": "portfolio",
+				"input": "",
+				"contract": "no input"
+			},
+			{
+				"name": "listPosts",
+				"file": "src/functions/portfolio.ts",
+				"layer": "portfolio",
+				"input": "postList.input",
+				"contract": "the list contract (listSchema)"
+			},
+			{
+				"name": "listRoles",
+				"file": "src/functions/rbac.ts",
+				"layer": "core",
+				"input": "",
+				"contract": "no input"
+			},
+			{
+				"name": "listRoleOptions",
+				"file": "src/functions/rbac.ts",
+				"layer": "core",
+				"input": "",
+				"contract": "no input"
+			},
+			{
+				"name": "listUsers",
+				"file": "src/functions/rbac.ts",
+				"layer": "core",
+				"input": "userList.input",
+				"contract": "the list contract (listSchema)"
+			},
+			{
+				"name": "listStack",
+				"file": "src/functions/stack.ts",
+				"layer": "dev",
+				"input": "stackSearchSchema",
+				"contract": "paging of its own"
+			},
+			{
+				"name": "listTasklineActivity",
+				"file": "src/functions/taskline-admin/activity.ts",
+				"layer": "taskline",
+				"input": "adminActivityList.input",
+				"contract": "the list contract (listSchema)"
+			},
+			{
+				"name": "listTasklineWorkspaceAutomations",
+				"file": "src/functions/taskline-admin/automations.ts",
+				"layer": "taskline",
+				"input": "",
+				"contract": "no input"
+			},
+			{
+				"name": "listTasklineWorkspaceFields",
+				"file": "src/functions/taskline-admin/fields.ts",
+				"layer": "taskline",
+				"input": "",
+				"contract": "no input"
+			},
+			{
+				"name": "listTasklineMembers",
+				"file": "src/functions/taskline-admin/members.ts",
+				"layer": "taskline",
+				"input": "adminMemberList.input",
+				"contract": "the list contract (listSchema)"
+			},
+			{
+				"name": "listTasklineMemberOptions",
+				"file": "src/functions/taskline-admin/members.ts",
+				"layer": "taskline",
+				"input": "",
+				"contract": "no input"
+			},
+			{
+				"name": "listTasklineInvitations",
+				"file": "src/functions/taskline-admin/members.ts",
+				"layer": "taskline",
+				"input": "",
+				"contract": "no input"
+			},
+			{
+				"name": "listTasklineAdminProjects",
+				"file": "src/functions/taskline-admin/projects.ts",
+				"layer": "taskline",
+				"input": "adminProjectList.input",
+				"contract": "the list contract (listSchema)"
+			},
+			{
+				"name": "listTasklineAdminTemplates",
+				"file": "src/functions/taskline-admin/templates.ts",
+				"layer": "taskline",
+				"input": "",
+				"contract": "no input"
+			},
+			{
+				"name": "listTasklineAdminTemplateChoices",
+				"file": "src/functions/taskline-admin/templates.ts",
+				"layer": "taskline",
+				"input": "",
+				"contract": "no input"
+			},
+			{
+				"name": "listTasklineTimeEntries",
+				"file": "src/functions/taskline-admin/time.ts",
+				"layer": "taskline",
+				"input": "adminTimeList.input",
+				"contract": "the list contract (listSchema)"
+			},
+			{
+				"name": "listTasklineAutomations",
+				"file": "src/functions/taskline/automations.ts",
+				"layer": "taskline",
+				"input": "projectInput",
+				"contract": "no paging"
+			},
+			{
+				"name": "listTasklineSavedViews",
+				"file": "src/functions/taskline/find.ts",
+				"layer": "taskline",
+				"input": "savedViewsInput",
+				"contract": "no paging"
+			},
+			{
+				"name": "listMyTasklineTasks",
+				"file": "src/functions/taskline/home.ts",
+				"layer": "taskline",
+				"input": "",
+				"contract": "no input"
+			},
+			{
+				"name": "listTasklineInbox",
+				"file": "src/functions/taskline/inbox.ts",
+				"layer": "taskline",
+				"input": "inboxInput",
+				"contract": "paging of its own"
+			},
+			{
+				"name": "listTasklineProjects",
+				"file": "src/functions/taskline/projects.ts",
+				"layer": "taskline",
+				"input": "listProjectsInput",
+				"contract": "no paging"
+			},
+			{
+				"name": "listTasklineProjectMembers",
+				"file": "src/functions/taskline/projects.ts",
+				"layer": "taskline",
+				"input": "projectInput",
+				"contract": "no paging"
+			},
+			{
+				"name": "listTasklineProjectUpdates",
+				"file": "src/functions/taskline/projects.ts",
+				"layer": "taskline",
+				"input": "projectInput",
+				"contract": "no paging"
+			},
+			{
+				"name": "listTasklineTasks",
+				"file": "src/functions/taskline/tasks.ts",
+				"layer": "taskline",
+				"input": "projectInput",
+				"contract": "no paging"
+			},
+			{
+				"name": "listTasklineTrash",
+				"file": "src/functions/taskline/tasks.ts",
+				"layer": "taskline",
+				"input": "projectInput",
+				"contract": "no paging"
+			},
+			{
+				"name": "listTasklineTaskPage",
+				"file": "src/functions/taskline/tasks.ts",
+				"layer": "taskline",
+				"input": "taskListInput",
+				"contract": "no paging"
+			},
+			{
+				"name": "listTasklineProjectActivity",
+				"file": "src/functions/taskline/tasks.ts",
+				"layer": "taskline",
+				"input": "projectInput",
+				"contract": "no paging"
+			},
+			{
+				"name": "listTasklineTemplates",
+				"file": "src/functions/taskline/templates.ts",
+				"layer": "taskline",
+				"input": "wsInput",
+				"contract": "no paging"
+			},
+			{
+				"name": "listTasklineMembers",
+				"file": "src/functions/taskline/workspaces.ts",
+				"layer": "taskline",
+				"input": "wsInput",
+				"contract": "no paging"
+			},
+			{
+				"name": "listPublicTestCrud",
+				"file": "src/functions/test-crud-public.ts",
+				"layer": "core",
+				"input": "testCrudPublicSearchSchema",
+				"contract": "paging of its own"
+			},
+			{
+				"name": "listTestCrud",
+				"file": "src/functions/test-crud.ts",
+				"layer": "core",
+				"input": "testCrudList.input",
+				"contract": "the list contract (listSchema)"
+			},
+			{
+				"name": "listTestCrudTags",
+				"file": "src/functions/test-crud.ts",
+				"layer": "core",
+				"input": "",
+				"contract": "no input"
+			}
+		]
+	}
+}

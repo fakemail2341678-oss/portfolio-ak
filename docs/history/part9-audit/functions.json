@@ -1,0 +1,8771 @@
+{
+	"generated": "node scripts/audit/functions.ts",
+	"total": 582,
+	"byLayer": {
+		"taskline": 150,
+		"kharcha": 97,
+		"chaal": 96,
+		"parda": 88,
+		"portfolio": 50,
+		"core": 42,
+		"apps": 40,
+		"dev": 19
+	},
+	"byMethod": {
+		"POST": 347,
+		"GET": 235
+	},
+	"verbClasses": {
+		"standard": 454,
+		"domain": 104,
+		"folded": 24
+	},
+	"verbs": {
+		"get": 154,
+		"list": 64,
+		"update": 54,
+		"delete": 50,
+		"create": 41,
+		"set": 35,
+		"save": 13,
+		"reorder": 12,
+		"add": 7,
+		"import": 7,
+		"remove": 7,
+		"search": 7,
+		"mark": 6,
+		"is": 5,
+		"confirm": 4,
+		"discard": 4,
+		"export": 4,
+		"join": 4,
+		"revoke": 4,
+		"sign": 4,
+		"submit": 4,
+		"invite": 3,
+		"leave": 3,
+		"preview": 3,
+		"purge": 3,
+		"restore": 3,
+		"start": 3,
+		"accept": 2,
+		"block": 2,
+		"bulk": 2,
+		"challenge": 2,
+		"complete": 2,
+		"example": 2,
+		"open": 2,
+		"record": 2,
+		"reset": 2,
+		"send": 2,
+		"stop": 2,
+		"toggle": 2,
+		"unblock": 2,
+		"act": 1,
+		"archive": 1,
+		"cancel": 1,
+		"check": 1,
+		"claim": 1,
+		"clear": 1,
+		"copy": 1,
+		"deactivate": 1,
+		"decline": 1,
+		"disconnect": 1,
+		"end": 1,
+		"ensure": 1,
+		"fail": 1,
+		"find": 1,
+		"follow": 1,
+		"impersonate": 1,
+		"locate": 1,
+		"log": 1,
+		"move": 1,
+		"note": 1,
+		"patch": 1,
+		"pause": 1,
+		"ping": 1,
+		"play": 1,
+		"post": 1,
+		"pulse": 1,
+		"rank": 1,
+		"rate": 1,
+		"react": 1,
+		"reactivate": 1,
+		"remind": 1,
+		"rename": 1,
+		"repeat": 1,
+		"report": 1,
+		"resend": 1,
+		"rewatch": 1,
+		"run": 1,
+		"seek": 1,
+		"share": 1,
+		"skip": 1,
+		"suspend": 1,
+		"switch": 1,
+		"take": 1,
+		"transfer": 1,
+		"trash": 1,
+		"unshare": 1,
+		"watch": 1,
+		"withdraw": 1
+	},
+	"guardChains": {
+		"require, then with": 559,
+		"another name": 20,
+		"no guard": 3
+	},
+	"guardNames": {
+		"requirePermission": 193,
+		"withServices": 185,
+		"requireTasklineUser": 93,
+		"withTasklineServices": 93,
+		"requireKharchaUser": 91,
+		"withKharchaServices": 91,
+		"requireChaalUser": 41,
+		"withChaalServices": 41,
+		"requirePardaViewer": 35,
+		"withPardaServices": 35,
+		"withChaalPublic": 34,
+		"requireAppUser": 32,
+		"withAppServices": 32,
+		"devOnlyMiddleware": 19,
+		"withPardaCatalog": 19,
+		"withPublicServices": 15,
+		"requireUserMiddleware": 4,
+		"requireAccountOwnerMiddleware": 2,
+		"requireAdminAccessMiddleware": 2,
+		"sessionMiddleware": 1
+	},
+	"validators": {
+		"zodInput": 479,
+		"none": 103
+	},
+	"handlers": {
+		"call": 533,
+		"block": 49
+	},
+	"functions": [
+		{
+			"name": "getDashboard",
+			"file": "src/functions/admin.ts",
+			"line": 11,
+			"layer": "core",
+			"verb": "get",
+			"verbClass": "standard",
+			"method": "GET",
+			"guards": [
+				"requireAdminAccessMiddleware"
+			],
+			"validator": "none",
+			"handler": "call"
+		},
+		{
+			"name": "getAppsUsage",
+			"file": "src/functions/apps/admin.ts",
+			"line": 8,
+			"layer": "apps",
+			"verb": "get",
+			"verbClass": "standard",
+			"method": "GET",
+			"guards": [
+				"requirePermission(\"apps:read\")",
+				"withServices"
+			],
+			"validator": "none",
+			"handler": "call"
+		},
+		{
+			"name": "getPublicForm",
+			"file": "src/functions/apps/forms-public.ts",
+			"line": 19,
+			"layer": "apps",
+			"verb": "get",
+			"verbClass": "standard",
+			"method": "GET",
+			"guards": [
+				"withPublicServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "submitFormResponse",
+			"file": "src/functions/apps/forms-public.ts",
+			"line": 24,
+			"layer": "apps",
+			"verb": "submit",
+			"verbClass": "domain",
+			"method": "POST",
+			"guards": [
+				"withPublicServices"
+			],
+			"validator": "zodInput",
+			"handler": "block"
+		},
+		{
+			"name": "listForms",
+			"file": "src/functions/apps/forms.ts",
+			"line": 22,
+			"layer": "apps",
+			"verb": "list",
+			"verbClass": "standard",
+			"method": "GET",
+			"guards": [
+				"requireAppUser",
+				"withAppServices"
+			],
+			"validator": "none",
+			"handler": "call"
+		},
+		{
+			"name": "getForm",
+			"file": "src/functions/apps/forms.ts",
+			"line": 26,
+			"layer": "apps",
+			"verb": "get",
+			"verbClass": "standard",
+			"method": "GET",
+			"guards": [
+				"requireAppUser",
+				"withAppServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "createForm",
+			"file": "src/functions/apps/forms.ts",
+			"line": 31,
+			"layer": "apps",
+			"verb": "create",
+			"verbClass": "standard",
+			"method": "POST",
+			"guards": [
+				"requireAppUser",
+				"withAppServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "saveForm",
+			"file": "src/functions/apps/forms.ts",
+			"line": 36,
+			"layer": "apps",
+			"verb": "save",
+			"verbClass": "folded",
+			"method": "POST",
+			"guards": [
+				"requireAppUser",
+				"withAppServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "setFormStatus",
+			"file": "src/functions/apps/forms.ts",
+			"line": 41,
+			"layer": "apps",
+			"verb": "set",
+			"verbClass": "standard",
+			"method": "POST",
+			"guards": [
+				"requireAppUser",
+				"withAppServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "deleteForm",
+			"file": "src/functions/apps/forms.ts",
+			"line": 46,
+			"layer": "apps",
+			"verb": "delete",
+			"verbClass": "standard",
+			"method": "POST",
+			"guards": [
+				"requireAppUser",
+				"withAppServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "getFormResults",
+			"file": "src/functions/apps/forms.ts",
+			"line": 51,
+			"layer": "apps",
+			"verb": "get",
+			"verbClass": "standard",
+			"method": "GET",
+			"guards": [
+				"requireAppUser",
+				"withAppServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "exportFormResponses",
+			"file": "src/functions/apps/forms.ts",
+			"line": 56,
+			"layer": "apps",
+			"verb": "export",
+			"verbClass": "standard",
+			"method": "GET",
+			"guards": [
+				"requireAppUser",
+				"withAppServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "getHabitsOverview",
+			"file": "src/functions/apps/habits.ts",
+			"line": 14,
+			"layer": "apps",
+			"verb": "get",
+			"verbClass": "standard",
+			"method": "GET",
+			"guards": [
+				"requireAppUser",
+				"withAppServices"
+			],
+			"validator": "none",
+			"handler": "call"
+		},
+		{
+			"name": "getHabit",
+			"file": "src/functions/apps/habits.ts",
+			"line": 18,
+			"layer": "apps",
+			"verb": "get",
+			"verbClass": "standard",
+			"method": "GET",
+			"guards": [
+				"requireAppUser",
+				"withAppServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "createHabit",
+			"file": "src/functions/apps/habits.ts",
+			"line": 23,
+			"layer": "apps",
+			"verb": "create",
+			"verbClass": "standard",
+			"method": "POST",
+			"guards": [
+				"requireAppUser",
+				"withAppServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "updateHabit",
+			"file": "src/functions/apps/habits.ts",
+			"line": 28,
+			"layer": "apps",
+			"verb": "update",
+			"verbClass": "standard",
+			"method": "POST",
+			"guards": [
+				"requireAppUser",
+				"withAppServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "deleteHabit",
+			"file": "src/functions/apps/habits.ts",
+			"line": 33,
+			"layer": "apps",
+			"verb": "delete",
+			"verbClass": "standard",
+			"method": "POST",
+			"guards": [
+				"requireAppUser",
+				"withAppServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "setHabitCheckin",
+			"file": "src/functions/apps/habits.ts",
+			"line": 38,
+			"layer": "apps",
+			"verb": "set",
+			"verbClass": "standard",
+			"method": "POST",
+			"guards": [
+				"requireAppUser",
+				"withAppServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "listLinksForModeration",
+			"file": "src/functions/apps/links-admin.ts",
+			"line": 11,
+			"layer": "apps",
+			"verb": "list",
+			"verbClass": "standard",
+			"method": "GET",
+			"guards": [
+				"requirePermission(\"links:moderate\")",
+				"withServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "setLinksBlocked",
+			"file": "src/functions/apps/links-admin.ts",
+			"line": 16,
+			"layer": "apps",
+			"verb": "set",
+			"verbClass": "standard",
+			"method": "POST",
+			"guards": [
+				"requirePermission(\"links:moderate\")",
+				"withServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "deleteModeratedLinks",
+			"file": "src/functions/apps/links-admin.ts",
+			"line": 21,
+			"layer": "apps",
+			"verb": "delete",
+			"verbClass": "standard",
+			"method": "POST",
+			"guards": [
+				"requirePermission(\"links:moderate\")",
+				"withServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "listLinks",
+			"file": "src/functions/apps/links.ts",
+			"line": 15,
+			"layer": "apps",
+			"verb": "list",
+			"verbClass": "standard",
+			"method": "GET",
+			"guards": [
+				"requireAppUser",
+				"withAppServices"
+			],
+			"validator": "none",
+			"handler": "call"
+		},
+		{
+			"name": "getLinkStats",
+			"file": "src/functions/apps/links.ts",
+			"line": 19,
+			"layer": "apps",
+			"verb": "get",
+			"verbClass": "standard",
+			"method": "GET",
+			"guards": [
+				"requireAppUser",
+				"withAppServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "createLink",
+			"file": "src/functions/apps/links.ts",
+			"line": 24,
+			"layer": "apps",
+			"verb": "create",
+			"verbClass": "standard",
+			"method": "POST",
+			"guards": [
+				"requireAppUser",
+				"withAppServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "updateLink",
+			"file": "src/functions/apps/links.ts",
+			"line": 29,
+			"layer": "apps",
+			"verb": "update",
+			"verbClass": "standard",
+			"method": "POST",
+			"guards": [
+				"requireAppUser",
+				"withAppServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "deleteLink",
+			"file": "src/functions/apps/links.ts",
+			"line": 34,
+			"layer": "apps",
+			"verb": "delete",
+			"verbClass": "standard",
+			"method": "POST",
+			"guards": [
+				"requireAppUser",
+				"withAppServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "getSharedNote",
+			"file": "src/functions/apps/notes-public.ts",
+			"line": 13,
+			"layer": "apps",
+			"verb": "get",
+			"verbClass": "standard",
+			"method": "GET",
+			"guards": [
+				"withPublicServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "listNotes",
+			"file": "src/functions/apps/notes.ts",
+			"line": 22,
+			"layer": "apps",
+			"verb": "list",
+			"verbClass": "standard",
+			"method": "GET",
+			"guards": [
+				"requireAppUser",
+				"withAppServices"
+			],
+			"validator": "none",
+			"handler": "call"
+		},
+		{
+			"name": "searchNotes",
+			"file": "src/functions/apps/notes.ts",
+			"line": 26,
+			"layer": "apps",
+			"verb": "search",
+			"verbClass": "standard",
+			"method": "GET",
+			"guards": [
+				"requireAppUser",
+				"withAppServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "getNote",
+			"file": "src/functions/apps/notes.ts",
+			"line": 31,
+			"layer": "apps",
+			"verb": "get",
+			"verbClass": "standard",
+			"method": "GET",
+			"guards": [
+				"requireAppUser",
+				"withAppServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "createNote",
+			"file": "src/functions/apps/notes.ts",
+			"line": 36,
+			"layer": "apps",
+			"verb": "create",
+			"verbClass": "standard",
+			"method": "POST",
+			"guards": [
+				"requireAppUser",
+				"withAppServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "updateNote",
+			"file": "src/functions/apps/notes.ts",
+			"line": 41,
+			"layer": "apps",
+			"verb": "update",
+			"verbClass": "standard",
+			"method": "POST",
+			"guards": [
+				"requireAppUser",
+				"withAppServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "setNoteFlags",
+			"file": "src/functions/apps/notes.ts",
+			"line": 46,
+			"layer": "apps",
+			"verb": "set",
+			"verbClass": "standard",
+			"method": "POST",
+			"guards": [
+				"requireAppUser",
+				"withAppServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "shareNote",
+			"file": "src/functions/apps/notes.ts",
+			"line": 51,
+			"layer": "apps",
+			"verb": "share",
+			"verbClass": "domain",
+			"method": "POST",
+			"guards": [
+				"requireAppUser",
+				"withAppServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "unshareNote",
+			"file": "src/functions/apps/notes.ts",
+			"line": 56,
+			"layer": "apps",
+			"verb": "unshare",
+			"verbClass": "domain",
+			"method": "POST",
+			"guards": [
+				"requireAppUser",
+				"withAppServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "deleteNote",
+			"file": "src/functions/apps/notes.ts",
+			"line": 61,
+			"layer": "apps",
+			"verb": "delete",
+			"verbClass": "standard",
+			"method": "POST",
+			"guards": [
+				"requireAppUser",
+				"withAppServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "getNoteUploadSettings",
+			"file": "src/functions/apps/notes.ts",
+			"line": 67,
+			"layer": "apps",
+			"verb": "get",
+			"verbClass": "standard",
+			"method": "GET",
+			"guards": [
+				"requireAppUser",
+				"withAppServices"
+			],
+			"validator": "none",
+			"handler": "call"
+		},
+		{
+			"name": "signNoteImageUpload",
+			"file": "src/functions/apps/notes.ts",
+			"line": 71,
+			"layer": "apps",
+			"verb": "sign",
+			"verbClass": "domain",
+			"method": "POST",
+			"guards": [
+				"requireAppUser",
+				"withAppServices"
+			],
+			"validator": "none",
+			"handler": "call"
+		},
+		{
+			"name": "confirmNoteImageUpload",
+			"file": "src/functions/apps/notes.ts",
+			"line": 75,
+			"layer": "apps",
+			"verb": "confirm",
+			"verbClass": "domain",
+			"method": "POST",
+			"guards": [
+				"requireAppUser",
+				"withAppServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "discardNoteImageUpload",
+			"file": "src/functions/apps/notes.ts",
+			"line": 81,
+			"layer": "apps",
+			"verb": "discard",
+			"verbClass": "domain",
+			"method": "POST",
+			"guards": [
+				"requireAppUser",
+				"withAppServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "getUploadSettings",
+			"file": "src/functions/attachments.ts",
+			"line": 28,
+			"layer": "core",
+			"verb": "get",
+			"verbClass": "standard",
+			"method": "GET",
+			"guards": [
+				"requirePermission(\"attachments:upload\")"
+			],
+			"validator": "none",
+			"handler": "call"
+		},
+		{
+			"name": "signImageUpload",
+			"file": "src/functions/attachments.ts",
+			"line": 32,
+			"layer": "core",
+			"verb": "sign",
+			"verbClass": "domain",
+			"method": "POST",
+			"guards": [
+				"requirePermission(\"attachments:upload\")"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "confirmImageUpload",
+			"file": "src/functions/attachments.ts",
+			"line": 37,
+			"layer": "core",
+			"verb": "confirm",
+			"verbClass": "domain",
+			"method": "POST",
+			"guards": [
+				"requirePermission(\"attachments:upload\")"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "discardImageUpload",
+			"file": "src/functions/attachments.ts",
+			"line": 43,
+			"layer": "core",
+			"verb": "discard",
+			"verbClass": "domain",
+			"method": "POST",
+			"guards": [
+				"requirePermission(\"attachments:upload\")"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "listAuditEvents",
+			"file": "src/functions/audit.ts",
+			"line": 10,
+			"layer": "core",
+			"verb": "list",
+			"verbClass": "standard",
+			"method": "GET",
+			"guards": [
+				"requirePermission(\"audit:read\")",
+				"withServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "getSession",
+			"file": "src/functions/auth.ts",
+			"line": 14,
+			"layer": "core",
+			"verb": "get",
+			"verbClass": "standard",
+			"method": "GET",
+			"guards": [
+				"sessionMiddleware"
+			],
+			"validator": "none",
+			"handler": "call"
+		},
+		{
+			"name": "getAuthFeatures",
+			"file": "src/functions/auth.ts",
+			"line": 19,
+			"layer": "core",
+			"verb": "get",
+			"verbClass": "standard",
+			"method": "GET",
+			"guards": [],
+			"validator": "none",
+			"handler": "block"
+		},
+		{
+			"name": "ensureAdminAccess",
+			"file": "src/functions/auth.ts",
+			"line": 29,
+			"layer": "core",
+			"verb": "ensure",
+			"verbClass": "domain",
+			"method": "GET",
+			"guards": [
+				"requireAdminAccessMiddleware"
+			],
+			"validator": "none",
+			"handler": "call"
+		},
+		{
+			"name": "listMySessions",
+			"file": "src/functions/auth.ts",
+			"line": 42,
+			"layer": "core",
+			"verb": "list",
+			"verbClass": "standard",
+			"method": "GET",
+			"guards": [
+				"requireUserMiddleware"
+			],
+			"validator": "none",
+			"handler": "block"
+		},
+		{
+			"name": "revokeMySession",
+			"file": "src/functions/auth.ts",
+			"line": 69,
+			"layer": "core",
+			"verb": "revoke",
+			"verbClass": "domain",
+			"method": "POST",
+			"guards": [
+				"requireAccountOwnerMiddleware"
+			],
+			"validator": "zodInput",
+			"handler": "block"
+		},
+		{
+			"name": "getAccountSecurity",
+			"file": "src/functions/auth.ts",
+			"line": 82,
+			"layer": "core",
+			"verb": "get",
+			"verbClass": "standard",
+			"method": "GET",
+			"guards": [
+				"requireUserMiddleware"
+			],
+			"validator": "none",
+			"handler": "block"
+		},
+		{
+			"name": "setMyPassword",
+			"file": "src/functions/auth.ts",
+			"line": 100,
+			"layer": "core",
+			"verb": "set",
+			"verbClass": "standard",
+			"method": "POST",
+			"guards": [
+				"requireAccountOwnerMiddleware"
+			],
+			"validator": "zodInput",
+			"handler": "block"
+		},
+		{
+			"name": "stopImpersonating",
+			"file": "src/functions/auth.ts",
+			"line": 124,
+			"layer": "core",
+			"verb": "stop",
+			"verbClass": "domain",
+			"method": "POST",
+			"guards": [
+				"requireUserMiddleware",
+				"withServices"
+			],
+			"validator": "none",
+			"handler": "block"
+		},
+		{
+			"name": "listChaalBlocks",
+			"file": "src/functions/chaal-admin/blocks.ts",
+			"line": 13,
+			"layer": "chaal",
+			"verb": "list",
+			"verbClass": "standard",
+			"method": "GET",
+			"guards": [
+				"requirePermission(\"chaal:read\")",
+				"withServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "blockChaal",
+			"file": "src/functions/chaal-admin/blocks.ts",
+			"line": 18,
+			"layer": "chaal",
+			"verb": "block",
+			"verbClass": "domain",
+			"method": "POST",
+			"guards": [
+				"requirePermission(\"chaal:moderate\")",
+				"withServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "unblockChaal",
+			"file": "src/functions/chaal-admin/blocks.ts",
+			"line": 23,
+			"layer": "chaal",
+			"verb": "unblock",
+			"verbClass": "domain",
+			"method": "POST",
+			"guards": [
+				"requirePermission(\"chaal:moderate\")",
+				"withServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "listChaalConnections",
+			"file": "src/functions/chaal-admin/connections.ts",
+			"line": 12,
+			"layer": "chaal",
+			"verb": "list",
+			"verbClass": "standard",
+			"method": "GET",
+			"guards": [
+				"requirePermission(\"chaal:read\")",
+				"withServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "revokeChaalConnections",
+			"file": "src/functions/chaal-admin/connections.ts",
+			"line": 17,
+			"layer": "chaal",
+			"verb": "revoke",
+			"verbClass": "domain",
+			"method": "POST",
+			"guards": [
+				"requirePermission(\"chaal:moderate\")",
+				"withServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "getChaalCuration",
+			"file": "src/functions/chaal-admin/curation.ts",
+			"line": 21,
+			"layer": "chaal",
+			"verb": "get",
+			"verbClass": "standard",
+			"method": "GET",
+			"guards": [
+				"requirePermission(\"chaal:read\")",
+				"withServices"
+			],
+			"validator": "none",
+			"handler": "call"
+		},
+		{
+			"name": "createChaalFeatured",
+			"file": "src/functions/chaal-admin/curation.ts",
+			"line": 25,
+			"layer": "chaal",
+			"verb": "create",
+			"verbClass": "standard",
+			"method": "POST",
+			"guards": [
+				"requirePermission(\"chaal:curate\")",
+				"withServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "updateChaalFeatured",
+			"file": "src/functions/chaal-admin/curation.ts",
+			"line": 30,
+			"layer": "chaal",
+			"verb": "update",
+			"verbClass": "standard",
+			"method": "POST",
+			"guards": [
+				"requirePermission(\"chaal:curate\")",
+				"withServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "reorderChaalFeatured",
+			"file": "src/functions/chaal-admin/curation.ts",
+			"line": 35,
+			"layer": "chaal",
+			"verb": "reorder",
+			"verbClass": "standard",
+			"method": "POST",
+			"guards": [
+				"requirePermission(\"chaal:curate\")",
+				"withServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "deleteChaalFeatured",
+			"file": "src/functions/chaal-admin/curation.ts",
+			"line": 40,
+			"layer": "chaal",
+			"verb": "delete",
+			"verbClass": "standard",
+			"method": "POST",
+			"guards": [
+				"requirePermission(\"chaal:curate\")",
+				"withServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "saveChaalHomeSections",
+			"file": "src/functions/chaal-admin/curation.ts",
+			"line": 45,
+			"layer": "chaal",
+			"verb": "save",
+			"verbClass": "folded",
+			"method": "POST",
+			"guards": [
+				"requirePermission(\"chaal:curate\")",
+				"withServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "saveChaalAnnouncement",
+			"file": "src/functions/chaal-admin/curation.ts",
+			"line": 53,
+			"layer": "chaal",
+			"verb": "save",
+			"verbClass": "folded",
+			"method": "POST",
+			"guards": [
+				"requirePermission(\"chaal:curate\")",
+				"withServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "getChaalHealth",
+			"file": "src/functions/chaal-admin/health.ts",
+			"line": 13,
+			"layer": "chaal",
+			"verb": "get",
+			"verbClass": "standard",
+			"method": "GET",
+			"guards": [
+				"requirePermission(\"chaal:read\")",
+				"withServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "pingChaalLichess",
+			"file": "src/functions/chaal-admin/health.ts",
+			"line": 18,
+			"layer": "chaal",
+			"verb": "ping",
+			"verbClass": "domain",
+			"method": "POST",
+			"guards": [
+				"requirePermission(\"chaal:configure\")"
+			],
+			"validator": "none",
+			"handler": "call"
+		},
+		{
+			"name": "getChaalLab",
+			"file": "src/functions/chaal-admin/lab.ts",
+			"line": 8,
+			"layer": "chaal",
+			"verb": "get",
+			"verbClass": "standard",
+			"method": "GET",
+			"guards": [
+				"requirePermission(\"chaal:configure\")"
+			],
+			"validator": "none",
+			"handler": "call"
+		},
+		{
+			"name": "checkChaalPublicLane",
+			"file": "src/functions/chaal-admin/lab.ts",
+			"line": 12,
+			"layer": "chaal",
+			"verb": "check",
+			"verbClass": "domain",
+			"method": "POST",
+			"guards": [
+				"requirePermission(\"chaal:configure\")"
+			],
+			"validator": "none",
+			"handler": "call"
+		},
+		{
+			"name": "getChaalOverview",
+			"file": "src/functions/chaal-admin/overview.ts",
+			"line": 12,
+			"layer": "chaal",
+			"verb": "get",
+			"verbClass": "standard",
+			"method": "GET",
+			"guards": [
+				"requirePermission(\"chaal:read\")",
+				"withServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "getChaalAdminSettings",
+			"file": "src/functions/chaal-admin/settings.ts",
+			"line": 11,
+			"layer": "chaal",
+			"verb": "get",
+			"verbClass": "standard",
+			"method": "GET",
+			"guards": [
+				"requirePermission(\"chaal:read\")",
+				"withServices"
+			],
+			"validator": "none",
+			"handler": "call"
+		},
+		{
+			"name": "updateChaalSettings",
+			"file": "src/functions/chaal-admin/settings.ts",
+			"line": 15,
+			"layer": "chaal",
+			"verb": "update",
+			"verbClass": "standard",
+			"method": "POST",
+			"guards": [
+				"requirePermission(\"chaal:configure\")",
+				"withServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "setChaalMaintenance",
+			"file": "src/functions/chaal-admin/settings.ts",
+			"line": 20,
+			"layer": "chaal",
+			"verb": "set",
+			"verbClass": "standard",
+			"method": "POST",
+			"guards": [
+				"requirePermission(\"chaal:configure\")",
+				"withServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "purgeChaalCache",
+			"file": "src/functions/chaal-admin/settings.ts",
+			"line": 25,
+			"layer": "chaal",
+			"verb": "purge",
+			"verbClass": "standard",
+			"method": "POST",
+			"guards": [
+				"requirePermission(\"chaal:configure\")",
+				"withServices"
+			],
+			"validator": "none",
+			"handler": "call"
+		},
+		{
+			"name": "listChaalAnalyses",
+			"file": "src/functions/chaal/analyses.ts",
+			"line": 16,
+			"layer": "chaal",
+			"verb": "list",
+			"verbClass": "standard",
+			"method": "GET",
+			"guards": [
+				"requireChaalUser",
+				"withChaalServices"
+			],
+			"validator": "none",
+			"handler": "call"
+		},
+		{
+			"name": "getChaalAnalysis",
+			"file": "src/functions/chaal/analyses.ts",
+			"line": 20,
+			"layer": "chaal",
+			"verb": "get",
+			"verbClass": "standard",
+			"method": "GET",
+			"guards": [
+				"requireChaalUser",
+				"withChaalServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "saveChaalAnalysis",
+			"file": "src/functions/chaal/analyses.ts",
+			"line": 25,
+			"layer": "chaal",
+			"verb": "save",
+			"verbClass": "folded",
+			"method": "POST",
+			"guards": [
+				"requireChaalUser",
+				"withChaalServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "deleteChaalAnalysis",
+			"file": "src/functions/chaal/analyses.ts",
+			"line": 32,
+			"layer": "chaal",
+			"verb": "delete",
+			"verbClass": "standard",
+			"method": "POST",
+			"guards": [
+				"requireChaalUser",
+				"withChaalServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "getChaalCloudEval",
+			"file": "src/functions/chaal/analysis.ts",
+			"line": 27,
+			"layer": "chaal",
+			"verb": "get",
+			"verbClass": "standard",
+			"method": "GET",
+			"guards": [
+				"withChaalPublic"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "getChaalExplorer",
+			"file": "src/functions/chaal/analysis.ts",
+			"line": 34,
+			"layer": "chaal",
+			"verb": "get",
+			"verbClass": "standard",
+			"method": "GET",
+			"guards": [
+				"withChaalPublic"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "getChaalTablebase",
+			"file": "src/functions/chaal/analysis.ts",
+			"line": 60,
+			"layer": "chaal",
+			"verb": "get",
+			"verbClass": "standard",
+			"method": "GET",
+			"guards": [
+				"withChaalPublic"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "importChaalGame",
+			"file": "src/functions/chaal/analysis.ts",
+			"line": 65,
+			"layer": "chaal",
+			"verb": "import",
+			"verbClass": "standard",
+			"method": "GET",
+			"guards": [
+				"withChaalPublic"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "getChaalChallenges",
+			"file": "src/functions/chaal/challenges.ts",
+			"line": 28,
+			"layer": "chaal",
+			"verb": "get",
+			"verbClass": "standard",
+			"method": "GET",
+			"guards": [
+				"requireChaalUser",
+				"withChaalServices"
+			],
+			"validator": "none",
+			"handler": "call"
+		},
+		{
+			"name": "challengeChaalPlayer",
+			"file": "src/functions/chaal/challenges.ts",
+			"line": 32,
+			"layer": "chaal",
+			"verb": "challenge",
+			"verbClass": "domain",
+			"method": "POST",
+			"guards": [
+				"requireChaalUser",
+				"withChaalServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "openChaalChallenge",
+			"file": "src/functions/chaal/challenges.ts",
+			"line": 37,
+			"layer": "chaal",
+			"verb": "open",
+			"verbClass": "domain",
+			"method": "POST",
+			"guards": [
+				"requireChaalUser",
+				"withChaalServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "acceptChaalChallenge",
+			"file": "src/functions/chaal/challenges.ts",
+			"line": 42,
+			"layer": "chaal",
+			"verb": "accept",
+			"verbClass": "domain",
+			"method": "POST",
+			"guards": [
+				"requireChaalUser",
+				"withChaalServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "declineChaalChallenge",
+			"file": "src/functions/chaal/challenges.ts",
+			"line": 47,
+			"layer": "chaal",
+			"verb": "decline",
+			"verbClass": "domain",
+			"method": "POST",
+			"guards": [
+				"requireChaalUser",
+				"withChaalServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "cancelChaalChallenge",
+			"file": "src/functions/chaal/challenges.ts",
+			"line": 52,
+			"layer": "chaal",
+			"verb": "cancel",
+			"verbClass": "domain",
+			"method": "POST",
+			"guards": [
+				"requireChaalUser",
+				"withChaalServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "challengeChaalAi",
+			"file": "src/functions/chaal/challenges.ts",
+			"line": 57,
+			"layer": "chaal",
+			"verb": "challenge",
+			"verbClass": "domain",
+			"method": "POST",
+			"guards": [
+				"requireChaalUser",
+				"withChaalServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "seekChaalCorrespondence",
+			"file": "src/functions/chaal/challenges.ts",
+			"line": 63,
+			"layer": "chaal",
+			"verb": "seek",
+			"verbClass": "domain",
+			"method": "POST",
+			"guards": [
+				"requireChaalUser",
+				"withChaalServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "getChaalPlaying",
+			"file": "src/functions/chaal/challenges.ts",
+			"line": 69,
+			"layer": "chaal",
+			"verb": "get",
+			"verbClass": "standard",
+			"method": "GET",
+			"guards": [
+				"requireChaalUser",
+				"withChaalServices"
+			],
+			"validator": "none",
+			"handler": "call"
+		},
+		{
+			"name": "getChaalConnection",
+			"file": "src/functions/chaal/connection.ts",
+			"line": 13,
+			"layer": "chaal",
+			"verb": "get",
+			"verbClass": "standard",
+			"method": "GET",
+			"guards": [
+				"requireChaalUser",
+				"withChaalServices"
+			],
+			"validator": "none",
+			"handler": "call"
+		},
+		{
+			"name": "disconnectChaal",
+			"file": "src/functions/chaal/connection.ts",
+			"line": 17,
+			"layer": "chaal",
+			"verb": "disconnect",
+			"verbClass": "domain",
+			"method": "POST",
+			"guards": [
+				"requireChaalUser",
+				"withChaalServices"
+			],
+			"validator": "none",
+			"handler": "call"
+		},
+		{
+			"name": "getChaalFollowing",
+			"file": "src/functions/chaal/follows.ts",
+			"line": 14,
+			"layer": "chaal",
+			"verb": "get",
+			"verbClass": "standard",
+			"method": "GET",
+			"guards": [
+				"requireChaalUser",
+				"withChaalServices"
+			],
+			"validator": "none",
+			"handler": "call"
+		},
+		{
+			"name": "followChaalPlayer",
+			"file": "src/functions/chaal/follows.ts",
+			"line": 18,
+			"layer": "chaal",
+			"verb": "follow",
+			"verbClass": "domain",
+			"method": "POST",
+			"guards": [
+				"requireChaalUser",
+				"withChaalServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "getChaalHome",
+			"file": "src/functions/chaal/home.ts",
+			"line": 11,
+			"layer": "chaal",
+			"verb": "get",
+			"verbClass": "standard",
+			"method": "GET",
+			"guards": [
+				"withChaalPublic"
+			],
+			"validator": "none",
+			"handler": "call"
+		},
+		{
+			"name": "getChaalLiveGame",
+			"file": "src/functions/chaal/live-game.ts",
+			"line": 21,
+			"layer": "chaal",
+			"verb": "get",
+			"verbClass": "standard",
+			"method": "GET",
+			"guards": [
+				"requireChaalUser",
+				"withChaalServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "playChaalMove",
+			"file": "src/functions/chaal/live-game.ts",
+			"line": 26,
+			"layer": "chaal",
+			"verb": "play",
+			"verbClass": "domain",
+			"method": "POST",
+			"guards": [
+				"requireChaalUser",
+				"withChaalServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "actOnChaalGame",
+			"file": "src/functions/chaal/live-game.ts",
+			"line": 34,
+			"layer": "chaal",
+			"verb": "act",
+			"verbClass": "domain",
+			"method": "POST",
+			"guards": [
+				"requireChaalUser",
+				"withChaalServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "getChaalChat",
+			"file": "src/functions/chaal/live-game.ts",
+			"line": 39,
+			"layer": "chaal",
+			"verb": "get",
+			"verbClass": "standard",
+			"method": "GET",
+			"guards": [
+				"requireChaalUser",
+				"withChaalServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "sendChaalChat",
+			"file": "src/functions/chaal/live-game.ts",
+			"line": 44,
+			"layer": "chaal",
+			"verb": "send",
+			"verbClass": "domain",
+			"method": "POST",
+			"guards": [
+				"requireChaalUser",
+				"withChaalServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "listChaalLocalGames",
+			"file": "src/functions/chaal/local-games.ts",
+			"line": 18,
+			"layer": "chaal",
+			"verb": "list",
+			"verbClass": "standard",
+			"method": "GET",
+			"guards": [
+				"requireChaalUser",
+				"withChaalServices"
+			],
+			"validator": "none",
+			"handler": "call"
+		},
+		{
+			"name": "getChaalLocalGame",
+			"file": "src/functions/chaal/local-games.ts",
+			"line": 22,
+			"layer": "chaal",
+			"verb": "get",
+			"verbClass": "standard",
+			"method": "GET",
+			"guards": [
+				"requireChaalUser",
+				"withChaalServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "saveChaalLocalGame",
+			"file": "src/functions/chaal/local-games.ts",
+			"line": 27,
+			"layer": "chaal",
+			"verb": "save",
+			"verbClass": "folded",
+			"method": "POST",
+			"guards": [
+				"requireChaalUser",
+				"withChaalServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "deleteChaalLocalGame",
+			"file": "src/functions/chaal/local-games.ts",
+			"line": 35,
+			"layer": "chaal",
+			"verb": "delete",
+			"verbClass": "standard",
+			"method": "POST",
+			"guards": [
+				"requireChaalUser",
+				"withChaalServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "importChaalLocalGames",
+			"file": "src/functions/chaal/local-games.ts",
+			"line": 40,
+			"layer": "chaal",
+			"verb": "import",
+			"verbClass": "standard",
+			"method": "POST",
+			"guards": [
+				"requireChaalUser",
+				"withChaalServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "getChaalMyStudies",
+			"file": "src/functions/chaal/my-studies.ts",
+			"line": 14,
+			"layer": "chaal",
+			"verb": "get",
+			"verbClass": "standard",
+			"method": "GET",
+			"guards": [
+				"requireChaalUser",
+				"withChaalServices"
+			],
+			"validator": "none",
+			"handler": "call"
+		},
+		{
+			"name": "saveChaalToStudy",
+			"file": "src/functions/chaal/my-studies.ts",
+			"line": 18,
+			"layer": "chaal",
+			"verb": "save",
+			"verbClass": "folded",
+			"method": "POST",
+			"guards": [
+				"requireChaalUser",
+				"withChaalServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "getChaalLeaderboard",
+			"file": "src/functions/chaal/players.ts",
+			"line": 29,
+			"layer": "chaal",
+			"verb": "get",
+			"verbClass": "standard",
+			"method": "GET",
+			"guards": [
+				"withChaalPublic"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "getChaalPlayer",
+			"file": "src/functions/chaal/players.ts",
+			"line": 34,
+			"layer": "chaal",
+			"verb": "get",
+			"verbClass": "standard",
+			"method": "GET",
+			"guards": [
+				"withChaalPublic"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "getChaalRatingHistory",
+			"file": "src/functions/chaal/players.ts",
+			"line": 41,
+			"layer": "chaal",
+			"verb": "get",
+			"verbClass": "standard",
+			"method": "GET",
+			"guards": [
+				"withChaalPublic"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "getChaalPerfStats",
+			"file": "src/functions/chaal/players.ts",
+			"line": 46,
+			"layer": "chaal",
+			"verb": "get",
+			"verbClass": "standard",
+			"method": "GET",
+			"guards": [
+				"withChaalPublic"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "getChaalActivity",
+			"file": "src/functions/chaal/players.ts",
+			"line": 53,
+			"layer": "chaal",
+			"verb": "get",
+			"verbClass": "standard",
+			"method": "GET",
+			"guards": [
+				"withChaalPublic"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "getChaalPlayerGames",
+			"file": "src/functions/chaal/players.ts",
+			"line": 58,
+			"layer": "chaal",
+			"verb": "get",
+			"verbClass": "standard",
+			"method": "GET",
+			"guards": [
+				"withChaalPublic"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "searchChaalPlayers",
+			"file": "src/functions/chaal/players.ts",
+			"line": 63,
+			"layer": "chaal",
+			"verb": "search",
+			"verbClass": "standard",
+			"method": "GET",
+			"guards": [
+				"withChaalPublic"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "getChaalReplay",
+			"file": "src/functions/chaal/players.ts",
+			"line": 68,
+			"layer": "chaal",
+			"verb": "get",
+			"verbClass": "standard",
+			"method": "GET",
+			"guards": [
+				"withChaalPublic"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "getChaalPreferences",
+			"file": "src/functions/chaal/preferences.ts",
+			"line": 15,
+			"layer": "chaal",
+			"verb": "get",
+			"verbClass": "standard",
+			"method": "GET",
+			"guards": [
+				"requireChaalUser",
+				"withChaalServices"
+			],
+			"validator": "none",
+			"handler": "call"
+		},
+		{
+			"name": "saveChaalPreferences",
+			"file": "src/functions/chaal/preferences.ts",
+			"line": 19,
+			"layer": "chaal",
+			"verb": "save",
+			"verbClass": "folded",
+			"method": "POST",
+			"guards": [
+				"requireChaalUser",
+				"withChaalServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "importChaalPreferences",
+			"file": "src/functions/chaal/preferences.ts",
+			"line": 27,
+			"layer": "chaal",
+			"verb": "import",
+			"verbClass": "standard",
+			"method": "POST",
+			"guards": [
+				"requireChaalUser",
+				"withChaalServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "recordChaalPuzzleAttempt",
+			"file": "src/functions/chaal/puzzle-attempts.ts",
+			"line": 21,
+			"layer": "chaal",
+			"verb": "record",
+			"verbClass": "domain",
+			"method": "POST",
+			"guards": [
+				"requireChaalUser",
+				"withChaalServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "importChaalPuzzleAttempts",
+			"file": "src/functions/chaal/puzzle-attempts.ts",
+			"line": 29,
+			"layer": "chaal",
+			"verb": "import",
+			"verbClass": "standard",
+			"method": "POST",
+			"guards": [
+				"requireChaalUser",
+				"withChaalServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "getChaalPuzzleProgress",
+			"file": "src/functions/chaal/puzzle-attempts.ts",
+			"line": 37,
+			"layer": "chaal",
+			"verb": "get",
+			"verbClass": "standard",
+			"method": "GET",
+			"guards": [
+				"requireChaalUser",
+				"withChaalServices"
+			],
+			"validator": "none",
+			"handler": "call"
+		},
+		{
+			"name": "getChaalPuzzleReplay",
+			"file": "src/functions/chaal/puzzle-attempts.ts",
+			"line": 41,
+			"layer": "chaal",
+			"verb": "get",
+			"verbClass": "standard",
+			"method": "GET",
+			"guards": [
+				"requireChaalUser",
+				"withChaalServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "getChaalDailyPuzzle",
+			"file": "src/functions/chaal/puzzles.ts",
+			"line": 19,
+			"layer": "chaal",
+			"verb": "get",
+			"verbClass": "standard",
+			"method": "GET",
+			"guards": [
+				"withChaalPublic"
+			],
+			"validator": "none",
+			"handler": "call"
+		},
+		{
+			"name": "getChaalPuzzle",
+			"file": "src/functions/chaal/puzzles.ts",
+			"line": 23,
+			"layer": "chaal",
+			"verb": "get",
+			"verbClass": "standard",
+			"method": "GET",
+			"guards": [
+				"withChaalPublic"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "getChaalPuzzleBatch",
+			"file": "src/functions/chaal/puzzles.ts",
+			"line": 28,
+			"layer": "chaal",
+			"verb": "get",
+			"verbClass": "standard",
+			"method": "GET",
+			"guards": [
+				"withChaalPublic"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "getChaalStatus",
+			"file": "src/functions/chaal/status.ts",
+			"line": 11,
+			"layer": "chaal",
+			"verb": "get",
+			"verbClass": "standard",
+			"method": "GET",
+			"guards": [
+				"withChaalPublic"
+			],
+			"validator": "none",
+			"handler": "call"
+		},
+		{
+			"name": "getChaalStudiesBy",
+			"file": "src/functions/chaal/studies.ts",
+			"line": 20,
+			"layer": "chaal",
+			"verb": "get",
+			"verbClass": "standard",
+			"method": "GET",
+			"guards": [
+				"withChaalPublic"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "getChaalStudy",
+			"file": "src/functions/chaal/studies.ts",
+			"line": 25,
+			"layer": "chaal",
+			"verb": "get",
+			"verbClass": "standard",
+			"method": "GET",
+			"guards": [
+				"withChaalPublic"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "getChaalStudyChapter",
+			"file": "src/functions/chaal/studies.ts",
+			"line": 30,
+			"layer": "chaal",
+			"verb": "get",
+			"verbClass": "standard",
+			"method": "GET",
+			"guards": [
+				"withChaalPublic"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "getChaalMyTeams",
+			"file": "src/functions/chaal/team-membership.ts",
+			"line": 14,
+			"layer": "chaal",
+			"verb": "get",
+			"verbClass": "standard",
+			"method": "GET",
+			"guards": [
+				"requireChaalUser",
+				"withChaalServices"
+			],
+			"validator": "none",
+			"handler": "call"
+		},
+		{
+			"name": "joinChaalTeam",
+			"file": "src/functions/chaal/team-membership.ts",
+			"line": 18,
+			"layer": "chaal",
+			"verb": "join",
+			"verbClass": "domain",
+			"method": "POST",
+			"guards": [
+				"requireChaalUser",
+				"withChaalServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "leaveChaalTeam",
+			"file": "src/functions/chaal/team-membership.ts",
+			"line": 23,
+			"layer": "chaal",
+			"verb": "leave",
+			"verbClass": "domain",
+			"method": "POST",
+			"guards": [
+				"requireChaalUser",
+				"withChaalServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "getChaalTeams",
+			"file": "src/functions/chaal/teams.ts",
+			"line": 19,
+			"layer": "chaal",
+			"verb": "get",
+			"verbClass": "standard",
+			"method": "GET",
+			"guards": [
+				"withChaalPublic"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "searchChaalTeams",
+			"file": "src/functions/chaal/teams.ts",
+			"line": 24,
+			"layer": "chaal",
+			"verb": "search",
+			"verbClass": "standard",
+			"method": "GET",
+			"guards": [
+				"withChaalPublic"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "getChaalTeam",
+			"file": "src/functions/chaal/teams.ts",
+			"line": 29,
+			"layer": "chaal",
+			"verb": "get",
+			"verbClass": "standard",
+			"method": "GET",
+			"guards": [
+				"withChaalPublic"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "joinChaalTournament",
+			"file": "src/functions/chaal/tournament-entry.ts",
+			"line": 14,
+			"layer": "chaal",
+			"verb": "join",
+			"verbClass": "domain",
+			"method": "POST",
+			"guards": [
+				"requireChaalUser",
+				"withChaalServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "withdrawChaalTournament",
+			"file": "src/functions/chaal/tournament-entry.ts",
+			"line": 19,
+			"layer": "chaal",
+			"verb": "withdraw",
+			"verbClass": "domain",
+			"method": "POST",
+			"guards": [
+				"requireChaalUser",
+				"withChaalServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "getChaalTournaments",
+			"file": "src/functions/chaal/tournaments.ts",
+			"line": 20,
+			"layer": "chaal",
+			"verb": "get",
+			"verbClass": "standard",
+			"method": "GET",
+			"guards": [
+				"withChaalPublic"
+			],
+			"validator": "none",
+			"handler": "call"
+		},
+		{
+			"name": "getChaalArena",
+			"file": "src/functions/chaal/tournaments.ts",
+			"line": 24,
+			"layer": "chaal",
+			"verb": "get",
+			"verbClass": "standard",
+			"method": "GET",
+			"guards": [
+				"withChaalPublic"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "getChaalSwiss",
+			"file": "src/functions/chaal/tournaments.ts",
+			"line": 32,
+			"layer": "chaal",
+			"verb": "get",
+			"verbClass": "standard",
+			"method": "GET",
+			"guards": [
+				"withChaalPublic"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "getChaalTv",
+			"file": "src/functions/chaal/watch.ts",
+			"line": 28,
+			"layer": "chaal",
+			"verb": "get",
+			"verbClass": "standard",
+			"method": "GET",
+			"guards": [
+				"withChaalPublic"
+			],
+			"validator": "none",
+			"handler": "call"
+		},
+		{
+			"name": "getChaalStreamers",
+			"file": "src/functions/chaal/watch.ts",
+			"line": 32,
+			"layer": "chaal",
+			"verb": "get",
+			"verbClass": "standard",
+			"method": "GET",
+			"guards": [
+				"withChaalPublic"
+			],
+			"validator": "none",
+			"handler": "call"
+		},
+		{
+			"name": "getChaalBroadcasts",
+			"file": "src/functions/chaal/watch.ts",
+			"line": 36,
+			"layer": "chaal",
+			"verb": "get",
+			"verbClass": "standard",
+			"method": "GET",
+			"guards": [
+				"withChaalPublic"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "getChaalOfficialBroadcasts",
+			"file": "src/functions/chaal/watch.ts",
+			"line": 41,
+			"layer": "chaal",
+			"verb": "get",
+			"verbClass": "standard",
+			"method": "GET",
+			"guards": [
+				"withChaalPublic"
+			],
+			"validator": "none",
+			"handler": "call"
+		},
+		{
+			"name": "searchChaalBroadcasts",
+			"file": "src/functions/chaal/watch.ts",
+			"line": 45,
+			"layer": "chaal",
+			"verb": "search",
+			"verbClass": "standard",
+			"method": "GET",
+			"guards": [
+				"withChaalPublic"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "getChaalBroadcastTour",
+			"file": "src/functions/chaal/watch.ts",
+			"line": 52,
+			"layer": "chaal",
+			"verb": "get",
+			"verbClass": "standard",
+			"method": "GET",
+			"guards": [
+				"withChaalPublic"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "getChaalBroadcastRound",
+			"file": "src/functions/chaal/watch.ts",
+			"line": 57,
+			"layer": "chaal",
+			"verb": "get",
+			"verbClass": "standard",
+			"method": "GET",
+			"guards": [
+				"withChaalPublic"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "getChaalBroadcastGame",
+			"file": "src/functions/chaal/watch.ts",
+			"line": 62,
+			"layer": "chaal",
+			"verb": "get",
+			"verbClass": "standard",
+			"method": "GET",
+			"guards": [
+				"withChaalPublic"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "previewRichText",
+			"file": "src/functions/dev.ts",
+			"line": 11,
+			"layer": "dev",
+			"verb": "preview",
+			"verbClass": "domain",
+			"method": "POST",
+			"guards": [
+				"devOnlyMiddleware"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "exampleReadItems",
+			"file": "src/functions/examples-permissions.ts",
+			"line": 11,
+			"layer": "dev",
+			"verb": "example",
+			"verbClass": "domain",
+			"method": "POST",
+			"guards": [
+				"requirePermission(\"test-crud:read\")"
+			],
+			"validator": "none",
+			"handler": "block"
+		},
+		{
+			"name": "exampleManageRoles",
+			"file": "src/functions/examples-permissions.ts",
+			"line": 18,
+			"layer": "dev",
+			"verb": "example",
+			"verbClass": "domain",
+			"method": "POST",
+			"guards": [
+				"requirePermission(\"roles:manage\")"
+			],
+			"validator": "none",
+			"handler": "block"
+		},
+		{
+			"name": "getExampleSnapshot",
+			"file": "src/functions/examples.ts",
+			"line": 37,
+			"layer": "dev",
+			"verb": "get",
+			"verbClass": "standard",
+			"method": "GET",
+			"guards": [
+				"devOnlyMiddleware"
+			],
+			"validator": "none",
+			"handler": "call"
+		},
+		{
+			"name": "getSlowExample",
+			"file": "src/functions/examples.ts",
+			"line": 42,
+			"layer": "dev",
+			"verb": "get",
+			"verbClass": "standard",
+			"method": "GET",
+			"guards": [
+				"devOnlyMiddleware"
+			],
+			"validator": "none",
+			"handler": "block"
+		},
+		{
+			"name": "listExampleTasks",
+			"file": "src/functions/examples.ts",
+			"line": 50,
+			"layer": "dev",
+			"verb": "list",
+			"verbClass": "standard",
+			"method": "GET",
+			"guards": [
+				"devOnlyMiddleware"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "getExampleTask",
+			"file": "src/functions/examples.ts",
+			"line": 56,
+			"layer": "dev",
+			"verb": "get",
+			"verbClass": "standard",
+			"method": "GET",
+			"guards": [
+				"devOnlyMiddleware"
+			],
+			"validator": "zodInput",
+			"handler": "block"
+		},
+		{
+			"name": "setExampleTasksDone",
+			"file": "src/functions/examples.ts",
+			"line": 66,
+			"layer": "dev",
+			"verb": "set",
+			"verbClass": "standard",
+			"method": "POST",
+			"guards": [
+				"devOnlyMiddleware"
+			],
+			"validator": "zodInput",
+			"handler": "block"
+		},
+		{
+			"name": "deleteExampleTasks",
+			"file": "src/functions/examples.ts",
+			"line": 75,
+			"layer": "dev",
+			"verb": "delete",
+			"verbClass": "standard",
+			"method": "POST",
+			"guards": [
+				"devOnlyMiddleware"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "resetExampleTasks",
+			"file": "src/functions/examples.ts",
+			"line": 80,
+			"layer": "dev",
+			"verb": "reset",
+			"verbClass": "domain",
+			"method": "POST",
+			"guards": [
+				"devOnlyMiddleware"
+			],
+			"validator": "none",
+			"handler": "block"
+		},
+		{
+			"name": "submitExampleSignup",
+			"file": "src/functions/examples.ts",
+			"line": 88,
+			"layer": "dev",
+			"verb": "submit",
+			"verbClass": "domain",
+			"method": "POST",
+			"guards": [
+				"devOnlyMiddleware"
+			],
+			"validator": "zodInput",
+			"handler": "block"
+		},
+		{
+			"name": "failExample",
+			"file": "src/functions/examples.ts",
+			"line": 101,
+			"layer": "dev",
+			"verb": "fail",
+			"verbClass": "domain",
+			"method": "POST",
+			"guards": [
+				"devOnlyMiddleware"
+			],
+			"validator": "zodInput",
+			"handler": "block"
+		},
+		{
+			"name": "listExampleMessages",
+			"file": "src/functions/examples.ts",
+			"line": 111,
+			"layer": "dev",
+			"verb": "list",
+			"verbClass": "standard",
+			"method": "GET",
+			"guards": [
+				"devOnlyMiddleware"
+			],
+			"validator": "none",
+			"handler": "call"
+		},
+		{
+			"name": "sendExampleMessage",
+			"file": "src/functions/examples.ts",
+			"line": 116,
+			"layer": "dev",
+			"verb": "send",
+			"verbClass": "domain",
+			"method": "POST",
+			"guards": [
+				"devOnlyMiddleware"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "resetExampleMessages",
+			"file": "src/functions/examples.ts",
+			"line": 121,
+			"layer": "dev",
+			"verb": "reset",
+			"verbClass": "domain",
+			"method": "POST",
+			"guards": [
+				"devOnlyMiddleware"
+			],
+			"validator": "none",
+			"handler": "block"
+		},
+		{
+			"name": "submitExampleContact",
+			"file": "src/functions/examples.ts",
+			"line": 129,
+			"layer": "dev",
+			"verb": "submit",
+			"verbClass": "domain",
+			"method": "POST",
+			"guards": [
+				"devOnlyMiddleware"
+			],
+			"validator": "zodInput",
+			"handler": "block"
+		},
+		{
+			"name": "runExampleJobFn",
+			"file": "src/functions/examples.ts",
+			"line": 142,
+			"layer": "dev",
+			"verb": "run",
+			"verbClass": "domain",
+			"method": "POST",
+			"guards": [
+				"devOnlyMiddleware"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "getHomeFlags",
+			"file": "src/functions/feature-flags.ts",
+			"line": 15,
+			"layer": "core",
+			"verb": "get",
+			"verbClass": "standard",
+			"method": "GET",
+			"guards": [],
+			"validator": "none",
+			"handler": "call"
+		},
+		{
+			"name": "claimGuestData",
+			"file": "src/functions/guests.ts",
+			"line": 17,
+			"layer": "apps",
+			"verb": "claim",
+			"verbClass": "domain",
+			"method": "POST",
+			"guards": [
+				"requireUserMiddleware"
+			],
+			"validator": "none",
+			"handler": "block"
+		},
+		{
+			"name": "getDbHealth",
+			"file": "src/functions/health.ts",
+			"line": 9,
+			"layer": "core",
+			"verb": "get",
+			"verbClass": "standard",
+			"method": "GET",
+			"guards": [],
+			"validator": "none",
+			"handler": "call"
+		},
+		{
+			"name": "getKharchaOverview",
+			"file": "src/functions/kharcha-admin/overview.ts",
+			"line": 9,
+			"layer": "kharcha",
+			"verb": "get",
+			"verbClass": "standard",
+			"method": "GET",
+			"guards": [
+				"requirePermission(\"kharcha:read\")",
+				"withServices"
+			],
+			"validator": "none",
+			"handler": "call"
+		},
+		{
+			"name": "listKharchaSenders",
+			"file": "src/functions/kharcha-admin/senders.ts",
+			"line": 10,
+			"layer": "kharcha",
+			"verb": "list",
+			"verbClass": "standard",
+			"method": "GET",
+			"guards": [
+				"requirePermission(\"kharcha:read\")",
+				"withServices"
+			],
+			"validator": "none",
+			"handler": "call"
+		},
+		{
+			"name": "suspendKharchaSender",
+			"file": "src/functions/kharcha-admin/senders.ts",
+			"line": 14,
+			"layer": "kharcha",
+			"verb": "suspend",
+			"verbClass": "domain",
+			"method": "POST",
+			"guards": [
+				"requirePermission(\"kharcha:configure\")",
+				"withServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "getKharchaAdminSettings",
+			"file": "src/functions/kharcha-admin/settings.ts",
+			"line": 10,
+			"layer": "kharcha",
+			"verb": "get",
+			"verbClass": "standard",
+			"method": "GET",
+			"guards": [
+				"requirePermission(\"kharcha:read\")",
+				"withServices"
+			],
+			"validator": "none",
+			"handler": "call"
+		},
+		{
+			"name": "updateKharchaSettings",
+			"file": "src/functions/kharcha-admin/settings.ts",
+			"line": 14,
+			"layer": "kharcha",
+			"verb": "update",
+			"verbClass": "standard",
+			"method": "POST",
+			"guards": [
+				"requirePermission(\"kharcha:configure\")",
+				"withServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "listKharchaBudgets",
+			"file": "src/functions/kharcha/budgets.ts",
+			"line": 20,
+			"layer": "kharcha",
+			"verb": "list",
+			"verbClass": "standard",
+			"method": "GET",
+			"guards": [
+				"requireKharchaUser",
+				"withKharchaServices"
+			],
+			"validator": "none",
+			"handler": "call"
+		},
+		{
+			"name": "createKharchaBudget",
+			"file": "src/functions/kharcha/budgets.ts",
+			"line": 24,
+			"layer": "kharcha",
+			"verb": "create",
+			"verbClass": "standard",
+			"method": "POST",
+			"guards": [
+				"requireKharchaUser",
+				"withKharchaServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "updateKharchaBudget",
+			"file": "src/functions/kharcha/budgets.ts",
+			"line": 29,
+			"layer": "kharcha",
+			"verb": "update",
+			"verbClass": "standard",
+			"method": "POST",
+			"guards": [
+				"requireKharchaUser",
+				"withKharchaServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "setKharchaBudgetMonth",
+			"file": "src/functions/kharcha/budgets.ts",
+			"line": 35,
+			"layer": "kharcha",
+			"verb": "set",
+			"verbClass": "standard",
+			"method": "POST",
+			"guards": [
+				"requireKharchaUser",
+				"withKharchaServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "deleteKharchaBudget",
+			"file": "src/functions/kharcha/budgets.ts",
+			"line": 40,
+			"layer": "kharcha",
+			"verb": "delete",
+			"verbClass": "standard",
+			"method": "POST",
+			"guards": [
+				"requireKharchaUser",
+				"withKharchaServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "createKharchaComment",
+			"file": "src/functions/kharcha/conversations.ts",
+			"line": 25,
+			"layer": "kharcha",
+			"verb": "create",
+			"verbClass": "standard",
+			"method": "POST",
+			"guards": [
+				"requireKharchaUser",
+				"withKharchaServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "updateKharchaComment",
+			"file": "src/functions/kharcha/conversations.ts",
+			"line": 30,
+			"layer": "kharcha",
+			"verb": "update",
+			"verbClass": "standard",
+			"method": "POST",
+			"guards": [
+				"requireKharchaUser",
+				"withKharchaServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "deleteKharchaComment",
+			"file": "src/functions/kharcha/conversations.ts",
+			"line": 35,
+			"layer": "kharcha",
+			"verb": "delete",
+			"verbClass": "standard",
+			"method": "POST",
+			"guards": [
+				"requireKharchaUser",
+				"withKharchaServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "reactKharchaComment",
+			"file": "src/functions/kharcha/conversations.ts",
+			"line": 40,
+			"layer": "kharcha",
+			"verb": "react",
+			"verbClass": "domain",
+			"method": "POST",
+			"guards": [
+				"requireKharchaUser",
+				"withKharchaServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "markKharchaThreadRead",
+			"file": "src/functions/kharcha/conversations.ts",
+			"line": 46,
+			"layer": "kharcha",
+			"verb": "mark",
+			"verbClass": "folded",
+			"method": "POST",
+			"guards": [
+				"requireKharchaUser",
+				"withKharchaServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "markKharchaNotificationsRead",
+			"file": "src/functions/kharcha/conversations.ts",
+			"line": 51,
+			"layer": "kharcha",
+			"verb": "mark",
+			"verbClass": "folded",
+			"method": "POST",
+			"guards": [
+				"requireKharchaUser",
+				"withKharchaServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "updateKharchaNotifySettings",
+			"file": "src/functions/kharcha/conversations.ts",
+			"line": 57,
+			"layer": "kharcha",
+			"verb": "update",
+			"verbClass": "standard",
+			"method": "POST",
+			"guards": [
+				"requireKharchaUser",
+				"withKharchaServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "setKharchaFocus",
+			"file": "src/functions/kharcha/conversations.ts",
+			"line": 63,
+			"layer": "kharcha",
+			"verb": "set",
+			"verbClass": "standard",
+			"method": "POST",
+			"guards": [
+				"requireKharchaUser",
+				"withKharchaServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "getKharchaExpense",
+			"file": "src/functions/kharcha/expenses.ts",
+			"line": 17,
+			"layer": "kharcha",
+			"verb": "get",
+			"verbClass": "standard",
+			"method": "GET",
+			"guards": [
+				"requireKharchaUser",
+				"withKharchaServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "createKharchaExpense",
+			"file": "src/functions/kharcha/expenses.ts",
+			"line": 22,
+			"layer": "kharcha",
+			"verb": "create",
+			"verbClass": "standard",
+			"method": "POST",
+			"guards": [
+				"requireKharchaUser",
+				"withKharchaServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "updateKharchaExpense",
+			"file": "src/functions/kharcha/expenses.ts",
+			"line": 27,
+			"layer": "kharcha",
+			"verb": "update",
+			"verbClass": "standard",
+			"method": "POST",
+			"guards": [
+				"requireKharchaUser",
+				"withKharchaServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "deleteKharchaExpense",
+			"file": "src/functions/kharcha/expenses.ts",
+			"line": 33,
+			"layer": "kharcha",
+			"verb": "delete",
+			"verbClass": "standard",
+			"method": "POST",
+			"guards": [
+				"requireKharchaUser",
+				"withKharchaServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "restoreKharchaExpense",
+			"file": "src/functions/kharcha/expenses.ts",
+			"line": 38,
+			"layer": "kharcha",
+			"verb": "restore",
+			"verbClass": "standard",
+			"method": "POST",
+			"guards": [
+				"requireKharchaUser",
+				"withKharchaServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "markKharchaDuplicate",
+			"file": "src/functions/kharcha/expenses.ts",
+			"line": 44,
+			"layer": "kharcha",
+			"verb": "mark",
+			"verbClass": "folded",
+			"method": "POST",
+			"guards": [
+				"requireKharchaUser",
+				"withKharchaServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "listKharchaSpend",
+			"file": "src/functions/kharcha/expenses.ts",
+			"line": 50,
+			"layer": "kharcha",
+			"verb": "list",
+			"verbClass": "standard",
+			"method": "GET",
+			"guards": [
+				"requireKharchaUser",
+				"withKharchaServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "getKharchaMerchants",
+			"file": "src/functions/kharcha/expenses.ts",
+			"line": 56,
+			"layer": "kharcha",
+			"verb": "get",
+			"verbClass": "standard",
+			"method": "GET",
+			"guards": [
+				"requireKharchaUser",
+				"withKharchaServices"
+			],
+			"validator": "none",
+			"handler": "call"
+		},
+		{
+			"name": "listKharchaFriends",
+			"file": "src/functions/kharcha/friends.ts",
+			"line": 14,
+			"layer": "kharcha",
+			"verb": "list",
+			"verbClass": "standard",
+			"method": "GET",
+			"guards": [
+				"requireKharchaUser",
+				"withKharchaServices"
+			],
+			"validator": "none",
+			"handler": "call"
+		},
+		{
+			"name": "addKharchaFriend",
+			"file": "src/functions/kharcha/friends.ts",
+			"line": 18,
+			"layer": "kharcha",
+			"verb": "add",
+			"verbClass": "standard",
+			"method": "POST",
+			"guards": [
+				"requireKharchaUser",
+				"withKharchaServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "updateKharchaFriend",
+			"file": "src/functions/kharcha/friends.ts",
+			"line": 23,
+			"layer": "kharcha",
+			"verb": "update",
+			"verbClass": "standard",
+			"method": "POST",
+			"guards": [
+				"requireKharchaUser",
+				"withKharchaServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "setKharchaFriendEmail",
+			"file": "src/functions/kharcha/friends.ts",
+			"line": 28,
+			"layer": "kharcha",
+			"verb": "set",
+			"verbClass": "standard",
+			"method": "POST",
+			"guards": [
+				"requireKharchaUser",
+				"withKharchaServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "listKharchaGroups",
+			"file": "src/functions/kharcha/groups.ts",
+			"line": 22,
+			"layer": "kharcha",
+			"verb": "list",
+			"verbClass": "standard",
+			"method": "GET",
+			"guards": [
+				"requireKharchaUser",
+				"withKharchaServices"
+			],
+			"validator": "none",
+			"handler": "call"
+		},
+		{
+			"name": "getKharchaGroup",
+			"file": "src/functions/kharcha/groups.ts",
+			"line": 26,
+			"layer": "kharcha",
+			"verb": "get",
+			"verbClass": "standard",
+			"method": "GET",
+			"guards": [
+				"requireKharchaUser",
+				"withKharchaServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "createKharchaGroup",
+			"file": "src/functions/kharcha/groups.ts",
+			"line": 31,
+			"layer": "kharcha",
+			"verb": "create",
+			"verbClass": "standard",
+			"method": "POST",
+			"guards": [
+				"requireKharchaUser",
+				"withKharchaServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "updateKharchaGroup",
+			"file": "src/functions/kharcha/groups.ts",
+			"line": 36,
+			"layer": "kharcha",
+			"verb": "update",
+			"verbClass": "standard",
+			"method": "POST",
+			"guards": [
+				"requireKharchaUser",
+				"withKharchaServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "archiveKharchaGroup",
+			"file": "src/functions/kharcha/groups.ts",
+			"line": 41,
+			"layer": "kharcha",
+			"verb": "archive",
+			"verbClass": "domain",
+			"method": "POST",
+			"guards": [
+				"requireKharchaUser",
+				"withKharchaServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "addKharchaGroupMember",
+			"file": "src/functions/kharcha/groups.ts",
+			"line": 46,
+			"layer": "kharcha",
+			"verb": "add",
+			"verbClass": "standard",
+			"method": "POST",
+			"guards": [
+				"requireKharchaUser",
+				"withKharchaServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "addKharchaNewGroupMember",
+			"file": "src/functions/kharcha/groups.ts",
+			"line": 51,
+			"layer": "kharcha",
+			"verb": "add",
+			"verbClass": "standard",
+			"method": "POST",
+			"guards": [
+				"requireKharchaUser",
+				"withKharchaServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "removeKharchaGroupMember",
+			"file": "src/functions/kharcha/groups.ts",
+			"line": 56,
+			"layer": "kharcha",
+			"verb": "remove",
+			"verbClass": "standard",
+			"method": "POST",
+			"guards": [
+				"requireKharchaUser",
+				"withKharchaServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "leaveKharchaGroup",
+			"file": "src/functions/kharcha/groups.ts",
+			"line": 61,
+			"layer": "kharcha",
+			"verb": "leave",
+			"verbClass": "domain",
+			"method": "POST",
+			"guards": [
+				"requireKharchaUser",
+				"withKharchaServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "getKharchaGroupTotals",
+			"file": "src/functions/kharcha/groups.ts",
+			"line": 67,
+			"layer": "kharcha",
+			"verb": "get",
+			"verbClass": "standard",
+			"method": "GET",
+			"guards": [
+				"requireKharchaUser",
+				"withKharchaServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "getKharchaInsightsOverview",
+			"file": "src/functions/kharcha/insights.ts",
+			"line": 13,
+			"layer": "kharcha",
+			"verb": "get",
+			"verbClass": "standard",
+			"method": "GET",
+			"guards": [
+				"requireKharchaUser",
+				"withKharchaServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "getKharchaInsightsTrends",
+			"file": "src/functions/kharcha/insights.ts",
+			"line": 18,
+			"layer": "kharcha",
+			"verb": "get",
+			"verbClass": "standard",
+			"method": "GET",
+			"guards": [
+				"requireKharchaUser",
+				"withKharchaServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "getKharchaStatement",
+			"file": "src/functions/kharcha/insights.ts",
+			"line": 23,
+			"layer": "kharcha",
+			"verb": "get",
+			"verbClass": "standard",
+			"method": "GET",
+			"guards": [
+				"requireKharchaUser",
+				"withKharchaServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "inviteKharchaFriend",
+			"file": "src/functions/kharcha/invites.ts",
+			"line": 15,
+			"layer": "kharcha",
+			"verb": "invite",
+			"verbClass": "domain",
+			"method": "POST",
+			"guards": [
+				"requireKharchaUser",
+				"withKharchaServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "acceptKharchaInvite",
+			"file": "src/functions/kharcha/invites.ts",
+			"line": 20,
+			"layer": "kharcha",
+			"verb": "accept",
+			"verbClass": "domain",
+			"method": "POST",
+			"guards": [
+				"requireKharchaUser",
+				"withKharchaServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "getKharchaInvite",
+			"file": "src/functions/kharcha/join.ts",
+			"line": 15,
+			"layer": "kharcha",
+			"verb": "get",
+			"verbClass": "standard",
+			"method": "GET",
+			"guards": [
+				"withPublicServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "getKharchaLists",
+			"file": "src/functions/kharcha/lists.ts",
+			"line": 25,
+			"layer": "kharcha",
+			"verb": "get",
+			"verbClass": "standard",
+			"method": "GET",
+			"guards": [
+				"requireKharchaUser",
+				"withKharchaServices"
+			],
+			"validator": "none",
+			"handler": "call"
+		},
+		{
+			"name": "createKharchaCategory",
+			"file": "src/functions/kharcha/lists.ts",
+			"line": 29,
+			"layer": "kharcha",
+			"verb": "create",
+			"verbClass": "standard",
+			"method": "POST",
+			"guards": [
+				"requireKharchaUser",
+				"withKharchaServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "updateKharchaCategory",
+			"file": "src/functions/kharcha/lists.ts",
+			"line": 34,
+			"layer": "kharcha",
+			"verb": "update",
+			"verbClass": "standard",
+			"method": "POST",
+			"guards": [
+				"requireKharchaUser",
+				"withKharchaServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "deleteKharchaCategory",
+			"file": "src/functions/kharcha/lists.ts",
+			"line": 40,
+			"layer": "kharcha",
+			"verb": "delete",
+			"verbClass": "standard",
+			"method": "POST",
+			"guards": [
+				"requireKharchaUser",
+				"withKharchaServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "reorderKharchaCategories",
+			"file": "src/functions/kharcha/lists.ts",
+			"line": 45,
+			"layer": "kharcha",
+			"verb": "reorder",
+			"verbClass": "standard",
+			"method": "POST",
+			"guards": [
+				"requireKharchaUser",
+				"withKharchaServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "createKharchaTag",
+			"file": "src/functions/kharcha/lists.ts",
+			"line": 50,
+			"layer": "kharcha",
+			"verb": "create",
+			"verbClass": "standard",
+			"method": "POST",
+			"guards": [
+				"requireKharchaUser",
+				"withKharchaServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "updateKharchaTag",
+			"file": "src/functions/kharcha/lists.ts",
+			"line": 55,
+			"layer": "kharcha",
+			"verb": "update",
+			"verbClass": "standard",
+			"method": "POST",
+			"guards": [
+				"requireKharchaUser",
+				"withKharchaServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "deleteKharchaTag",
+			"file": "src/functions/kharcha/lists.ts",
+			"line": 60,
+			"layer": "kharcha",
+			"verb": "delete",
+			"verbClass": "standard",
+			"method": "POST",
+			"guards": [
+				"requireKharchaUser",
+				"withKharchaServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "createKharchaMethod",
+			"file": "src/functions/kharcha/lists.ts",
+			"line": 65,
+			"layer": "kharcha",
+			"verb": "create",
+			"verbClass": "standard",
+			"method": "POST",
+			"guards": [
+				"requireKharchaUser",
+				"withKharchaServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "updateKharchaMethod",
+			"file": "src/functions/kharcha/lists.ts",
+			"line": 70,
+			"layer": "kharcha",
+			"verb": "update",
+			"verbClass": "standard",
+			"method": "POST",
+			"guards": [
+				"requireKharchaUser",
+				"withKharchaServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "deleteKharchaMethod",
+			"file": "src/functions/kharcha/lists.ts",
+			"line": 75,
+			"layer": "kharcha",
+			"verb": "delete",
+			"verbClass": "standard",
+			"method": "POST",
+			"guards": [
+				"requireKharchaUser",
+				"withKharchaServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "reorderKharchaMethods",
+			"file": "src/functions/kharcha/lists.ts",
+			"line": 80,
+			"layer": "kharcha",
+			"verb": "reorder",
+			"verbClass": "standard",
+			"method": "POST",
+			"guards": [
+				"requireKharchaUser",
+				"withKharchaServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "createKharchaRule",
+			"file": "src/functions/kharcha/lists.ts",
+			"line": 85,
+			"layer": "kharcha",
+			"verb": "create",
+			"verbClass": "standard",
+			"method": "POST",
+			"guards": [
+				"requireKharchaUser",
+				"withKharchaServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "updateKharchaRule",
+			"file": "src/functions/kharcha/lists.ts",
+			"line": 90,
+			"layer": "kharcha",
+			"verb": "update",
+			"verbClass": "standard",
+			"method": "POST",
+			"guards": [
+				"requireKharchaUser",
+				"withKharchaServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "deleteKharchaRule",
+			"file": "src/functions/kharcha/lists.ts",
+			"line": 95,
+			"layer": "kharcha",
+			"verb": "delete",
+			"verbClass": "standard",
+			"method": "POST",
+			"guards": [
+				"requireKharchaUser",
+				"withKharchaServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "reorderKharchaRules",
+			"file": "src/functions/kharcha/lists.ts",
+			"line": 100,
+			"layer": "kharcha",
+			"verb": "reorder",
+			"verbClass": "standard",
+			"method": "POST",
+			"guards": [
+				"requireKharchaUser",
+				"withKharchaServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "getKharchaMe",
+			"file": "src/functions/kharcha/me.ts",
+			"line": 14,
+			"layer": "kharcha",
+			"verb": "get",
+			"verbClass": "standard",
+			"method": "GET",
+			"guards": [
+				"requireKharchaUser",
+				"withKharchaServices"
+			],
+			"validator": "none",
+			"handler": "call"
+		},
+		{
+			"name": "getKharchaRev",
+			"file": "src/functions/kharcha/me.ts",
+			"line": 19,
+			"layer": "kharcha",
+			"verb": "get",
+			"verbClass": "standard",
+			"method": "GET",
+			"guards": [
+				"requireKharchaUser",
+				"withKharchaServices"
+			],
+			"validator": "none",
+			"handler": "call"
+		},
+		{
+			"name": "getKharchaHome",
+			"file": "src/functions/kharcha/me.ts",
+			"line": 24,
+			"layer": "kharcha",
+			"verb": "get",
+			"verbClass": "standard",
+			"method": "GET",
+			"guards": [
+				"requireKharchaUser",
+				"withKharchaServices"
+			],
+			"validator": "none",
+			"handler": "call"
+		},
+		{
+			"name": "completeKharchaOnboarding",
+			"file": "src/functions/kharcha/me.ts",
+			"line": 28,
+			"layer": "kharcha",
+			"verb": "complete",
+			"verbClass": "domain",
+			"method": "POST",
+			"guards": [
+				"requireKharchaUser",
+				"withKharchaServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "updateKharchaProfile",
+			"file": "src/functions/kharcha/me.ts",
+			"line": 34,
+			"layer": "kharcha",
+			"verb": "update",
+			"verbClass": "standard",
+			"method": "POST",
+			"guards": [
+				"requireKharchaUser",
+				"withKharchaServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "getKharchaPayment",
+			"file": "src/functions/kharcha/payments.ts",
+			"line": 14,
+			"layer": "kharcha",
+			"verb": "get",
+			"verbClass": "standard",
+			"method": "GET",
+			"guards": [
+				"requireKharchaUser",
+				"withKharchaServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "createKharchaPayment",
+			"file": "src/functions/kharcha/payments.ts",
+			"line": 19,
+			"layer": "kharcha",
+			"verb": "create",
+			"verbClass": "standard",
+			"method": "POST",
+			"guards": [
+				"requireKharchaUser",
+				"withKharchaServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "updateKharchaPayment",
+			"file": "src/functions/kharcha/payments.ts",
+			"line": 24,
+			"layer": "kharcha",
+			"verb": "update",
+			"verbClass": "standard",
+			"method": "POST",
+			"guards": [
+				"requireKharchaUser",
+				"withKharchaServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "deleteKharchaPayment",
+			"file": "src/functions/kharcha/payments.ts",
+			"line": 30,
+			"layer": "kharcha",
+			"verb": "delete",
+			"verbClass": "standard",
+			"method": "POST",
+			"guards": [
+				"requireKharchaUser",
+				"withKharchaServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "restoreKharchaPayment",
+			"file": "src/functions/kharcha/payments.ts",
+			"line": 35,
+			"layer": "kharcha",
+			"verb": "restore",
+			"verbClass": "standard",
+			"method": "POST",
+			"guards": [
+				"requireKharchaUser",
+				"withKharchaServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "getKharchaUploadSettings",
+			"file": "src/functions/kharcha/receipts.ts",
+			"line": 15,
+			"layer": "kharcha",
+			"verb": "get",
+			"verbClass": "standard",
+			"method": "GET",
+			"guards": [
+				"requireKharchaUser",
+				"withKharchaServices"
+			],
+			"validator": "none",
+			"handler": "call"
+		},
+		{
+			"name": "signKharchaUpload",
+			"file": "src/functions/kharcha/receipts.ts",
+			"line": 19,
+			"layer": "kharcha",
+			"verb": "sign",
+			"verbClass": "domain",
+			"method": "POST",
+			"guards": [
+				"requireKharchaUser",
+				"withKharchaServices"
+			],
+			"validator": "none",
+			"handler": "call"
+		},
+		{
+			"name": "confirmKharchaUpload",
+			"file": "src/functions/kharcha/receipts.ts",
+			"line": 23,
+			"layer": "kharcha",
+			"verb": "confirm",
+			"verbClass": "domain",
+			"method": "POST",
+			"guards": [
+				"requireKharchaUser",
+				"withKharchaServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "discardKharchaUpload",
+			"file": "src/functions/kharcha/receipts.ts",
+			"line": 29,
+			"layer": "kharcha",
+			"verb": "discard",
+			"verbClass": "domain",
+			"method": "POST",
+			"guards": [
+				"requireKharchaUser",
+				"withKharchaServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "createKharchaDraft",
+			"file": "src/functions/kharcha/receipts.ts",
+			"line": 35,
+			"layer": "kharcha",
+			"verb": "create",
+			"verbClass": "standard",
+			"method": "POST",
+			"guards": [
+				"requireKharchaUser",
+				"withKharchaServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "deleteKharchaDraft",
+			"file": "src/functions/kharcha/receipts.ts",
+			"line": 40,
+			"layer": "kharcha",
+			"verb": "delete",
+			"verbClass": "standard",
+			"method": "POST",
+			"guards": [
+				"requireKharchaUser",
+				"withKharchaServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "listKharchaRecurring",
+			"file": "src/functions/kharcha/recurring.ts",
+			"line": 26,
+			"layer": "kharcha",
+			"verb": "list",
+			"verbClass": "standard",
+			"method": "GET",
+			"guards": [
+				"requireKharchaUser",
+				"withKharchaServices"
+			],
+			"validator": "none",
+			"handler": "call"
+		},
+		{
+			"name": "repeatKharchaExpense",
+			"file": "src/functions/kharcha/recurring.ts",
+			"line": 30,
+			"layer": "kharcha",
+			"verb": "repeat",
+			"verbClass": "domain",
+			"method": "POST",
+			"guards": [
+				"requireKharchaUser",
+				"withKharchaServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "updateKharchaRecurring",
+			"file": "src/functions/kharcha/recurring.ts",
+			"line": 35,
+			"layer": "kharcha",
+			"verb": "update",
+			"verbClass": "standard",
+			"method": "POST",
+			"guards": [
+				"requireKharchaUser",
+				"withKharchaServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "pauseKharchaRecurring",
+			"file": "src/functions/kharcha/recurring.ts",
+			"line": 40,
+			"layer": "kharcha",
+			"verb": "pause",
+			"verbClass": "domain",
+			"method": "POST",
+			"guards": [
+				"requireKharchaUser",
+				"withKharchaServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "skipKharchaRecurring",
+			"file": "src/functions/kharcha/recurring.ts",
+			"line": 46,
+			"layer": "kharcha",
+			"verb": "skip",
+			"verbClass": "domain",
+			"method": "POST",
+			"guards": [
+				"requireKharchaUser",
+				"withKharchaServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "deleteKharchaRecurring",
+			"file": "src/functions/kharcha/recurring.ts",
+			"line": 51,
+			"layer": "kharcha",
+			"verb": "delete",
+			"verbClass": "standard",
+			"method": "POST",
+			"guards": [
+				"requireKharchaUser",
+				"withKharchaServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "getKharchaSettleUp",
+			"file": "src/functions/kharcha/settle.ts",
+			"line": 15,
+			"layer": "kharcha",
+			"verb": "get",
+			"verbClass": "standard",
+			"method": "GET",
+			"guards": [
+				"requireKharchaUser",
+				"withKharchaServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "remindKharchaFriend",
+			"file": "src/functions/kharcha/settle.ts",
+			"line": 21,
+			"layer": "kharcha",
+			"verb": "remind",
+			"verbClass": "domain",
+			"method": "POST",
+			"guards": [
+				"requireKharchaUser",
+				"withKharchaServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "getKharchaSpendChart",
+			"file": "src/functions/kharcha/spend.ts",
+			"line": 26,
+			"layer": "kharcha",
+			"verb": "get",
+			"verbClass": "standard",
+			"method": "GET",
+			"guards": [
+				"requireKharchaUser",
+				"withKharchaServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "exportKharchaSpend",
+			"file": "src/functions/kharcha/spend.ts",
+			"line": 32,
+			"layer": "kharcha",
+			"verb": "export",
+			"verbClass": "standard",
+			"method": "POST",
+			"guards": [
+				"requireKharchaUser",
+				"withKharchaServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "bulkKharchaExpenses",
+			"file": "src/functions/kharcha/spend.ts",
+			"line": 37,
+			"layer": "kharcha",
+			"verb": "bulk",
+			"verbClass": "domain",
+			"method": "POST",
+			"guards": [
+				"requireKharchaUser",
+				"withKharchaServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "saveKharchaSearch",
+			"file": "src/functions/kharcha/spend.ts",
+			"line": 42,
+			"layer": "kharcha",
+			"verb": "save",
+			"verbClass": "folded",
+			"method": "POST",
+			"guards": [
+				"requireKharchaUser",
+				"withKharchaServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "renameKharchaSearch",
+			"file": "src/functions/kharcha/spend.ts",
+			"line": 47,
+			"layer": "kharcha",
+			"verb": "rename",
+			"verbClass": "domain",
+			"method": "POST",
+			"guards": [
+				"requireKharchaUser",
+				"withKharchaServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "reorderKharchaSearches",
+			"file": "src/functions/kharcha/spend.ts",
+			"line": 52,
+			"layer": "kharcha",
+			"verb": "reorder",
+			"verbClass": "standard",
+			"method": "POST",
+			"guards": [
+				"requireKharchaUser",
+				"withKharchaServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "deleteKharchaSearch",
+			"file": "src/functions/kharcha/spend.ts",
+			"line": 57,
+			"layer": "kharcha",
+			"verb": "delete",
+			"verbClass": "standard",
+			"method": "POST",
+			"guards": [
+				"requireKharchaUser",
+				"withKharchaServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "importKharchaSpend",
+			"file": "src/functions/kharcha/spend.ts",
+			"line": 63,
+			"layer": "kharcha",
+			"verb": "import",
+			"verbClass": "standard",
+			"method": "POST",
+			"guards": [
+				"requireKharchaUser",
+				"withKharchaServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "listKharchaPeople",
+			"file": "src/functions/kharcha/threads.ts",
+			"line": 14,
+			"layer": "kharcha",
+			"verb": "list",
+			"verbClass": "standard",
+			"method": "GET",
+			"guards": [
+				"requireKharchaUser",
+				"withKharchaServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "getKharchaGroupThread",
+			"file": "src/functions/kharcha/threads.ts",
+			"line": 19,
+			"layer": "kharcha",
+			"verb": "get",
+			"verbClass": "standard",
+			"method": "GET",
+			"guards": [
+				"requireKharchaUser",
+				"withKharchaServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "getKharchaFriendThread",
+			"file": "src/functions/kharcha/threads.ts",
+			"line": 24,
+			"layer": "kharcha",
+			"verb": "get",
+			"verbClass": "standard",
+			"method": "GET",
+			"guards": [
+				"requireKharchaUser",
+				"withKharchaServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "listMedia",
+			"file": "src/functions/media.ts",
+			"line": 16,
+			"layer": "core",
+			"verb": "list",
+			"verbClass": "standard",
+			"method": "GET",
+			"guards": [
+				"requirePermission(\"media:read\")",
+				"withServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "updateMediaAlt",
+			"file": "src/functions/media.ts",
+			"line": 21,
+			"layer": "core",
+			"verb": "update",
+			"verbClass": "standard",
+			"method": "POST",
+			"guards": [
+				"requirePermission(\"media:write\")",
+				"withServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "deleteMedia",
+			"file": "src/functions/media.ts",
+			"line": 27,
+			"layer": "core",
+			"verb": "delete",
+			"verbClass": "standard",
+			"method": "POST",
+			"guards": [
+				"requirePermission(\"media:write\")",
+				"withServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "searchPardaTitles",
+			"file": "src/functions/parda-admin/curation.ts",
+			"line": 30,
+			"layer": "parda",
+			"verb": "search",
+			"verbClass": "standard",
+			"method": "GET",
+			"guards": [
+				"requirePermission(\"parda:curate\")",
+				"withServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "listPardaBillboards",
+			"file": "src/functions/parda-admin/curation.ts",
+			"line": 35,
+			"layer": "parda",
+			"verb": "list",
+			"verbClass": "standard",
+			"method": "GET",
+			"guards": [
+				"requirePermission(\"parda:read\")",
+				"withServices"
+			],
+			"validator": "none",
+			"handler": "call"
+		},
+		{
+			"name": "getPardaBillboard",
+			"file": "src/functions/parda-admin/curation.ts",
+			"line": 39,
+			"layer": "parda",
+			"verb": "get",
+			"verbClass": "standard",
+			"method": "GET",
+			"guards": [
+				"requirePermission(\"parda:read\")",
+				"withServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "createPardaBillboard",
+			"file": "src/functions/parda-admin/curation.ts",
+			"line": 44,
+			"layer": "parda",
+			"verb": "create",
+			"verbClass": "standard",
+			"method": "POST",
+			"guards": [
+				"requirePermission(\"parda:curate\")",
+				"withServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "updatePardaBillboard",
+			"file": "src/functions/parda-admin/curation.ts",
+			"line": 49,
+			"layer": "parda",
+			"verb": "update",
+			"verbClass": "standard",
+			"method": "POST",
+			"guards": [
+				"requirePermission(\"parda:curate\")",
+				"withServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "reorderPardaBillboards",
+			"file": "src/functions/parda-admin/curation.ts",
+			"line": 54,
+			"layer": "parda",
+			"verb": "reorder",
+			"verbClass": "standard",
+			"method": "POST",
+			"guards": [
+				"requirePermission(\"parda:curate\")",
+				"withServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "deletePardaBillboards",
+			"file": "src/functions/parda-admin/curation.ts",
+			"line": 59,
+			"layer": "parda",
+			"verb": "delete",
+			"verbClass": "standard",
+			"method": "POST",
+			"guards": [
+				"requirePermission(\"parda:curate\")",
+				"withServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "listPardaCollections",
+			"file": "src/functions/parda-admin/curation.ts",
+			"line": 66,
+			"layer": "parda",
+			"verb": "list",
+			"verbClass": "standard",
+			"method": "GET",
+			"guards": [
+				"requirePermission(\"parda:read\")",
+				"withServices"
+			],
+			"validator": "none",
+			"handler": "call"
+		},
+		{
+			"name": "getPardaAdminCollection",
+			"file": "src/functions/parda-admin/curation.ts",
+			"line": 70,
+			"layer": "parda",
+			"verb": "get",
+			"verbClass": "standard",
+			"method": "GET",
+			"guards": [
+				"requirePermission(\"parda:read\")",
+				"withServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "createPardaCollection",
+			"file": "src/functions/parda-admin/curation.ts",
+			"line": 75,
+			"layer": "parda",
+			"verb": "create",
+			"verbClass": "standard",
+			"method": "POST",
+			"guards": [
+				"requirePermission(\"parda:curate\")",
+				"withServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "updatePardaCollection",
+			"file": "src/functions/parda-admin/curation.ts",
+			"line": 80,
+			"layer": "parda",
+			"verb": "update",
+			"verbClass": "standard",
+			"method": "POST",
+			"guards": [
+				"requirePermission(\"parda:curate\")",
+				"withServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "deletePardaCollections",
+			"file": "src/functions/parda-admin/curation.ts",
+			"line": 85,
+			"layer": "parda",
+			"verb": "delete",
+			"verbClass": "standard",
+			"method": "POST",
+			"guards": [
+				"requirePermission(\"parda:curate\")",
+				"withServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "getPardaLayout",
+			"file": "src/functions/parda-admin/curation.ts",
+			"line": 92,
+			"layer": "parda",
+			"verb": "get",
+			"verbClass": "standard",
+			"method": "GET",
+			"guards": [
+				"requirePermission(\"parda:read\")",
+				"withServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "savePardaLayout",
+			"file": "src/functions/parda-admin/curation.ts",
+			"line": 97,
+			"layer": "parda",
+			"verb": "save",
+			"verbClass": "folded",
+			"method": "POST",
+			"guards": [
+				"requirePermission(\"parda:curate\")",
+				"withServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "getPardaOverview",
+			"file": "src/functions/parda-admin/overview.ts",
+			"line": 14,
+			"layer": "parda",
+			"verb": "get",
+			"verbClass": "standard",
+			"method": "GET",
+			"guards": [
+				"requirePermission(\"parda:read\")",
+				"withServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "listPardaLabSources",
+			"file": "src/functions/parda-admin/player-lab.ts",
+			"line": 10,
+			"layer": "parda",
+			"verb": "list",
+			"verbClass": "standard",
+			"method": "GET",
+			"guards": [
+				"requirePermission(\"parda:configure\")",
+				"withServices"
+			],
+			"validator": "none",
+			"handler": "call"
+		},
+		{
+			"name": "openPardaLabPlayer",
+			"file": "src/functions/parda-admin/player-lab.ts",
+			"line": 14,
+			"layer": "parda",
+			"verb": "open",
+			"verbClass": "domain",
+			"method": "GET",
+			"guards": [
+				"requirePermission(\"parda:configure\")",
+				"withServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "listPardaReports",
+			"file": "src/functions/parda-admin/reports.ts",
+			"line": 11,
+			"layer": "parda",
+			"verb": "list",
+			"verbClass": "standard",
+			"method": "GET",
+			"guards": [
+				"requirePermission(\"parda:read\")",
+				"withServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "setPardaReportStatus",
+			"file": "src/functions/parda-admin/reports.ts",
+			"line": 16,
+			"layer": "parda",
+			"verb": "set",
+			"verbClass": "standard",
+			"method": "POST",
+			"guards": [
+				"requirePermission(\"parda:moderate\")",
+				"withServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "getPardaSettings",
+			"file": "src/functions/parda-admin/settings.ts",
+			"line": 11,
+			"layer": "parda",
+			"verb": "get",
+			"verbClass": "standard",
+			"method": "GET",
+			"guards": [
+				"requirePermission(\"parda:read\")",
+				"withServices"
+			],
+			"validator": "none",
+			"handler": "call"
+		},
+		{
+			"name": "updatePardaSettings",
+			"file": "src/functions/parda-admin/settings.ts",
+			"line": 15,
+			"layer": "parda",
+			"verb": "update",
+			"verbClass": "standard",
+			"method": "POST",
+			"guards": [
+				"requirePermission(\"parda:configure\")",
+				"withServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "setPardaPlayback",
+			"file": "src/functions/parda-admin/settings.ts",
+			"line": 20,
+			"layer": "parda",
+			"verb": "set",
+			"verbClass": "standard",
+			"method": "POST",
+			"guards": [
+				"requirePermission(\"parda:configure\")",
+				"withServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "setPardaSourceOrder",
+			"file": "src/functions/parda-admin/settings.ts",
+			"line": 26,
+			"layer": "parda",
+			"verb": "set",
+			"verbClass": "standard",
+			"method": "POST",
+			"guards": [
+				"requirePermission(\"parda:configure\")",
+				"withServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "purgePardaCache",
+			"file": "src/functions/parda-admin/settings.ts",
+			"line": 31,
+			"layer": "parda",
+			"verb": "purge",
+			"verbClass": "standard",
+			"method": "POST",
+			"guards": [
+				"requirePermission(\"parda:configure\")",
+				"withServices"
+			],
+			"validator": "none",
+			"handler": "call"
+		},
+		{
+			"name": "listPardaSources",
+			"file": "src/functions/parda-admin/sources.ts",
+			"line": 19,
+			"layer": "parda",
+			"verb": "list",
+			"verbClass": "standard",
+			"method": "GET",
+			"guards": [
+				"requirePermission(\"parda:read\")",
+				"withServices"
+			],
+			"validator": "none",
+			"handler": "call"
+		},
+		{
+			"name": "getPardaSource",
+			"file": "src/functions/parda-admin/sources.ts",
+			"line": 23,
+			"layer": "parda",
+			"verb": "get",
+			"verbClass": "standard",
+			"method": "GET",
+			"guards": [
+				"requirePermission(\"parda:read\")",
+				"withServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "createPardaSource",
+			"file": "src/functions/parda-admin/sources.ts",
+			"line": 28,
+			"layer": "parda",
+			"verb": "create",
+			"verbClass": "standard",
+			"method": "POST",
+			"guards": [
+				"requirePermission(\"parda:configure\")",
+				"withServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "updatePardaSource",
+			"file": "src/functions/parda-admin/sources.ts",
+			"line": 33,
+			"layer": "parda",
+			"verb": "update",
+			"verbClass": "standard",
+			"method": "POST",
+			"guards": [
+				"requirePermission(\"parda:configure\")",
+				"withServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "setPardaSourceState",
+			"file": "src/functions/parda-admin/sources.ts",
+			"line": 38,
+			"layer": "parda",
+			"verb": "set",
+			"verbClass": "standard",
+			"method": "POST",
+			"guards": [
+				"requirePermission(\"parda:configure\")",
+				"withServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "reorderPardaSources",
+			"file": "src/functions/parda-admin/sources.ts",
+			"line": 43,
+			"layer": "parda",
+			"verb": "reorder",
+			"verbClass": "standard",
+			"method": "POST",
+			"guards": [
+				"requirePermission(\"parda:configure\")",
+				"withServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "deletePardaSources",
+			"file": "src/functions/parda-admin/sources.ts",
+			"line": 48,
+			"layer": "parda",
+			"verb": "delete",
+			"verbClass": "standard",
+			"method": "POST",
+			"guards": [
+				"requirePermission(\"parda:configure\")",
+				"withServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "listPardaTakedowns",
+			"file": "src/functions/parda-admin/titles.ts",
+			"line": 13,
+			"layer": "parda",
+			"verb": "list",
+			"verbClass": "standard",
+			"method": "GET",
+			"guards": [
+				"requirePermission(\"parda:read\")",
+				"withServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "blockPardaTitle",
+			"file": "src/functions/parda-admin/titles.ts",
+			"line": 18,
+			"layer": "parda",
+			"verb": "block",
+			"verbClass": "domain",
+			"method": "POST",
+			"guards": [
+				"requirePermission(\"parda:moderate\")",
+				"withServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "unblockPardaTitles",
+			"file": "src/functions/parda-admin/titles.ts",
+			"line": 23,
+			"layer": "parda",
+			"verb": "unblock",
+			"verbClass": "domain",
+			"method": "POST",
+			"guards": [
+				"requirePermission(\"parda:moderate\")",
+				"withServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "getPardaInbox",
+			"file": "src/functions/parda/alerts.ts",
+			"line": 19,
+			"layer": "parda",
+			"verb": "get",
+			"verbClass": "standard",
+			"method": "GET",
+			"guards": [
+				"requirePardaViewer",
+				"withPardaServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "markPardaInboxRead",
+			"file": "src/functions/parda/alerts.ts",
+			"line": 25,
+			"layer": "parda",
+			"verb": "mark",
+			"verbClass": "folded",
+			"method": "POST",
+			"guards": [
+				"requirePardaViewer",
+				"withPardaServices"
+			],
+			"validator": "zodInput",
+			"handler": "block"
+		},
+		{
+			"name": "getPardaFollowing",
+			"file": "src/functions/parda/alerts.ts",
+			"line": 34,
+			"layer": "parda",
+			"verb": "get",
+			"verbClass": "standard",
+			"method": "GET",
+			"guards": [
+				"requirePardaViewer",
+				"withPardaServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "getPardaHub",
+			"file": "src/functions/parda/catalog.ts",
+			"line": 49,
+			"layer": "parda",
+			"verb": "get",
+			"verbClass": "standard",
+			"method": "GET",
+			"guards": [
+				"withPardaCatalog"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "getPardaRail",
+			"file": "src/functions/parda/catalog.ts",
+			"line": 59,
+			"layer": "parda",
+			"verb": "get",
+			"verbClass": "standard",
+			"method": "GET",
+			"guards": [
+				"withPardaCatalog"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "getPardaTitle",
+			"file": "src/functions/parda/catalog.ts",
+			"line": 69,
+			"layer": "parda",
+			"verb": "get",
+			"verbClass": "standard",
+			"method": "GET",
+			"guards": [
+				"withPardaCatalog"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "getPardaSeason",
+			"file": "src/functions/parda/catalog.ts",
+			"line": 84,
+			"layer": "parda",
+			"verb": "get",
+			"verbClass": "standard",
+			"method": "GET",
+			"guards": [
+				"withPardaCatalog"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "getPardaCredits",
+			"file": "src/functions/parda/catalog.ts",
+			"line": 94,
+			"layer": "parda",
+			"verb": "get",
+			"verbClass": "standard",
+			"method": "GET",
+			"guards": [
+				"withPardaCatalog"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "getPardaPerson",
+			"file": "src/functions/parda/catalog.ts",
+			"line": 109,
+			"layer": "parda",
+			"verb": "get",
+			"verbClass": "standard",
+			"method": "GET",
+			"guards": [
+				"withPardaCatalog"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "getPardaCollection",
+			"file": "src/functions/parda/catalog.ts",
+			"line": 119,
+			"layer": "parda",
+			"verb": "get",
+			"verbClass": "standard",
+			"method": "GET",
+			"guards": [
+				"withPardaCatalog"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "getPardaCurated",
+			"file": "src/functions/parda/catalog.ts",
+			"line": 130,
+			"layer": "parda",
+			"verb": "get",
+			"verbClass": "standard",
+			"method": "GET",
+			"guards": [
+				"withPardaCatalog"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "getPardaSurprise",
+			"file": "src/functions/parda/catalog.ts",
+			"line": 141,
+			"layer": "parda",
+			"verb": "get",
+			"verbClass": "standard",
+			"method": "GET",
+			"guards": [
+				"withPardaCatalog"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "getPardaBanner",
+			"file": "src/functions/parda/catalog.ts",
+			"line": 155,
+			"layer": "parda",
+			"verb": "get",
+			"verbClass": "standard",
+			"method": "GET",
+			"guards": [
+				"withPardaCatalog"
+			],
+			"validator": "none",
+			"handler": "call"
+		},
+		{
+			"name": "getPardaViewer",
+			"file": "src/functions/parda/library.ts",
+			"line": 75,
+			"layer": "parda",
+			"verb": "get",
+			"verbClass": "standard",
+			"method": "GET",
+			"guards": [
+				"requirePardaViewer",
+				"withPardaServices"
+			],
+			"validator": "none",
+			"handler": "call"
+		},
+		{
+			"name": "getPardaContinue",
+			"file": "src/functions/parda/library.ts",
+			"line": 92,
+			"layer": "parda",
+			"verb": "get",
+			"verbClass": "standard",
+			"method": "GET",
+			"guards": [
+				"requirePardaViewer",
+				"withPardaServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "getPardaTitleProgress",
+			"file": "src/functions/parda/library.ts",
+			"line": 97,
+			"layer": "parda",
+			"verb": "get",
+			"verbClass": "standard",
+			"method": "GET",
+			"guards": [
+				"requirePardaViewer",
+				"withPardaServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "savePardaProgress",
+			"file": "src/functions/parda/library.ts",
+			"line": 105,
+			"layer": "parda",
+			"verb": "save",
+			"verbClass": "folded",
+			"method": "POST",
+			"guards": [
+				"requirePardaViewer",
+				"withPardaServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "markPardaWatched",
+			"file": "src/functions/parda/library.ts",
+			"line": 110,
+			"layer": "parda",
+			"verb": "mark",
+			"verbClass": "folded",
+			"method": "POST",
+			"guards": [
+				"requirePardaViewer",
+				"withPardaServices"
+			],
+			"validator": "zodInput",
+			"handler": "block"
+		},
+		{
+			"name": "removePardaContinue",
+			"file": "src/functions/parda/library.ts",
+			"line": 118,
+			"layer": "parda",
+			"verb": "remove",
+			"verbClass": "standard",
+			"method": "POST",
+			"guards": [
+				"requirePardaViewer",
+				"withPardaServices"
+			],
+			"validator": "zodInput",
+			"handler": "block"
+		},
+		{
+			"name": "rewatchPardaTitle",
+			"file": "src/functions/parda/library.ts",
+			"line": 126,
+			"layer": "parda",
+			"verb": "rewatch",
+			"verbClass": "domain",
+			"method": "POST",
+			"guards": [
+				"requirePardaViewer",
+				"withPardaServices"
+			],
+			"validator": "zodInput",
+			"handler": "block"
+		},
+		{
+			"name": "importPardaProgress",
+			"file": "src/functions/parda/library.ts",
+			"line": 135,
+			"layer": "parda",
+			"verb": "import",
+			"verbClass": "standard",
+			"method": "POST",
+			"guards": [
+				"requirePardaViewer",
+				"withPardaServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "getPardaSaved",
+			"file": "src/functions/parda/library.ts",
+			"line": 146,
+			"layer": "parda",
+			"verb": "get",
+			"verbClass": "standard",
+			"method": "GET",
+			"guards": [
+				"requirePardaViewer",
+				"withPardaServices"
+			],
+			"validator": "none",
+			"handler": "call"
+		},
+		{
+			"name": "setPardaListed",
+			"file": "src/functions/parda/library.ts",
+			"line": 151,
+			"layer": "parda",
+			"verb": "set",
+			"verbClass": "standard",
+			"method": "POST",
+			"guards": [
+				"requirePardaViewer",
+				"withPardaServices"
+			],
+			"validator": "zodInput",
+			"handler": "block"
+		},
+		{
+			"name": "setPardaPersonFavourite",
+			"file": "src/functions/parda/library.ts",
+			"line": 160,
+			"layer": "parda",
+			"verb": "set",
+			"verbClass": "standard",
+			"method": "POST",
+			"guards": [
+				"requirePardaViewer",
+				"withPardaServices"
+			],
+			"validator": "zodInput",
+			"handler": "block"
+		},
+		{
+			"name": "ratePardaTitle",
+			"file": "src/functions/parda/library.ts",
+			"line": 169,
+			"layer": "parda",
+			"verb": "rate",
+			"verbClass": "domain",
+			"method": "POST",
+			"guards": [
+				"requirePardaViewer",
+				"withPardaServices"
+			],
+			"validator": "zodInput",
+			"handler": "block"
+		},
+		{
+			"name": "getPardaLibrary",
+			"file": "src/functions/parda/library.ts",
+			"line": 178,
+			"layer": "parda",
+			"verb": "get",
+			"verbClass": "standard",
+			"method": "GET",
+			"guards": [
+				"requirePardaViewer",
+				"withPardaServices"
+			],
+			"validator": "zodInput",
+			"handler": "block"
+		},
+		{
+			"name": "getPardaHistory",
+			"file": "src/functions/parda/library.ts",
+			"line": 188,
+			"layer": "parda",
+			"verb": "get",
+			"verbClass": "standard",
+			"method": "GET",
+			"guards": [
+				"requirePardaViewer",
+				"withPardaServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "removePardaHistory",
+			"file": "src/functions/parda/library.ts",
+			"line": 194,
+			"layer": "parda",
+			"verb": "remove",
+			"verbClass": "standard",
+			"method": "POST",
+			"guards": [
+				"requirePardaViewer",
+				"withPardaServices"
+			],
+			"validator": "zodInput",
+			"handler": "block"
+		},
+		{
+			"name": "clearPardaHistory",
+			"file": "src/functions/parda/library.ts",
+			"line": 203,
+			"layer": "parda",
+			"verb": "clear",
+			"verbClass": "domain",
+			"method": "POST",
+			"guards": [
+				"requirePardaViewer",
+				"withPardaServices"
+			],
+			"validator": "none",
+			"handler": "block"
+		},
+		{
+			"name": "getPardaForYou",
+			"file": "src/functions/parda/library.ts",
+			"line": 211,
+			"layer": "parda",
+			"verb": "get",
+			"verbClass": "standard",
+			"method": "GET",
+			"guards": [
+				"requirePardaViewer",
+				"withPardaServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "createPardaParty",
+			"file": "src/functions/parda/party.ts",
+			"line": 42,
+			"layer": "parda",
+			"verb": "create",
+			"verbClass": "standard",
+			"method": "POST",
+			"guards": [
+				"requirePardaViewer",
+				"withPardaServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "joinPardaParty",
+			"file": "src/functions/parda/party.ts",
+			"line": 49,
+			"layer": "parda",
+			"verb": "join",
+			"verbClass": "domain",
+			"method": "POST",
+			"guards": [
+				"requirePardaViewer",
+				"withPardaServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "getPardaPartyToken",
+			"file": "src/functions/parda/party.ts",
+			"line": 57,
+			"layer": "parda",
+			"verb": "get",
+			"verbClass": "standard",
+			"method": "POST",
+			"guards": [
+				"requirePardaViewer",
+				"withPardaServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "pulsePardaParty",
+			"file": "src/functions/parda/party.ts",
+			"line": 62,
+			"layer": "parda",
+			"verb": "pulse",
+			"verbClass": "domain",
+			"method": "POST",
+			"guards": [
+				"requirePardaViewer",
+				"withPardaServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "leavePardaParty",
+			"file": "src/functions/parda/party.ts",
+			"line": 67,
+			"layer": "parda",
+			"verb": "leave",
+			"verbClass": "domain",
+			"method": "POST",
+			"guards": [
+				"requirePardaViewer",
+				"withPardaServices"
+			],
+			"validator": "zodInput",
+			"handler": "block"
+		},
+		{
+			"name": "setPardaPartySource",
+			"file": "src/functions/parda/party.ts",
+			"line": 75,
+			"layer": "parda",
+			"verb": "set",
+			"verbClass": "standard",
+			"method": "POST",
+			"guards": [
+				"requirePardaViewer",
+				"withPardaServices"
+			],
+			"validator": "zodInput",
+			"handler": "block"
+		},
+		{
+			"name": "takeOverPardaParty",
+			"file": "src/functions/parda/party.ts",
+			"line": 83,
+			"layer": "parda",
+			"verb": "take",
+			"verbClass": "domain",
+			"method": "POST",
+			"guards": [
+				"requirePardaViewer",
+				"withPardaServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "endPardaParty",
+			"file": "src/functions/parda/party.ts",
+			"line": 88,
+			"layer": "parda",
+			"verb": "end",
+			"verbClass": "domain",
+			"method": "POST",
+			"guards": [
+				"requirePardaViewer",
+				"withPardaServices"
+			],
+			"validator": "zodInput",
+			"handler": "block"
+		},
+		{
+			"name": "getPardaProfiles",
+			"file": "src/functions/parda/profiles.ts",
+			"line": 61,
+			"layer": "parda",
+			"verb": "get",
+			"verbClass": "standard",
+			"method": "GET",
+			"guards": [
+				"requirePardaViewer",
+				"withPardaServices"
+			],
+			"validator": "zodInput",
+			"handler": "block"
+		},
+		{
+			"name": "createPardaProfile",
+			"file": "src/functions/parda/profiles.ts",
+			"line": 88,
+			"layer": "parda",
+			"verb": "create",
+			"verbClass": "standard",
+			"method": "POST",
+			"guards": [
+				"requirePardaViewer",
+				"withPardaServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "updatePardaProfile",
+			"file": "src/functions/parda/profiles.ts",
+			"line": 93,
+			"layer": "parda",
+			"verb": "update",
+			"verbClass": "standard",
+			"method": "POST",
+			"guards": [
+				"requirePardaViewer",
+				"withPardaServices"
+			],
+			"validator": "zodInput",
+			"handler": "block"
+		},
+		{
+			"name": "deletePardaProfile",
+			"file": "src/functions/parda/profiles.ts",
+			"line": 101,
+			"layer": "parda",
+			"verb": "delete",
+			"verbClass": "standard",
+			"method": "POST",
+			"guards": [
+				"requirePardaViewer",
+				"withPardaServices"
+			],
+			"validator": "zodInput",
+			"handler": "block"
+		},
+		{
+			"name": "setPardaProfilePin",
+			"file": "src/functions/parda/profiles.ts",
+			"line": 110,
+			"layer": "parda",
+			"verb": "set",
+			"verbClass": "standard",
+			"method": "POST",
+			"guards": [
+				"requirePardaViewer",
+				"withPardaServices"
+			],
+			"validator": "zodInput",
+			"handler": "block"
+		},
+		{
+			"name": "switchPardaProfile",
+			"file": "src/functions/parda/profiles.ts",
+			"line": 120,
+			"layer": "parda",
+			"verb": "switch",
+			"verbClass": "domain",
+			"method": "POST",
+			"guards": [
+				"requirePardaViewer",
+				"withPardaServices"
+			],
+			"validator": "zodInput",
+			"handler": "block"
+		},
+		{
+			"name": "setPardaDigest",
+			"file": "src/functions/parda/profiles.ts",
+			"line": 129,
+			"layer": "parda",
+			"verb": "set",
+			"verbClass": "standard",
+			"method": "POST",
+			"guards": [
+				"requirePardaViewer",
+				"withPardaServices"
+			],
+			"validator": "zodInput",
+			"handler": "block"
+		},
+		{
+			"name": "getPardaAnimeWeek",
+			"file": "src/functions/parda/schedule.ts",
+			"line": 16,
+			"layer": "parda",
+			"verb": "get",
+			"verbClass": "standard",
+			"method": "GET",
+			"guards": [
+				"withPardaCatalog"
+			],
+			"validator": "zodInput",
+			"handler": "block"
+		},
+		{
+			"name": "getPardaSearch",
+			"file": "src/functions/parda/search.ts",
+			"line": 30,
+			"layer": "parda",
+			"verb": "get",
+			"verbClass": "standard",
+			"method": "GET",
+			"guards": [
+				"withPardaCatalog"
+			],
+			"validator": "zodInput",
+			"handler": "block"
+		},
+		{
+			"name": "getPardaSuggest",
+			"file": "src/functions/parda/search.ts",
+			"line": 42,
+			"layer": "parda",
+			"verb": "get",
+			"verbClass": "standard",
+			"method": "GET",
+			"guards": [
+				"withPardaCatalog"
+			],
+			"validator": "zodInput",
+			"handler": "block"
+		},
+		{
+			"name": "notePardaSearch",
+			"file": "src/functions/parda/search.ts",
+			"line": 56,
+			"layer": "parda",
+			"verb": "note",
+			"verbClass": "domain",
+			"method": "POST",
+			"guards": [
+				"withPardaCatalog"
+			],
+			"validator": "zodInput",
+			"handler": "block"
+		},
+		{
+			"name": "getPardaDiscover",
+			"file": "src/functions/parda/search.ts",
+			"line": 64,
+			"layer": "parda",
+			"verb": "get",
+			"verbClass": "standard",
+			"method": "GET",
+			"guards": [
+				"withPardaCatalog"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "getPardaWatch",
+			"file": "src/functions/parda/watch.ts",
+			"line": 64,
+			"layer": "parda",
+			"verb": "get",
+			"verbClass": "standard",
+			"method": "GET",
+			"guards": [
+				"withPardaCatalog"
+			],
+			"validator": "zodInput",
+			"handler": "block"
+		},
+		{
+			"name": "getPardaParty",
+			"file": "src/functions/parda/watch.ts",
+			"line": 87,
+			"layer": "parda",
+			"verb": "get",
+			"verbClass": "standard",
+			"method": "GET",
+			"guards": [
+				"withPardaCatalog"
+			],
+			"validator": "zodInput",
+			"handler": "block"
+		},
+		{
+			"name": "recordPardaPlay",
+			"file": "src/functions/parda/watch.ts",
+			"line": 112,
+			"layer": "parda",
+			"verb": "record",
+			"verbClass": "domain",
+			"method": "POST",
+			"guards": [
+				"withPardaCatalog"
+			],
+			"validator": "zodInput",
+			"handler": "block"
+		},
+		{
+			"name": "reportPardaProblem",
+			"file": "src/functions/parda/watch.ts",
+			"line": 133,
+			"layer": "parda",
+			"verb": "report",
+			"verbClass": "domain",
+			"method": "POST",
+			"guards": [
+				"withPardaCatalog"
+			],
+			"validator": "zodInput",
+			"handler": "block"
+		},
+		{
+			"name": "listContactMessages",
+			"file": "src/functions/portfolio-messages.ts",
+			"line": 16,
+			"layer": "portfolio",
+			"verb": "list",
+			"verbClass": "standard",
+			"method": "GET",
+			"guards": [
+				"requirePermission(\"messages:read\")",
+				"withServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "setContactMessageState",
+			"file": "src/functions/portfolio-messages.ts",
+			"line": 21,
+			"layer": "portfolio",
+			"verb": "set",
+			"verbClass": "standard",
+			"method": "POST",
+			"guards": [
+				"requirePermission(\"messages:manage\")",
+				"withServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "deleteContactMessages",
+			"file": "src/functions/portfolio-messages.ts",
+			"line": 26,
+			"layer": "portfolio",
+			"verb": "delete",
+			"verbClass": "standard",
+			"method": "POST",
+			"guards": [
+				"requirePermission(\"messages:manage\")",
+				"withServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "getPublicProfile",
+			"file": "src/functions/portfolio-public.ts",
+			"line": 47,
+			"layer": "portfolio",
+			"verb": "get",
+			"verbClass": "standard",
+			"method": "GET",
+			"guards": [
+				"withPublicServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "getHome",
+			"file": "src/functions/portfolio-public.ts",
+			"line": 52,
+			"layer": "portfolio",
+			"verb": "get",
+			"verbClass": "standard",
+			"method": "GET",
+			"guards": [
+				"withPublicServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "getWork",
+			"file": "src/functions/portfolio-public.ts",
+			"line": 57,
+			"layer": "portfolio",
+			"verb": "get",
+			"verbClass": "standard",
+			"method": "GET",
+			"guards": [
+				"withPublicServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "getCaseStudy",
+			"file": "src/functions/portfolio-public.ts",
+			"line": 62,
+			"layer": "portfolio",
+			"verb": "get",
+			"verbClass": "standard",
+			"method": "GET",
+			"guards": [
+				"withPublicServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "getAbout",
+			"file": "src/functions/portfolio-public.ts",
+			"line": 70,
+			"layer": "portfolio",
+			"verb": "get",
+			"verbClass": "standard",
+			"method": "GET",
+			"guards": [
+				"withPublicServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "getJournal",
+			"file": "src/functions/portfolio-public.ts",
+			"line": 75,
+			"layer": "portfolio",
+			"verb": "get",
+			"verbClass": "standard",
+			"method": "GET",
+			"guards": [
+				"withPublicServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "getArticle",
+			"file": "src/functions/portfolio-public.ts",
+			"line": 80,
+			"layer": "portfolio",
+			"verb": "get",
+			"verbClass": "standard",
+			"method": "GET",
+			"guards": [
+				"withPublicServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "getAppCaseStudies",
+			"file": "src/functions/portfolio-public.ts",
+			"line": 90,
+			"layer": "portfolio",
+			"verb": "get",
+			"verbClass": "standard",
+			"method": "GET",
+			"guards": [
+				"withPublicServices"
+			],
+			"validator": "none",
+			"handler": "call"
+		},
+		{
+			"name": "submitContactMessage",
+			"file": "src/functions/portfolio-public.ts",
+			"line": 99,
+			"layer": "portfolio",
+			"verb": "submit",
+			"verbClass": "domain",
+			"method": "POST",
+			"guards": [
+				"withPublicServices"
+			],
+			"validator": "zodInput",
+			"handler": "block"
+		},
+		{
+			"name": "listExperience",
+			"file": "src/functions/portfolio-sections.ts",
+			"line": 32,
+			"layer": "portfolio",
+			"verb": "list",
+			"verbClass": "standard",
+			"method": "GET",
+			"guards": [
+				"requirePermission(\"portfolio:read\")",
+				"withServices"
+			],
+			"validator": "none",
+			"handler": "call"
+		},
+		{
+			"name": "createExperience",
+			"file": "src/functions/portfolio-sections.ts",
+			"line": 36,
+			"layer": "portfolio",
+			"verb": "create",
+			"verbClass": "standard",
+			"method": "POST",
+			"guards": [
+				"requirePermission(\"portfolio:write\")",
+				"withServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "updateExperience",
+			"file": "src/functions/portfolio-sections.ts",
+			"line": 41,
+			"layer": "portfolio",
+			"verb": "update",
+			"verbClass": "standard",
+			"method": "POST",
+			"guards": [
+				"requirePermission(\"portfolio:write\")",
+				"withServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "deleteExperience",
+			"file": "src/functions/portfolio-sections.ts",
+			"line": 46,
+			"layer": "portfolio",
+			"verb": "delete",
+			"verbClass": "standard",
+			"method": "POST",
+			"guards": [
+				"requirePermission(\"portfolio:write\")",
+				"withServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "reorderExperience",
+			"file": "src/functions/portfolio-sections.ts",
+			"line": 51,
+			"layer": "portfolio",
+			"verb": "reorder",
+			"verbClass": "standard",
+			"method": "POST",
+			"guards": [
+				"requirePermission(\"portfolio:write\")",
+				"withServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "listSkills",
+			"file": "src/functions/portfolio-sections.ts",
+			"line": 58,
+			"layer": "portfolio",
+			"verb": "list",
+			"verbClass": "standard",
+			"method": "GET",
+			"guards": [
+				"requirePermission(\"portfolio:read\")",
+				"withServices"
+			],
+			"validator": "none",
+			"handler": "call"
+		},
+		{
+			"name": "createSkill",
+			"file": "src/functions/portfolio-sections.ts",
+			"line": 62,
+			"layer": "portfolio",
+			"verb": "create",
+			"verbClass": "standard",
+			"method": "POST",
+			"guards": [
+				"requirePermission(\"portfolio:write\")",
+				"withServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "updateSkill",
+			"file": "src/functions/portfolio-sections.ts",
+			"line": 67,
+			"layer": "portfolio",
+			"verb": "update",
+			"verbClass": "standard",
+			"method": "POST",
+			"guards": [
+				"requirePermission(\"portfolio:write\")",
+				"withServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "deleteSkills",
+			"file": "src/functions/portfolio-sections.ts",
+			"line": 72,
+			"layer": "portfolio",
+			"verb": "delete",
+			"verbClass": "standard",
+			"method": "POST",
+			"guards": [
+				"requirePermission(\"portfolio:write\")",
+				"withServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "reorderSkills",
+			"file": "src/functions/portfolio-sections.ts",
+			"line": 77,
+			"layer": "portfolio",
+			"verb": "reorder",
+			"verbClass": "standard",
+			"method": "POST",
+			"guards": [
+				"requirePermission(\"portfolio:write\")",
+				"withServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "listProcessSteps",
+			"file": "src/functions/portfolio-sections.ts",
+			"line": 84,
+			"layer": "portfolio",
+			"verb": "list",
+			"verbClass": "standard",
+			"method": "GET",
+			"guards": [
+				"requirePermission(\"portfolio:read\")",
+				"withServices"
+			],
+			"validator": "none",
+			"handler": "call"
+		},
+		{
+			"name": "createProcessStep",
+			"file": "src/functions/portfolio-sections.ts",
+			"line": 88,
+			"layer": "portfolio",
+			"verb": "create",
+			"verbClass": "standard",
+			"method": "POST",
+			"guards": [
+				"requirePermission(\"portfolio:write\")",
+				"withServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "updateProcessStep",
+			"file": "src/functions/portfolio-sections.ts",
+			"line": 93,
+			"layer": "portfolio",
+			"verb": "update",
+			"verbClass": "standard",
+			"method": "POST",
+			"guards": [
+				"requirePermission(\"portfolio:write\")",
+				"withServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "deleteProcessSteps",
+			"file": "src/functions/portfolio-sections.ts",
+			"line": 98,
+			"layer": "portfolio",
+			"verb": "delete",
+			"verbClass": "standard",
+			"method": "POST",
+			"guards": [
+				"requirePermission(\"portfolio:write\")",
+				"withServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "reorderProcessSteps",
+			"file": "src/functions/portfolio-sections.ts",
+			"line": 103,
+			"layer": "portfolio",
+			"verb": "reorder",
+			"verbClass": "standard",
+			"method": "POST",
+			"guards": [
+				"requirePermission(\"portfolio:write\")",
+				"withServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "listTestimonials",
+			"file": "src/functions/portfolio-sections.ts",
+			"line": 110,
+			"layer": "portfolio",
+			"verb": "list",
+			"verbClass": "standard",
+			"method": "GET",
+			"guards": [
+				"requirePermission(\"portfolio:read\")",
+				"withServices"
+			],
+			"validator": "none",
+			"handler": "call"
+		},
+		{
+			"name": "createTestimonial",
+			"file": "src/functions/portfolio-sections.ts",
+			"line": 114,
+			"layer": "portfolio",
+			"verb": "create",
+			"verbClass": "standard",
+			"method": "POST",
+			"guards": [
+				"requirePermission(\"portfolio:write\")",
+				"withServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "updateTestimonial",
+			"file": "src/functions/portfolio-sections.ts",
+			"line": 119,
+			"layer": "portfolio",
+			"verb": "update",
+			"verbClass": "standard",
+			"method": "POST",
+			"guards": [
+				"requirePermission(\"portfolio:write\")",
+				"withServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "deleteTestimonials",
+			"file": "src/functions/portfolio-sections.ts",
+			"line": 124,
+			"layer": "portfolio",
+			"verb": "delete",
+			"verbClass": "standard",
+			"method": "POST",
+			"guards": [
+				"requirePermission(\"portfolio:write\")",
+				"withServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "reorderTestimonials",
+			"file": "src/functions/portfolio-sections.ts",
+			"line": 129,
+			"layer": "portfolio",
+			"verb": "reorder",
+			"verbClass": "standard",
+			"method": "POST",
+			"guards": [
+				"requirePermission(\"portfolio:write\")",
+				"withServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "getPortfolioProfile",
+			"file": "src/functions/portfolio.ts",
+			"line": 39,
+			"layer": "portfolio",
+			"verb": "get",
+			"verbClass": "standard",
+			"method": "GET",
+			"guards": [
+				"requirePermission(\"portfolio:read\")",
+				"withServices"
+			],
+			"validator": "none",
+			"handler": "call"
+		},
+		{
+			"name": "updatePortfolioProfile",
+			"file": "src/functions/portfolio.ts",
+			"line": 43,
+			"layer": "portfolio",
+			"verb": "update",
+			"verbClass": "standard",
+			"method": "POST",
+			"guards": [
+				"requirePermission(\"portfolio:write\")",
+				"withServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "listProjects",
+			"file": "src/functions/portfolio.ts",
+			"line": 50,
+			"layer": "portfolio",
+			"verb": "list",
+			"verbClass": "standard",
+			"method": "GET",
+			"guards": [
+				"requirePermission(\"portfolio:read\")",
+				"withServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "listProjectOrder",
+			"file": "src/functions/portfolio.ts",
+			"line": 56,
+			"layer": "portfolio",
+			"verb": "list",
+			"verbClass": "standard",
+			"method": "GET",
+			"guards": [
+				"requirePermission(\"portfolio:read\")",
+				"withServices"
+			],
+			"validator": "none",
+			"handler": "call"
+		},
+		{
+			"name": "getProject",
+			"file": "src/functions/portfolio.ts",
+			"line": 60,
+			"layer": "portfolio",
+			"verb": "get",
+			"verbClass": "standard",
+			"method": "GET",
+			"guards": [
+				"requirePermission(\"portfolio:read\")",
+				"withServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "isProjectSlugFree",
+			"file": "src/functions/portfolio.ts",
+			"line": 65,
+			"layer": "portfolio",
+			"verb": "is",
+			"verbClass": "standard",
+			"method": "GET",
+			"guards": [
+				"requirePermission(\"portfolio:read\")",
+				"withServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "createProject",
+			"file": "src/functions/portfolio.ts",
+			"line": 70,
+			"layer": "portfolio",
+			"verb": "create",
+			"verbClass": "standard",
+			"method": "POST",
+			"guards": [
+				"requirePermission(\"portfolio:write\")",
+				"withServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "updateProject",
+			"file": "src/functions/portfolio.ts",
+			"line": 75,
+			"layer": "portfolio",
+			"verb": "update",
+			"verbClass": "standard",
+			"method": "POST",
+			"guards": [
+				"requirePermission(\"portfolio:write\")",
+				"withServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "setProjectStatus",
+			"file": "src/functions/portfolio.ts",
+			"line": 80,
+			"layer": "portfolio",
+			"verb": "set",
+			"verbClass": "standard",
+			"method": "POST",
+			"guards": [
+				"requirePermission(\"portfolio:publish\")",
+				"withServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "deleteProjects",
+			"file": "src/functions/portfolio.ts",
+			"line": 85,
+			"layer": "portfolio",
+			"verb": "delete",
+			"verbClass": "standard",
+			"method": "POST",
+			"guards": [
+				"requirePermission(\"portfolio:write\")",
+				"withServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "reorderProjects",
+			"file": "src/functions/portfolio.ts",
+			"line": 90,
+			"layer": "portfolio",
+			"verb": "reorder",
+			"verbClass": "standard",
+			"method": "POST",
+			"guards": [
+				"requirePermission(\"portfolio:write\")",
+				"withServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "listPosts",
+			"file": "src/functions/portfolio.ts",
+			"line": 97,
+			"layer": "portfolio",
+			"verb": "list",
+			"verbClass": "standard",
+			"method": "GET",
+			"guards": [
+				"requirePermission(\"portfolio:read\")",
+				"withServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "getPost",
+			"file": "src/functions/portfolio.ts",
+			"line": 102,
+			"layer": "portfolio",
+			"verb": "get",
+			"verbClass": "standard",
+			"method": "GET",
+			"guards": [
+				"requirePermission(\"portfolio:read\")",
+				"withServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "isPostSlugFree",
+			"file": "src/functions/portfolio.ts",
+			"line": 107,
+			"layer": "portfolio",
+			"verb": "is",
+			"verbClass": "standard",
+			"method": "GET",
+			"guards": [
+				"requirePermission(\"portfolio:read\")",
+				"withServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "createPost",
+			"file": "src/functions/portfolio.ts",
+			"line": 112,
+			"layer": "portfolio",
+			"verb": "create",
+			"verbClass": "standard",
+			"method": "POST",
+			"guards": [
+				"requirePermission(\"portfolio:write\")",
+				"withServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "updatePost",
+			"file": "src/functions/portfolio.ts",
+			"line": 117,
+			"layer": "portfolio",
+			"verb": "update",
+			"verbClass": "standard",
+			"method": "POST",
+			"guards": [
+				"requirePermission(\"portfolio:write\")",
+				"withServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "setPostStatus",
+			"file": "src/functions/portfolio.ts",
+			"line": 122,
+			"layer": "portfolio",
+			"verb": "set",
+			"verbClass": "standard",
+			"method": "POST",
+			"guards": [
+				"requirePermission(\"portfolio:publish\")",
+				"withServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "deletePosts",
+			"file": "src/functions/portfolio.ts",
+			"line": 127,
+			"layer": "portfolio",
+			"verb": "delete",
+			"verbClass": "standard",
+			"method": "POST",
+			"guards": [
+				"requirePermission(\"portfolio:write\")",
+				"withServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "listRoles",
+			"file": "src/functions/rbac.ts",
+			"line": 30,
+			"layer": "core",
+			"verb": "list",
+			"verbClass": "standard",
+			"method": "GET",
+			"guards": [
+				"requirePermission(\"roles:read\")",
+				"withServices"
+			],
+			"validator": "none",
+			"handler": "call"
+		},
+		{
+			"name": "listRoleOptions",
+			"file": "src/functions/rbac.ts",
+			"line": 35,
+			"layer": "core",
+			"verb": "list",
+			"verbClass": "standard",
+			"method": "GET",
+			"guards": [
+				"requirePermission(\"users:read\")",
+				"withServices"
+			],
+			"validator": "none",
+			"handler": "call"
+		},
+		{
+			"name": "createRole",
+			"file": "src/functions/rbac.ts",
+			"line": 39,
+			"layer": "core",
+			"verb": "create",
+			"verbClass": "standard",
+			"method": "POST",
+			"guards": [
+				"requirePermission(\"roles:manage\")",
+				"withServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "updateRole",
+			"file": "src/functions/rbac.ts",
+			"line": 44,
+			"layer": "core",
+			"verb": "update",
+			"verbClass": "standard",
+			"method": "POST",
+			"guards": [
+				"requirePermission(\"roles:manage\")",
+				"withServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "deleteRole",
+			"file": "src/functions/rbac.ts",
+			"line": 49,
+			"layer": "core",
+			"verb": "delete",
+			"verbClass": "standard",
+			"method": "POST",
+			"guards": [
+				"requirePermission(\"roles:manage\")",
+				"withServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "updateRolePermissions",
+			"file": "src/functions/rbac.ts",
+			"line": 54,
+			"layer": "core",
+			"verb": "update",
+			"verbClass": "standard",
+			"method": "POST",
+			"guards": [
+				"requirePermission(\"roles:manage\")",
+				"withServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "listUsers",
+			"file": "src/functions/rbac.ts",
+			"line": 59,
+			"layer": "core",
+			"verb": "list",
+			"verbClass": "standard",
+			"method": "GET",
+			"guards": [
+				"requirePermission(\"users:read\")",
+				"withServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "setUserRoles",
+			"file": "src/functions/rbac.ts",
+			"line": 64,
+			"layer": "core",
+			"verb": "set",
+			"verbClass": "standard",
+			"method": "POST",
+			"guards": [
+				"requirePermission(\"users:update\")",
+				"withServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "setUserBanned",
+			"file": "src/functions/rbac.ts",
+			"line": 69,
+			"layer": "core",
+			"verb": "set",
+			"verbClass": "standard",
+			"method": "POST",
+			"guards": [
+				"requirePermission(\"users:ban\")",
+				"withServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "revokeUserSessions",
+			"file": "src/functions/rbac.ts",
+			"line": 75,
+			"layer": "core",
+			"verb": "revoke",
+			"verbClass": "domain",
+			"method": "POST",
+			"guards": [
+				"requirePermission(\"users:ban\")",
+				"withServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "isUserEmailFree",
+			"file": "src/functions/rbac.ts",
+			"line": 81,
+			"layer": "core",
+			"verb": "is",
+			"verbClass": "standard",
+			"method": "GET",
+			"guards": [
+				"requirePermission(\"users:invite\")",
+				"withServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "inviteUser",
+			"file": "src/functions/rbac.ts",
+			"line": 87,
+			"layer": "core",
+			"verb": "invite",
+			"verbClass": "domain",
+			"method": "POST",
+			"guards": [
+				"requirePermission(\"users:invite\")",
+				"withServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "impersonateUser",
+			"file": "src/functions/rbac.ts",
+			"line": 102,
+			"layer": "core",
+			"verb": "impersonate",
+			"verbClass": "domain",
+			"method": "POST",
+			"guards": [
+				"requirePermission(\"users:update\")",
+				"withServices"
+			],
+			"validator": "zodInput",
+			"handler": "block"
+		},
+		{
+			"name": "listStack",
+			"file": "src/functions/stack.ts",
+			"line": 13,
+			"layer": "dev",
+			"verb": "list",
+			"verbClass": "standard",
+			"method": "GET",
+			"guards": [
+				"devOnlyMiddleware"
+			],
+			"validator": "zodInput",
+			"handler": "block"
+		},
+		{
+			"name": "getStackStats",
+			"file": "src/functions/stack.ts",
+			"line": 25,
+			"layer": "dev",
+			"verb": "get",
+			"verbClass": "standard",
+			"method": "GET",
+			"guards": [
+				"devOnlyMiddleware"
+			],
+			"validator": "none",
+			"handler": "block"
+		},
+		{
+			"name": "listTasklineActivity",
+			"file": "src/functions/taskline-admin/activity.ts",
+			"line": 11,
+			"layer": "taskline",
+			"verb": "list",
+			"verbClass": "standard",
+			"method": "GET",
+			"guards": [
+				"requirePermission(\"taskline:read\")",
+				"withServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "getTasklineActivityOptions",
+			"file": "src/functions/taskline-admin/activity.ts",
+			"line": 16,
+			"layer": "taskline",
+			"verb": "get",
+			"verbClass": "standard",
+			"method": "GET",
+			"guards": [
+				"requirePermission(\"taskline:read\")",
+				"withServices"
+			],
+			"validator": "none",
+			"handler": "call"
+		},
+		{
+			"name": "listTasklineWorkspaceAutomations",
+			"file": "src/functions/taskline-admin/automations.ts",
+			"line": 18,
+			"layer": "taskline",
+			"verb": "list",
+			"verbClass": "standard",
+			"method": "GET",
+			"guards": [
+				"requirePermission(\"taskline:configure\")",
+				"withServices"
+			],
+			"validator": "none",
+			"handler": "call"
+		},
+		{
+			"name": "createTasklineWorkspaceAutomation",
+			"file": "src/functions/taskline-admin/automations.ts",
+			"line": 22,
+			"layer": "taskline",
+			"verb": "create",
+			"verbClass": "standard",
+			"method": "POST",
+			"guards": [
+				"requirePermission(\"taskline:configure\")",
+				"withServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "updateTasklineWorkspaceAutomation",
+			"file": "src/functions/taskline-admin/automations.ts",
+			"line": 27,
+			"layer": "taskline",
+			"verb": "update",
+			"verbClass": "standard",
+			"method": "POST",
+			"guards": [
+				"requirePermission(\"taskline:configure\")",
+				"withServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "toggleTasklineWorkspaceAutomation",
+			"file": "src/functions/taskline-admin/automations.ts",
+			"line": 32,
+			"layer": "taskline",
+			"verb": "toggle",
+			"verbClass": "folded",
+			"method": "POST",
+			"guards": [
+				"requirePermission(\"taskline:configure\")",
+				"withServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "deleteTasklineWorkspaceAutomation",
+			"file": "src/functions/taskline-admin/automations.ts",
+			"line": 37,
+			"layer": "taskline",
+			"verb": "delete",
+			"verbClass": "standard",
+			"method": "POST",
+			"guards": [
+				"requirePermission(\"taskline:configure\")",
+				"withServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "previewTasklineWorkspaceAutomation",
+			"file": "src/functions/taskline-admin/automations.ts",
+			"line": 42,
+			"layer": "taskline",
+			"verb": "preview",
+			"verbClass": "domain",
+			"method": "POST",
+			"guards": [
+				"requirePermission(\"taskline:configure\")",
+				"withServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "listTasklineWorkspaceFields",
+			"file": "src/functions/taskline-admin/fields.ts",
+			"line": 15,
+			"layer": "taskline",
+			"verb": "list",
+			"verbClass": "standard",
+			"method": "GET",
+			"guards": [
+				"requirePermission(\"taskline:configure\")",
+				"withServices"
+			],
+			"validator": "none",
+			"handler": "call"
+		},
+		{
+			"name": "createTasklineWorkspaceField",
+			"file": "src/functions/taskline-admin/fields.ts",
+			"line": 19,
+			"layer": "taskline",
+			"verb": "create",
+			"verbClass": "standard",
+			"method": "POST",
+			"guards": [
+				"requirePermission(\"taskline:configure\")",
+				"withServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "updateTasklineWorkspaceField",
+			"file": "src/functions/taskline-admin/fields.ts",
+			"line": 24,
+			"layer": "taskline",
+			"verb": "update",
+			"verbClass": "standard",
+			"method": "POST",
+			"guards": [
+				"requirePermission(\"taskline:configure\")",
+				"withServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "deleteTasklineWorkspaceField",
+			"file": "src/functions/taskline-admin/fields.ts",
+			"line": 29,
+			"layer": "taskline",
+			"verb": "delete",
+			"verbClass": "standard",
+			"method": "POST",
+			"guards": [
+				"requirePermission(\"taskline:configure\")",
+				"withServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "listTasklineMembers",
+			"file": "src/functions/taskline-admin/members.ts",
+			"line": 27,
+			"layer": "taskline",
+			"verb": "list",
+			"verbClass": "standard",
+			"method": "GET",
+			"guards": [
+				"requirePermission(\"taskline:read\")",
+				"withServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "listTasklineMemberOptions",
+			"file": "src/functions/taskline-admin/members.ts",
+			"line": 33,
+			"layer": "taskline",
+			"verb": "list",
+			"verbClass": "standard",
+			"method": "GET",
+			"guards": [
+				"requirePermission(\"taskline:read\")",
+				"withServices"
+			],
+			"validator": "none",
+			"handler": "call"
+		},
+		{
+			"name": "searchTasklineAccounts",
+			"file": "src/functions/taskline-admin/members.ts",
+			"line": 38,
+			"layer": "taskline",
+			"verb": "search",
+			"verbClass": "standard",
+			"method": "GET",
+			"guards": [
+				"requirePermission(\"taskline:manage\")",
+				"withServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "addTasklineMembers",
+			"file": "src/functions/taskline-admin/members.ts",
+			"line": 43,
+			"layer": "taskline",
+			"verb": "add",
+			"verbClass": "standard",
+			"method": "POST",
+			"guards": [
+				"requirePermission(\"taskline:manage\")",
+				"withServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "updateTasklineMember",
+			"file": "src/functions/taskline-admin/members.ts",
+			"line": 48,
+			"layer": "taskline",
+			"verb": "update",
+			"verbClass": "standard",
+			"method": "POST",
+			"guards": [
+				"requirePermission(\"taskline:manage\")",
+				"withServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "deactivateTasklineMember",
+			"file": "src/functions/taskline-admin/members.ts",
+			"line": 53,
+			"layer": "taskline",
+			"verb": "deactivate",
+			"verbClass": "domain",
+			"method": "POST",
+			"guards": [
+				"requirePermission(\"taskline:manage\")",
+				"withServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "reactivateTasklineMember",
+			"file": "src/functions/taskline-admin/members.ts",
+			"line": 58,
+			"layer": "taskline",
+			"verb": "reactivate",
+			"verbClass": "domain",
+			"method": "POST",
+			"guards": [
+				"requirePermission(\"taskline:manage\")",
+				"withServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "listTasklineInvitations",
+			"file": "src/functions/taskline-admin/members.ts",
+			"line": 63,
+			"layer": "taskline",
+			"verb": "list",
+			"verbClass": "standard",
+			"method": "GET",
+			"guards": [
+				"requirePermission(\"taskline:read\")",
+				"withServices"
+			],
+			"validator": "none",
+			"handler": "call"
+		},
+		{
+			"name": "inviteTasklineMember",
+			"file": "src/functions/taskline-admin/members.ts",
+			"line": 67,
+			"layer": "taskline",
+			"verb": "invite",
+			"verbClass": "domain",
+			"method": "POST",
+			"guards": [
+				"requirePermission(\"taskline:manage\")",
+				"withServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "resendTasklineInvitation",
+			"file": "src/functions/taskline-admin/members.ts",
+			"line": 72,
+			"layer": "taskline",
+			"verb": "resend",
+			"verbClass": "domain",
+			"method": "POST",
+			"guards": [
+				"requirePermission(\"taskline:manage\")",
+				"withServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "revokeTasklineInvitation",
+			"file": "src/functions/taskline-admin/members.ts",
+			"line": 77,
+			"layer": "taskline",
+			"verb": "revoke",
+			"verbClass": "domain",
+			"method": "POST",
+			"guards": [
+				"requirePermission(\"taskline:manage\")",
+				"withServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "getTasklineOverview",
+			"file": "src/functions/taskline-admin/overview.ts",
+			"line": 9,
+			"layer": "taskline",
+			"verb": "get",
+			"verbClass": "standard",
+			"method": "GET",
+			"guards": [
+				"requirePermission(\"taskline:read\")",
+				"withServices"
+			],
+			"validator": "none",
+			"handler": "call"
+		},
+		{
+			"name": "listTasklineAdminProjects",
+			"file": "src/functions/taskline-admin/projects.ts",
+			"line": 29,
+			"layer": "taskline",
+			"verb": "list",
+			"verbClass": "standard",
+			"method": "GET",
+			"guards": [
+				"requirePermission(\"taskline:read\")",
+				"withServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "getTasklineAdminProject",
+			"file": "src/functions/taskline-admin/projects.ts",
+			"line": 34,
+			"layer": "taskline",
+			"verb": "get",
+			"verbClass": "standard",
+			"method": "GET",
+			"guards": [
+				"requirePermission(\"taskline:read\")",
+				"withServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "isTasklineProjectKeyFree",
+			"file": "src/functions/taskline-admin/projects.ts",
+			"line": 40,
+			"layer": "taskline",
+			"verb": "is",
+			"verbClass": "standard",
+			"method": "GET",
+			"guards": [
+				"requirePermission(\"taskline:manage\")",
+				"withServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "createTasklineAdminProject",
+			"file": "src/functions/taskline-admin/projects.ts",
+			"line": 45,
+			"layer": "taskline",
+			"verb": "create",
+			"verbClass": "standard",
+			"method": "POST",
+			"guards": [
+				"requirePermission(\"taskline:manage\")",
+				"withServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "updateTasklineAdminProject",
+			"file": "src/functions/taskline-admin/projects.ts",
+			"line": 50,
+			"layer": "taskline",
+			"verb": "update",
+			"verbClass": "standard",
+			"method": "POST",
+			"guards": [
+				"requirePermission(\"taskline:manage\")",
+				"withServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "setTasklineAdminProjectState",
+			"file": "src/functions/taskline-admin/projects.ts",
+			"line": 55,
+			"layer": "taskline",
+			"verb": "set",
+			"verbClass": "standard",
+			"method": "POST",
+			"guards": [
+				"requirePermission(\"taskline:manage\")",
+				"withServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "setTasklineAdminProjectArchived",
+			"file": "src/functions/taskline-admin/projects.ts",
+			"line": 60,
+			"layer": "taskline",
+			"verb": "set",
+			"verbClass": "standard",
+			"method": "POST",
+			"guards": [
+				"requirePermission(\"taskline:manage\")",
+				"withServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "transferTasklineProjectLead",
+			"file": "src/functions/taskline-admin/projects.ts",
+			"line": 65,
+			"layer": "taskline",
+			"verb": "transfer",
+			"verbClass": "domain",
+			"method": "POST",
+			"guards": [
+				"requirePermission(\"taskline:manage\")",
+				"withServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "deleteTasklineAdminProject",
+			"file": "src/functions/taskline-admin/projects.ts",
+			"line": 71,
+			"layer": "taskline",
+			"verb": "delete",
+			"verbClass": "standard",
+			"method": "POST",
+			"guards": [
+				"requirePermission(\"taskline:manage\")",
+				"withServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "exportTasklineAdminProject",
+			"file": "src/functions/taskline-admin/projects.ts",
+			"line": 76,
+			"layer": "taskline",
+			"verb": "export",
+			"verbClass": "standard",
+			"method": "POST",
+			"guards": [
+				"requirePermission(\"taskline:read\")",
+				"withServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "setTasklineAdminProjectMember",
+			"file": "src/functions/taskline-admin/projects.ts",
+			"line": 81,
+			"layer": "taskline",
+			"verb": "set",
+			"verbClass": "standard",
+			"method": "POST",
+			"guards": [
+				"requirePermission(\"taskline:manage\")",
+				"withServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "removeTasklineAdminProjectMember",
+			"file": "src/functions/taskline-admin/projects.ts",
+			"line": 86,
+			"layer": "taskline",
+			"verb": "remove",
+			"verbClass": "standard",
+			"method": "POST",
+			"guards": [
+				"requirePermission(\"taskline:manage\")",
+				"withServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "getTasklineAdminReports",
+			"file": "src/functions/taskline-admin/reports.ts",
+			"line": 10,
+			"layer": "taskline",
+			"verb": "get",
+			"verbClass": "standard",
+			"method": "GET",
+			"guards": [
+				"requirePermission(\"taskline:read\")",
+				"withServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "getTasklineWorkspace",
+			"file": "src/functions/taskline-admin/settings.ts",
+			"line": 18,
+			"layer": "taskline",
+			"verb": "get",
+			"verbClass": "standard",
+			"method": "GET",
+			"guards": [
+				"requirePermission(\"taskline:configure\")",
+				"withServices"
+			],
+			"validator": "none",
+			"handler": "call"
+		},
+		{
+			"name": "updateTasklineWorkspace",
+			"file": "src/functions/taskline-admin/settings.ts",
+			"line": 22,
+			"layer": "taskline",
+			"verb": "update",
+			"verbClass": "standard",
+			"method": "POST",
+			"guards": [
+				"requirePermission(\"taskline:configure\")",
+				"withServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "getTasklineWorkflows",
+			"file": "src/functions/taskline-admin/settings.ts",
+			"line": 27,
+			"layer": "taskline",
+			"verb": "get",
+			"verbClass": "standard",
+			"method": "GET",
+			"guards": [
+				"requirePermission(\"taskline:configure\")",
+				"withServices"
+			],
+			"validator": "none",
+			"handler": "call"
+		},
+		{
+			"name": "updateTasklineWorkflows",
+			"file": "src/functions/taskline-admin/settings.ts",
+			"line": 31,
+			"layer": "taskline",
+			"verb": "update",
+			"verbClass": "standard",
+			"method": "POST",
+			"guards": [
+				"requirePermission(\"taskline:configure\")",
+				"withServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "createTasklineWorkspaceLabel",
+			"file": "src/functions/taskline-admin/settings.ts",
+			"line": 36,
+			"layer": "taskline",
+			"verb": "create",
+			"verbClass": "standard",
+			"method": "POST",
+			"guards": [
+				"requirePermission(\"taskline:configure\")",
+				"withServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "updateTasklineWorkspaceLabel",
+			"file": "src/functions/taskline-admin/settings.ts",
+			"line": 41,
+			"layer": "taskline",
+			"verb": "update",
+			"verbClass": "standard",
+			"method": "POST",
+			"guards": [
+				"requirePermission(\"taskline:configure\")",
+				"withServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "deleteTasklineWorkspaceLabel",
+			"file": "src/functions/taskline-admin/settings.ts",
+			"line": 46,
+			"layer": "taskline",
+			"verb": "delete",
+			"verbClass": "standard",
+			"method": "POST",
+			"guards": [
+				"requirePermission(\"taskline:configure\")",
+				"withServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "listTasklineAdminTemplates",
+			"file": "src/functions/taskline-admin/templates.ts",
+			"line": 18,
+			"layer": "taskline",
+			"verb": "list",
+			"verbClass": "standard",
+			"method": "GET",
+			"guards": [
+				"requirePermission(\"taskline:configure\")",
+				"withServices"
+			],
+			"validator": "none",
+			"handler": "call"
+		},
+		{
+			"name": "createTasklineAdminTemplate",
+			"file": "src/functions/taskline-admin/templates.ts",
+			"line": 22,
+			"layer": "taskline",
+			"verb": "create",
+			"verbClass": "standard",
+			"method": "POST",
+			"guards": [
+				"requirePermission(\"taskline:configure\")",
+				"withServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "updateTasklineAdminTemplate",
+			"file": "src/functions/taskline-admin/templates.ts",
+			"line": 27,
+			"layer": "taskline",
+			"verb": "update",
+			"verbClass": "standard",
+			"method": "POST",
+			"guards": [
+				"requirePermission(\"taskline:configure\")",
+				"withServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "deleteTasklineAdminTemplate",
+			"file": "src/functions/taskline-admin/templates.ts",
+			"line": 32,
+			"layer": "taskline",
+			"verb": "delete",
+			"verbClass": "standard",
+			"method": "POST",
+			"guards": [
+				"requirePermission(\"taskline:configure\")",
+				"withServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "saveTasklineProjectAsTemplate",
+			"file": "src/functions/taskline-admin/templates.ts",
+			"line": 38,
+			"layer": "taskline",
+			"verb": "save",
+			"verbClass": "folded",
+			"method": "POST",
+			"guards": [
+				"requirePermission(\"taskline:configure\")",
+				"withServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "listTasklineAdminTemplateChoices",
+			"file": "src/functions/taskline-admin/templates.ts",
+			"line": 44,
+			"layer": "taskline",
+			"verb": "list",
+			"verbClass": "standard",
+			"method": "GET",
+			"guards": [
+				"requirePermission(\"taskline:manage\")",
+				"withServices"
+			],
+			"validator": "none",
+			"handler": "call"
+		},
+		{
+			"name": "listTasklineTimeEntries",
+			"file": "src/functions/taskline-admin/time.ts",
+			"line": 21,
+			"layer": "taskline",
+			"verb": "list",
+			"verbClass": "standard",
+			"method": "GET",
+			"guards": [
+				"requirePermission(\"taskline:time\")",
+				"withServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "getTasklineTimeOptions",
+			"file": "src/functions/taskline-admin/time.ts",
+			"line": 26,
+			"layer": "taskline",
+			"verb": "get",
+			"verbClass": "standard",
+			"method": "GET",
+			"guards": [
+				"requirePermission(\"taskline:time\")",
+				"withServices"
+			],
+			"validator": "none",
+			"handler": "call"
+		},
+		{
+			"name": "updateTasklineAdminTimeEntry",
+			"file": "src/functions/taskline-admin/time.ts",
+			"line": 30,
+			"layer": "taskline",
+			"verb": "update",
+			"verbClass": "standard",
+			"method": "POST",
+			"guards": [
+				"requirePermission(\"taskline:time\")",
+				"withServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "deleteTasklineAdminTimeEntry",
+			"file": "src/functions/taskline-admin/time.ts",
+			"line": 35,
+			"layer": "taskline",
+			"verb": "delete",
+			"verbClass": "standard",
+			"method": "POST",
+			"guards": [
+				"requirePermission(\"taskline:time\")",
+				"withServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "setTasklineTimesheetLock",
+			"file": "src/functions/taskline-admin/time.ts",
+			"line": 40,
+			"layer": "taskline",
+			"verb": "set",
+			"verbClass": "standard",
+			"method": "POST",
+			"guards": [
+				"requirePermission(\"taskline:time\")",
+				"withServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "getTasklineUtilization",
+			"file": "src/functions/taskline-admin/time.ts",
+			"line": 45,
+			"layer": "taskline",
+			"verb": "get",
+			"verbClass": "standard",
+			"method": "GET",
+			"guards": [
+				"requirePermission(\"taskline:time\")",
+				"withServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "exportTasklineTimeEntries",
+			"file": "src/functions/taskline-admin/time.ts",
+			"line": 50,
+			"layer": "taskline",
+			"verb": "export",
+			"verbClass": "standard",
+			"method": "POST",
+			"guards": [
+				"requirePermission(\"taskline:time\")",
+				"withServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "listTasklineAutomations",
+			"file": "src/functions/taskline/automations.ts",
+			"line": 17,
+			"layer": "taskline",
+			"verb": "list",
+			"verbClass": "standard",
+			"method": "GET",
+			"guards": [
+				"requireTasklineUser",
+				"withTasklineServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "createTasklineAutomation",
+			"file": "src/functions/taskline/automations.ts",
+			"line": 22,
+			"layer": "taskline",
+			"verb": "create",
+			"verbClass": "standard",
+			"method": "POST",
+			"guards": [
+				"requireTasklineUser",
+				"withTasklineServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "updateTasklineAutomation",
+			"file": "src/functions/taskline/automations.ts",
+			"line": 27,
+			"layer": "taskline",
+			"verb": "update",
+			"verbClass": "standard",
+			"method": "POST",
+			"guards": [
+				"requireTasklineUser",
+				"withTasklineServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "toggleTasklineAutomation",
+			"file": "src/functions/taskline/automations.ts",
+			"line": 32,
+			"layer": "taskline",
+			"verb": "toggle",
+			"verbClass": "folded",
+			"method": "POST",
+			"guards": [
+				"requireTasklineUser",
+				"withTasklineServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "deleteTasklineAutomation",
+			"file": "src/functions/taskline/automations.ts",
+			"line": 37,
+			"layer": "taskline",
+			"verb": "delete",
+			"verbClass": "standard",
+			"method": "POST",
+			"guards": [
+				"requireTasklineUser",
+				"withTasklineServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "previewTasklineAutomation",
+			"file": "src/functions/taskline/automations.ts",
+			"line": 42,
+			"layer": "taskline",
+			"verb": "preview",
+			"verbClass": "domain",
+			"method": "POST",
+			"guards": [
+				"requireTasklineUser",
+				"withTasklineServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "addTasklineComment",
+			"file": "src/functions/taskline/collab.ts",
+			"line": 20,
+			"layer": "taskline",
+			"verb": "add",
+			"verbClass": "standard",
+			"method": "POST",
+			"guards": [
+				"requireTasklineUser",
+				"withTasklineServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "updateTasklineComment",
+			"file": "src/functions/taskline/collab.ts",
+			"line": 25,
+			"layer": "taskline",
+			"verb": "update",
+			"verbClass": "standard",
+			"method": "POST",
+			"guards": [
+				"requireTasklineUser",
+				"withTasklineServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "deleteTasklineComment",
+			"file": "src/functions/taskline/collab.ts",
+			"line": 30,
+			"layer": "taskline",
+			"verb": "delete",
+			"verbClass": "standard",
+			"method": "POST",
+			"guards": [
+				"requireTasklineUser",
+				"withTasklineServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "watchTasklineTask",
+			"file": "src/functions/taskline/collab.ts",
+			"line": 35,
+			"layer": "taskline",
+			"verb": "watch",
+			"verbClass": "domain",
+			"method": "POST",
+			"guards": [
+				"requireTasklineUser",
+				"withTasklineServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "addTasklineTaskFiles",
+			"file": "src/functions/taskline/collab.ts",
+			"line": 40,
+			"layer": "taskline",
+			"verb": "add",
+			"verbClass": "standard",
+			"method": "POST",
+			"guards": [
+				"requireTasklineUser",
+				"withTasklineServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "removeTasklineTaskFile",
+			"file": "src/functions/taskline/collab.ts",
+			"line": 45,
+			"layer": "taskline",
+			"verb": "remove",
+			"verbClass": "standard",
+			"method": "POST",
+			"guards": [
+				"requireTasklineUser",
+				"withTasklineServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "getTasklineUploadSettings",
+			"file": "src/functions/taskline/collab.ts",
+			"line": 51,
+			"layer": "taskline",
+			"verb": "get",
+			"verbClass": "standard",
+			"method": "GET",
+			"guards": [
+				"requireTasklineUser",
+				"withTasklineServices"
+			],
+			"validator": "none",
+			"handler": "call"
+		},
+		{
+			"name": "signTasklineUpload",
+			"file": "src/functions/taskline/collab.ts",
+			"line": 55,
+			"layer": "taskline",
+			"verb": "sign",
+			"verbClass": "domain",
+			"method": "POST",
+			"guards": [
+				"requireTasklineUser",
+				"withTasklineServices"
+			],
+			"validator": "none",
+			"handler": "call"
+		},
+		{
+			"name": "confirmTasklineUpload",
+			"file": "src/functions/taskline/collab.ts",
+			"line": 59,
+			"layer": "taskline",
+			"verb": "confirm",
+			"verbClass": "domain",
+			"method": "POST",
+			"guards": [
+				"requireTasklineUser",
+				"withTasklineServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "discardTasklineUpload",
+			"file": "src/functions/taskline/collab.ts",
+			"line": 65,
+			"layer": "taskline",
+			"verb": "discard",
+			"verbClass": "domain",
+			"method": "POST",
+			"guards": [
+				"requireTasklineUser",
+				"withTasklineServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "createTasklineField",
+			"file": "src/functions/taskline/fields.ts",
+			"line": 10,
+			"layer": "taskline",
+			"verb": "create",
+			"verbClass": "standard",
+			"method": "POST",
+			"guards": [
+				"requireTasklineUser",
+				"withTasklineServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "updateTasklineField",
+			"file": "src/functions/taskline/fields.ts",
+			"line": 15,
+			"layer": "taskline",
+			"verb": "update",
+			"verbClass": "standard",
+			"method": "POST",
+			"guards": [
+				"requireTasklineUser",
+				"withTasklineServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "deleteTasklineField",
+			"file": "src/functions/taskline/fields.ts",
+			"line": 20,
+			"layer": "taskline",
+			"verb": "delete",
+			"verbClass": "standard",
+			"method": "POST",
+			"guards": [
+				"requireTasklineUser",
+				"withTasklineServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "searchTasklineTasks",
+			"file": "src/functions/taskline/find.ts",
+			"line": 19,
+			"layer": "taskline",
+			"verb": "search",
+			"verbClass": "standard",
+			"method": "GET",
+			"guards": [
+				"requireTasklineUser",
+				"withTasklineServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "findTasklineTasks",
+			"file": "src/functions/taskline/find.ts",
+			"line": 24,
+			"layer": "taskline",
+			"verb": "find",
+			"verbClass": "folded",
+			"method": "GET",
+			"guards": [
+				"requireTasklineUser",
+				"withTasklineServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "listTasklineSavedViews",
+			"file": "src/functions/taskline/find.ts",
+			"line": 29,
+			"layer": "taskline",
+			"verb": "list",
+			"verbClass": "standard",
+			"method": "GET",
+			"guards": [
+				"requireTasklineUser",
+				"withTasklineServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "saveTasklineSavedView",
+			"file": "src/functions/taskline/find.ts",
+			"line": 34,
+			"layer": "taskline",
+			"verb": "save",
+			"verbClass": "folded",
+			"method": "POST",
+			"guards": [
+				"requireTasklineUser",
+				"withTasklineServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "deleteTasklineSavedView",
+			"file": "src/functions/taskline/find.ts",
+			"line": 39,
+			"layer": "taskline",
+			"verb": "delete",
+			"verbClass": "standard",
+			"method": "POST",
+			"guards": [
+				"requireTasklineUser",
+				"withTasklineServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "importTasklineTasks",
+			"file": "src/functions/taskline/find.ts",
+			"line": 44,
+			"layer": "taskline",
+			"verb": "import",
+			"verbClass": "standard",
+			"method": "POST",
+			"guards": [
+				"requireTasklineUser",
+				"withTasklineServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "getTasklineNav",
+			"file": "src/functions/taskline/home.ts",
+			"line": 8,
+			"layer": "taskline",
+			"verb": "get",
+			"verbClass": "standard",
+			"method": "GET",
+			"guards": [
+				"requireTasklineUser",
+				"withTasklineServices"
+			],
+			"validator": "none",
+			"handler": "call"
+		},
+		{
+			"name": "listMyTasklineTasks",
+			"file": "src/functions/taskline/home.ts",
+			"line": 12,
+			"layer": "taskline",
+			"verb": "list",
+			"verbClass": "standard",
+			"method": "GET",
+			"guards": [
+				"requireTasklineUser",
+				"withTasklineServices"
+			],
+			"validator": "none",
+			"handler": "call"
+		},
+		{
+			"name": "listTasklineInbox",
+			"file": "src/functions/taskline/inbox.ts",
+			"line": 10,
+			"layer": "taskline",
+			"verb": "list",
+			"verbClass": "standard",
+			"method": "GET",
+			"guards": [
+				"requireTasklineUser",
+				"withTasklineServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "getTasklineUnread",
+			"file": "src/functions/taskline/inbox.ts",
+			"line": 16,
+			"layer": "taskline",
+			"verb": "get",
+			"verbClass": "standard",
+			"method": "GET",
+			"guards": [
+				"requireTasklineUser",
+				"withTasklineServices"
+			],
+			"validator": "none",
+			"handler": "call"
+		},
+		{
+			"name": "markTasklineRead",
+			"file": "src/functions/taskline/inbox.ts",
+			"line": 20,
+			"layer": "taskline",
+			"verb": "mark",
+			"verbClass": "folded",
+			"method": "POST",
+			"guards": [
+				"requireTasklineUser",
+				"withTasklineServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "getTasklineNotifySettings",
+			"file": "src/functions/taskline/inbox.ts",
+			"line": 25,
+			"layer": "taskline",
+			"verb": "get",
+			"verbClass": "standard",
+			"method": "GET",
+			"guards": [
+				"requireTasklineUser",
+				"withTasklineServices"
+			],
+			"validator": "none",
+			"handler": "call"
+		},
+		{
+			"name": "saveTasklineNotifySettings",
+			"file": "src/functions/taskline/inbox.ts",
+			"line": 29,
+			"layer": "taskline",
+			"verb": "save",
+			"verbClass": "folded",
+			"method": "POST",
+			"guards": [
+				"requireTasklineUser",
+				"withTasklineServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "listTasklineProjects",
+			"file": "src/functions/taskline/projects.ts",
+			"line": 30,
+			"layer": "taskline",
+			"verb": "list",
+			"verbClass": "standard",
+			"method": "GET",
+			"guards": [
+				"requireTasklineUser",
+				"withTasklineServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "createTasklineProject",
+			"file": "src/functions/taskline/projects.ts",
+			"line": 35,
+			"layer": "taskline",
+			"verb": "create",
+			"verbClass": "standard",
+			"method": "POST",
+			"guards": [
+				"requireTasklineUser",
+				"withTasklineServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "updateTasklineProject",
+			"file": "src/functions/taskline/projects.ts",
+			"line": 40,
+			"layer": "taskline",
+			"verb": "update",
+			"verbClass": "standard",
+			"method": "POST",
+			"guards": [
+				"requireTasklineUser",
+				"withTasklineServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "setTasklineProjectState",
+			"file": "src/functions/taskline/projects.ts",
+			"line": 45,
+			"layer": "taskline",
+			"verb": "set",
+			"verbClass": "standard",
+			"method": "POST",
+			"guards": [
+				"requireTasklineUser",
+				"withTasklineServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "setTasklineProjectArchived",
+			"file": "src/functions/taskline/projects.ts",
+			"line": 50,
+			"layer": "taskline",
+			"verb": "set",
+			"verbClass": "standard",
+			"method": "POST",
+			"guards": [
+				"requireTasklineUser",
+				"withTasklineServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "setTasklineProjectStar",
+			"file": "src/functions/taskline/projects.ts",
+			"line": 55,
+			"layer": "taskline",
+			"verb": "set",
+			"verbClass": "standard",
+			"method": "POST",
+			"guards": [
+				"requireTasklineUser",
+				"withTasklineServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "joinTasklineProject",
+			"file": "src/functions/taskline/projects.ts",
+			"line": 60,
+			"layer": "taskline",
+			"verb": "join",
+			"verbClass": "domain",
+			"method": "POST",
+			"guards": [
+				"requireTasklineUser",
+				"withTasklineServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "listTasklineProjectMembers",
+			"file": "src/functions/taskline/projects.ts",
+			"line": 65,
+			"layer": "taskline",
+			"verb": "list",
+			"verbClass": "standard",
+			"method": "GET",
+			"guards": [
+				"requireTasklineUser",
+				"withTasklineServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "setTasklineProjectMember",
+			"file": "src/functions/taskline/projects.ts",
+			"line": 72,
+			"layer": "taskline",
+			"verb": "set",
+			"verbClass": "standard",
+			"method": "POST",
+			"guards": [
+				"requireTasklineUser",
+				"withTasklineServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "removeTasklineProjectMember",
+			"file": "src/functions/taskline/projects.ts",
+			"line": 77,
+			"layer": "taskline",
+			"verb": "remove",
+			"verbClass": "standard",
+			"method": "POST",
+			"guards": [
+				"requireTasklineUser",
+				"withTasklineServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "listTasklineProjectUpdates",
+			"file": "src/functions/taskline/projects.ts",
+			"line": 83,
+			"layer": "taskline",
+			"verb": "list",
+			"verbClass": "standard",
+			"method": "GET",
+			"guards": [
+				"requireTasklineUser",
+				"withTasklineServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "postTasklineProjectUpdate",
+			"file": "src/functions/taskline/projects.ts",
+			"line": 88,
+			"layer": "taskline",
+			"verb": "post",
+			"verbClass": "domain",
+			"method": "POST",
+			"guards": [
+				"requireTasklineUser",
+				"withTasklineServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "deleteTasklineProjectUpdate",
+			"file": "src/functions/taskline/projects.ts",
+			"line": 93,
+			"layer": "taskline",
+			"verb": "delete",
+			"verbClass": "standard",
+			"method": "POST",
+			"guards": [
+				"requireTasklineUser",
+				"withTasklineServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "locateTasklineProject",
+			"file": "src/functions/taskline/projects.ts",
+			"line": 99,
+			"layer": "taskline",
+			"verb": "locate",
+			"verbClass": "folded",
+			"method": "GET",
+			"guards": [
+				"requireTasklineUser",
+				"withTasklineServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "getTasklineProjectReports",
+			"file": "src/functions/taskline/reports.ts",
+			"line": 9,
+			"layer": "taskline",
+			"verb": "get",
+			"verbClass": "standard",
+			"method": "GET",
+			"guards": [
+				"requireTasklineUser",
+				"withTasklineServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "createTasklineSprint",
+			"file": "src/functions/taskline/sprints.ts",
+			"line": 16,
+			"layer": "taskline",
+			"verb": "create",
+			"verbClass": "standard",
+			"method": "POST",
+			"guards": [
+				"requireTasklineUser",
+				"withTasklineServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "updateTasklineSprint",
+			"file": "src/functions/taskline/sprints.ts",
+			"line": 21,
+			"layer": "taskline",
+			"verb": "update",
+			"verbClass": "standard",
+			"method": "POST",
+			"guards": [
+				"requireTasklineUser",
+				"withTasklineServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "deleteTasklineSprint",
+			"file": "src/functions/taskline/sprints.ts",
+			"line": 26,
+			"layer": "taskline",
+			"verb": "delete",
+			"verbClass": "standard",
+			"method": "POST",
+			"guards": [
+				"requireTasklineUser",
+				"withTasklineServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "startTasklineSprint",
+			"file": "src/functions/taskline/sprints.ts",
+			"line": 31,
+			"layer": "taskline",
+			"verb": "start",
+			"verbClass": "domain",
+			"method": "POST",
+			"guards": [
+				"requireTasklineUser",
+				"withTasklineServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "completeTasklineSprint",
+			"file": "src/functions/taskline/sprints.ts",
+			"line": 36,
+			"layer": "taskline",
+			"verb": "complete",
+			"verbClass": "domain",
+			"method": "POST",
+			"guards": [
+				"requireTasklineUser",
+				"withTasklineServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "rankTasklineTask",
+			"file": "src/functions/taskline/sprints.ts",
+			"line": 41,
+			"layer": "taskline",
+			"verb": "rank",
+			"verbClass": "domain",
+			"method": "POST",
+			"guards": [
+				"requireTasklineUser",
+				"withTasklineServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "getTasklineSprintReport",
+			"file": "src/functions/taskline/sprints.ts",
+			"line": 46,
+			"layer": "taskline",
+			"verb": "get",
+			"verbClass": "standard",
+			"method": "GET",
+			"guards": [
+				"requireTasklineUser",
+				"withTasklineServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "listTasklineTasks",
+			"file": "src/functions/taskline/tasks.ts",
+			"line": 29,
+			"layer": "taskline",
+			"verb": "list",
+			"verbClass": "standard",
+			"method": "GET",
+			"guards": [
+				"requireTasklineUser",
+				"withTasklineServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "getTasklineTask",
+			"file": "src/functions/taskline/tasks.ts",
+			"line": 34,
+			"layer": "taskline",
+			"verb": "get",
+			"verbClass": "standard",
+			"method": "GET",
+			"guards": [
+				"requireTasklineUser",
+				"withTasklineServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "createTasklineTask",
+			"file": "src/functions/taskline/tasks.ts",
+			"line": 39,
+			"layer": "taskline",
+			"verb": "create",
+			"verbClass": "standard",
+			"method": "POST",
+			"guards": [
+				"requireTasklineUser",
+				"withTasklineServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "updateTasklineTask",
+			"file": "src/functions/taskline/tasks.ts",
+			"line": 44,
+			"layer": "taskline",
+			"verb": "update",
+			"verbClass": "standard",
+			"method": "POST",
+			"guards": [
+				"requireTasklineUser",
+				"withTasklineServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "patchTasklineTask",
+			"file": "src/functions/taskline/tasks.ts",
+			"line": 49,
+			"layer": "taskline",
+			"verb": "patch",
+			"verbClass": "folded",
+			"method": "POST",
+			"guards": [
+				"requireTasklineUser",
+				"withTasklineServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "moveTasklineTask",
+			"file": "src/functions/taskline/tasks.ts",
+			"line": 54,
+			"layer": "taskline",
+			"verb": "move",
+			"verbClass": "domain",
+			"method": "POST",
+			"guards": [
+				"requireTasklineUser",
+				"withTasklineServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "setTasklineChecklist",
+			"file": "src/functions/taskline/tasks.ts",
+			"line": 59,
+			"layer": "taskline",
+			"verb": "set",
+			"verbClass": "standard",
+			"method": "POST",
+			"guards": [
+				"requireTasklineUser",
+				"withTasklineServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "trashTasklineTask",
+			"file": "src/functions/taskline/tasks.ts",
+			"line": 64,
+			"layer": "taskline",
+			"verb": "trash",
+			"verbClass": "standard",
+			"method": "POST",
+			"guards": [
+				"requireTasklineUser",
+				"withTasklineServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "restoreTasklineTask",
+			"file": "src/functions/taskline/tasks.ts",
+			"line": 69,
+			"layer": "taskline",
+			"verb": "restore",
+			"verbClass": "standard",
+			"method": "POST",
+			"guards": [
+				"requireTasklineUser",
+				"withTasklineServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "listTasklineTrash",
+			"file": "src/functions/taskline/tasks.ts",
+			"line": 74,
+			"layer": "taskline",
+			"verb": "list",
+			"verbClass": "standard",
+			"method": "GET",
+			"guards": [
+				"requireTasklineUser",
+				"withTasklineServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "listTasklineTaskPage",
+			"file": "src/functions/taskline/tasks.ts",
+			"line": 79,
+			"layer": "taskline",
+			"verb": "list",
+			"verbClass": "standard",
+			"method": "GET",
+			"guards": [
+				"requireTasklineUser",
+				"withTasklineServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "bulkUpdateTasklineTasks",
+			"file": "src/functions/taskline/tasks.ts",
+			"line": 84,
+			"layer": "taskline",
+			"verb": "bulk",
+			"verbClass": "domain",
+			"method": "POST",
+			"guards": [
+				"requireTasklineUser",
+				"withTasklineServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "purgeTasklineTask",
+			"file": "src/functions/taskline/tasks.ts",
+			"line": 89,
+			"layer": "taskline",
+			"verb": "purge",
+			"verbClass": "standard",
+			"method": "POST",
+			"guards": [
+				"requireTasklineUser",
+				"withTasklineServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "listTasklineProjectActivity",
+			"file": "src/functions/taskline/tasks.ts",
+			"line": 94,
+			"layer": "taskline",
+			"verb": "list",
+			"verbClass": "standard",
+			"method": "GET",
+			"guards": [
+				"requireTasklineUser",
+				"withTasklineServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "getTasklineProjectRev",
+			"file": "src/functions/taskline/tasks.ts",
+			"line": 100,
+			"layer": "taskline",
+			"verb": "get",
+			"verbClass": "standard",
+			"method": "GET",
+			"guards": [
+				"requireTasklineUser",
+				"withTasklineServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "listTasklineTemplates",
+			"file": "src/functions/taskline/templates.ts",
+			"line": 9,
+			"layer": "taskline",
+			"verb": "list",
+			"verbClass": "standard",
+			"method": "GET",
+			"guards": [
+				"requireTasklineUser",
+				"withTasklineServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "startTasklineTimer",
+			"file": "src/functions/taskline/time.ts",
+			"line": 18,
+			"layer": "taskline",
+			"verb": "start",
+			"verbClass": "domain",
+			"method": "POST",
+			"guards": [
+				"requireTasklineUser",
+				"withTasklineServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "stopTasklineTimer",
+			"file": "src/functions/taskline/time.ts",
+			"line": 23,
+			"layer": "taskline",
+			"verb": "stop",
+			"verbClass": "domain",
+			"method": "POST",
+			"guards": [
+				"requireTasklineUser",
+				"withTasklineServices"
+			],
+			"validator": "none",
+			"handler": "call"
+		},
+		{
+			"name": "logTasklineTime",
+			"file": "src/functions/taskline/time.ts",
+			"line": 27,
+			"layer": "taskline",
+			"verb": "log",
+			"verbClass": "domain",
+			"method": "POST",
+			"guards": [
+				"requireTasklineUser",
+				"withTasklineServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "updateTasklineTimeEntry",
+			"file": "src/functions/taskline/time.ts",
+			"line": 32,
+			"layer": "taskline",
+			"verb": "update",
+			"verbClass": "standard",
+			"method": "POST",
+			"guards": [
+				"requireTasklineUser",
+				"withTasklineServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "deleteTasklineTimeEntry",
+			"file": "src/functions/taskline/time.ts",
+			"line": 37,
+			"layer": "taskline",
+			"verb": "delete",
+			"verbClass": "standard",
+			"method": "POST",
+			"guards": [
+				"requireTasklineUser",
+				"withTasklineServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "setTasklineTimesheetCell",
+			"file": "src/functions/taskline/time.ts",
+			"line": 42,
+			"layer": "taskline",
+			"verb": "set",
+			"verbClass": "standard",
+			"method": "POST",
+			"guards": [
+				"requireTasklineUser",
+				"withTasklineServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "copyTasklineTimesheetWeek",
+			"file": "src/functions/taskline/time.ts",
+			"line": 47,
+			"layer": "taskline",
+			"verb": "copy",
+			"verbClass": "domain",
+			"method": "POST",
+			"guards": [
+				"requireTasklineUser",
+				"withTasklineServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "getTasklineTimesheet",
+			"file": "src/functions/taskline/time.ts",
+			"line": 52,
+			"layer": "taskline",
+			"verb": "get",
+			"verbClass": "standard",
+			"method": "GET",
+			"guards": [
+				"requireTasklineUser",
+				"withTasklineServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "getTasklineProjectTime",
+			"file": "src/functions/taskline/time.ts",
+			"line": 57,
+			"layer": "taskline",
+			"verb": "get",
+			"verbClass": "standard",
+			"method": "GET",
+			"guards": [
+				"requireTasklineUser",
+				"withTasklineServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "createTasklineMilestone",
+			"file": "src/functions/taskline/timeline.ts",
+			"line": 15,
+			"layer": "taskline",
+			"verb": "create",
+			"verbClass": "standard",
+			"method": "POST",
+			"guards": [
+				"requireTasklineUser",
+				"withTasklineServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "updateTasklineMilestone",
+			"file": "src/functions/taskline/timeline.ts",
+			"line": 20,
+			"layer": "taskline",
+			"verb": "update",
+			"verbClass": "standard",
+			"method": "POST",
+			"guards": [
+				"requireTasklineUser",
+				"withTasklineServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "deleteTasklineMilestone",
+			"file": "src/functions/taskline/timeline.ts",
+			"line": 25,
+			"layer": "taskline",
+			"verb": "delete",
+			"verbClass": "standard",
+			"method": "POST",
+			"guards": [
+				"requireTasklineUser",
+				"withTasklineServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "addTasklineDependency",
+			"file": "src/functions/taskline/timeline.ts",
+			"line": 30,
+			"layer": "taskline",
+			"verb": "add",
+			"verbClass": "standard",
+			"method": "POST",
+			"guards": [
+				"requireTasklineUser",
+				"withTasklineServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "removeTasklineDependency",
+			"file": "src/functions/taskline/timeline.ts",
+			"line": 35,
+			"layer": "taskline",
+			"verb": "remove",
+			"verbClass": "standard",
+			"method": "POST",
+			"guards": [
+				"requireTasklineUser",
+				"withTasklineServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "createTasklineStatus",
+			"file": "src/functions/taskline/workflow.ts",
+			"line": 17,
+			"layer": "taskline",
+			"verb": "create",
+			"verbClass": "standard",
+			"method": "POST",
+			"guards": [
+				"requireTasklineUser",
+				"withTasklineServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "updateTasklineStatus",
+			"file": "src/functions/taskline/workflow.ts",
+			"line": 22,
+			"layer": "taskline",
+			"verb": "update",
+			"verbClass": "standard",
+			"method": "POST",
+			"guards": [
+				"requireTasklineUser",
+				"withTasklineServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "deleteTasklineStatus",
+			"file": "src/functions/taskline/workflow.ts",
+			"line": 27,
+			"layer": "taskline",
+			"verb": "delete",
+			"verbClass": "standard",
+			"method": "POST",
+			"guards": [
+				"requireTasklineUser",
+				"withTasklineServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "createTasklineLabel",
+			"file": "src/functions/taskline/workflow.ts",
+			"line": 32,
+			"layer": "taskline",
+			"verb": "create",
+			"verbClass": "standard",
+			"method": "POST",
+			"guards": [
+				"requireTasklineUser",
+				"withTasklineServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "updateTasklineLabel",
+			"file": "src/functions/taskline/workflow.ts",
+			"line": 37,
+			"layer": "taskline",
+			"verb": "update",
+			"verbClass": "standard",
+			"method": "POST",
+			"guards": [
+				"requireTasklineUser",
+				"withTasklineServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "deleteTasklineLabel",
+			"file": "src/functions/taskline/workflow.ts",
+			"line": 42,
+			"layer": "taskline",
+			"verb": "delete",
+			"verbClass": "standard",
+			"method": "POST",
+			"guards": [
+				"requireTasklineUser",
+				"withTasklineServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "getTasklineWorkspace",
+			"file": "src/functions/taskline/workspaces.ts",
+			"line": 13,
+			"layer": "taskline",
+			"verb": "get",
+			"verbClass": "standard",
+			"method": "GET",
+			"guards": [
+				"requireTasklineUser",
+				"withTasklineServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "startTasklineSandbox",
+			"file": "src/functions/taskline/workspaces.ts",
+			"line": 18,
+			"layer": "taskline",
+			"verb": "start",
+			"verbClass": "domain",
+			"method": "POST",
+			"guards": [
+				"requireTasklineUser",
+				"withTasklineServices"
+			],
+			"validator": "none",
+			"handler": "call"
+		},
+		{
+			"name": "listTasklineMembers",
+			"file": "src/functions/taskline/workspaces.ts",
+			"line": 22,
+			"layer": "taskline",
+			"verb": "list",
+			"verbClass": "standard",
+			"method": "GET",
+			"guards": [
+				"requireTasklineUser",
+				"withTasklineServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "listPublicTestCrud",
+			"file": "src/functions/test-crud-public.ts",
+			"line": 18,
+			"layer": "core",
+			"verb": "list",
+			"verbClass": "standard",
+			"method": "GET",
+			"guards": [
+				"devOnlyMiddleware",
+				"withPublicServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "getPublicTestCrud",
+			"file": "src/functions/test-crud-public.ts",
+			"line": 26,
+			"layer": "core",
+			"verb": "get",
+			"verbClass": "standard",
+			"method": "GET",
+			"guards": [
+				"devOnlyMiddleware",
+				"withPublicServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "listTestCrud",
+			"file": "src/functions/test-crud.ts",
+			"line": 26,
+			"layer": "core",
+			"verb": "list",
+			"verbClass": "standard",
+			"method": "GET",
+			"guards": [
+				"requirePermission(\"test-crud:read\")",
+				"withServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "listTestCrudTags",
+			"file": "src/functions/test-crud.ts",
+			"line": 32,
+			"layer": "core",
+			"verb": "list",
+			"verbClass": "standard",
+			"method": "GET",
+			"guards": [
+				"requirePermission(\"test-crud:read\")",
+				"withServices"
+			],
+			"validator": "none",
+			"handler": "call"
+		},
+		{
+			"name": "getTestCrud",
+			"file": "src/functions/test-crud.ts",
+			"line": 36,
+			"layer": "core",
+			"verb": "get",
+			"verbClass": "standard",
+			"method": "GET",
+			"guards": [
+				"requirePermission(\"test-crud:read\")",
+				"withServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "isTestCrudSlugFree",
+			"file": "src/functions/test-crud.ts",
+			"line": 42,
+			"layer": "core",
+			"verb": "is",
+			"verbClass": "standard",
+			"method": "GET",
+			"guards": [
+				"requirePermission(\"test-crud:read\")",
+				"withServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "createTestCrud",
+			"file": "src/functions/test-crud.ts",
+			"line": 47,
+			"layer": "core",
+			"verb": "create",
+			"verbClass": "standard",
+			"method": "POST",
+			"guards": [
+				"requirePermission(\"test-crud:create\")",
+				"withServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "updateTestCrud",
+			"file": "src/functions/test-crud.ts",
+			"line": 52,
+			"layer": "core",
+			"verb": "update",
+			"verbClass": "standard",
+			"method": "POST",
+			"guards": [
+				"requirePermission(\"test-crud:update\")",
+				"withServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "setTestCrudStatus",
+			"file": "src/functions/test-crud.ts",
+			"line": 57,
+			"layer": "core",
+			"verb": "set",
+			"verbClass": "standard",
+			"method": "POST",
+			"guards": [
+				"requirePermission(\"test-crud:publish\")",
+				"withServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		},
+		{
+			"name": "deleteTestCrud",
+			"file": "src/functions/test-crud.ts",
+			"line": 63,
+			"layer": "core",
+			"verb": "delete",
+			"verbClass": "standard",
+			"method": "POST",
+			"guards": [
+				"requirePermission(\"test-crud:delete\")",
+				"withServices"
+			],
+			"validator": "zodInput",
+			"handler": "call"
+		}
+	]
+}

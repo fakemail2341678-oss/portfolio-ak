@@ -14,7 +14,8 @@
 			"!**/.claude",
 			"!**/storybook-static",
 			"!**/tests/fixtures/tmdb",
-			"!**/tests/fixtures/lichess"
+			"!**/tests/fixtures/lichess",
+			"!**/docs/history/part9-audit"
 		]
 	},
 	"formatter": {

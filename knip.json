@@ -22,5 +22,6 @@
 	"ignore": ["src/components/ui/**"],
 	"vite": false,
 	"ignoreExportsUsedInFile": true,
+	"ignoreBinaries": ["openssl"],
 	"ignoreDependencies": ["@inlang/plugin-m-function-matcher", "@inlang/plugin-message-format"]
 }

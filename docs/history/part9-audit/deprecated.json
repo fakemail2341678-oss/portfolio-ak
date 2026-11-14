@@ -1,0 +1,994 @@
+{
+	"generated": "node --max-old-space-size=4096 scripts/audit/deprecated.ts",
+	"filesChecked": 2201,
+	"byPackage": {
+		"@tanstack/react-store": 51,
+		"@types/react": 45,
+		"?": 32,
+		"zod": 4,
+		"recharts": 3,
+		"posthog-node": 1,
+		"typescript": 1,
+		"vitest": 1
+	},
+	"byName": {
+		"@tanstack/react-store: useStore": 51,
+		"@types/react: FormEvent<HTMLFormElement>": 39,
+		"?: type FormEvent": 32,
+		"@types/react: FormEvent": 6,
+		"zod: finite": 4,
+		"recharts: Cell": 2,
+		"posthog-node: getFeatureFlag": 1,
+		"recharts: verticalAlign": 1,
+		"typescript: returnValue": 1,
+		"vitest: toThrowError": 1
+	},
+	"uses": [
+		{
+			"file": "src/features/apps/forms/fields.ts",
+			"line": 88,
+			"name": "finite",
+			"from": "zod",
+			"message": "'(params?: unknown): ZodNumber' is deprecated."
+		},
+		{
+			"file": "src/features/parda/player/redirect-guard.ts",
+			"line": 23,
+			"name": "returnValue",
+			"from": "typescript",
+			"message": "'returnValue' is deprecated."
+		},
+		{
+			"file": "src/features/taskline/fields.ts",
+			"line": 108,
+			"name": "finite",
+			"from": "zod",
+			"message": "'(params?: unknown): ZodNumber' is deprecated."
+		},
+		{
+			"file": "src/lib/validation.ts",
+			"line": 133,
+			"name": "finite",
+			"from": "zod",
+			"message": "'(params?: unknown): ZodNumber' is deprecated."
+		},
+		{
+			"file": "src/lib/list/params.ts",
+			"line": 68,
+			"name": "finite",
+			"from": "zod",
+			"message": "'(params?: unknown): ZodCoercedNumber<unknown>' is deprecated."
+		},
+		{
+			"file": "src/server/analytics/posthog.ts",
+			"line": 93,
+			"name": "getFeatureFlag",
+			"from": "posthog-node",
+			"message": "The signature '(key: string, distinctId: string, options?: { groups?: Record<string, string> | undefined; personProperties?: any; groupProperties?: Record<string, Properties> | undefined; onlyEvaluateLocally?: boolean | undefined; sendFeatureFlagEvents?: boolean | undefined; disableGeoip?: boolean | undefined; } | undefined): Promise<...>' of 'posthog.getFeatureFlag' is deprecated."
+		},
+		{
+			"file": "tests/unit/parda-tmdb.test.ts",
+			"line": 214,
+			"name": "toThrowError",
+			"from": "vitest",
+			"message": "'toThrowError' is deprecated."
+		},
+		{
+			"file": "src/components/charts/donut-chart.tsx",
+			"line": 1,
+			"name": "Cell",
+			"from": "recharts",
+			"message": "'Cell' is deprecated."
+		},
+		{
+			"file": "src/components/charts/donut-chart.tsx",
+			"line": 45,
+			"name": "Cell",
+			"from": "recharts",
+			"message": "'Cell' is deprecated."
+		},
+		{
+			"file": "src/components/dialogs/form-dialog.tsx",
+			"line": 1,
+			"name": "useStore",
+			"from": "@tanstack/react-store",
+			"message": "'useStore' is deprecated."
+		},
+		{
+			"file": "src/components/dialogs/form-dialog.tsx",
+			"line": 84,
+			"name": "useStore",
+			"from": "@tanstack/react-store",
+			"message": "'useStore' is deprecated."
+		},
+		{
+			"file": "src/components/filters/filter-bar.tsx",
+			"line": 2,
+			"name": "type FormEvent",
+			"from": "?",
+			"message": "'FormEvent' is deprecated."
+		},
+		{
+			"file": "src/components/filters/filter-bar.tsx",
+			"line": 95,
+			"name": "FormEvent<HTMLFormElement>",
+			"from": "@types/react",
+			"message": "'FormEvent' is deprecated."
+		},
+		{
+			"file": "src/components/filters/filter-bar.tsx",
+			"line": 105,
+			"name": "FormEvent<HTMLFormElement>",
+			"from": "@types/react",
+			"message": "'FormEvent' is deprecated."
+		},
+		{
+			"file": "src/components/forms/field-shell.tsx",
+			"line": 1,
+			"name": "useStore",
+			"from": "@tanstack/react-store",
+			"message": "'useStore' is deprecated."
+		},
+		{
+			"file": "src/components/forms/field-shell.tsx",
+			"line": 54,
+			"name": "useStore",
+			"from": "@tanstack/react-store",
+			"message": "'useStore' is deprecated."
+		},
+		{
+			"file": "src/components/forms/form-components.tsx",
+			"line": 1,
+			"name": "useStore",
+			"from": "@tanstack/react-store",
+			"message": "'useStore' is deprecated."
+		},
+		{
+			"file": "src/components/forms/form-components.tsx",
+			"line": 69,
+			"name": "useStore",
+			"from": "@tanstack/react-store",
+			"message": "'useStore' is deprecated."
+		},
+		{
+			"file": "src/components/forms/form-components.tsx",
+			"line": 93,
+			"name": "useStore",
+			"from": "@tanstack/react-store",
+			"message": "'useStore' is deprecated."
+		},
+		{
+			"file": "src/components/forms/form-components.tsx",
+			"line": 94,
+			"name": "useStore",
+			"from": "@tanstack/react-store",
+			"message": "'useStore' is deprecated."
+		},
+		{
+			"file": "src/components/forms/form-components.tsx",
+			"line": 95,
+			"name": "useStore",
+			"from": "@tanstack/react-store",
+			"message": "'useStore' is deprecated."
+		},
+		{
+			"file": "src/components/forms/fields/localized-fields.tsx",
+			"line": 1,
+			"name": "useStore",
+			"from": "@tanstack/react-store",
+			"message": "'useStore' is deprecated."
+		},
+		{
+			"file": "src/components/forms/fields/localized-fields.tsx",
+			"line": 100,
+			"name": "useStore",
+			"from": "@tanstack/react-store",
+			"message": "'useStore' is deprecated."
+		},
+		{
+			"file": "src/components/forms/fields/localized-fields.tsx",
+			"line": 101,
+			"name": "useStore",
+			"from": "@tanstack/react-store",
+			"message": "'useStore' is deprecated."
+		},
+		{
+			"file": "src/components/forms/fields/localized-fields.tsx",
+			"line": 102,
+			"name": "useStore",
+			"from": "@tanstack/react-store",
+			"message": "'useStore' is deprecated."
+		},
+		{
+			"file": "src/components/forms/fields/localized-fields.tsx",
+			"line": 142,
+			"name": "useStore",
+			"from": "@tanstack/react-store",
+			"message": "'useStore' is deprecated."
+		},
+		{
+			"file": "src/components/forms/fields/localized-fields.tsx",
+			"line": 143,
+			"name": "useStore",
+			"from": "@tanstack/react-store",
+			"message": "'useStore' is deprecated."
+		},
+		{
+			"file": "src/components/forms/fields/localized-fields.tsx",
+			"line": 144,
+			"name": "useStore",
+			"from": "@tanstack/react-store",
+			"message": "'useStore' is deprecated."
+		},
+		{
+			"file": "src/components/forms/fields/slug-field.tsx",
+			"line": 1,
+			"name": "useStore",
+			"from": "@tanstack/react-store",
+			"message": "'useStore' is deprecated."
+		},
+		{
+			"file": "src/components/forms/fields/slug-field.tsx",
+			"line": 46,
+			"name": "useStore",
+			"from": "@tanstack/react-store",
+			"message": "'useStore' is deprecated."
+		},
+		{
+			"file": "src/components/page/form-layout.tsx",
+			"line": 1,
+			"name": "useStore",
+			"from": "@tanstack/react-store",
+			"message": "'useStore' is deprecated."
+		},
+		{
+			"file": "src/components/page/form-layout.tsx",
+			"line": 95,
+			"name": "useStore",
+			"from": "@tanstack/react-store",
+			"message": "'useStore' is deprecated."
+		},
+		{
+			"file": "src/components/ui/chart.tsx",
+			"line": 209,
+			"name": "verticalAlign",
+			"from": "recharts",
+			"message": "'verticalAlign' is deprecated."
+		},
+		{
+			"file": "src/features/auth/components/account-page.tsx",
+			"line": 2,
+			"name": "type FormEvent",
+			"from": "?",
+			"message": "'FormEvent' is deprecated."
+		},
+		{
+			"file": "src/features/auth/components/account-page.tsx",
+			"line": 113,
+			"name": "FormEvent<HTMLFormElement>",
+			"from": "@types/react",
+			"message": "'FormEvent' is deprecated."
+		},
+		{
+			"file": "src/features/auth/components/account-page.tsx",
+			"line": 146,
+			"name": "FormEvent<HTMLFormElement>",
+			"from": "@types/react",
+			"message": "'FormEvent' is deprecated."
+		},
+		{
+			"file": "src/features/auth/components/account-page.tsx",
+			"line": 192,
+			"name": "FormEvent<HTMLFormElement>",
+			"from": "@types/react",
+			"message": "'FormEvent' is deprecated."
+		},
+		{
+			"file": "src/features/auth/components/login-form.tsx",
+			"line": 1,
+			"name": "type FormEvent",
+			"from": "?",
+			"message": "'FormEvent' is deprecated."
+		},
+		{
+			"file": "src/features/auth/components/login-form.tsx",
+			"line": 22,
+			"name": "FormEvent<HTMLFormElement>",
+			"from": "@types/react",
+			"message": "'FormEvent' is deprecated."
+		},
+		{
+			"file": "src/features/auth/components/login-form.tsx",
+			"line": 74,
+			"name": "FormEvent<HTMLFormElement>",
+			"from": "@types/react",
+			"message": "'FormEvent' is deprecated."
+		},
+		{
+			"file": "src/features/auth/components/register-form.tsx",
+			"line": 1,
+			"name": "type FormEvent",
+			"from": "?",
+			"message": "'FormEvent' is deprecated."
+		},
+		{
+			"file": "src/features/auth/components/register-form.tsx",
+			"line": 44,
+			"name": "FormEvent<HTMLFormElement>",
+			"from": "@types/react",
+			"message": "'FormEvent' is deprecated."
+		},
+		{
+			"file": "src/features/auth/components/sign-in-methods-section.tsx",
+			"line": 2,
+			"name": "type FormEvent",
+			"from": "?",
+			"message": "'FormEvent' is deprecated."
+		},
+		{
+			"file": "src/features/auth/components/sign-in-methods-section.tsx",
+			"line": 30,
+			"name": "FormEvent<HTMLFormElement>",
+			"from": "@types/react",
+			"message": "'FormEvent' is deprecated."
+		},
+		{
+			"file": "src/features/auth/components/two-factor-section.tsx",
+			"line": 2,
+			"name": "type FormEvent",
+			"from": "?",
+			"message": "'FormEvent' is deprecated."
+		},
+		{
+			"file": "src/features/auth/components/two-factor-section.tsx",
+			"line": 53,
+			"name": "FormEvent<HTMLFormElement>",
+			"from": "@types/react",
+			"message": "'FormEvent' is deprecated."
+		},
+		{
+			"file": "src/features/auth/components/two-factor-section.tsx",
+			"line": 66,
+			"name": "FormEvent<HTMLFormElement>",
+			"from": "@types/react",
+			"message": "'FormEvent' is deprecated."
+		},
+		{
+			"file": "src/features/auth/components/two-factor-section.tsx",
+			"line": 82,
+			"name": "FormEvent<HTMLFormElement>",
+			"from": "@types/react",
+			"message": "'FormEvent' is deprecated."
+		},
+		{
+			"file": "src/features/chaal/admin/blocks/block-form.tsx",
+			"line": 1,
+			"name": "useStore",
+			"from": "@tanstack/react-store",
+			"message": "'useStore' is deprecated."
+		},
+		{
+			"file": "src/features/chaal/admin/blocks/block-form.tsx",
+			"line": 32,
+			"name": "useStore",
+			"from": "@tanstack/react-store",
+			"message": "'useStore' is deprecated."
+		},
+		{
+			"file": "src/features/chaal/admin/curation/featured-dialog.tsx",
+			"line": 1,
+			"name": "useStore",
+			"from": "@tanstack/react-store",
+			"message": "'useStore' is deprecated."
+		},
+		{
+			"file": "src/features/chaal/admin/curation/featured-dialog.tsx",
+			"line": 56,
+			"name": "useStore",
+			"from": "@tanstack/react-store",
+			"message": "'useStore' is deprecated."
+		},
+		{
+			"file": "src/features/chaal/analysis/analysis-dialogs.tsx",
+			"line": 2,
+			"name": "type FormEvent",
+			"from": "?",
+			"message": "'FormEvent' is deprecated."
+		},
+		{
+			"file": "src/features/chaal/analysis/analysis-dialogs.tsx",
+			"line": 85,
+			"name": "FormEvent",
+			"from": "@types/react",
+			"message": "'FormEvent' is deprecated."
+		},
+		{
+			"file": "src/features/chaal/analysis/explorer-panel.tsx",
+			"line": 2,
+			"name": "type FormEvent",
+			"from": "?",
+			"message": "'FormEvent' is deprecated."
+		},
+		{
+			"file": "src/features/chaal/analysis/explorer-panel.tsx",
+			"line": 183,
+			"name": "FormEvent",
+			"from": "@types/react",
+			"message": "'FormEvent' is deprecated."
+		},
+		{
+			"file": "src/features/chaal/events/tournament-page.tsx",
+			"line": 4,
+			"name": "type FormEvent",
+			"from": "?",
+			"message": "'FormEvent' is deprecated."
+		},
+		{
+			"file": "src/features/chaal/events/tournament-page.tsx",
+			"line": 265,
+			"name": "FormEvent<HTMLFormElement>",
+			"from": "@types/react",
+			"message": "'FormEvent' is deprecated."
+		},
+		{
+			"file": "src/features/chaal/studies/save-dialog.tsx",
+			"line": 4,
+			"name": "type FormEvent",
+			"from": "?",
+			"message": "'FormEvent' is deprecated."
+		},
+		{
+			"file": "src/features/chaal/studies/save-dialog.tsx",
+			"line": 63,
+			"name": "FormEvent<HTMLFormElement>",
+			"from": "@types/react",
+			"message": "'FormEvent' is deprecated."
+		},
+		{
+			"file": "src/features/chaal/studies/studies-page.tsx",
+			"line": 4,
+			"name": "type FormEvent",
+			"from": "?",
+			"message": "'FormEvent' is deprecated."
+		},
+		{
+			"file": "src/features/chaal/studies/studies-page.tsx",
+			"line": 59,
+			"name": "FormEvent<HTMLFormElement>",
+			"from": "@types/react",
+			"message": "'FormEvent' is deprecated."
+		},
+		{
+			"file": "src/features/chaal/studies/studies-page.tsx",
+			"line": 64,
+			"name": "FormEvent<HTMLFormElement>",
+			"from": "@types/react",
+			"message": "'FormEvent' is deprecated."
+		},
+		{
+			"file": "src/features/chaal/teams/team-page.tsx",
+			"line": 4,
+			"name": "type FormEvent",
+			"from": "?",
+			"message": "'FormEvent' is deprecated."
+		},
+		{
+			"file": "src/features/chaal/teams/team-page.tsx",
+			"line": 197,
+			"name": "FormEvent<HTMLFormElement>",
+			"from": "@types/react",
+			"message": "'FormEvent' is deprecated."
+		},
+		{
+			"file": "src/features/chaal/teams/teams-page.tsx",
+			"line": 4,
+			"name": "FormEvent",
+			"from": "@types/react",
+			"message": "'FormEvent' is deprecated."
+		},
+		{
+			"file": "src/features/chaal/teams/teams-page.tsx",
+			"line": 60,
+			"name": "FormEvent<HTMLFormElement>",
+			"from": "@types/react",
+			"message": "'FormEvent' is deprecated."
+		},
+		{
+			"file": "src/features/chaal/watch/broadcasts-page.tsx",
+			"line": 4,
+			"name": "FormEvent",
+			"from": "@types/react",
+			"message": "'FormEvent' is deprecated."
+		},
+		{
+			"file": "src/features/chaal/watch/broadcasts-page.tsx",
+			"line": 57,
+			"name": "FormEvent<HTMLFormElement>",
+			"from": "@types/react",
+			"message": "'FormEvent' is deprecated."
+		},
+		{
+			"file": "src/features/kharcha/budgets/budget-dialog.tsx",
+			"line": 1,
+			"name": "useStore",
+			"from": "@tanstack/react-store",
+			"message": "'useStore' is deprecated."
+		},
+		{
+			"file": "src/features/kharcha/budgets/budget-dialog.tsx",
+			"line": 95,
+			"name": "useStore",
+			"from": "@tanstack/react-store",
+			"message": "'useStore' is deprecated."
+		},
+		{
+			"file": "src/features/kharcha/expenses/expense-dialog.tsx",
+			"line": 1,
+			"name": "useStore",
+			"from": "@tanstack/react-store",
+			"message": "'useStore' is deprecated."
+		},
+		{
+			"file": "src/features/kharcha/expenses/expense-dialog.tsx",
+			"line": 256,
+			"name": "useStore",
+			"from": "@tanstack/react-store",
+			"message": "'useStore' is deprecated."
+		},
+		{
+			"file": "src/features/kharcha/expenses/expense-dialog.tsx",
+			"line": 257,
+			"name": "useStore",
+			"from": "@tanstack/react-store",
+			"message": "'useStore' is deprecated."
+		},
+		{
+			"file": "src/features/kharcha/expenses/expense-dialog.tsx",
+			"line": 258,
+			"name": "useStore",
+			"from": "@tanstack/react-store",
+			"message": "'useStore' is deprecated."
+		},
+		{
+			"file": "src/features/kharcha/groups/group-settings.tsx",
+			"line": 1,
+			"name": "useStore",
+			"from": "@tanstack/react-store",
+			"message": "'useStore' is deprecated."
+		},
+		{
+			"file": "src/features/kharcha/groups/group-settings.tsx",
+			"line": 121,
+			"name": "useStore",
+			"from": "@tanstack/react-store",
+			"message": "'useStore' is deprecated."
+		},
+		{
+			"file": "src/features/kharcha/groups/group-settings.tsx",
+			"line": 122,
+			"name": "useStore",
+			"from": "@tanstack/react-store",
+			"message": "'useStore' is deprecated."
+		},
+		{
+			"file": "src/features/kharcha/groups/group-settings.tsx",
+			"line": 365,
+			"name": "useStore",
+			"from": "@tanstack/react-store",
+			"message": "'useStore' is deprecated."
+		},
+		{
+			"file": "src/features/kharcha/recurring/repeat-dialog.tsx",
+			"line": 1,
+			"name": "useStore",
+			"from": "@tanstack/react-store",
+			"message": "'useStore' is deprecated."
+		},
+		{
+			"file": "src/features/kharcha/recurring/repeat-dialog.tsx",
+			"line": 73,
+			"name": "useStore",
+			"from": "@tanstack/react-store",
+			"message": "'useStore' is deprecated."
+		},
+		{
+			"file": "src/features/kharcha/settings/list-dialogs.tsx",
+			"line": 1,
+			"name": "useStore",
+			"from": "@tanstack/react-store",
+			"message": "'useStore' is deprecated."
+		},
+		{
+			"file": "src/features/kharcha/settings/list-dialogs.tsx",
+			"line": 89,
+			"name": "useStore",
+			"from": "@tanstack/react-store",
+			"message": "'useStore' is deprecated."
+		},
+		{
+			"file": "src/features/kharcha/settle/settle-dialog.tsx",
+			"line": 1,
+			"name": "useStore",
+			"from": "@tanstack/react-store",
+			"message": "'useStore' is deprecated."
+		},
+		{
+			"file": "src/features/kharcha/settle/settle-dialog.tsx",
+			"line": 210,
+			"name": "useStore",
+			"from": "@tanstack/react-store",
+			"message": "'useStore' is deprecated."
+		},
+		{
+			"file": "src/features/kharcha/shell/create-dialogs.tsx",
+			"line": 1,
+			"name": "useStore",
+			"from": "@tanstack/react-store",
+			"message": "'useStore' is deprecated."
+		},
+		{
+			"file": "src/features/kharcha/shell/create-dialogs.tsx",
+			"line": 146,
+			"name": "useStore",
+			"from": "@tanstack/react-store",
+			"message": "'useStore' is deprecated."
+		},
+		{
+			"file": "src/features/kharcha/shell/create-dialogs.tsx",
+			"line": 247,
+			"name": "useStore",
+			"from": "@tanstack/react-store",
+			"message": "'useStore' is deprecated."
+		},
+		{
+			"file": "src/features/kharcha/shell/create-dialogs.tsx",
+			"line": 248,
+			"name": "useStore",
+			"from": "@tanstack/react-store",
+			"message": "'useStore' is deprecated."
+		},
+		{
+			"file": "src/features/kharcha/shell/create-dialogs.tsx",
+			"line": 249,
+			"name": "useStore",
+			"from": "@tanstack/react-store",
+			"message": "'useStore' is deprecated."
+		},
+		{
+			"file": "src/features/parda/admin/curation/title-fields.tsx",
+			"line": 1,
+			"name": "useStore",
+			"from": "@tanstack/react-store",
+			"message": "'useStore' is deprecated."
+		},
+		{
+			"file": "src/features/parda/admin/curation/title-fields.tsx",
+			"line": 57,
+			"name": "useStore",
+			"from": "@tanstack/react-store",
+			"message": "'useStore' is deprecated."
+		},
+		{
+			"file": "src/features/parda/admin/player-lab/player-lab-page.tsx",
+			"line": 3,
+			"name": "type FormEvent",
+			"from": "?",
+			"message": "'FormEvent' is deprecated."
+		},
+		{
+			"file": "src/features/parda/admin/player-lab/player-lab-page.tsx",
+			"line": 163,
+			"name": "FormEvent<HTMLFormElement>",
+			"from": "@types/react",
+			"message": "'FormEvent' is deprecated."
+		},
+		{
+			"file": "src/features/parda/profiles/profiles-page.tsx",
+			"line": 4,
+			"name": "type FormEvent",
+			"from": "?",
+			"message": "'FormEvent' is deprecated."
+		},
+		{
+			"file": "src/features/parda/profiles/profiles-page.tsx",
+			"line": 62,
+			"name": "FormEvent",
+			"from": "@types/react",
+			"message": "'FormEvent' is deprecated."
+		},
+		{
+			"file": "src/features/parda/search/search-page.tsx",
+			"line": 4,
+			"name": "type FormEvent",
+			"from": "?",
+			"message": "'FormEvent' is deprecated."
+		},
+		{
+			"file": "src/features/parda/search/search-page.tsx",
+			"line": 44,
+			"name": "FormEvent<HTMLFormElement>",
+			"from": "@types/react",
+			"message": "'FormEvent' is deprecated."
+		},
+		{
+			"file": "src/features/portfolio/admin/components/case-study-blocks.tsx",
+			"line": 1,
+			"name": "useStore",
+			"from": "@tanstack/react-store",
+			"message": "'useStore' is deprecated."
+		},
+		{
+			"file": "src/features/portfolio/admin/components/case-study-blocks.tsx",
+			"line": 180,
+			"name": "useStore",
+			"from": "@tanstack/react-store",
+			"message": "'useStore' is deprecated."
+		},
+		{
+			"file": "src/features/portfolio/components/contact/contact-form.tsx",
+			"line": 2,
+			"name": "type FormEvent",
+			"from": "?",
+			"message": "'FormEvent' is deprecated."
+		},
+		{
+			"file": "src/features/portfolio/components/contact/contact-form.tsx",
+			"line": 49,
+			"name": "FormEvent<HTMLFormElement>",
+			"from": "@types/react",
+			"message": "'FormEvent' is deprecated."
+		},
+		{
+			"file": "src/features/taskline/admin/time/time-dialogs.tsx",
+			"line": 1,
+			"name": "type FormEvent",
+			"from": "?",
+			"message": "'FormEvent' is deprecated."
+		},
+		{
+			"file": "src/features/taskline/admin/time/time-dialogs.tsx",
+			"line": 85,
+			"name": "FormEvent<HTMLFormElement>",
+			"from": "@types/react",
+			"message": "'FormEvent' is deprecated."
+		},
+		{
+			"file": "src/features/taskline/admin/workflows/workflows-page.tsx",
+			"line": 3,
+			"name": "type FormEvent",
+			"from": "?",
+			"message": "'FormEvent' is deprecated."
+		},
+		{
+			"file": "src/features/taskline/admin/workflows/workflows-page.tsx",
+			"line": 77,
+			"name": "FormEvent",
+			"from": "@types/react",
+			"message": "'FormEvent' is deprecated."
+		},
+		{
+			"file": "src/features/taskline/board/board.tsx",
+			"line": 5,
+			"name": "type FormEvent",
+			"from": "?",
+			"message": "'FormEvent' is deprecated."
+		},
+		{
+			"file": "src/features/taskline/board/board.tsx",
+			"line": 414,
+			"name": "FormEvent<HTMLFormElement>",
+			"from": "@types/react",
+			"message": "'FormEvent' is deprecated."
+		},
+		{
+			"file": "src/features/taskline/inbox/notify-settings.tsx",
+			"line": 4,
+			"name": "type FormEvent",
+			"from": "?",
+			"message": "'FormEvent' is deprecated."
+		},
+		{
+			"file": "src/features/taskline/inbox/notify-settings.tsx",
+			"line": 36,
+			"name": "FormEvent<HTMLFormElement>",
+			"from": "@types/react",
+			"message": "'FormEvent' is deprecated."
+		},
+		{
+			"file": "src/features/taskline/settings/labels-settings.tsx",
+			"line": 4,
+			"name": "type FormEvent",
+			"from": "?",
+			"message": "'FormEvent' is deprecated."
+		},
+		{
+			"file": "src/features/taskline/settings/labels-settings.tsx",
+			"line": 41,
+			"name": "FormEvent<HTMLFormElement>",
+			"from": "@types/react",
+			"message": "'FormEvent' is deprecated."
+		},
+		{
+			"file": "src/features/taskline/settings/members-settings.tsx",
+			"line": 4,
+			"name": "type FormEvent",
+			"from": "?",
+			"message": "'FormEvent' is deprecated."
+		},
+		{
+			"file": "src/features/taskline/settings/members-settings.tsx",
+			"line": 36,
+			"name": "FormEvent<HTMLFormElement>",
+			"from": "@types/react",
+			"message": "'FormEvent' is deprecated."
+		},
+		{
+			"file": "src/features/taskline/settings/workflow-settings.tsx",
+			"line": 4,
+			"name": "type FormEvent",
+			"from": "?",
+			"message": "'FormEvent' is deprecated."
+		},
+		{
+			"file": "src/features/taskline/settings/workflow-settings.tsx",
+			"line": 66,
+			"name": "FormEvent<HTMLFormElement>",
+			"from": "@types/react",
+			"message": "'FormEvent' is deprecated."
+		},
+		{
+			"file": "src/features/taskline/sprints/backlog.tsx",
+			"line": 5,
+			"name": "type FormEvent",
+			"from": "?",
+			"message": "'FormEvent' is deprecated."
+		},
+		{
+			"file": "src/features/taskline/sprints/backlog.tsx",
+			"line": 345,
+			"name": "FormEvent<HTMLFormElement>",
+			"from": "@types/react",
+			"message": "'FormEvent' is deprecated."
+		},
+		{
+			"file": "src/features/taskline/sprints/sprint-dialogs.tsx",
+			"line": 1,
+			"name": "useStore",
+			"from": "@tanstack/react-store",
+			"message": "'useStore' is deprecated."
+		},
+		{
+			"file": "src/features/taskline/sprints/sprint-dialogs.tsx",
+			"line": 190,
+			"name": "useStore",
+			"from": "@tanstack/react-store",
+			"message": "'useStore' is deprecated."
+		},
+		{
+			"file": "src/features/taskline/task/task-panel.tsx",
+			"line": 5,
+			"name": "type FormEvent",
+			"from": "?",
+			"message": "'FormEvent' is deprecated."
+		},
+		{
+			"file": "src/features/taskline/task/task-panel.tsx",
+			"line": 671,
+			"name": "FormEvent<HTMLFormElement>",
+			"from": "@types/react",
+			"message": "'FormEvent' is deprecated."
+		},
+		{
+			"file": "src/features/taskline/task/task-panel.tsx",
+			"line": 761,
+			"name": "FormEvent<HTMLFormElement>",
+			"from": "@types/react",
+			"message": "'FormEvent' is deprecated."
+		},
+		{
+			"file": "src/features/taskline/time/entry-form.tsx",
+			"line": 1,
+			"name": "type FormEvent",
+			"from": "?",
+			"message": "'FormEvent' is deprecated."
+		},
+		{
+			"file": "src/features/taskline/time/entry-form.tsx",
+			"line": 42,
+			"name": "FormEvent<HTMLFormElement>",
+			"from": "@types/react",
+			"message": "'FormEvent' is deprecated."
+		},
+		{
+			"file": "src/features/taskline/timeline/dependencies.tsx",
+			"line": 4,
+			"name": "type FormEvent",
+			"from": "?",
+			"message": "'FormEvent' is deprecated."
+		},
+		{
+			"file": "src/features/taskline/timeline/dependencies.tsx",
+			"line": 174,
+			"name": "FormEvent<HTMLFormElement>",
+			"from": "@types/react",
+			"message": "'FormEvent' is deprecated."
+		},
+		{
+			"file": "src/routes/_auth/forgot-password.tsx",
+			"line": 2,
+			"name": "type FormEvent",
+			"from": "?",
+			"message": "'FormEvent' is deprecated."
+		},
+		{
+			"file": "src/routes/_auth/forgot-password.tsx",
+			"line": 30,
+			"name": "FormEvent<HTMLFormElement>",
+			"from": "@types/react",
+			"message": "'FormEvent' is deprecated."
+		},
+		{
+			"file": "src/routes/_auth/sign-in-code.tsx",
+			"line": 2,
+			"name": "type FormEvent",
+			"from": "?",
+			"message": "'FormEvent' is deprecated."
+		},
+		{
+			"file": "src/routes/_auth/sign-in-code.tsx",
+			"line": 36,
+			"name": "FormEvent<HTMLFormElement>",
+			"from": "@types/react",
+			"message": "'FormEvent' is deprecated."
+		},
+		{
+			"file": "src/routes/_auth/sign-in-code.tsx",
+			"line": 64,
+			"name": "FormEvent<HTMLFormElement>",
+			"from": "@types/react",
+			"message": "'FormEvent' is deprecated."
+		},
+		{
+			"file": "src/routes/_public/reset-password.tsx",
+			"line": 2,
+			"name": "type FormEvent",
+			"from": "?",
+			"message": "'FormEvent' is deprecated."
+		},
+		{
+			"file": "src/routes/_public/reset-password.tsx",
+			"line": 38,
+			"name": "FormEvent<HTMLFormElement>",
+			"from": "@types/react",
+			"message": "'FormEvent' is deprecated."
+		},
+		{
+			"file": "src/routes/_public/verify-email.tsx",
+			"line": 2,
+			"name": "type FormEvent",
+			"from": "?",
+			"message": "'FormEvent' is deprecated."
+		},
+		{
+			"file": "src/routes/_public/verify-email.tsx",
+			"line": 44,
+			"name": "FormEvent<HTMLFormElement>",
+			"from": "@types/react",
+			"message": "'FormEvent' is deprecated."
+		},
+		{
+			"file": "src/routes/dev/examples/contact.tsx",
+			"line": 3,
+			"name": "type FormEvent",
+			"from": "?",
+			"message": "'FormEvent' is deprecated."
+		},
+		{
+			"file": "src/routes/dev/examples/contact.tsx",
+			"line": 41,
+			"name": "FormEvent<HTMLFormElement>",
+			"from": "@types/react",
+			"message": "'FormEvent' is deprecated."
+		}
+	]
+}

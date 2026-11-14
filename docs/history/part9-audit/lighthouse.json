@@ -1,0 +1,232 @@
+{
+	"generated": "node scripts/audit/lighthouse.ts",
+	"setup": "Lighthouse 13, mobile, simulated throttling, through a local HTTP/2 proxy with brotli, on the e2e harness's production build",
+	"runsPerPage": 3,
+	"results": [
+		{
+			"page": "/",
+			"runs": [
+				{
+					"performance": 94,
+					"accessibility": 100,
+					"bestPractices": 100,
+					"seo": 100,
+					"fcp": 1141,
+					"lcp": 1141,
+					"tbt": 281,
+					"cls": 0
+				},
+				{
+					"performance": 95,
+					"accessibility": 100,
+					"bestPractices": 100,
+					"seo": 100,
+					"fcp": 1138,
+					"lcp": 1138,
+					"tbt": 266,
+					"cls": 0
+				},
+				{
+					"performance": 96,
+					"accessibility": 100,
+					"bestPractices": 100,
+					"seo": 100,
+					"fcp": 1154,
+					"lcp": 1154,
+					"tbt": 217,
+					"cls": 0
+				}
+			],
+			"median": {
+				"performance": 95,
+				"accessibility": 100,
+				"bestPractices": 100,
+				"seo": 100,
+				"fcp": 1141,
+				"lcp": 1141,
+				"tbt": 266,
+				"cls": 0
+			}
+		},
+		{
+			"page": "/app/taskline",
+			"runs": [
+				{
+					"performance": 100,
+					"accessibility": 100,
+					"bestPractices": 100,
+					"seo": 100,
+					"fcp": 1133,
+					"lcp": 1133,
+					"tbt": 83,
+					"cls": 0
+				},
+				{
+					"performance": 100,
+					"accessibility": 100,
+					"bestPractices": 100,
+					"seo": 100,
+					"fcp": 1133,
+					"lcp": 1133,
+					"tbt": 77,
+					"cls": 0
+				},
+				{
+					"performance": 100,
+					"accessibility": 100,
+					"bestPractices": 100,
+					"seo": 100,
+					"fcp": 1129,
+					"lcp": 1129,
+					"tbt": 65,
+					"cls": 0
+				}
+			],
+			"median": {
+				"performance": 100,
+				"accessibility": 100,
+				"bestPractices": 100,
+				"seo": 100,
+				"fcp": 1133,
+				"lcp": 1133,
+				"tbt": 77,
+				"cls": 0
+			}
+		},
+		{
+			"page": "/app/parda",
+			"runs": [
+				{
+					"performance": 73,
+					"accessibility": 100,
+					"bestPractices": 100,
+					"seo": 100,
+					"fcp": 1234,
+					"lcp": 4687,
+					"tbt": 427,
+					"cls": 0
+				},
+				{
+					"performance": 78,
+					"accessibility": 100,
+					"bestPractices": 100,
+					"seo": 100,
+					"fcp": 1217,
+					"lcp": 3845,
+					"tbt": 423,
+					"cls": 0
+				},
+				{
+					"performance": 78,
+					"accessibility": 100,
+					"bestPractices": 100,
+					"seo": 100,
+					"fcp": 1234,
+					"lcp": 3699,
+					"tbt": 444,
+					"cls": 0
+				}
+			],
+			"median": {
+				"performance": 78,
+				"accessibility": 100,
+				"bestPractices": 100,
+				"seo": 100,
+				"fcp": 1234,
+				"lcp": 3845,
+				"tbt": 427,
+				"cls": 0
+			}
+		},
+		{
+			"page": "/app/chaal",
+			"runs": [
+				{
+					"performance": 99,
+					"accessibility": 100,
+					"bestPractices": 100,
+					"seo": 100,
+					"fcp": 1119,
+					"lcp": 1119,
+					"tbt": 126,
+					"cls": 0
+				},
+				{
+					"performance": 99,
+					"accessibility": 100,
+					"bestPractices": 100,
+					"seo": 100,
+					"fcp": 1102,
+					"lcp": 1102,
+					"tbt": 99,
+					"cls": 0
+				},
+				{
+					"performance": 99,
+					"accessibility": 100,
+					"bestPractices": 100,
+					"seo": 100,
+					"fcp": 1109,
+					"lcp": 1109,
+					"tbt": 122,
+					"cls": 0
+				}
+			],
+			"median": {
+				"performance": 99,
+				"accessibility": 100,
+				"bestPractices": 100,
+				"seo": 100,
+				"fcp": 1109,
+				"lcp": 1109,
+				"tbt": 122,
+				"cls": 0
+			}
+		},
+		{
+			"page": "/app/kharcha",
+			"runs": [
+				{
+					"performance": 99,
+					"accessibility": 100,
+					"bestPractices": 100,
+					"seo": 100,
+					"fcp": 1116,
+					"lcp": 1116,
+					"tbt": 110,
+					"cls": 0
+				},
+				{
+					"performance": 99,
+					"accessibility": 100,
+					"bestPractices": 100,
+					"seo": 100,
+					"fcp": 1093,
+					"lcp": 1093,
+					"tbt": 121,
+					"cls": 0
+				},
+				{
+					"performance": 99,
+					"accessibility": 100,
+					"bestPractices": 100,
+					"seo": 100,
+					"fcp": 1089,
+					"lcp": 1089,
+					"tbt": 101,
+					"cls": 0
+				}
+			],
+			"median": {
+				"performance": 99,
+				"accessibility": 100,
+				"bestPractices": 100,
+				"seo": 100,
+				"fcp": 1093,
+				"lcp": 1093,
+				"tbt": 110,
+				"cls": 0
+			}
+		}
+	]
+}

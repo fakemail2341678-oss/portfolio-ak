@@ -4473,7 +4473,7 @@ As 10.1 (with 14.1's differences), and:
 
 | Task | Name | Effort | Plugins | Status |
 | --- | --- | --- | --- | --- |
-| 98 | Baseline and audit: every gate timed, coverage, every deviation counted, package verdicts, the old plan's gaps | xhigh | context7, playwright | Planned |
+| 98 | Baseline and audit: every gate timed, coverage, every deviation counted, package verdicts, the old plan's gaps | xhigh | context7, playwright | Done (decision 0295) |
 | 99 | Fast gates: find why the suites are slow, fix it, `pnpm gates` | high | context7 | Planned |
 | 100 | The standard: rules written, enforced by tests, AI rules, the generator | xhigh | context7, claude-code-setup | Planned |
 | 101 | Structure and names everywhere: one codemod, no behaviour change | high | typescript-lsp, serena | Planned |
@@ -4514,20 +4514,22 @@ As 10.1 (with 14.1's differences), and:
 
 ### 15.4 What exists today (measured 2026-11-14; check, because it moves)
 
-- **Size:** 1,873 source files and 206,000 lines in `src`; 262 routes; 592 server functions in 121 files; 59 migrations; 7,228 messages; 207 test files, 77 story files with 394 stories, 104 reviewed pages in e2e; 293 decisions (the index says 241).
+Task 98 measured these again and corrected the lines below where its counts differed. The full numbers are in `docs/history/part9-audit.md`.
+
+- **Size:** 1,873 source files and 206,000 lines in `src`; 262 routes; 582 server functions in 113 files; 59 migrations; 7,227 messages; 207 test files, 77 story files with 394 stories, 302 reviewed page entries in e2e (3,624 checks); 293 decisions before Part 9.
 - **State:** the tree is clean on `main` and `pnpm typecheck` is green. The last commit (`ac15bf9`, "optimistic trying still") is 0294's work: admin lists write through TanStack DB.
-- **Gate times (0292, 2 e2e workers, 4 Vitest workers):** `pnpm test` 208 files and 2,539 tests in 4.4 min; Storybook 394 stories, twice; `pnpm test:e2e` 3,832 checks in 72.3 min, split in ten shards to fit the tool's 10-minute limit (24.9 min at Part 4's end); build 47 s; `build-storybook` about 20 s (0280). The owner's machine has 11.7 GB of memory, which caps the workers. `docs/guides/testing.md` still says e2e takes "about 6 minutes".
+- **Gate times (0295, 2 e2e workers, 4 Vitest workers):** typecheck 1 min 45 s with no cache and 58 s with nothing changed; `pnpm test` 207 files and 2,534 tests in 3 min 26 s; Storybook 394 stories twice, 55 s and 53 s at 7.3 GB; `pnpm test:e2e` 3,832 tests in 73 min 26 s, in ten shards to fit the tool's 10-minute limit; build 1 min 34 s; `build-storybook` 1 min 16 s. Everything but e2e takes 11 min 17 s. The owner's machine has 11.7 GB of memory, which caps the workers.
 - **Two folder conventions:** core features keep components in `components/` (Test CRUD, rbac, portfolio, auth: 140 `.tsx` files). The four products keep them beside the data files in module folders (taskline 111, chaal 93, kharcha 81, parda 74).
 - **Names that differ:** `collection.ts` (10 files) and `collections.ts` (3); `repository.ts` and `service.ts` in a folder (core), `posts-repository.ts` style (portfolio), and many other file kinds in the products' server folders; function verbs outside the usual set (`save` 10, `find`, `locate`, `patch`, `toggle`, `add`/`remove` next to `create`/`delete`).
-- **Two write paths:** `useCrudMutation` (73 calls in 45 files, the admin's, 0294) and raw `useMutation` (152 calls in 80 files: taskline 66, kharcha 44, apps 15, chaal 11, `/dev` 10). Collections: `crudCollection` descriptors for admin lists, and `queryCollectionOptions` collections in Notes, Habits and Taskline's board.
-- **Two read paths:** `useSuspenseQuery` (180) after a loader's `ensureQuery` (185), and `useQuery` (198, of which chaal 107), each of which needs a reason.
+- **Two write paths:** `useCrudMutation` (71 calls, the admin's, 0294) and raw `useMutation` (151 calls), in 122 files together. 36 of the 222 call sites are optimistic today. Collections: `crudCollection` descriptors for admin lists, and `queryCollectionOptions` collections in Notes, Habits and Taskline's board.
+- **Two read paths:** `useSuspenseQuery` (180) after a loader's `ensureQuery` (185), and `useQuery` (197, of which chaal 107), each of which needs a reason: 135 give none in the code.
 - **Server functions are already uniform in shape:** every one is `createServerFn(…).middleware([…]).validator(zodInput(…)).handler(…)`. The guards differ in name per product (`withPardaCatalog`, `withChaalPublic`, `requireKharchaUser`, …).
-- **Hand-written code that packages cover:** `src/hooks/use-hotkeys.ts` (98 lines, 11 call sites, plus 26 `onKeyDown` props and 3 raw listeners), `src/hooks/use-debounced-value.ts` (8 call sites) and timers in `filter-bar.tsx`, `async-combobox-field.tsx`, `slug-field.tsx` and `async-validators.ts`, `src/lib/fractional-index.ts` (178 lines), `src/lib/csv.ts`'s parser, an LRU cache, `src/server/http/rate-limit.ts`, Chaal's request lanes.
+- **Hand-written code that packages cover:** `src/hooks/use-hotkeys.ts` (97 lines, 13 call sites, plus 26 `onKeyDown` props and 2 raw listeners), `src/hooks/use-debounced-value.ts` (8 call sites) and timers in `filter-bar.tsx`, `async-combobox-field.tsx`, `slug-field.tsx` and `async-validators.ts`, `src/lib/fractional-index.ts` (178 lines), `src/lib/csv.ts`'s parser, an LRU cache, `src/server/http/rate-limit.ts`, Chaal's request lanes.
 - **Behind on versions (npm, 2026-11-14):** TypeScript 6.0.3 (7.0.2 is out), `@tanstack/react-db` 0.5.4 (1.0.0-rc.1.5), Vitest 5.0.3 (5.1.0), Start 1.168 (1.169), Query 5.104 (5.107). Not installed: `@tanstack/react-pacer` (0.24.1), `@tanstack/react-hotkeys` (0.25.0).
 - **Widths:** `Page width="admin"` is already fluid. Centred columns come from `wide`, `default` and `narrow` (`max-w-6xl`, `5xl`, `3xl`), the apps layout (`max-w-6xl`), Chaal's frame (`max-w-7xl`, 32 uses) and Parda (10).
 - **Error pieces exist:** `AppError` and its codes (`src/lib/errors.ts`), `errorNormalizationMiddleware`, `ErrorPage`, `NotFoundPage`, `PendingPage` as the router's defaults, `log()` with the request id. Sixteen Nitro routes and four `/api` routes each do their own method, secret and error handling.
 - **Seeds and migrations:** five `db:seed-*` scripts with `scripts/lib/*-seed.ts`, each its own shape; migrations are `NNNN_name.sql`, checked against the schema in CI, with no lint and no upgrade test.
-- **Coverage:** `pnpm test:coverage` prints a table per area; there is no floor.
+- **Coverage:** `pnpm test:coverage` prints a table per area; there is no floor. The unit project covers 57.5% of lines: `src/server` 92.2%, `src/lib` 87.0%, `src/features` 37.1%.
 - **Portfolio:** a demo persona ("Aarav Shrestha"), seven invented projects and six posts in `scripts/lib/portfolio-data`, the "Himal" system in `src/styles/himal.css` and `src/features/portfolio` (104 files). None of the four products is in it.
 - **The apps gallery** (`src/features/apps/registry.ts`) lists Notes, Links, Habits and Forms only; `/apps/kanban` and `/apps/expenses` are redirect routes in the taskline and kharcha layers.
 - **Redesigns the finish reviews left for the owner:** Chaal's desktop game page, home, play hub and puzzle page (0275); Kharcha's desktop thread, expense panel, split editor and phone thread header (0291); Parda's watch page chrome (0244).
@@ -4596,6 +4598,20 @@ A product adds `shell/`, `kit/` and `admin/`, each a feature folder.
 | A log line | `log()` |
 | Dates, numbers, money | `src/lib/i18n` |
 
+**Checked against the code (Task 98, `docs/history/part9-audit.md`).** Where the lines above and the counts disagree, Task 100 decides which one moves and records it:
+
+- **The folder shape:** 9 of 129 feature folders have it. The four products hold 355 components beside their data files and have no `components/` folder at all, and 161 `.ts` files there have names outside the list (`load.ts` 8, `brand.ts` 4, `limits.ts` 4, `head.ts` 3, `uploads.ts` 3, …). The list needs those kinds named, or `lib/` takes them.
+- **Component roles:** 176 of 467 feature components end in a role from the list (page 86, dialog 32, list 21, form 15). The commonest other endings: section 18, settings 12, filters 9, dialogs 8, columns 7, home 7, frame 6, layout 6, banner 5, board 5, button 5, editor 4. As written the rule renames 291 files, so the list is widened or the files are renamed, by decision.
+- **Hooks:** 45 of 84 exported hooks live in a `use-<thing>` file.
+- **Exports:** `keys.ts` already follows the rule (21 of 23). `queries.ts` exports 218 `…Options` functions and 19 `…Mutations` objects, and almost no `<feature>Queries`. Schemas are named `<thing>Input` (258) far more often than `<thing>InputSchema` (65 end in `Schema`). Collections: 24 `…Rows`, 5 `…Collection`.
+- **Guards:** 559 of 582 functions run `require…` then `with…`. Outside the words: `requirePardaViewer` (35), `requireAppUser` and `withAppServices` (32), `withPardaCatalog` (19), `withPublicServices` (15), `devOnlyMiddleware` (19), four `…Middleware` names (9 uses). Three functions have no guard (`getAuthFeatures`, `getHomeFlags`, `getDbHealth`), and 103 have no validator, 17 of them `POST`.
+- **Verbs:** 454 standard, 24 folded (`save` 13, `mark` 6, `toggle` 2, `find`, `locate`, `patch`), 104 domain verbs in 66 words (the audit's `functions.json` lists them). 49 handlers do more than one call.
+- **Tables and migrations:** the products' tables carry their prefix (`tl_`, `pd_`, `ch_`, `kh_`) and the portfolio's `portfolio_`. The core's 12 and the apps' 7 have none, or one per app (`form_`, `habit_`, `link_`). 39 of 59 migrations start with a layer's name.
+- **Messages:** all 7,227 are snake_case and 6,794 have three parts or more. Two products abbreviate their prefix (`ch_` 1,378, `pd_` 856) and two spell it (`taskline_` 1,609, `kharcha_` 1,045).
+- **Server folders:** 31 hold `repository.ts` and `service.ts`, 26 hold a service only, and the portfolio's 11 files are `<thing>-repository.ts` and `<thing>-service.ts`.
+- **Tests:** 158 of 207 files are named after a feature, a module or a core library. `tests/i18n` (3) and `tests/email` (1) sit outside `unit`, `server` and `components`.
+- **Lists:** of 64 `list…` functions, 16 take the list contract's input, 5 page in their own way, 12 take an input with no paging and 31 take none. None of their inputs names a cursor: the cursor contract is `cursorOrder` in `src/server/db/list.ts` and nothing more yet.
+
 ### 15.6 Optimistic writes: the position
 
 The owner asked whether every operation can be optimistic, and said to do it if the planner agrees. **The plan agrees, with rules.**
@@ -4635,25 +4651,46 @@ The owner asked whether every operation can be optimistic, and said to do it if 
   9. the layer's guide and its Learn section say what the code does;
   10. the bundle and Task 98's timings did not get worse.
 
-### Task 98: Baseline and audit
+### Task 98: Baseline and audit (done)
 
-**Goal:** know where the repo stands before changing it. No app code changes; scripts and a report only.
+**Done** (2026-11-14, decision 0295). No app code changed. The report is `docs/history/part9-audit.md`; its 19 data files are in `docs/history/part9-audit/`.
 
-- **Gates:** run all ten in full, once, each with its wall time and peak memory, and Vitest's and Playwright's per-file times. This is the baseline every later claim is measured against.
-- **Coverage:** `pnpm test:coverage`, per area and per layer. **Bundle:** `check-bundle.ts` for every route. **Lighthouse:** the public home and each product's landing.
-- **The audit scripts** (`scripts/audit/`, kept: Task 100 turns them into tests). Each prints counts and a list:
-  - structure and names against 15.5 (folders, file names, exports, verbs, guards, tables, messages, tests);
-  - writes: every `useMutation`, and whether it is optimistic, with the 15.6 class of each write;
-  - reads: every `useQuery` with its reason, every route with data but no loader, every list outside the contracts;
-  - errors: every `throw` in `src/server` that isn't an `AppError`, every `catch` that swallows, every server route's handling;
-  - effects (`useEffect` by purpose), casts (`as unknown as`), `biome-ignore` reasons, default exports;
-  - copies: a duplicate-code report across the layers (jscpd or the like), which feeds Task 108.
-- **Every library used as its docs say today:** version, latest, deprecated APIs in use, and a line on whether our use matches the recommended one (Start, Router, Query, DB, Form, Store, Table, Better Auth, Drizzle, Paraglide, Tailwind, shadcn, Sentry, PostHog, Ably, Cloudinary, Resend, Nitro, Vite, the React Compiler, Vitest, Storybook, Playwright, Biome, Knip).
-- **Package verdicts:** for each hand-written module, the package that could replace it and a verdict (replace or keep, with the reason). 15.4 has the candidates.
-- **The old plan:** each deliverable of sections 4–10 against today's code, with its gap and the Part 9 task that closes it. The starting map: env, scaffold and observability to 103; the database to 104; router, SSR and server functions to 103 and 106; email and auth to 103 and 110; forms and the kit to 107; state to 105 and 106; Test CRUD, RBAC, attachments and the audit log to 110; Storybook, tests and CI to 99 and 123; the CRUD standard and the generator to 100; the apps to 111; the portfolio to 120–122.
-- **UX:** a screenshot of every reviewed page at 1280 and 1920, and a list of the pages with empty side space, a missing state or an anatomy unlike the others.
-- **Docs that are stale:** found and listed (the testing guide's times, the decisions index).
-- **Output:** `docs/history/part9-audit.md` with its data files beside it, a decision with the baseline numbers, and corrections to 15.4 and 15.5 where the counts disagree with them.
+- **What was added:**
+  - `scripts/audit/`: 19 scripts and the `lib.ts` they share. `measure.ts` times a command and samples its process tree's memory. `all.ts` runs the ten audits that only read the source (`structure`, `functions`, `names`, `writes`, `reads`, `errors`, `code`, `docs`, `modules`, `old-plan`). The others each need something: `times` (the reporters' JSON), `coverage`, `deprecated` (a full type check), `libraries` and `copies` (the network), `lighthouse` (the e2e server), `ux` (an audit run of the review).
+  - `e2e/support/audit.ts`: with `AUDIT_DIR` set, the browser review also saves a screenshot, the layout's numbers and the server functions each page called while it loaded; `AUDIT_WIDTHS` adds 1920. Unset, the review is as before.
+- **The baseline** (4 Vitest workers, 2 Playwright workers):
+
+  | Gate | Time | Peak memory |
+  | --- | ---: | ---: |
+  | typecheck, no cache | 1 min 45 s | 3.5 GB |
+  | typecheck, nothing changed | 58 s | 1.9 GB |
+  | check, knip, i18n:check | 15 s, 7 s, 6 s | under 1 GB |
+  | test (2,534 tests) | 3 min 26 s | 4.5 GB |
+  | test:storybook (394 stories, twice) | 55 s and 53 s | 7.3 GB |
+  | build, build-storybook | 1 min 34 s, 1 min 16 s | 4.7 GB, 2.9 GB |
+  | test:e2e (3,832 tests, ten shards) | 73 min 26 s | 4.6 GB |
+
+  Everything but e2e: 11 min 17 s. Coverage: 57.5% of lines (`src/server` 92.2%, `src/features` 37.1%). The entry bundle: 297.1 kB of 300. Lighthouse: the home 95, Taskline 100, Parda 78, Chaal 99, Kharcha 99.
+- **What it found, by the task that uses it:**
+  - **99:** the review is 3,624 checks at 2.2 s on two workers; `kharcha-access.test.ts` is 42% of `pnpm test`; Storybook needs 7.3 GB and left 39 MB free; a no-change typecheck takes 58 s; the builds take twice what the docs said; a stuck Playwright runner never ends (no `globalTimeout`).
+  - **100, 101:** 9 of 129 feature folders have 15.5's shape (355 product components sit beside their data files); 176 of 467 components end in a listed role; 24 folded verbs; the guard words differ per product. 15.5 has the list.
+  - **102:** 7 dependencies a major version behind (TypeScript 7, TanStack DB 1.0 RC, Paraglide 3, lucide 1); 138 uses of deprecated APIs (React's `FormEvent` 77, Store's `useStore` 51). Verdicts: replace `use-hotkeys.ts`, `use-debounced-value.ts`, the hand-written timers, Chaal's lane queue, the LRU cache and the fractional index (each with a parity test); keep the Postgres rate limiter, the CSV writer and the `Intl` wrappers.
+  - **103:** 63 bare `Error`s among 666 server throws, 42 silent catches without a comment, 20 server routes with 8 `json()` helpers and 6 secret checks of their own.
+  - **105:** 222 write call sites, 36 optimistic today; 158 of the 184 that 15.6 wants optimistic are not (Taskline 81, Kharcha 39).
+  - **106:** 135 of 197 `useQuery` calls give no reason (Chaal 76); 79 of 302 pages call a server function during their first load, 100 of the 118 calls being three polls (`getTasklineUnread`, `getTasklineProjectRev`, `getKharchaRev`); 16 of 64 `list…` functions take the list contract's input.
+  - **107, 111 to 119:** at 1920 wide, 179 of 302 pages use under three quarters of the width (Chaal 51 of 57, Taskline 41 of 46, the apps 15 of 15, the admin's forms). Every page has one `<main>` and one `<h1>`.
+  - **108:** 46 exact copies (0.43% of the lines), and 27 files that three or four products each have under the same path (the sign-in pages, the user menu, the palette, the admin's overview and settings, `cron.ts`, `manifest.ts`).
+  - **123:** the server can take a coverage floor now (86% or more in every layer); `src/features` cannot until component or Storybook runs count.
+  - **124:** Parda's home (LCP 3.85 s, 427 ms of blocking time).
+- **Deviations:**
+  - **The 604 screenshots are not committed** (34 MB): they are in `.data/audit/ux/screens` on the owner's machine, with their numbers in `ux.json`.
+  - **Library docs:** four libraries were read against their current docs (Start, DB, Pacer, Hotkeys); the rest were checked by version and by the deprecated-API scan.
+  - **"A missing state"** is not something a script finds. The router's defaults cover every route; states inside a page are for the UX passes.
+  - **The first day's measurements were thrown away** (a runaway Windows service, then a locked, overheating laptop) and everything was measured again after a restart.
+  - **e2e ran in ten shards,** so its time is their sum plus 68 s for the server.
+  - **`biome.json` leaves `docs/history/part9-audit` out:** generated data, written again by each run.
+- **Stale docs fixed:** the decisions index's count, the testing guide's e2e and Storybook build times, 15.4's counts and times.
+- **Left for the owner:** whether the screenshots should be kept somewhere shared; keeping the laptop unlocked, cool and idle for timing runs (`measure.ts` warns about a busy processor, not a throttled one).
 
 ### Task 99: Fast gates
 

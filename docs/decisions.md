@@ -3,7 +3,7 @@
 Record every non-obvious choice here: **What**, **Why**, **Alternatives considered**. Newest entries at the bottom.
 
 <details>
-<summary>Index (241 entries)</summary>
+<summary>Index (294 entries)</summary>
 
 - [0001](#0001-project-has-its-own-git-repository): Project has its own git repository
 - [0002](#0002-default-deployment-target-is-vercel-assumption): Default deployment target is Vercel (assumption)
@@ -299,6 +299,7 @@ Record every non-obvious choice here: **What**, **Why**, **Alternatives consider
 - [0292](#0292-part-8-measured-task-97): Part 8 measured (Task 97)
 - [0293](#0293-after-the-plan-the-temporary-knip-entry-gone-with-the-two-functions-it-hid): After the plan: the temporary knip entry gone, with the two functions it hid
 - [0294](#0294-admin-lists-write-through-tanstack-db-one-collection-per-list-fed-by-the-query-cache): Admin lists write through TanStack DB: one collection per list, fed by the Query cache
+- [0295](#0295-part-9s-baseline-every-gate-measured-every-deviation-counted-task-98): Part 9's baseline: every gate measured, every deviation counted (Task 98)
 </details>
 
 ---
@@ -4319,3 +4320,40 @@ A cleanup once every Part was done (2026-11-14).
   - **Not converted, on purpose:** pages that are not row lists keep their layout and their non-optimistic `useCrudMutation` writes: Taskline's workflows, fields and automations editors (shared with the app's settings), Chaal's curation (it keeps a draft order and saves it), Parda's layout and the three reorder dialogs (a dialog saves on submit), every settings form. Read-only lists (the audit log, Taskline's activity) pass no collection.
 - **Numbers:** the entry (every page) is unchanged at 297.1 kB gzip, and `NOT_IN_ENTRY` still passes: no public page loads DB. The admin's routes now carry DB's runtime (about 100 kB gzip, 0189's 100.6; one chunk, loaded once by the admin layout), which `check-bundle` counts on each of them: the heaviest, the portfolio's project list, is 355.4 kB on top of the root and Test CRUD's list 339.5, so the route budget went from 300 to 360 kB. Storybook's preview chunk (a dev tool) is 2.4 MB with DB in the stories' providers, and its warning limit went from 2000 to 2600 kB. New tests: `tests/unit/crud-collection.test.ts` (every cached page, following the cache, the newest copy, an optimistic change kept, a refusal rolled back, one set of rows per DbClient).
 - **Alternatives considered:** keeping Query-cache patching and only renaming it (not what was asked, and two optimistic mechanisms would stay in the repo); DB's on-demand sync with predicate push-down (the list contract's `q`, filters, totals and page counts don't map to it, and the URL would stop being the state); one `queryCollectionOptions` per page (0174's reason to leave); turning the non-table pages into tables (the ordered sections would lose drag-reordering, the editors their shape; left for the owner to decide page by page).
+
+## 0295: Part 9's baseline: every gate measured, every deviation counted (Task 98)
+
+Measured on the owner's Windows machine (Node 24.11, 12 threads, 11.7 GB), 2026-11-14, at `c39ee78`. The report is `docs/history/part9-audit.md` with its data files in `docs/history/part9-audit/`; no app code changed.
+
+- **The baseline** (Vitest 4 workers, Playwright 2):
+  - `pnpm typecheck` 1 min 45 s with no cache and 58 s with nothing changed; `pnpm check` 15 s; `pnpm knip` 7 s; `pnpm i18n:check` 6 s.
+  - `pnpm test` 3 min 26 s (207 files, 2,534 tests, 4.5 GB). One file, `kharcha-access.test.ts`, is 42% of it.
+  - `pnpm test:storybook` 55 s and 53 s for its two passes (394 stories each), at 7.3 GB: the first pass left 39 MB of memory free.
+  - `pnpm build` 1 min 34 s; `pnpm build-storybook` 1 min 16 s; the bundle check 2 s.
+  - `pnpm test:e2e` 73 min 26 s in ten shards plus 68 s for its server: 3,832 tests, none failed, one flaky. The review is 3,624 of them (302 page entries in 12 variants) at 2.2 s each.
+  - Everything but e2e: 11 min 17 s. The full set: 86 minutes.
+- **Coverage** (the unit project): 57.5% of lines, 46.2% of branches, 42.2% of functions. `src/server` 92.2%, `src/lib` 87.0%, `src/features` 37.1%.
+- **Bundle:** every page 297.1 kB of 300; the heaviest route adds 355.3 kB of 360; 151 of 227 routes add under 100 kB.
+- **Lighthouse** (13.6, mobile, medians of three): the home 95, Taskline 100, Parda 78, Chaal 99, Kharcha 99.
+- **Against the standard (PLAN 15.5):**
+  - 9 of 129 feature folders have its shape; 176 of 467 feature components end in a listed role.
+  - 582 server functions: 559 with `require…` then `with…`, 24 with a folded verb, 17 `POST`s without a validator.
+  - 222 write call sites, 36 optimistic today; 158 of the 184 that 15.6 wants optimistic are not.
+  - 197 `useQuery`, 135 with no reason in the code; 79 of 302 pages call a server function during their first load, 100 of those 118 calls being three polls.
+  - 63 bare `Error`s among 666 server throws; 42 silent catches with no comment; 20 server routes with 8 `json()` helpers and 6 secret checks of their own.
+  - 118 effects, 49 timers, 41 key handlers, 19 `as unknown as`, 67 `biome-ignore`.
+  - 46 exact copies (0.43% of the lines), and 27 files that three or four products each have under the same path.
+  - 138 uses of deprecated APIs (React's `FormEvent` 77, TanStack Store's `useStore` 51); 7 dependencies a major version behind.
+  - At 1920 wide, 179 of 302 pages use under three quarters of the width beside the sidebar.
+- **Choices:**
+  - **The audits are scripts, kept** (`scripts/audit/`, one per data file; `all.ts` runs the ten that only read the source). They parse files with the TypeScript compiler API and import no app code, so they run with plain `node` and cannot be broken by the app. Task 100 turns their checks into tests with lists of known deviations.
+  - **`measure.ts` measures a command's process tree,** not the machine: wall time, the sum of the working sets of every process the command started (sampled every 1.5 s) and the least free memory. A process is known by its pid and its start time, because Windows hands a dead process's pid to another program within seconds (two shards counted 200 processes before that). It also records how busy the processors were just before, and warns above 15%.
+  - **The first day's numbers were thrown away.** A Windows service had been using 3 to 5 threads for seven hours, and later the laptop overheated while locked: the same loop went from 1.7 s to 4.8 s in three runs, and headless Chrome drew no frames, so the review hung. Everything was measured again after a restart.
+  - **e2e ran in ten shards** on one server, as 0292 did: one run would outlast the tool's 10-minute limit. Its time here is the shards' sum.
+  - **The UX audit is the browser review itself,** with two opt-in hooks (`AUDIT_DIR`, `AUDIT_WIDTHS`, `e2e/support/audit.ts`): it reuses the review's page list, sign-ins and URLs, and adds 1920, a screenshot, the layout's numbers and the server functions called during the load. Unset, the review is unchanged.
+  - **The 604 screenshots stay out of the repository** (34 MB, `.data/audit/ux/screens`): the numbers taken from them are committed and the command makes them again.
+  - **The data files are not formatted by Biome** (`biome.json` leaves `docs/history/part9-audit` out, as it does the recorded fixtures): they are `JSON.stringify`'s output, written again by every run.
+  - **Lighthouse's proxy runs in the script's own process,** so Lighthouse is started without blocking it; and Chrome gets one flag with no quotes (`HEADLESS=1` for the rest), because a quoted list of flags lost its second one through two Windows command shims.
+- **Corrected in the plan:** 15.4's counts and times, and a new paragraph in 15.5 on where the standard as written and the code disagree (the role list, the schema suffix, the guard words, the messages' prefixes), for Task 100 to settle.
+- **Not done:** the libraries' docs were read line by line for four of them (Start, DB, Pacer, Hotkeys); the others were checked by version and by the deprecated-API scan. Empty and loading states inside a page cannot be found by a script; the UX passes look at them.
+- **Alternatives considered:** counting with `grep` (15.4's first numbers: a comment or a string counts as a call, and several were off); committing the screenshots as JPEG (34 MB in every clone of a template); a separate Playwright spec for the screenshots (it would copy the review's 60 lines that turn a route into a URL); measuring the machine's memory instead of the command's (whatever else runs is counted too).
