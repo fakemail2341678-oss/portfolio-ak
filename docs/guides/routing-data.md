@@ -65,7 +65,7 @@ export const updateThing = createServerFn({ method: "POST" })
 ```
 
 - **Thin:** the middleware checks the permission, `zodInput` validates with the shared schema (field errors come back keyed by field), and the handler is one call into `src/server/**`. Logic lives there, where tests run it on PGlite.
-- **Every protected function** runs `requirePermission` first, and `tests/server/guarded-functions.test.ts` lists each function with its permission ([rbac.md](rbac.md)). Use `requireUser` for "any signed-in account" (it refuses guests, 0185), `requireAppUser` for the showcase apps (guests included) and `requireDev` for `/dev` helpers.
+- **Every protected function** runs `requirePermission` first, and `tests/server/functions-guards.test.ts` lists each function with its permission ([rbac.md](rbac.md)). Use `requireUser` for "any signed-in account" (it refuses guests, 0185), `requireAppsUser` for the showcase apps (guests included) and `requireDev` for `/dev` helpers.
 - **Global function middleware** (`src/start.ts`): it sends the page locale as a header (so `m.*` and `getLocale()` work inside handlers), passes on the request's id (`context.requestId`, the same as the `x-request-id` header, 0123), logs one JSON line per call, and normalises errors.
 - **Runtime:** server functions run only inside Start. Test the plain functions they call, not the wrappers.
 
@@ -113,7 +113,7 @@ The server function takes the key in its input (`key: z.uuid()`), the scope is `
 
 `src/server/**` and `*.server.*` never reach the client: TanStack Start's import protection fails the build, and `tests/server/env-boundary.test.ts` scans imports. Allowed importers are `src/server`, `src/functions`, `src/middleware` (dynamic import inside `.server()` only), and server routes (`.ts` route files with only `server.handlers`, like `/sitemap.xml`).
 
-Modules that use Start runtime helpers (`createIsomorphicFn`, e.g. `src/lib/start/http-status.ts`) are for routes and server code only. Storybook has no Start plugin, so a component importing them breaks every story that renders it. Example: `assertRoutePermission` lives in `rbac/route-guard.ts`, not `rbac/can.tsx`.
+Modules that use Start runtime helpers (`createIsomorphicFn`, e.g. `src/lib/start/http-status.ts`) are for routes and server code only. Storybook has no Start plugin, so a component importing them breaks every story that renders it. Example: `assertRoutePermission` lives in `rbac/lib/route-guard.ts`, not `rbac/hooks/use-can.ts`.
 
 ## Pitfalls already solved
 

@@ -16,7 +16,7 @@ import { type ProfileDetail, type ProfileFormValues, profileFormSchema, toProfil
 import { profileKeys } from "../keys";
 import { AVAILABILITY_LABELS } from "../labels";
 import { profileMutations, profileQueryOptions } from "../queries";
-import { MetricFields } from "./field-groups";
+import { MetricFields } from "./grouped-field";
 
 const EMPTY = { en: "", ne: "" };
 const picked = (image: ProfileDetail["portrait"]) => (image ? [{ id: image.id, preview: image }] : []);

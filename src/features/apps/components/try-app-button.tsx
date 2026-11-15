@@ -3,8 +3,8 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
-import { authErrorMessage } from "@/features/auth/errors";
-import { useAuthNavigation } from "@/features/auth/use-auth-actions";
+import { useAuthNavigation } from "@/features/auth/hooks/use-auth-actions";
+import { authErrorMessage } from "@/features/auth/lib/errors";
 import { m } from "@/paraglide/messages";
 
 /**

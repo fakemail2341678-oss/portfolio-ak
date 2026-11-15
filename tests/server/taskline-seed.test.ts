@@ -1,6 +1,6 @@
 import { hashPassword } from "better-auth/crypto";
 import { afterAll, describe, expect, it } from "vitest";
-import { templateDefinition } from "@/features/taskline/template-definition";
+import { templateDefinition } from "@/features/taskline/lib/template-definition";
 import type { TasklineServices } from "@/server/taskline/access";
 import * as automations from "@/server/taskline/automations/service";
 import * as projects from "@/server/taskline/projects/service";

@@ -2,9 +2,9 @@ import { createServerFn } from "@tanstack/react-start";
 import {
 	type ChaalTeamPage,
 	type ChaalTeams,
-	teamInput,
-	teamListInput,
-	teamSearchInput,
+	teamInputSchema,
+	teamListInputSchema,
+	teamSearchInputSchema,
 } from "@/features/chaal/teams/schema";
 import { zodInput } from "@/functions/_lib/validator";
 import { withChaalPublic } from "@/middleware/chaal";
@@ -18,15 +18,15 @@ import * as teams from "@/server/chaal/teams/service";
 
 export const getChaalTeams = createServerFn({ method: "GET" })
 	.middleware([withChaalPublic])
-	.validator(zodInput(teamListInput))
+	.validator(zodInput(teamListInputSchema))
 	.handler(({ context, data }): Promise<ChaalTeams> => teams.popularTeams(context.chaal, data.page));
 
 export const searchChaalTeams = createServerFn({ method: "GET" })
 	.middleware([withChaalPublic])
-	.validator(zodInput(teamSearchInput))
+	.validator(zodInput(teamSearchInputSchema))
 	.handler(({ context, data }): Promise<ChaalTeams> => teams.searchTeams(context.chaal, data.q, data.page));
 
 export const getChaalTeam = createServerFn({ method: "GET" })
 	.middleware([withChaalPublic])
-	.validator(zodInput(teamInput))
+	.validator(zodInput(teamInputSchema))
 	.handler(({ context, data }): Promise<ChaalTeamPage> => teams.teamPage(context.chaal, context.session, data.id));

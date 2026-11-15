@@ -1,6 +1,6 @@
 import { createFileRoute, notFound } from "@tanstack/react-router";
-import { pardaHead } from "@/features/parda/brand";
-import { PardaWatchPage } from "@/features/parda/player/watch-page";
+import { pardaHead } from "@/features/parda/lib/brand";
+import { PardaWatchPage } from "@/features/parda/player/components/watch-page";
 import { titleRouteParams, watchSearchSchema } from "@/features/parda/search";
 import { getLocale } from "@/paraglide/runtime";
 

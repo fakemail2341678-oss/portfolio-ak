@@ -9,10 +9,10 @@ import type { RowAction } from "@/components/data-table";
 import { Button } from "@/components/ui/button";
 import { deleteRows } from "@/lib/crud/collection";
 import { m } from "@/paraglide/messages";
-import { Can } from "../can";
 import { roleRows } from "../collection";
 import { roleColumns } from "../columns";
-import { RBAC_REFRESH } from "../keys";
+import { Can } from "../hooks/use-can";
+import { rbacRefreshKeys } from "../keys";
 import { roleLabel } from "../labels";
 import { roleMutations, rolesQueryOptions } from "../queries";
 import type { RoleSummary } from "../schema";
@@ -29,7 +29,7 @@ export function RolesList() {
 	const [editing, setEditing] = useState<{ id?: string } | null>(null);
 	const collection = useCrudCollection(roleRows);
 	const remove = useCrudMutation(roleMutations.delete(), {
-		invalidate: RBAC_REFRESH,
+		invalidate: rbacRefreshKeys,
 		optimistic: (id) => deleteRows(collection, [id]),
 	});
 	// The dialog shows the role as it is in the list, so a reloaded newer version re-keys it.

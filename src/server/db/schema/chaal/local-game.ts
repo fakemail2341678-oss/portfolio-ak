@@ -1,6 +1,6 @@
 import { index, integer, jsonb, pgTable, text, timestamp, uuid } from "drizzle-orm/pg-core";
-import type { TimeControl } from "@/features/chaal/chess/clock";
-import type { GameResult } from "@/features/chaal/chess/rules";
+import type { TimeControl } from "@/features/chaal/chess/lib/clock";
+import type { GameResult } from "@/features/chaal/chess/lib/rules";
 import type { BoardLayout, LocalEndReason, LocalMode } from "@/features/chaal/local/types";
 import { user } from "../auth";
 

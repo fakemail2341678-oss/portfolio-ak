@@ -1,10 +1,10 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { START_FEN } from "@/features/chaal/chess/rules";
-import { canBerserk, liveGameOf } from "@/features/chaal/game/live-game";
-import type { ChaalEvent, ChaalEventGame, ChaalGameFull } from "@/features/chaal/live/events";
-import { type ChannelLike, PLAYING_EVERY_MS, startLiveEvents } from "@/features/chaal/live/events-client";
-import { newNotices } from "@/features/chaal/live/notices";
-import type { KeepOptions } from "@/features/chaal/live/reader";
+import { START_FEN } from "@/features/chaal/chess/lib/rules";
+import { canBerserk, liveGameOf } from "@/features/chaal/game/lib/live-game";
+import type { ChaalEvent, ChaalEventGame, ChaalGameFull } from "@/features/chaal/live/lib/events";
+import { type ChannelLike, PLAYING_EVERY_MS, startLiveEvents } from "@/features/chaal/live/lib/events-client";
+import { newNotices } from "@/features/chaal/live/lib/notices";
+import type { KeepOptions } from "@/features/chaal/live/lib/reader";
 import {
 	applyEvent,
 	applyPlaying,
@@ -18,9 +18,9 @@ import {
 	secondsLeftOf,
 	settle,
 } from "@/features/chaal/live/store";
-import { QUICK_PAIRS, ratingRangeOf, seekLegal } from "@/features/chaal/play/controls";
-import { seekInput } from "@/features/chaal/play/schema";
-import { PLAY_PAGE } from "@/features/chaal/shell/zen";
+import { QUICK_PAIRS, ratingRangeOf, seekLegal } from "@/features/chaal/play/lib/controls";
+import { seekInputSchema } from "@/features/chaal/play/schema";
+import { PLAY_PAGE } from "@/features/chaal/shell/hooks/use-zen";
 
 /**
  * Online play II in the browser (PLAN Task 78, decision 0267): what may be sought, the
@@ -80,15 +80,15 @@ describe("what quick pairing may seek", () => {
 		expect(seekLegal({ initial: 600, increment: 181 })).toBe(false);
 		expect(seekLegal({ initial: 0, increment: 0 })).toBe(false);
 		for (const pace of QUICK_PAIRS)
-			expect(seekInput.safeParse({ pace, rated: false, range: "any" }).success).toBe(true);
+			expect(seekInputSchema.safeParse({ pace, rated: false, range: "any" }).success).toBe(true);
 		expect(
-			seekInput.safeParse({
+			seekInputSchema.safeParse({
 				pace: { kind: "clock", clock: { initial: 180, increment: 2 } },
 				rated: false,
 				range: "any",
 			}).success,
 		).toBe(false);
-		expect(seekInput.safeParse({ pace: QUICK_PAIRS[0], rated: false, range: "50" }).success).toBe(false);
+		expect(seekInputSchema.safeParse({ pace: QUICK_PAIRS[0], rated: false, range: "50" }).success).toBe(false);
 	});
 
 	it("a rating range around the player's rating, never below 400; any or no rating means anyone", () => {

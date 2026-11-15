@@ -1,8 +1,8 @@
 import "@tanstack/react-start/server-only";
 import { and, asc, eq, gte, inArray, isNull, sql } from "drizzle-orm";
-import { PARDA_NAME } from "@/features/parda/brand";
+import { PARDA_NAME } from "@/features/parda/lib/brand";
+import { titleSlug } from "@/features/parda/lib/slug";
 import { episodeRangeLabel } from "@/features/parda/schedule/labels";
-import { titleSlug } from "@/features/parda/slug";
 import { localizedUrl } from "@/lib/seo";
 import { pdAccount, pdNotification, pdProfile, user } from "@/server/db/schema";
 import type { Db } from "@/server/db/types";

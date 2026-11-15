@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { KharchaAdminSettingsPage } from "@/features/kharcha/admin/settings/settings-page";
+import { KharchaAdminSettingsPage } from "@/features/kharcha/admin/settings/components/settings-page";
 import { staticCrumb } from "@/lib/breadcrumbs";
 import { titleHead } from "@/lib/crud/route";
 import { ensureQuery } from "@/lib/query";

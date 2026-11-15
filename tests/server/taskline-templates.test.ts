@@ -1,7 +1,7 @@
 import { and, asc, eq } from "drizzle-orm";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import type { Actor } from "@/features/rbac/types";
-import { templateDefinition, templateFile } from "@/features/taskline/template-definition";
+import { templateDefinition, templateFile } from "@/features/taskline/lib/template-definition";
 import { BUILTIN_TEMPLATES } from "@/features/taskline/types";
 import { isAppError } from "@/lib/errors";
 import { addDays, todayInZone } from "@/lib/i18n/date-only";

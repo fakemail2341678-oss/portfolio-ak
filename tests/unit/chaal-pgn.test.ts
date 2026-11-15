@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
-import { PGN_MAX_MOVES, type PgnGame, readPgn, writePgn } from "@/features/chaal/chess/pgn";
-import { START_FEN } from "@/features/chaal/chess/rules";
-import { type GameTree, mainline, nodeOf, type TreeNode } from "@/features/chaal/chess/tree";
+import { PGN_MAX_MOVES, type PgnGame, readPgn, writePgn } from "@/features/chaal/chess/lib/pgn";
+import { START_FEN } from "@/features/chaal/chess/lib/rules";
+import { type GameTree, mainline, nodeOf, type TreeNode } from "@/features/chaal/chess/lib/tree";
 
 /**
  * PGN in and out (Task 74, decision 0261): variations, comments, NAGs, Lichess's clocks and

@@ -22,7 +22,7 @@ export const getChaalAnalysis = createServerFn({ method: "GET" })
 	.validator(zodInput(idInput))
 	.handler(({ context, data }): Promise<ChaalAnalysis> => analyses.getAnalysis(context.db, context.user.id, data.id));
 
-export const saveChaalAnalysis = createServerFn({ method: "POST" })
+export const updateChaalAnalysis = createServerFn({ method: "POST" })
 	.middleware([requireChaalUser, withChaalServices])
 	.validator(zodInput(analysisInputSchema))
 	.handler(

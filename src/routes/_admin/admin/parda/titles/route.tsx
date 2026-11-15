@@ -4,5 +4,5 @@ import { m } from "@/paraglide/messages";
 
 /** /admin/parda/titles/*: the takedown list (parda:read from the section; writes need parda:moderate). */
 export const Route = createFileRoute("/_admin/admin/parda/titles")({
-	staticData: { breadcrumb: staticCrumb(m.pd_admin_takedowns_title) },
+	staticData: { breadcrumb: staticCrumb(m.parda_admin_takedowns_title) },
 });

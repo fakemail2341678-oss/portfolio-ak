@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { tasklineTitle } from "@/features/taskline/brand";
-import { LabelsSettings } from "@/features/taskline/settings/labels-settings";
+import { tasklineTitle } from "@/features/taskline/lib/brand";
+import { LabelsSettings } from "@/features/taskline/settings/components/labels-settings-panel";
 import { staticCrumb } from "@/lib/breadcrumbs";
 import { m } from "@/paraglide/messages";
 

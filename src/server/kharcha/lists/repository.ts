@@ -1,6 +1,6 @@
 import "@tanstack/react-start/server-only";
 import { and, asc, desc, eq, inArray, isNull, ne, sql } from "drizzle-orm";
-import { DEFAULT_METHODS, type KharchaSettings } from "@/features/kharcha/settings";
+import { DEFAULT_METHODS, type KharchaSettings } from "@/features/kharcha/lib/settings";
 import type { CategoryChip, MerchantSuggestion } from "@/features/kharcha/types";
 import type { Locale } from "@/paraglide/runtime";
 import { notFound } from "@/server/db/crud";

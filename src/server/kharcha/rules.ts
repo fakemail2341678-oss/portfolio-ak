@@ -1,7 +1,7 @@
 import "@tanstack/react-start/server-only";
 import { and, eq, isNotNull, isNull } from "drizzle-orm";
-import type { Debt } from "@/features/kharcha/money/ledger";
-import { type KharchaSettings, offeredCurrencies } from "@/features/kharcha/settings";
+import { type KharchaSettings, offeredCurrencies } from "@/features/kharcha/lib/settings";
+import type { Debt } from "@/features/kharcha/money/lib/ledger";
 import type { Amount } from "@/features/kharcha/types";
 import { ruleError } from "@/lib/errors";
 import { formatMoney } from "@/lib/i18n/currency";

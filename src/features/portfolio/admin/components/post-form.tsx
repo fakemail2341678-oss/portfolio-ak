@@ -9,7 +9,7 @@ import { FormSection, StickyFormBar } from "@/components/page/form-layout";
 import { Page, PageHeader } from "@/components/page/page";
 import { Button } from "@/components/ui/button";
 import { MediaField } from "@/features/media/components/media-field";
-import { useCan } from "@/features/rbac/can";
+import { useCan } from "@/features/rbac/hooks/use-can";
 import { isPostSlugFree } from "@/functions/portfolio";
 import { m } from "@/paraglide/messages";
 import { PORTFOLIO_STATUSES } from "../../constants";
@@ -17,7 +17,7 @@ import { type PostDetail, type PostFormValues, postFormSchema, toPostInput } fro
 import { postKeys } from "../keys";
 import { STATUS_LABELS } from "../labels";
 import { postDetailQueryOptions, postMutations } from "../queries";
-import { PreviewLink } from "./shared";
+import { PreviewLink } from "./preview-link";
 
 const EMPTY = { en: "", ne: "" };
 

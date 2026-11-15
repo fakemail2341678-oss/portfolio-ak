@@ -1,5 +1,5 @@
 import { createFileRoute, redirect } from "@tanstack/react-router";
-import { FormResultsPage } from "@/features/apps/forms/components/form-results";
+import { FormResultsPage } from "@/features/apps/forms/components/form-results-page";
 import { formParamsSchema, formResultsSearchSchema } from "@/features/apps/forms/search";
 import { listSearch, loadDetailOr404 } from "@/lib/crud/route";
 import { parseParams } from "@/lib/list/params";

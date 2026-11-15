@@ -93,14 +93,14 @@ const title = () => z.string().trim().max(LINK_TITLE_MAX);
 const expiresAt = () => z.iso.datetime({ offset: true }).nullable();
 
 /** A new link: the slug is optional (a random one is picked). */
-export const createLinkInput = z.strictObject({
+export const createLinkInputSchema = z.strictObject({
 	target: linkTarget(),
 	slug: z.union([z.literal(""), linkSlug()]),
 	title: title(),
 	expiresAt: expiresAt(),
 });
 
-export const updateLinkInput = z.strictObject({
+export const updateLinkInputSchema = z.strictObject({
 	id,
 	target: linkTarget().optional(),
 	title: title().optional(),
@@ -108,7 +108,7 @@ export const updateLinkInput = z.strictObject({
 	expiresAt: expiresAt().optional(),
 });
 
-export const linkIdInput = z.strictObject({ id });
+export const linkIdInputSchema = z.strictObject({ id });
 
-export type CreateLinkInput = z.infer<typeof createLinkInput>;
-export type UpdateLinkInput = z.infer<typeof updateLinkInput>;
+export type CreateLinkInput = z.infer<typeof createLinkInputSchema>;
+export type UpdateLinkInput = z.infer<typeof updateLinkInputSchema>;

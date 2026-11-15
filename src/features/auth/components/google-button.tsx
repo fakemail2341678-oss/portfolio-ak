@@ -2,8 +2,8 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { authClient } from "@/lib/auth-client";
 import { m } from "@/paraglide/messages";
-import { authErrorMessage } from "../errors";
-import { localizedPath } from "../use-auth-actions";
+import { localizedPath } from "../hooks/use-auth-actions";
+import { authErrorMessage } from "../lib/errors";
 import { FormMessage } from "./auth-field";
 
 /** Rendered only when Google OAuth is configured on the server (authFeatures.google). */

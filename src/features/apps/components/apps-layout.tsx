@@ -25,7 +25,7 @@ import { appCaseStudiesQueryOptions } from "@/features/portfolio/queries"; // @p
 import { GUEST_LIFETIME_DAYS } from "@/lib/guests";
 import { formatNumber } from "@/lib/i18n/intl";
 import { m } from "@/paraglide/messages";
-import { APPS, type AppEntry, appBySlug, appPath, isAppSlug } from "../registry";
+import { APPS, type AppEntry, appBySlug, appPath, isAppSlug } from "../lib/registry";
 
 /** The app a path is in (/apps/<slug>/…), if any. */
 const appOfPath = (pathname: string): AppEntry | null => {

@@ -8,7 +8,7 @@ const alertVariants = cva(
 		variants: {
 			variant: {
 				default: "bg-card text-card-foreground",
-				// Graphite status tones (contrast-tested pairs, tests/unit/design-tokens.test.ts): the icon and
+				// Graphite status tones (contrast-tested pairs, tests/unit/styles-tokens.test.ts): the icon and
 				// title take the status colour on its subtle tint; the description stays in the body colour.
 				info: "border-info/30 bg-info-subtle text-info *:data-[slot=alert-description]:text-foreground",
 				success: "border-success/30 bg-success-subtle text-success *:data-[slot=alert-description]:text-foreground",

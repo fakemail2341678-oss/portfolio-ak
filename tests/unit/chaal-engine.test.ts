@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
-import { createEngine, type EngineWorker } from "@/features/chaal/engine/engine";
-import { ENGINE_HASH, ENGINE_SCRIPT, ENGINE_WASM } from "@/features/chaal/engine/files";
-import { type EngineInfo, levelOf, readBestMove, readInfo } from "@/features/chaal/engine/uci";
+import { createEngine, type EngineWorker } from "@/features/chaal/engine/lib/engine";
+import { ENGINE_HASH, ENGINE_SCRIPT, ENGINE_WASM } from "@/features/chaal/engine/lib/files";
+import { type EngineInfo, levelOf, readBestMove, readInfo } from "@/features/chaal/engine/lib/uci";
 
 /**
  * The engine client against a fake worker (PLAN Task 75; decision 0263): the UCI

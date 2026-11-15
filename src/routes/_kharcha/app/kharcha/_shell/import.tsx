@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { kharchaHead } from "@/features/kharcha/brand";
-import { KharchaImportPage } from "@/features/kharcha/spend/import-page";
+import { kharchaHead } from "@/features/kharcha/lib/brand";
+import { KharchaImportPage } from "@/features/kharcha/spend/components/import-page";
 import { ensureQuery } from "@/lib/query";
 import { m } from "@/paraglide/messages";
 

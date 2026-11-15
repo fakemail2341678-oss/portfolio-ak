@@ -1,5 +1,5 @@
 import { z } from "zod";
-import type { GameTree } from "../chess/tree";
+import type { GameTree } from "../chess/lib/tree";
 
 /**
  * "My analyses" (Task 75, decision 0264): what saving sends and what reading returns. The

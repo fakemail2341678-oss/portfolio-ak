@@ -1,9 +1,9 @@
 import "@tanstack/react-start/server-only";
 import { and, desc, eq, inArray, notInArray, sql } from "drizzle-orm";
-import { featureOn, missingScopes } from "@/features/chaal/features";
-import type { PuzzleAngle } from "@/features/chaal/puzzles/angles";
-import { readPuzzleLimits } from "@/features/chaal/puzzles/limits";
-import { progressOf } from "@/features/chaal/puzzles/progress";
+import { featureOn, missingScopes } from "@/features/chaal/lib/features";
+import type { PuzzleAngle } from "@/features/chaal/puzzles/lib/angles";
+import { readPuzzleLimits } from "@/features/chaal/puzzles/lib/limits";
+import { progressOf } from "@/features/chaal/puzzles/lib/progress";
 import {
 	type ChaalPuzzle,
 	type ChaalPuzzleBatch,

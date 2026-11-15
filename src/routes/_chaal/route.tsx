@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { CHAAL_BRAND, chaalTitle } from "@/features/chaal/brand";
+import { CHAAL_BRAND, chaalTitle } from "@/features/chaal/lib/brand";
 import { chaalFontPreloads } from "@/features/chaal/lib/fonts";
-import { ChaalNotFound, ChaalSection } from "@/features/chaal/shell/section";
+import { ChaalNotFound, ChaalSection } from "@/features/chaal/shell/components/section";
 import { NOINDEX } from "@/lib/seo";
 import { getLocale } from "@/paraglide/runtime";
 

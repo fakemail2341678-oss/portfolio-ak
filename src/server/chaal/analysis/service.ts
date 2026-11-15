@@ -8,8 +8,8 @@ import {
 	type ChaalAnalysis,
 	type ChaalAnalysisSummary,
 } from "@/features/chaal/analysis/schema";
-import { PGN_MAX_MOVES } from "@/features/chaal/chess/pgn";
-import { type GameTree, sizeOf, verifyTree } from "@/features/chaal/chess/tree";
+import { PGN_MAX_MOVES } from "@/features/chaal/chess/lib/pgn";
+import { type GameTree, sizeOf, verifyTree } from "@/features/chaal/chess/lib/tree";
 import { AppError } from "@/lib/errors";
 import { chAnalysis } from "@/server/db/schema";
 import type { Db, Tx } from "@/server/db/types";

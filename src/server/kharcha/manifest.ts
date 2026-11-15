@@ -1,5 +1,5 @@
 import "@tanstack/react-start/server-only";
-import { KHARCHA_NAME } from "@/features/kharcha/brand";
+import { KHARCHA_NAME } from "@/features/kharcha/lib/brand";
 import { m } from "@/paraglide/messages";
 import { getTextDirection, type Locale, localizeHref } from "@/paraglide/runtime";
 

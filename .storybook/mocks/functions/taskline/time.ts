@@ -16,7 +16,7 @@ export const startTasklineTimer = fn(async (): Promise<RunningTimer> => sampleTi
 export const stopTasklineTimer = fn(async (): Promise<{ minutes: number } | null> => ({ minutes: 42 })).mockName(
 	"stopTasklineTimer",
 );
-export const logTasklineTime = fn(async (): Promise<TimeEntry> => entry()).mockName("logTasklineTime");
+export const recordTasklineTime = fn(async (): Promise<TimeEntry> => entry()).mockName("recordTasklineTime");
 export const updateTasklineTimeEntry = fn(async (): Promise<TimeEntry> => entry()).mockName("updateTasklineTimeEntry");
 export const deleteTasklineTimeEntry = fn(async (): Promise<void> => undefined).mockName("deleteTasklineTimeEntry");
 export const setTasklineTimesheetCell = fn(async (): Promise<{ minutes: number }> => ({ minutes: 0 })).mockName(

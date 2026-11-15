@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { LinksModeration } from "@/features/apps/links/admin/components/links-moderation";
+import { LinksModeration } from "@/features/apps/links/admin/components/links-moderation-page";
 import { LINK_MODERATION_TABLE_ID, linkModerationList } from "@/features/apps/links/admin/search";
-import { assertRoutePermission } from "@/features/rbac/route-guard";
+import { assertRoutePermission } from "@/features/rbac/lib/route-guard";
 import { staticCrumb } from "@/lib/breadcrumbs";
 import { listLoader, listSearch, titleHead } from "@/lib/crud/route";
 import { m } from "@/paraglide/messages";

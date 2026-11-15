@@ -1,14 +1,14 @@
 import "@tanstack/react-start/server-only";
 import { waitUntil } from "@vercel/functions";
 import { and, asc, eq, gt, inArray, isNull, lt, notInArray, or, sql } from "drizzle-orm";
-import { KHARCHA_NAME } from "@/features/kharcha/brand";
+import { KHARCHA_NAME } from "@/features/kharcha/lib/brand";
 import {
 	type NotifyTarget,
 	notificationSentence,
 	notifyPath,
 	parseThread,
 	type ThreadKey,
-} from "@/features/kharcha/notifications";
+} from "@/features/kharcha/lib/notifications";
 import { localizedUrl } from "@/lib/seo";
 import { baseLocale, isLocale, type Locale } from "@/paraglide/runtime";
 import { khGroupMember, khNotification, khPerson, khProfile, user } from "@/server/db/schema";

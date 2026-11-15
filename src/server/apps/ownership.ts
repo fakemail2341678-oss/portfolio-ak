@@ -16,7 +16,7 @@ export const ownedBy = (table: Owned, userId: string) => eq(table.ownerId, userI
 
 /**
  * What an app's service works with: the database and who is asking (from
- * `requireAppUser`). Guests and accounts alike; `isGuest` only decides what can be
+ * `requireAppsUser`). Guests and accounts alike; `isGuest` only decides what can be
  * published (0186). Tests pass their own.
  */
 export type AppServices = { db: Db; user: { id: string; isGuest: boolean } };

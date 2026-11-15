@@ -1,7 +1,7 @@
 import { createFileRoute, redirect } from "@tanstack/react-router";
 import { authFeaturesQueryOptions } from "@/features/auth/queries";
-import { ChaalSignIn } from "@/features/chaal/auth/chaal-sign-in";
-import { chaalHead } from "@/features/chaal/brand";
+import { ChaalSignIn } from "@/features/chaal/auth/components/chaal-sign-in-page";
+import { chaalHead } from "@/features/chaal/lib/brand";
 import { CHAAL_PATHS } from "@/features/chaal/links";
 import { redirectSearchSchema } from "@/lib/http/redirect";
 import { ensureQuery } from "@/lib/query";
@@ -20,6 +20,6 @@ export const Route = createFileRoute("/_chaal/app/chaal/sign-in")({
 		}
 	},
 	loader: ({ context }) => ensureQuery(context.queryClient, authFeaturesQueryOptions()),
-	head: () => chaalHead(m.ch_sign_in()),
+	head: () => chaalHead(m.chaal_sign_in()),
 	component: ChaalSignIn,
 });

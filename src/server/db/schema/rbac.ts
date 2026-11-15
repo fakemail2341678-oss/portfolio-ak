@@ -10,7 +10,7 @@ import { user } from "./auth";
  *   role_permission) and is assigned through Better Auth's `user.role = "admin"`.
  *   `user` is every signed-in user's baseline.
  * - `role_permission`: "<resource>:<action>" strings from the catalog in
- *   src/features/rbac/permissions.ts.
+ *   src/features/rbac/lib/permissions.ts.
  * - `user_role`: custom roles assigned to users (system roles are never stored here).
  */
 export const role = pgTable(

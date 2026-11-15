@@ -1,6 +1,7 @@
 import "@tanstack/react-start/server-only";
-import { withinCap } from "@/features/parda/kids";
-import { progressShare } from "@/features/parda/library/progress";
+import { withinCap } from "@/features/parda/lib/kids";
+import { titleSlug } from "@/features/parda/lib/slug";
+import { progressShare } from "@/features/parda/library/lib/progress";
 import type {
 	FavouritePerson,
 	ForYouData,
@@ -13,7 +14,6 @@ import type {
 	LibraryTitle,
 	SavedState,
 } from "@/features/parda/library/types";
-import { titleSlug } from "@/features/parda/slug";
 import { AppError, isAppError } from "@/lib/errors";
 import { addDays, startOfDayInZone, todayInZone } from "@/lib/i18n/date-only";
 import { APP_TIME_ZONE } from "@/lib/i18n/intl";
@@ -24,7 +24,7 @@ import { toHubTitle } from "../catalog/hubs";
 import { personDetails, titleDetails, usCertificate } from "../catalog/service";
 import { titleKey } from "../controls";
 import { newEpisodes } from "../notify/service";
-import * as repo from "./saved-repository";
+import * as repo from "./saved/repository";
 import type { PardaServices } from "./service";
 
 /**

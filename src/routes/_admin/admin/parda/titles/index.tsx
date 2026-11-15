@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { PARDA_TAKEDOWNS_TABLE_ID, pardaTakedownList } from "@/features/parda/admin/search";
-import { PardaTakedownsPage, PardaTakedownsPending } from "@/features/parda/admin/titles/takedown-list";
+import { PardaTakedownsPage, PardaTakedownsPending } from "@/features/parda/admin/titles/components/takedown-list";
 import { listLoader, listSearch, titleHead } from "@/lib/crud/route";
 import { m } from "@/paraglide/messages";
 
@@ -13,7 +13,7 @@ export const Route = createFileRoute("/_admin/admin/parda/titles/")({
 		const { pardaTakedownsQueryOptions } = await import("@/features/parda/admin/queries");
 		return listLoader(route, { tableId: PARDA_TAKEDOWNS_TABLE_ID, query: pardaTakedownsQueryOptions });
 	},
-	head: titleHead(m.pd_admin_takedowns_title),
+	head: titleHead(m.parda_admin_takedowns_title),
 	pendingComponent: PardaTakedownsPending,
 	component: PardaTakedownsPage,
 });

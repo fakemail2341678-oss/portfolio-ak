@@ -3,7 +3,7 @@ import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { useState } from "react";
 import { describe, expect, it, vi } from "vitest";
-import { Board, type BoardLane } from "@/features/taskline/board/board";
+import { Board, type BoardLane } from "@/features/taskline/board/components/board";
 import type { TasklineStatus, TaskSummary } from "@/features/taskline/types";
 
 /**

@@ -1,5 +1,6 @@
 import "@tanstack/react-start/server-only";
 import { and, asc, eq, inArray, isNull } from "drizzle-orm";
+import { projectSettings } from "@/features/taskline/lib/settings";
 import {
 	firstWeekOf,
 	percentile,
@@ -8,8 +9,7 @@ import {
 	taskDurations,
 	weeklySeries,
 	workloadRows,
-} from "@/features/taskline/reports/metrics";
-import { projectSettings } from "@/features/taskline/settings";
+} from "@/features/taskline/reports/lib/metrics";
 import {
 	isClosedCategory,
 	type ProjectReports,

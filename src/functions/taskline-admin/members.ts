@@ -4,13 +4,13 @@ import {
 	type AdminInvitation,
 	type AdminMemberItem,
 	type AdminMemberPage,
-	addMembersInput,
-	deactivateMemberInput,
-	invitationIdInput,
-	inviteMemberInput,
-	reactivateMemberInput,
-	searchAccountsInput,
-	updateMemberInput,
+	addMembersInputSchema,
+	deactivateMemberInputSchema,
+	invitationIdInputSchema,
+	inviteMemberInputSchema,
+	reactivateMemberInputSchema,
+	searchAccountsInputSchema,
+	updateMemberInputSchema,
 } from "@/features/taskline/admin/schema";
 import { adminMemberList } from "@/features/taskline/admin/search";
 import { zodInput } from "@/functions/_lib/validator";
@@ -37,27 +37,27 @@ export const listTasklineMemberOptions = createServerFn({ method: "GET" })
 /** Accounts not on the team (never guests), by name or email: the "Add people" picker. */
 export const searchTasklineAccounts = createServerFn({ method: "GET" })
 	.middleware([requirePermission("taskline:manage"), withServices])
-	.validator(zodInput(searchAccountsInput))
+	.validator(zodInput(searchAccountsInputSchema))
 	.handler(({ data, context }): Promise<AccountOption[]> => members.searchAccounts(context, data.q));
 
 export const addTasklineMembers = createServerFn({ method: "POST" })
 	.middleware([requirePermission("taskline:manage"), withServices])
-	.validator(zodInput(addMembersInput))
+	.validator(zodInput(addMembersInputSchema))
 	.handler(({ data, context }): Promise<{ added: number }> => members.add(context, data));
 
 export const updateTasklineMember = createServerFn({ method: "POST" })
 	.middleware([requirePermission("taskline:manage"), withServices])
-	.validator(zodInput(updateMemberInput))
+	.validator(zodInput(updateMemberInputSchema))
 	.handler(({ data, context }): Promise<AdminMemberItem> => members.update(context, data));
 
-export const deactivateTasklineMember = createServerFn({ method: "POST" })
+export const setTasklineMemberInactive = createServerFn({ method: "POST" })
 	.middleware([requirePermission("taskline:manage"), withServices])
-	.validator(zodInput(deactivateMemberInput))
+	.validator(zodInput(deactivateMemberInputSchema))
 	.handler(({ data, context }): Promise<{ reassigned: number }> => members.deactivate(context, data));
 
-export const reactivateTasklineMember = createServerFn({ method: "POST" })
+export const setTasklineMemberActive = createServerFn({ method: "POST" })
 	.middleware([requirePermission("taskline:manage"), withServices])
-	.validator(zodInput(reactivateMemberInput))
+	.validator(zodInput(reactivateMemberInputSchema))
 	.handler(({ data, context }): Promise<void> => members.reactivate(context, data));
 
 export const listTasklineInvitations = createServerFn({ method: "GET" })
@@ -66,15 +66,15 @@ export const listTasklineInvitations = createServerFn({ method: "GET" })
 
 export const inviteTasklineMember = createServerFn({ method: "POST" })
 	.middleware([requirePermission("taskline:manage"), withServices])
-	.validator(zodInput(inviteMemberInput))
+	.validator(zodInput(inviteMemberInputSchema))
 	.handler(({ data, context }): Promise<AdminInvitation> => invitations.invite(context, data));
 
 export const resendTasklineInvitation = createServerFn({ method: "POST" })
 	.middleware([requirePermission("taskline:manage"), withServices])
-	.validator(zodInput(invitationIdInput))
+	.validator(zodInput(invitationIdInputSchema))
 	.handler(({ data, context }): Promise<void> => invitations.resend(context, data));
 
 export const revokeTasklineInvitation = createServerFn({ method: "POST" })
 	.middleware([requirePermission("taskline:manage"), withServices])
-	.validator(zodInput(invitationIdInput))
+	.validator(zodInput(invitationIdInputSchema))
 	.handler(({ data, context }): Promise<void> => invitations.revoke(context, data));

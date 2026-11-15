@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { FormsShowcase } from "@/features/dev/forms-showcase";
+import { FormsShowcase } from "@/features/dev/components/forms-showcase-page";
 import { DEV_ROUTES } from "@/lib/dev-routes";
 import { privateHead } from "@/lib/seo";
 import { m } from "@/paraglide/messages";

@@ -23,9 +23,9 @@ export const createTasklineWorkspaceAutomation = fn(
 export const updateTasklineWorkspaceAutomation = fn(
 	async (): Promise<AdminAutomations> => sampleTasklineAutomations,
 ).mockName("updateTasklineWorkspaceAutomation");
-export const toggleTasklineWorkspaceAutomation = fn(
+export const setTasklineWorkspaceAutomationEnabled = fn(
 	async (): Promise<AdminAutomations> => sampleTasklineAutomations,
-).mockName("toggleTasklineWorkspaceAutomation");
+).mockName("setTasklineWorkspaceAutomationEnabled");
 export const deleteTasklineWorkspaceAutomation = fn(
 	async (): Promise<AdminAutomations> => sampleTasklineAutomations,
 ).mockName("deleteTasklineWorkspaceAutomation");

@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
+import { parseTitleParam, titleParam, titleSlug } from "@/features/parda/lib/slug";
 import { titleRouteParams } from "@/features/parda/search";
-import { parseTitleParam, titleParam, titleSlug } from "@/features/parda/slug";
 
 /** A title's address (decision 0235): the id finds it, the slug is for people and search engines. */
 describe("title slugs", () => {

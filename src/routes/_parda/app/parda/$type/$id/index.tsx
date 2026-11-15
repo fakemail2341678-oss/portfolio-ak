@@ -1,7 +1,7 @@
 import { createFileRoute, notFound } from "@tanstack/react-router";
 import { titleRouteParams, titleSearchSchema } from "@/features/parda/search";
+import { PardaTitlePage } from "@/features/parda/title/components/parda-title-page";
 import { pardaContentHead } from "@/features/parda/title/head";
-import { PardaTitlePage } from "@/features/parda/title/parda-title-page";
 import { getLocale } from "@/paraglide/runtime";
 
 /**

@@ -11,8 +11,8 @@ export const startTasklineSprint = fn(async (): Promise<SprintSummary> => sprint
 export const completeTasklineSprint = fn(async (): Promise<SprintSummary> => sprint()).mockName(
 	"completeTasklineSprint",
 );
-export const rankTasklineTask = fn(async (): Promise<TaskSummary> => sampleTasks[0] as TaskSummary).mockName(
-	"rankTasklineTask",
+export const reorderTasklineTask = fn(async (): Promise<TaskSummary> => sampleTasks[0] as TaskSummary).mockName(
+	"reorderTasklineTask",
 );
 export const getTasklineSprintReport = fn(async (): Promise<SprintReport> => sampleSprintReport).mockName(
 	"getTasklineSprintReport",

@@ -12,7 +12,7 @@ import {
 import { act, fireEvent, render, screen, within } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 import { sessionQueryOptions } from "@/features/auth/queries";
-import { TasklineShell } from "@/features/taskline/shell/taskline-shell";
+import { TasklineShell } from "@/features/taskline/shell/components/taskline-shell";
 import type { TasklineNav } from "@/features/taskline/types";
 import type { Session } from "@/lib/session";
 import { createPreferencesStore, DEFAULT_PREFERENCES } from "@/lib/stores/preferences";

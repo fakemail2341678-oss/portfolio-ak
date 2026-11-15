@@ -3,9 +3,9 @@ import {
 	type ChaalStudy,
 	type ChaalStudyChapter,
 	type ChaalStudyList,
-	studiesByInput,
-	studyChapterInput,
-	studyInput,
+	studiesByInputSchema,
+	studyChapterInputSchema,
+	studyInputSchema,
 } from "@/features/chaal/studies/schema";
 import { zodInput } from "@/functions/_lib/validator";
 import { withChaalPublic } from "@/middleware/chaal";
@@ -19,17 +19,17 @@ import * as studies from "@/server/chaal/studies/service";
 
 export const getChaalStudiesBy = createServerFn({ method: "GET" })
 	.middleware([withChaalPublic])
-	.validator(zodInput(studiesByInput))
+	.validator(zodInput(studiesByInputSchema))
 	.handler(({ context, data }): Promise<ChaalStudyList> => studies.studiesBy(context.chaal, data.username));
 
 export const getChaalStudy = createServerFn({ method: "GET" })
 	.middleware([withChaalPublic])
-	.validator(zodInput(studyInput))
+	.validator(zodInput(studyInputSchema))
 	.handler(({ context, data }): Promise<ChaalStudy> => studies.study(context.chaal, context.session, data.id));
 
 export const getChaalStudyChapter = createServerFn({ method: "GET" })
 	.middleware([withChaalPublic])
-	.validator(zodInput(studyChapterInput))
+	.validator(zodInput(studyChapterInputSchema))
 	.handler(
 		({ context, data }): Promise<ChaalStudyChapter> =>
 			studies.studyChapter(context.chaal, context.session, data.id, data.chapter),

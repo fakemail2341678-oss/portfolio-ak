@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { MediaLibrary } from "@/features/media/components/media-library";
+import { MediaLibrary } from "@/features/media/components/media-library-gallery";
 import { mediaList } from "@/features/media/search";
-import { assertRoutePermission } from "@/features/rbac/route-guard";
+import { assertRoutePermission } from "@/features/rbac/lib/route-guard";
 import { staticCrumb } from "@/lib/breadcrumbs";
 import { listLoader, listSearch, titleHead } from "@/lib/crud/route";
 import { m } from "@/paraglide/messages";

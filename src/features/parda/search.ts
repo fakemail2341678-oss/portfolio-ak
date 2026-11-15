@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { SLUG_MAX, SLUG_PATTERN } from "@/lib/slug";
-import { parseTitleParam } from "./slug";
+import { parseTitleParam } from "./lib/slug";
 
 /**
  * Parda's URL contract (PLAN 12.5): route files import this, never a form schema (0194).

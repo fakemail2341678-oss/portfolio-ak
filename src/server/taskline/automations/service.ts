@@ -1,7 +1,7 @@
 import "@tanstack/react-start/server-only";
 import { and, eq, isNull } from "drizzle-orm";
-import { type AutomationDefinition, matchesConditions } from "@/features/taskline/automation-rules";
-import { activeFields, fieldFilterChoices } from "@/features/taskline/fields";
+import { type AutomationDefinition, matchesConditions } from "@/features/taskline/lib/automation-rules";
+import { activeFields, fieldFilterChoices } from "@/features/taskline/lib/fields";
 import type {
 	CreateAutomationInput,
 	PreviewAutomationInput,

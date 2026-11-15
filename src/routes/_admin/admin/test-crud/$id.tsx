@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { assertRoutePermission } from "@/features/rbac/route-guard";
+import { assertRoutePermission } from "@/features/rbac/lib/route-guard";
 import { TestCrudEditPage } from "@/features/test-crud/components/test-crud-detail";
 import { loaderTitleCrumb } from "@/lib/breadcrumbs";
 import { loadDetailOr404, titleHead } from "@/lib/crud/route";

@@ -1,7 +1,7 @@
 import { createFileRoute, redirect } from "@tanstack/react-router";
 import { z } from "zod";
-import { PardaAccountPage } from "@/features/parda/account/parda-account-page";
-import { pardaHead } from "@/features/parda/brand";
+import { PardaAccountPage } from "@/features/parda/account/components/parda-account-page";
+import { pardaHead } from "@/features/parda/lib/brand";
 import { pardaLinks } from "@/features/parda/links";
 import { m } from "@/paraglide/messages";
 

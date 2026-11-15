@@ -1,6 +1,6 @@
 import { createFileRoute, notFound } from "@tanstack/react-router";
-import { pardaHead } from "@/features/parda/brand";
-import { PardaPartyPage } from "@/features/parda/party/party-page";
+import { pardaHead } from "@/features/parda/lib/brand";
+import { PardaPartyPage } from "@/features/parda/party/components/party-page";
 import { getLocale } from "@/paraglide/runtime";
 
 /**

@@ -2,8 +2,8 @@ import { m } from "@/paraglide/messages";
 import { cn } from "../../lib/cn";
 import { cssVars } from "../../lib/css-vars";
 import type { ProcessStep } from "../../types";
-import { ArchivalFigure } from "../primitives/archival-picture";
-import { SectionHeading } from "../primitives/section-heading";
+import { ArchivalFigure } from "../primitives/archival-image";
+import { SectionHeading } from "../primitives/section-header";
 
 /**
  * How a project unfolds, on the pine field: the stages as display lines that

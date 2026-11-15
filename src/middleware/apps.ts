@@ -9,7 +9,7 @@ import { withSession } from "./auth";
  * functions scope every read and write to `appUser.id` (`ownedBy`), so no
  * permission is involved: each user only ever sees their own rows.
  */
-export const requireAppUser = createMiddleware({ type: "function" })
+export const requireAppsUser = createMiddleware({ type: "function" })
 	.middleware([withSession])
 	.server(({ next, context }) => {
 		if (!context.session) throw new AppError("UNAUTHORIZED", "Authentication required");
@@ -21,15 +21,15 @@ export const requireAppUser = createMiddleware({ type: "function" })
 /**
  * The showcase apps' services (decisions 0185, 0187): `context.db`, `context.user`
  * (the caller's id and whether they are a guest) and `context.imageStore` (null when
- * Cloudinary isn't configured; Notes' images, 0190), after `requireAppUser`:
+ * Cloudinary isn't configured; Notes' images, 0190), after `requireAppsUser`:
  *
  *   createServerFn({ method: "POST" })
- *     .middleware([requireAppUser, withAppServices])
+ *     .middleware([requireAppsUser, withAppsServices])
  *     .validator(zodInput(createCardInput))
  *     .handler(({ data, context }) => notes.createNote(context, data));
  */
-export const withAppServices = createMiddleware({ type: "function" })
-	.middleware([requireAppUser])
+export const withAppsServices = createMiddleware({ type: "function" })
+	.middleware([requireAppsUser])
 	.server(async ({ next, context }) => {
 		const [{ db }, { imageStore }] = await Promise.all([
 			import("@/server/db/client"),

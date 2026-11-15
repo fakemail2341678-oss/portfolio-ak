@@ -3,7 +3,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { z } from "zod";
 import { formValidators, handleSaveError, useAppForm } from "@/components/forms";
-import { Demo, ExamplePage } from "@/features/dev/examples/example-page";
+import { Demo, ExamplePage } from "@/features/dev/examples/components/example-page";
 import { exampleSignupSchema } from "@/features/dev/examples/schema";
 import { submitExampleSignup } from "@/functions/examples";
 import { staticCrumb } from "@/lib/breadcrumbs";

@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { PardaSourcesPage, PardaSourcesPending } from "@/features/parda/admin/sources/source-list";
+import { PardaSourcesPage, PardaSourcesPending } from "@/features/parda/admin/sources/components/source-list";
 import { titleHead } from "@/lib/crud/route";
 import { ensureQuery } from "@/lib/query";
 import { m } from "@/paraglide/messages";
@@ -14,7 +14,7 @@ export const Route = createFileRoute("/_admin/admin/parda/sources/")({
 			ensureQuery(context.queryClient, pardaSettingsQueryOptions()),
 		]);
 	},
-	head: titleHead(m.pd_admin_sources_title),
+	head: titleHead(m.parda_admin_sources_title),
 	pendingComponent: PardaSourcesPending,
 	component: PardaSourcesPage,
 });

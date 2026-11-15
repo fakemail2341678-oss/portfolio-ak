@@ -1,11 +1,11 @@
 // @vitest-environment jsdom
 import { act, renderHook } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { play } from "@/features/chaal/chess/rules";
-import { liveGameOf, shownMoves } from "@/features/chaal/game/live-game";
-import { type LiveCalls, useLiveGame } from "@/features/chaal/game/use-live-game";
-import type { ChaalGameFull, ChaalGameState } from "@/features/chaal/live/events";
-import type { KeepOptions } from "@/features/chaal/live/reader";
+import { play } from "@/features/chaal/chess/lib/rules";
+import { type LiveCalls, useLiveGame } from "@/features/chaal/game/hooks/use-live-game";
+import { liveGameOf, shownMoves } from "@/features/chaal/game/lib/live-game";
+import type { ChaalGameFull, ChaalGameState } from "@/features/chaal/live/lib/events";
+import type { KeepOptions } from "@/features/chaal/live/lib/reader";
 import { overwriteGetLocale } from "@/paraglide/runtime";
 
 /**

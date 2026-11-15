@@ -5,7 +5,7 @@ import { zodInput } from "@/functions/_lib/validator";
 import { bulkIdsSchema } from "@/lib/list/paging";
 import { requirePermission } from "@/middleware/auth";
 import { withServices } from "@/middleware/services";
-import * as messages from "@/server/portfolio/messages-service";
+import * as messages from "@/server/portfolio/messages/service";
 
 /**
  * The contact form's inbox (/admin/portfolio/messages, decision 0176): reading

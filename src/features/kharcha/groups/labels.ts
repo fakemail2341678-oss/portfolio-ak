@@ -1,5 +1,5 @@
 import { m } from "@/paraglide/messages";
-import type { SplitMethod } from "../money/split";
+import type { SplitMethod } from "../money/lib/split";
 import type { GroupIcon, GroupKind } from "../types";
 
 /** A group's kind in words (the new-group dialog, its header and settings). Call at render time. */

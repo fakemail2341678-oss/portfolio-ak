@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
-import { convertAt } from "@/features/kharcha/money/convert";
-import { expenseDebts, netBalances, pairBalances, paymentDebt, totalDebt } from "@/features/kharcha/money/ledger";
-import { simplify } from "@/features/kharcha/money/simplify";
+import { convertAt } from "@/features/kharcha/money/lib/convert";
+import { expenseDebts, netBalances, pairBalances, paymentDebt, totalDebt } from "@/features/kharcha/money/lib/ledger";
+import { simplify } from "@/features/kharcha/money/lib/simplify";
 import {
 	allocate,
 	computeShares,
@@ -12,7 +12,7 @@ import {
 	type Share,
 	type Split,
 	splitPeople,
-} from "@/features/kharcha/money/split";
+} from "@/features/kharcha/money/lib/split";
 
 /**
  * Kharcha's money core (src/features/kharcha/money, decision 0278): each split method, the

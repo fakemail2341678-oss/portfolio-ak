@@ -8,9 +8,9 @@ import {
 	periodOf,
 	periodShift,
 	thresholdsReached,
-} from "@/features/kharcha/budgets/period";
-import { budgetTarget, notifyPath } from "@/features/kharcha/notifications";
-import { type Cadence, dueOccurrences, firstOnOrAfter, occurrenceOn } from "@/features/kharcha/recurring/cadence";
+} from "@/features/kharcha/budgets/lib/period";
+import { budgetTarget, notifyPath } from "@/features/kharcha/lib/notifications";
+import { type Cadence, dueOccurrences, firstOnOrAfter, occurrenceOn } from "@/features/kharcha/recurring/lib/cadence";
 import { statementOf } from "@/features/kharcha/search";
 
 /** Task 94: budget periods and their alerts, recurrence dates, and a statement's days (pure). */

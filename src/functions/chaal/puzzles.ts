@@ -2,8 +2,8 @@ import { createServerFn } from "@tanstack/react-start";
 import {
 	type ChaalPuzzle,
 	type ChaalPuzzleBatch,
-	puzzleBatchInput,
-	puzzleIdInput,
+	puzzleBatchInputSchema,
+	puzzleIdInputSchema,
 } from "@/features/chaal/puzzles/schema";
 import { zodInput } from "@/functions/_lib/validator";
 import { withChaalPublic } from "@/middleware/chaal";
@@ -22,10 +22,10 @@ export const getChaalDailyPuzzle = createServerFn({ method: "GET" })
 
 export const getChaalPuzzle = createServerFn({ method: "GET" })
 	.middleware([withChaalPublic])
-	.validator(zodInput(puzzleIdInput))
+	.validator(zodInput(puzzleIdInputSchema))
 	.handler(({ context, data }): Promise<ChaalPuzzle> => puzzles.puzzleById(context.chaal, data.id));
 
 export const getChaalPuzzleBatch = createServerFn({ method: "GET" })
 	.middleware([withChaalPublic])
-	.validator(zodInput(puzzleBatchInput))
+	.validator(zodInput(puzzleBatchInputSchema))
 	.handler(({ context, data }): Promise<ChaalPuzzleBatch> => puzzles.puzzleBatch(context.chaal, context.session, data));

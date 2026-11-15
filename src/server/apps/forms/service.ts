@@ -6,8 +6,8 @@ import {
 	newFieldId,
 	newOptionId,
 	toZodSchema,
-} from "@/features/apps/forms/fields";
-import { summarize } from "@/features/apps/forms/results";
+} from "@/features/apps/forms/lib/fields";
+import { summarize } from "@/features/apps/forms/lib/results";
 import type {
 	CreateFormInput,
 	SaveFormInput,

@@ -1,7 +1,7 @@
 import { createFileRoute, stripSearchParams } from "@tanstack/react-router";
-import { kharchaHead } from "@/features/kharcha/brand";
+import { kharchaHead } from "@/features/kharcha/lib/brand";
 import { SPEND_SEARCH_DEFAULTS, spendSearch } from "@/features/kharcha/search";
-import { SpendPage } from "@/features/kharcha/spend/spend-page";
+import { SpendPage } from "@/features/kharcha/spend/components/spend-page";
 import { ensureQuery } from "@/lib/query";
 import { m } from "@/paraglide/messages";
 
@@ -20,7 +20,7 @@ export const Route = createFileRoute("/_kharcha/app/kharcha/_shell/spend")({
 		const [
 			{ kharchaListsQueryOptions, kharchaSpendChartQueryOptions, kharchaSpendQueryOptions },
 			{ spendChartInput, spendInput },
-		] = await Promise.all([import("@/features/kharcha/queries"), import("@/features/kharcha/spend/input")]);
+		] = await Promise.all([import("@/features/kharcha/queries"), import("@/features/kharcha/spend/lib/input")]);
 		const userId = context.session.user.id;
 		const search = { ...deps, expense: undefined };
 		await Promise.all([

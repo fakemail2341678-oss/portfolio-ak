@@ -1,6 +1,6 @@
 import { fn } from "storybook/test";
 import type { ChaalAdminCuration, ChaalAdminFeatured } from "../../../../src/features/chaal/admin/schema";
-import { type ChaalHomeSectionKey, mergedSections } from "../../../../src/features/chaal/home/curation";
+import { type ChaalHomeSectionKey, mergedSections } from "../../../../src/features/chaal/home/lib/curation";
 import type { Localized } from "../../../../src/lib/i18n/localized";
 
 // Stand-ins for src/functions/chaal-admin/curation.ts: one of each kind, showing, coming and over.
@@ -84,9 +84,9 @@ export const reorderChaalFeatured = fn(async (): Promise<{ moved: number }> => (
 export const deleteChaalFeatured = fn(async (): Promise<{ deleted: number }> => ({ deleted: 1 })).mockName(
 	"deleteChaalFeatured",
 );
-export const saveChaalHomeSections = fn(
+export const setChaalHomeSections = fn(
 	async ({ data }: { data: { sections: Array<{ key: ChaalHomeSectionKey; visible: boolean }> } }) => data.sections,
-).mockName("saveChaalHomeSections");
-export const saveChaalAnnouncement = fn(
+).mockName("setChaalHomeSections");
+export const setChaalAnnouncement = fn(
 	async ({ data }: { data: { announcement: Localized } }): Promise<Localized> => data.announcement,
-).mockName("saveChaalAnnouncement");
+).mockName("setChaalAnnouncement");

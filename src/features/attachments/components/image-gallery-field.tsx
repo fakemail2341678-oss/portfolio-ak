@@ -2,20 +2,21 @@ import { useQuery } from "@tanstack/react-query";
 import { ImagePlusIcon, Trash2Icon, XIcon } from "lucide-react";
 import { type DragEvent, useEffect, useId, useRef, useState } from "react";
 import { useFieldContext } from "@/components/forms/contexts";
-import { FieldLabelText, FieldMessages, useFieldA11y } from "@/components/forms/field-shell";
+import { FieldLabelText, FieldMessages } from "@/components/forms/field-shell";
 import { moveItem, SortableList } from "@/components/forms/fields/sortable-list";
+import { useFieldA11y } from "@/components/forms/use-field-a11y";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Progress } from "@/components/ui/progress";
-import { useCan } from "@/features/rbac/can";
+import { useCan } from "@/features/rbac/hooks/use-can";
 import { formatNumber } from "@/lib/i18n/intl";
 import type { Localized } from "@/lib/i18n/localized";
 import { cn } from "@/lib/utils";
 import { m } from "@/paraglide/messages";
 import { IMAGE_MAX_BYTES, type UploadScope, uploadRule } from "../constants";
+import { ADMIN_UPLOADS, UploadError, type UploadTransport, uploadImage } from "../lib/upload";
 import type { ImageAsset } from "../schema";
-import { ADMIN_UPLOADS, UploadError, type UploadTransport, uploadImage } from "../upload";
 import { CloudImage } from "./cloud-image";
 
 /** One image in the field's value: an attachment, its alt text (both languages) and its preview. */

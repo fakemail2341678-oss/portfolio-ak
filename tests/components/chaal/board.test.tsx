@@ -2,10 +2,10 @@
 import { act, fireEvent, render, screen, within } from "@testing-library/react";
 import { useState } from "react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { Board, type BoardProps } from "@/features/chaal/board/board";
-import type { Square } from "@/features/chaal/board/fen";
-import { cellOf, type Orientation } from "@/features/chaal/board/geometry";
-import { type PlayedMove, START_FEN } from "@/features/chaal/chess/rules";
+import { Board, type BoardProps } from "@/features/chaal/board/components/board";
+import type { Square } from "@/features/chaal/board/lib/fen";
+import { cellOf, type Orientation } from "@/features/chaal/board/lib/geometry";
+import { type PlayedMove, START_FEN } from "@/features/chaal/chess/lib/rules";
 import { overwriteGetLocale } from "@/paraglide/runtime";
 
 /**

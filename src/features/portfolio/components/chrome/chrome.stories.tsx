@@ -1,11 +1,11 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { expect, userEvent } from "storybook/test";
 import { m } from "@/paraglide/messages";
-import { demo, withPortfolioCanvas } from "../story-helpers";
+import { demo, withPortfolioCanvas } from "../story-frame";
 import { PortfolioFooter } from "./portfolio-footer";
 import { PortfolioHeader } from "./portfolio-header";
 import { PortfolioMenu } from "./portfolio-menu";
-import { PortfolioNotFound } from "./portfolio-not-found";
+import { PortfolioNotFound } from "./portfolio-not-found-page";
 import { PortfolioPending } from "./portfolio-pending";
 
 /** The portfolio's own header, phone menu, footer and 404 (each section brings its own header, decision 0161). */

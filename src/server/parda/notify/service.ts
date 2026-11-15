@@ -1,8 +1,8 @@
 import "@tanstack/react-start/server-only";
-import { withinCap } from "@/features/parda/kids";
-import { CONTINUE_MAX_AGE_MS } from "@/features/parda/library/progress";
+import { withinCap } from "@/features/parda/lib/kids";
+import { titleSlug } from "@/features/parda/lib/slug";
+import { CONTINUE_MAX_AGE_MS } from "@/features/parda/library/lib/progress";
 import type { FollowingSchedule, InboxData, NewEpisodeItem, ScheduleEntry } from "@/features/parda/schedule/types";
-import { titleSlug } from "@/features/parda/slug";
 import { isAppError } from "@/lib/errors";
 import { addDays } from "@/lib/i18n/date-only";
 import { errorFields, log } from "@/server/log";

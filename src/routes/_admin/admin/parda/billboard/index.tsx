@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { PardaBillboardPage, PardaBillboardPending } from "@/features/parda/admin/curation/billboard-list";
+import { PardaBillboardPage, PardaBillboardPending } from "@/features/parda/admin/curation/components/billboard-list";
 import { pardaPageSearch } from "@/features/parda/admin/search";
 import { titleHead } from "@/lib/crud/route";
 import { ensureQuery } from "@/lib/query";
@@ -13,7 +13,7 @@ export const Route = createFileRoute("/_admin/admin/parda/billboard/")({
 		const { pardaBillboardsQueryOptions } = await import("@/features/parda/admin/queries");
 		await ensureQuery(context.queryClient, pardaBillboardsQueryOptions());
 	},
-	head: titleHead(m.pd_admin_billboard_title),
+	head: titleHead(m.parda_admin_billboard_title),
 	pendingComponent: PardaBillboardPending,
 	component: PardaBillboardPage,
 });

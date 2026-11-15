@@ -1,6 +1,6 @@
 import "@tanstack/react-start/server-only";
 import { and, eq, inArray, sql } from "drizzle-orm";
-import { type WorkspaceSettings, workspaceSettings } from "@/features/taskline/settings";
+import { type WorkspaceSettings, workspaceSettings } from "@/features/taskline/lib/settings";
 import type { ActivityData, ActivityKind } from "@/features/taskline/types";
 import type { AuditEntry } from "@/server/audit/record";
 import { notFound } from "@/server/db/crud";

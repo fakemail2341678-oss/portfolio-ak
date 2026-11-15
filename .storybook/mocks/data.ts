@@ -1,7 +1,7 @@
-import type { Dashboard } from "../../src/features/admin/dashboard";
+import type { Dashboard } from "../../src/features/admin/lib/dashboard";
 import type { ImageAsset } from "../../src/features/attachments/schema";
 import type { AuditEventItem } from "../../src/features/audit/schema";
-import { ALL_PERMISSIONS } from "../../src/features/rbac/permissions";
+import { ALL_PERMISSIONS } from "../../src/features/rbac/lib/permissions";
 import type { RoleSummary, UserListItem } from "../../src/features/rbac/schema";
 import type { PublicTestCrudCard, TestCrudDetail, TestCrudListItem } from "../../src/features/test-crud/schema";
 import type { SafeHtml } from "../../src/lib/safe-html";

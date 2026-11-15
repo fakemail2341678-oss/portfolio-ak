@@ -1,6 +1,6 @@
 import { createFileRoute, redirect, stripSearchParams } from "@tanstack/react-router";
-import { tasklineTitle } from "@/features/taskline/brand";
-import { SearchPage } from "@/features/taskline/find/search-page";
+import { SearchPage } from "@/features/taskline/find/components/search-page";
+import { tasklineTitle } from "@/features/taskline/lib/brand";
 import { tasklineLinks } from "@/features/taskline/links";
 import { taskSearchSearch } from "@/features/taskline/search";
 import { staticCrumb } from "@/lib/breadcrumbs";

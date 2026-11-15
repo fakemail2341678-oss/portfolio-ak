@@ -1,5 +1,5 @@
 import "@tanstack/react-start/server-only";
-import { PARDA_NAME } from "@/features/parda/brand";
+import { PARDA_NAME } from "@/features/parda/lib/brand";
 import { m } from "@/paraglide/messages";
 import { getTextDirection, type Locale, localizeHref } from "@/paraglide/runtime";
 
@@ -14,7 +14,7 @@ export function pardaManifest(locale: Locale) {
 		id: "/app/parda",
 		name: PARDA_NAME,
 		short_name: PARDA_NAME,
-		description: m.pd_description({}, { locale }),
+		description: m.parda_description({}, { locale }),
 		lang: locale,
 		dir: getTextDirection(locale),
 		start_url: localizeHref("/app/parda", { locale }),

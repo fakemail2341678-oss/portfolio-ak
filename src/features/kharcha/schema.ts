@@ -1,10 +1,10 @@
 import { z } from "zod";
 import { CURRENCIES } from "@/lib/i18n/currency";
 import { email, isoDate, optionalText, required } from "@/lib/validation";
-import { BUDGET_PERIODS } from "./budgets/period";
-import { FULL_BP, MAX_AMOUNT_MINOR, MAX_WEIGHT, SPLIT_METHODS } from "./money/split";
-import { COMMENT_MAX, NOTIFY_EMAILS, NOTIFY_KINDS, REACTIONS, THREAD_KEY, type ThreadKey } from "./notifications";
-import { RECURRING_EVERY_MAX, RECURRING_UNITS } from "./recurring/cadence";
+import { BUDGET_PERIODS } from "./budgets/lib/period";
+import { COMMENT_MAX, NOTIFY_EMAILS, NOTIFY_KINDS, REACTIONS, THREAD_KEY, type ThreadKey } from "./lib/notifications";
+import { FULL_BP, MAX_AMOUNT_MINOR, MAX_WEIGHT, SPLIT_METHODS } from "./money/lib/split";
+import { RECURRING_EVERY_MAX, RECURRING_UNITS } from "./recurring/lib/cadence";
 import {
 	CATEGORY_ICONS,
 	EXPENSE_KINDS,
@@ -47,8 +47,8 @@ const currency = z.enum(CURRENCIES);
 const people = z.array(id).min(1).max(PARTICIPANTS_MAX);
 const parts = <T extends z.ZodType>(value: T) => z.array(value).min(1).max(PARTICIPANTS_MAX);
 
-/** A split's inputs, as `kh_expense.split` stores them (src/features/kharcha/money/split.ts). */
-export const split = z.discriminatedUnion("method", [
+/** A split's inputs, as `kh_expense.split` stores them (src/features/kharcha/money/lib/split.ts). */
+export const splitSchema = z.discriminatedUnion("method", [
 	z.strictObject({ method: z.literal("equal"), people }),
 	z.strictObject({ method: z.literal("exact"), parts: parts(z.strictObject({ person: id, amount: minorOrZero })) }),
 	z.strictObject({
@@ -88,7 +88,7 @@ const expenseFields = {
 	/** Who paid; left out, the caller paid all of it. */
 	payers: payers.optional(),
 	/** How it is split; left out, it is the caller's alone. */
-	split: split.optional(),
+	split: splitSchema.optional(),
 	/**
 	 * The caller's own category, tags and method (Task 89). Left out on a new expense, the
 	 * merchant's rule or the category they last gave the merchant; null: none.
@@ -100,13 +100,13 @@ const expenseFields = {
 	receiptIds: z.array(id).max(RECEIPTS_MAX).optional(),
 };
 
-export const expenseIdInput = z.strictObject({ expenseId: id });
+export const expenseIdInputSchema = z.strictObject({ expenseId: id });
 
 /** "Not a duplicate" (`ok`), or "it may be one" again: the caller's own flag on their share. */
-export const markDuplicateInput = z.strictObject({ expenseId: id, ok: z.boolean() });
+export const markDuplicateInputSchema = z.strictObject({ expenseId: id, ok: z.boolean() });
 
 /** A new expense. `groupId` puts it in a group; without one it is personal or shared with friends. */
-export const createExpenseInput = z.strictObject({
+export const createExpenseInputSchema = z.strictObject({
 	id: id.optional(),
 	groupId: id.nullable().default(null),
 	...expenseFields,
@@ -115,7 +115,7 @@ export const createExpenseInput = z.strictObject({
 });
 
 /** The expense form's save: every field, with the `version` it was loaded at (a stale one is refused). */
-export const updateExpenseInput = z.strictObject({
+export const updateExpenseInputSchema = z.strictObject({
 	expenseId: id,
 	version: z.number().int().min(1),
 	...expenseFields,
@@ -138,10 +138,10 @@ const paymentFields = {
 	paidOn: isoDate(),
 };
 
-export const paymentIdInput = z.strictObject({ paymentId: id });
+export const paymentIdInputSchema = z.strictObject({ paymentId: id });
 
 /** A payment made elsewhere, recorded: `fromId` paid `toId`. */
-export const createPaymentInput = z.strictObject({
+export const createPaymentInputSchema = z.strictObject({
 	id: id.optional(),
 	groupId: id.nullable().default(null),
 	fromId: id,
@@ -149,7 +149,7 @@ export const createPaymentInput = z.strictObject({
 	...paymentFields,
 });
 
-export const updatePaymentInput = z.strictObject({
+export const updatePaymentInputSchema = z.strictObject({
 	paymentId: id,
 	version: z.number().int().min(1),
 	...paymentFields,
@@ -170,9 +170,9 @@ const groupFields = {
 const groupDates = (value: { startOn: string | null; endOn: string | null }) =>
 	value.startOn === null || value.endOn === null || value.startOn <= value.endOn;
 
-export const groupIdInput = z.strictObject({ groupId: id });
+export const groupIdInputSchema = z.strictObject({ groupId: id });
 
-export const createGroupInput = z
+export const createGroupInputSchema = z
 	.strictObject({
 		id: id.optional(),
 		...groupFields,
@@ -181,7 +181,7 @@ export const createGroupInput = z
 	})
 	.refine(groupDates, { path: ["endOn"] });
 
-export const updateGroupInput = z
+export const updateGroupInputSchema = z
 	.strictObject({
 		groupId: id,
 		version: z.number().int().min(1),
@@ -191,52 +191,52 @@ export const updateGroupInput = z
 	})
 	.refine(groupDates, { path: ["endOn"] });
 
-export const archiveGroupInput = z.strictObject({ groupId: id, archived: z.boolean() });
-export const groupMemberInput = z.strictObject({ groupId: id, personId: id });
+export const archiveGroupInputSchema = z.strictObject({ groupId: id, archived: z.boolean() });
+export const groupMemberInputSchema = z.strictObject({ groupId: id, personId: id });
 
-export const personIdInput = z.strictObject({ personId: id });
+export const personIdInputSchema = z.strictObject({ personId: id });
 
 /**
  * A friend by name only (a contact private to the caller), or by their address too; with
  * `invite`, someone without an account is emailed an invite at once (Task 90).
  */
-export const addFriendInput = z.strictObject({
+export const addFriendInputSchema = z.strictObject({
 	name: required({ max: NAME_MAX }),
 	email: email().optional(),
 	invite: z.boolean().default(false),
 });
 
-export const updateFriendInput = z.strictObject({
+export const updateFriendInputSchema = z.strictObject({
 	personId: id,
 	nickname: optionalText({ max: NAME_MAX }).optional(),
 	hidden: z.boolean().optional(),
 });
 
 /** An address for a contact of the caller's who has a name only: it merges into whoever has that address. */
-export const friendEmailInput = z.strictObject({
+export const friendEmailInputSchema = z.strictObject({
 	personId: id,
 	email: email(),
 	invite: z.boolean().default(false),
 });
 
 /** `/people`: the caller's friends and groups whose name has `q`; `hidden` lists the friends they hid too. */
-export const peopleInput = z.strictObject({
+export const peopleInputSchema = z.strictObject({
 	q: z.string().trim().max(80).default(""),
 	hidden: z.boolean().default(false),
 });
 
 /** A link for a friend without an account, from a group (its name shows on the page) or not; `send` emails it. */
-export const inviteInput = z.strictObject({
+export const inviteInputSchema = z.strictObject({
 	personId: id,
 	groupId: id.nullable().default(null),
 	send: z.boolean().default(false),
 });
 
 /** An invite link's token (src/features/kharcha/search.ts has the route's pattern). */
-export const joinTokenInput = z.strictObject({ token: z.string().regex(/^[\w-]{32}$/) });
+export const joinTokenInputSchema = z.strictObject({ token: z.string().regex(/^[\w-]{32}$/) });
 
 /** Someone new in a group: a friend made on the way (by name, or with an address), then added. */
-export const newGroupMemberInput = z.strictObject({
+export const newGroupMemberInputSchema = z.strictObject({
 	groupId: id,
 	name: required({ max: NAME_MAX }),
 	email: email().optional(),
@@ -244,24 +244,28 @@ export const newGroupMemberInput = z.strictObject({
 
 // Lists (Task 89): the caller's own categories, tags, payment methods and merchant rules.
 
-export const listIdInput = z.strictObject({ id });
+export const listIdInputSchema = z.strictObject({ id });
 
 const categoryFields = {
 	name: required({ max: CATEGORY_NAME_MAX }),
 	icon: z.enum(CATEGORY_ICONS),
 	color: z.enum(KHARCHA_COLORS),
 };
-export const createCategoryInput = z.strictObject({ id: id.optional(), ...categoryFields });
-export const updateCategoryInput = z.strictObject({ id, ...categoryFields, archived: z.boolean() });
+export const createCategoryInputSchema = z.strictObject({ id: id.optional(), ...categoryFields });
+export const updateCategoryInputSchema = z.strictObject({ id, ...categoryFields, archived: z.boolean() });
 
 /** A list's new order: every id of it, first to last. */
-export const reorderInput = z.strictObject({ ids: z.array(id).min(1).max(200) });
+export const reorderInputSchema = z.strictObject({ ids: z.array(id).min(1).max(200) });
 
-export const tagInput = z.strictObject({ name: required({ max: TAG_NAME_MAX }) });
-export const updateTagInput = z.strictObject({ id, name: required({ max: TAG_NAME_MAX }) });
+export const tagInputSchema = z.strictObject({ name: required({ max: TAG_NAME_MAX }) });
+export const updateTagInputSchema = z.strictObject({ id, name: required({ max: TAG_NAME_MAX }) });
 
-export const createMethodInput = z.strictObject({ name: required({ max: METHOD_MAX }) });
-export const updateMethodInput = z.strictObject({ id, name: required({ max: METHOD_MAX }), archived: z.boolean() });
+export const createMethodInputSchema = z.strictObject({ name: required({ max: METHOD_MAX }) });
+export const updateMethodInputSchema = z.strictObject({
+	id,
+	name: required({ max: METHOD_MAX }),
+	archived: z.boolean(),
+});
 
 const ruleFields = {
 	match: z.enum(RULE_MATCHES),
@@ -270,15 +274,15 @@ const ruleFields = {
 	tagIds: z.array(id).max(TAGS_MAX),
 	methodId: id.nullable(),
 };
-export const createRuleInput = z.strictObject(ruleFields);
-export const updateRuleInput = z.strictObject({ id, ...ruleFields });
+export const createRuleInputSchema = z.strictObject(ruleFields);
+export const updateRuleInputSchema = z.strictObject({ id, ...ruleFields });
 
 // Receipts (Task 89).
 
-export const receiptUploadInput = z.strictObject({ publicId: z.string().min(1).max(300) });
-export const receiptIdInput = z.strictObject({ id });
+export const receiptUploadInputSchema = z.strictObject({ publicId: z.string().min(1).max(300) });
+export const receiptIdInputSchema = z.strictObject({ id });
 /** A receipt to fill in later: the caller's uploads. */
-export const createDraftInput = z.strictObject({ receiptIds: z.array(id).min(1).max(RECEIPTS_MAX) });
+export const createDraftInputSchema = z.strictObject({ receiptIds: z.array(id).min(1).max(RECEIPTS_MAX) });
 
 // Spend (Task 93): bulk actions, saved searches, export and import.
 
@@ -288,7 +292,7 @@ export const SAVED_SEARCH_NAME_MAX = 40;
 /** Rows one CSV import takes. */
 export const IMPORT_ROWS_MAX = 1_000;
 
-export const bulkInput = z.strictObject({
+export const bulkInputSchema = z.strictObject({
 	ids: z.array(id).min(1).max(BULK_MAX),
 	action: z.discriminatedUnion("kind", [
 		/** The caller's own category on their part; null: none. */
@@ -301,20 +305,20 @@ export const bulkInput = z.strictObject({
 		z.strictObject({ kind: z.literal("delete") }),
 	]),
 });
-export type BulkInput = z.infer<typeof bulkInput>;
+export type BulkInput = z.infer<typeof bulkInputSchema>;
 
 /** A CSV of the search (`q`), or of the rows chosen (`ids`). */
-export const spendExportInput = z.strictObject({
+export const spendExportInputSchema = z.strictObject({
 	q: z.string().trim().max(300).default(""),
 	ids: z.array(id).min(1).max(BULK_MAX).optional(),
 });
-export type SpendExportInput = z.infer<typeof spendExportInput>;
+export type SpendExportInput = z.infer<typeof spendExportInputSchema>;
 
-export const savedSearchInput = z.strictObject({
+export const savedSearchInputSchema = z.strictObject({
 	name: required({ max: SAVED_SEARCH_NAME_MAX }),
 	query: required({ max: 300 }),
 });
-export const renameSearchInput = z.strictObject({ id, name: required({ max: SAVED_SEARCH_NAME_MAX }) });
+export const renameSearchInputSchema = z.strictObject({ id, name: required({ max: SAVED_SEARCH_NAME_MAX }) });
 
 /** One row of a CSV import, read by the import page (spend/import.ts) and checked again here. */
 export const importRowSchema = z.strictObject({
@@ -332,33 +336,33 @@ export const importRowSchema = z.strictObject({
 export type ImportRow = z.infer<typeof importRowSchema>;
 
 /** The rows, once per idempotency key (made with each preview on the page). */
-export const importInput = z.strictObject({
+export const importInputSchema = z.strictObject({
 	key: id,
 	rows: z.array(importRowSchema).min(1).max(IMPORT_ROWS_MAX),
 });
-export type ImportInput = z.infer<typeof importInput>;
+export type ImportInput = z.infer<typeof importInputSchema>;
 
-export type CreateCategoryInput = z.infer<typeof createCategoryInput>;
-export type UpdateCategoryInput = z.infer<typeof updateCategoryInput>;
-export type UpdateMethodInput = z.infer<typeof updateMethodInput>;
-export type CreateRuleInput = z.infer<typeof createRuleInput>;
-export type UpdateRuleInput = z.infer<typeof updateRuleInput>;
+export type CreateCategoryInput = z.infer<typeof createCategoryInputSchema>;
+export type UpdateCategoryInput = z.infer<typeof updateCategoryInputSchema>;
+export type UpdateMethodInput = z.infer<typeof updateMethodInputSchema>;
+export type CreateRuleInput = z.infer<typeof createRuleInputSchema>;
+export type UpdateRuleInput = z.infer<typeof updateRuleInputSchema>;
 
-export type CreateExpenseInput = z.infer<typeof createExpenseInput>;
-export type UpdateExpenseInput = z.infer<typeof updateExpenseInput>;
-export type CreatePaymentInput = z.infer<typeof createPaymentInput>;
-export type UpdatePaymentInput = z.infer<typeof updatePaymentInput>;
-export type CreateGroupInput = z.infer<typeof createGroupInput>;
-export type UpdateGroupInput = z.infer<typeof updateGroupInput>;
-export type AddFriendInput = z.input<typeof addFriendInput>;
-export type UpdateFriendInput = z.infer<typeof updateFriendInput>;
-export type FriendEmailInput = z.input<typeof friendEmailInput>;
-export type PeopleInput = z.input<typeof peopleInput>;
-export type InviteInput = z.input<typeof inviteInput>;
-export type NewGroupMemberInput = z.infer<typeof newGroupMemberInput>;
+export type CreateExpenseInput = z.infer<typeof createExpenseInputSchema>;
+export type UpdateExpenseInput = z.infer<typeof updateExpenseInputSchema>;
+export type CreatePaymentInput = z.infer<typeof createPaymentInputSchema>;
+export type UpdatePaymentInput = z.infer<typeof updatePaymentInputSchema>;
+export type CreateGroupInput = z.infer<typeof createGroupInputSchema>;
+export type UpdateGroupInput = z.infer<typeof updateGroupInputSchema>;
+export type AddFriendInput = z.input<typeof addFriendInputSchema>;
+export type UpdateFriendInput = z.infer<typeof updateFriendInputSchema>;
+export type FriendEmailInput = z.input<typeof friendEmailInputSchema>;
+export type PeopleInput = z.input<typeof peopleInputSchema>;
+export type InviteInput = z.input<typeof inviteInputSchema>;
+export type NewGroupMemberInput = z.infer<typeof newGroupMemberInputSchema>;
 
 /** An IANA time zone this runtime knows ("Asia/Kathmandu"): `Intl` throws on any other. */
-export const timeZone = z
+export const timeZoneSchema = z
 	.string()
 	.min(1)
 	.max(64)
@@ -375,21 +379,21 @@ export const timeZone = z
  * Onboarding (Task 88): home currency, time zone and what they came for. Skipping sends
  * what is already set, so the dialog never comes back either way.
  */
-export const onboardingInput = z.strictObject({
+export const onboardingInputSchema = z.strictObject({
 	homeCurrency: currency,
-	timeZone,
+	timeZone: timeZoneSchema,
 	start: z.enum(KHARCHA_STARTS),
 });
 
-export type OnboardingInput = z.infer<typeof onboardingInput>;
+export type OnboardingInput = z.infer<typeof onboardingInputSchema>;
 
 /** How friends can pay the caller, in their own words (Task 91): shown to them when they settle up. */
 export const PAY_NOTE_MAX = 200;
 
 /** Settings → Profile (Task 91): the home currency, the time zone, and the pay note. */
-export const profileInput = z.strictObject({
+export const profileInputSchema = z.strictObject({
 	homeCurrency: currency,
-	timeZone,
+	timeZone: timeZoneSchema,
 	payNote: optionalText({ max: PAY_NOTE_MAX }).default(""),
 });
 
@@ -397,47 +401,47 @@ export const profileInput = z.strictObject({
  * The settle-up dialog's options (Task 91): in a group, with a friend, or (neither) every
  * open balance of the caller's.
  */
-export const settleUpInput = z.strictObject({
+export const settleUpInputSchema = z.strictObject({
 	groupId: id.nullable().default(null),
 	personId: id.optional(),
 });
 
-export type ProfileInput = z.input<typeof profileInput>;
-export type SettleUpInput = z.input<typeof settleUpInput>;
+export type ProfileInput = z.input<typeof profileInputSchema>;
+export type SettleUpInput = z.input<typeof settleUpInputSchema>;
 
 /** A thread from the reader's side (Task 92): `g:<group>`, `f:<person>` or `e:<expense>`. */
-export const threadKeyInput = z
+export const threadKeyInputSchema = z
 	.string()
 	.regex(THREAD_KEY)
 	.transform((key) => key as ThreadKey);
 
 /** A new comment: plain text, with the people it mentions (the server keeps those who can read it). */
-export const createCommentInput = z.strictObject({
+export const createCommentInputSchema = z.strictObject({
 	id: id.optional(),
-	thread: threadKeyInput,
+	thread: threadKeyInputSchema,
 	body: required({ max: COMMENT_MAX }),
 	mentions: z.array(id).max(20).default([]),
 });
-export const updateCommentInput = z.strictObject({
+export const updateCommentInputSchema = z.strictObject({
 	commentId: id,
 	body: required({ max: COMMENT_MAX }),
 	mentions: z.array(id).max(20).default([]),
 });
-export const commentIdInput = z.strictObject({ commentId: id });
-export const reactInput = z.strictObject({ commentId: id, emoji: z.enum(REACTIONS), on: z.boolean() });
-export const threadInput = z.strictObject({ thread: threadKeyInput });
+export const commentIdInputSchema = z.strictObject({ commentId: id });
+export const reactInputSchema = z.strictObject({ commentId: id, emoji: z.enum(REACTIONS), on: z.boolean() });
+export const threadInputSchema = z.strictObject({ thread: threadKeyInputSchema });
 /** Mark notifications read: these, or (none named) all of the caller's. */
-export const markNotificationsInput = z.strictObject({ ids: z.array(id).max(100).optional() });
+export const markNotificationsInputSchema = z.strictObject({ ids: z.array(id).max(100).optional() });
 /** Settings → Notifications: how each kind is emailed. */
-export const notifySettingsInput = z.strictObject({
+export const notifySettingsInputSchema = z.strictObject({
 	notify: z.partialRecord(z.enum(NOTIFY_KINDS), z.enum(NOTIFY_EMAILS)),
 });
-export const focusInput = z.strictObject({ focus: z.boolean() });
+export const focusInputSchema = z.strictObject({ focus: z.boolean() });
 
-export type CreateCommentInput = z.input<typeof createCommentInput>;
-export type UpdateCommentInput = z.input<typeof updateCommentInput>;
-export type ReactInput = z.input<typeof reactInput>;
-export type NotifySettingsInput = z.input<typeof notifySettingsInput>;
+export type CreateCommentInput = z.input<typeof createCommentInputSchema>;
+export type UpdateCommentInput = z.input<typeof updateCommentInputSchema>;
+export type ReactInput = z.input<typeof reactInputSchema>;
+export type NotifySettingsInput = z.input<typeof notifySettingsInputSchema>;
 
 /* Planning (Task 94, decision 0288): budgets and recurring expenses. */
 
@@ -445,7 +449,7 @@ export type NotifySettingsInput = z.input<typeof notifySettingsInput>;
 export const MONTH_PATTERN = /^\d{4}-(0[1-9]|1[0-2])$/;
 
 /** A new budget: one of the caller's categories (null: everything), a currency, a period and its amount. */
-export const createBudgetInput = z.strictObject({
+export const createBudgetInputSchema = z.strictObject({
 	categoryId: id.nullable().default(null),
 	currency,
 	period: z.enum(BUDGET_PERIODS),
@@ -453,19 +457,19 @@ export const createBudgetInput = z.strictObject({
 	startsOn: isoDate(),
 });
 /** A budget's amount and first day, at the `version` it was loaded at; what it is about stays. */
-export const updateBudgetInput = z.strictObject({
+export const updateBudgetInputSchema = z.strictObject({
 	budgetId: id,
 	version: z.number().int().min(1),
 	amountMinor: minor,
 	startsOn: isoDate(),
 });
 /** A monthly budget's own amount for one month; null goes back to the budget's amount. */
-export const budgetMonthInput = z.strictObject({
+export const budgetMonthInputSchema = z.strictObject({
 	budgetId: id,
 	month: z.string().regex(MONTH_PATTERN),
 	amountMinor: minor.nullable(),
 });
-export const budgetIdInput = z.strictObject({ budgetId: id });
+export const budgetIdInputSchema = z.strictObject({ budgetId: id });
 
 const cadence = {
 	unit: z.enum(RECURRING_UNITS),
@@ -473,18 +477,18 @@ const cadence = {
 	endsOn: isoDate().nullable().default(null),
 };
 /** "Repeat…" on an expense: how often from its day, and until when. */
-export const repeatExpenseInput = z.strictObject({ expenseId: id, ...cadence });
+export const repeatExpenseInputSchema = z.strictObject({ expenseId: id, ...cadence });
 /** A recurring expense's cadence and end, at its `version`; what it makes is the expense it came from. */
-export const updateRecurringInput = z.strictObject({
+export const updateRecurringInputSchema = z.strictObject({
 	recurringId: id,
 	version: z.number().int().min(1),
 	...cadence,
 });
-export const recurringIdInput = z.strictObject({ recurringId: id });
-export const pauseRecurringInput = z.strictObject({ recurringId: id, paused: z.boolean() });
+export const recurringIdInputSchema = z.strictObject({ recurringId: id });
+export const pauseRecurringInputSchema = z.strictObject({ recurringId: id, paused: z.boolean() });
 
-export type CreateBudgetInput = z.input<typeof createBudgetInput>;
-export type UpdateBudgetInput = z.input<typeof updateBudgetInput>;
-export type BudgetMonthInput = z.input<typeof budgetMonthInput>;
-export type RepeatExpenseInput = z.input<typeof repeatExpenseInput>;
-export type UpdateRecurringInput = z.input<typeof updateRecurringInput>;
+export type CreateBudgetInput = z.input<typeof createBudgetInputSchema>;
+export type UpdateBudgetInput = z.input<typeof updateBudgetInputSchema>;
+export type BudgetMonthInput = z.input<typeof budgetMonthInputSchema>;
+export type RepeatExpenseInput = z.input<typeof repeatExpenseInputSchema>;
+export type UpdateRecurringInput = z.input<typeof updateRecurringInputSchema>;

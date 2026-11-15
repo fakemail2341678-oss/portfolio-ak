@@ -1,7 +1,7 @@
 import "@tanstack/react-start/server-only";
 import { and, asc, count, eq, inArray, isNotNull, isNull, lte } from "drizzle-orm";
-import { computeShares } from "@/features/kharcha/money/split";
-import { threadKey } from "@/features/kharcha/notifications";
+import { threadKey } from "@/features/kharcha/lib/notifications";
+import { computeShares } from "@/features/kharcha/money/lib/split";
 import {
 	beforeEnd,
 	type Cadence,
@@ -9,7 +9,7 @@ import {
 	firstOnOrAfter,
 	occurrenceOn,
 	type RecurringUnit,
-} from "@/features/kharcha/recurring/cadence";
+} from "@/features/kharcha/recurring/lib/cadence";
 import type { RepeatExpenseInput, UpdateRecurringInput } from "@/features/kharcha/schema";
 import type { RecurringProblem, RecurringTemplate, RecurringView } from "@/features/kharcha/types";
 import { AppError, ruleError } from "@/lib/errors";

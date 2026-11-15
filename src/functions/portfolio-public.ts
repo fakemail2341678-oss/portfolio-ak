@@ -12,7 +12,7 @@ import type {
 	ProjectDetail,
 	ProjectSummary,
 } from "@/features/portfolio/types";
-import { hasAll } from "@/features/rbac/permissions";
+import { hasAll } from "@/features/rbac/lib/permissions";
 import { zodInput } from "@/functions/_lib/validator";
 import { withPublic } from "@/middleware/services";
 import { locales } from "@/paraglide/runtime";
@@ -21,7 +21,7 @@ import { getServerSession } from "@/server/auth/session";
 import { sendEmail } from "@/server/email/send";
 import { serverEnv } from "@/server/env";
 import { verifyTurnstile } from "@/server/http/turnstile";
-import { submitContact } from "@/server/portfolio/messages-service";
+import { submitContact } from "@/server/portfolio/messages/service";
 import * as portfolio from "@/server/portfolio/public";
 
 /**

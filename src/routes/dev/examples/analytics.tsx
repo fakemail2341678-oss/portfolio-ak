@@ -3,14 +3,14 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { DescriptionList } from "@/components/data-display/description-list";
 import { Button } from "@/components/ui/button";
-import { Demo, ExamplePage } from "@/features/dev/examples/example-page";
+import { Demo, ExamplePage } from "@/features/dev/examples/components/example-page";
 import { homeFlagsQueryOptions } from "@/features/flags/queries";
 import { staticCrumb } from "@/lib/breadcrumbs";
 import { analyticsKey, analyticsRunning, track } from "@/lib/observability/analytics";
 import { ensureQuery } from "@/lib/query";
 import { privateHead } from "@/lib/seo";
-import { usePreferences, usePreferencesStore } from "@/lib/stores/hooks";
 import type { AnalyticsConsent } from "@/lib/stores/preferences";
+import { usePreferences, usePreferencesStore } from "@/lib/stores/use-stores";
 import { m } from "@/paraglide/messages";
 
 /**

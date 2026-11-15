@@ -1,6 +1,6 @@
 import "@tanstack/react-start/server-only";
 import { and, desc, eq, inArray, isNull, lte, notInArray, or, type SQL, sql } from "drizzle-orm";
-import { threadKey } from "@/features/kharcha/notifications";
+import { threadKey } from "@/features/kharcha/lib/notifications";
 import type { PeopleInput } from "@/features/kharcha/schema";
 import type { CommentView, ThreadState } from "@/features/kharcha/types";
 import {

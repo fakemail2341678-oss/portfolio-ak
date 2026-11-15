@@ -1,4 +1,4 @@
-import { hasAll, type Permission } from "./permissions";
+import { hasAll, type Permission } from "./lib/permissions";
 
 /**
  * Who is acting: the signed-in user as the permission rules see them. One type on

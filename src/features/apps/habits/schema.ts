@@ -2,7 +2,7 @@ import { z } from "zod";
 import { formatNumber } from "@/lib/i18n/intl";
 import { isoDate, numberRange, required } from "@/lib/validation";
 import { m } from "@/paraglide/messages";
-import { APP_COLORS } from "../colors";
+import { APP_COLORS } from "../lib/colors";
 import { EVERY_DAY, HABIT_TARGET_MAX } from "./types";
 
 /**
@@ -21,7 +21,7 @@ const days = () =>
 		.max(EVERY_DAY);
 const target = () => numberRange({ min: 1, max: HABIT_TARGET_MAX, integer: true });
 
-export const createHabitInput = z.strictObject({
+export const createHabitInputSchema = z.strictObject({
 	id,
 	name: required({ max: HABIT_NAME_MAX }),
 	color: z.enum(APP_COLORS),
@@ -29,7 +29,7 @@ export const createHabitInput = z.strictObject({
 	target: target(),
 });
 
-export const updateHabitInput = z.strictObject({
+export const updateHabitInputSchema = z.strictObject({
 	id,
 	name: required({ max: HABIT_NAME_MAX }).optional(),
 	color: z.enum(APP_COLORS).optional(),
@@ -38,10 +38,10 @@ export const updateHabitInput = z.strictObject({
 	archived: z.boolean().optional(),
 });
 
-export const habitIdInput = z.strictObject({ id });
+export const habitIdInputSchema = z.strictObject({ id });
 
 /** A day's count for a habit; 0 removes the check-in. */
-export const checkinInput = z.strictObject({
+export const checkinInputSchema = z.strictObject({
 	habitId: id,
 	day: isoDate(),
 	count: z
@@ -60,6 +60,6 @@ export const habitFormSchema = z.object({
 });
 export type HabitFormValues = z.input<typeof habitFormSchema>;
 
-export type CreateHabitInput = z.infer<typeof createHabitInput>;
-export type UpdateHabitInput = z.infer<typeof updateHabitInput>;
-export type CheckinInput = z.infer<typeof checkinInput>;
+export type CreateHabitInput = z.infer<typeof createHabitInputSchema>;
+export type UpdateHabitInput = z.infer<typeof updateHabitInputSchema>;
+export type CheckinInput = z.infer<typeof checkinInputSchema>;

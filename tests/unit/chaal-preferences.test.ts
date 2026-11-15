@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
-import { isDarkSquare, placementOf } from "@/features/chaal/board/fen";
-import { connectionState } from "@/features/chaal/connect/use-connect";
-import { DEFAULT_CHAAL_PREFERENCES, readPreferences } from "@/features/chaal/settings/preferences";
+import { isDarkSquare, placementOf } from "@/features/chaal/board/lib/fen";
+import { connectionState } from "@/features/chaal/connect/hooks/use-connect";
+import { DEFAULT_CHAAL_PREFERENCES, readPreferences } from "@/features/chaal/settings/lib/preferences";
 
 /** Chaal's preferences as stored (Task 73, decision 0259), the diagram's FEN reader and the connection's dot. */
 describe("readPreferences", () => {

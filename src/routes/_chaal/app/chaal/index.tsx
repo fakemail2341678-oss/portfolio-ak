@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { CHAAL_NAME } from "@/features/chaal/brand";
 import { chaalPageHead } from "@/features/chaal/head";
-import { ChaalHome } from "@/features/chaal/home/chaal-home";
+import { ChaalHome } from "@/features/chaal/home/components/chaal-home-page";
+import { CHAAL_NAME } from "@/features/chaal/lib/brand";
 import { CHAAL_PATHS } from "@/features/chaal/links";
 import { ensureQuery } from "@/lib/query";
 import { m } from "@/paraglide/messages";
@@ -13,6 +13,6 @@ export const Route = createFileRoute("/_chaal/app/chaal/")({
 		const { chaalHomeQueryOptions } = await import("@/features/chaal/home/queries");
 		await ensureQuery(context.queryClient, chaalHomeQueryOptions());
 	},
-	head: () => chaalPageHead(CHAAL_PATHS.home, m.ch_home_title(), m.ch_description(), CHAAL_NAME),
+	head: () => chaalPageHead(CHAAL_PATHS.home, m.chaal_home_title(), m.chaal_description(), CHAAL_NAME),
 	component: ChaalHome,
 });

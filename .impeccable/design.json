@@ -581,7 +581,7 @@
 			},
 			{
 				"name": "The Contrast Floor Rule",
-				"body": "Every text pair is at least 4.5:1 on its ground and its second ground, in both themes, on every field and on the art (`tests/unit/himal-tokens.test.ts`). Text on a new colour adds a pair there.",
+				"body": "Every text pair is at least 4.5:1 on its ground and its second ground, in both themes, on every field and on the art (`tests/unit/portfolio-tokens.test.ts`). Text on a new colour adds a pair there.",
 				"section": "colors"
 			},
 			{

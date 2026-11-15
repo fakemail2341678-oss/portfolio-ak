@@ -1,6 +1,6 @@
 import "@tanstack/react-start/server-only";
-import { PGN_MAX_BYTES } from "@/features/chaal/chess/pgn";
-import { readWatchLimits } from "@/features/chaal/watch/limits";
+import { PGN_MAX_BYTES } from "@/features/chaal/chess/lib/pgn";
+import { readWatchLimits } from "@/features/chaal/watch/lib/limits";
 import type {
 	BroadcastTourSummary,
 	ChaalBroadcastGame,

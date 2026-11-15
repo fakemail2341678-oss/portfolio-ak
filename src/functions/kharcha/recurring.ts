@@ -1,9 +1,9 @@
 import { createServerFn } from "@tanstack/react-start";
 import {
-	pauseRecurringInput,
-	recurringIdInput,
-	repeatExpenseInput,
-	updateRecurringInput,
+	pauseRecurringInputSchema,
+	recurringIdInputSchema,
+	repeatExpenseInputSchema,
+	updateRecurringInputSchema,
 } from "@/features/kharcha/schema";
 import type { RecurringView } from "@/features/kharcha/types";
 import { zodInput } from "@/functions/_lib/validator";
@@ -27,28 +27,28 @@ export const listKharchaRecurring = createServerFn({ method: "GET" })
 	.middleware([requireKharchaUser, withKharchaServices])
 	.handler(({ context }): Promise<RecurringView[]> => listRecurring(context));
 
-export const repeatKharchaExpense = createServerFn({ method: "POST" })
+export const createKharchaRecurring = createServerFn({ method: "POST" })
 	.middleware([requireKharchaUser, withKharchaServices])
-	.validator(zodInput(repeatExpenseInput))
+	.validator(zodInput(repeatExpenseInputSchema))
 	.handler(({ data, context }): Promise<RecurringView[]> => repeatExpense(context, data));
 
 export const updateKharchaRecurring = createServerFn({ method: "POST" })
 	.middleware([requireKharchaUser, withKharchaServices])
-	.validator(zodInput(updateRecurringInput))
+	.validator(zodInput(updateRecurringInputSchema))
 	.handler(({ data, context }): Promise<RecurringView[]> => updateRecurring(context, data));
 
-export const pauseKharchaRecurring = createServerFn({ method: "POST" })
+export const setKharchaRecurringPaused = createServerFn({ method: "POST" })
 	.middleware([requireKharchaUser, withKharchaServices])
-	.validator(zodInput(pauseRecurringInput))
+	.validator(zodInput(pauseRecurringInputSchema))
 	.handler(({ data, context }): Promise<RecurringView[]> => pauseRecurring(context, data));
 
 /** Skip the next one: it is never made. */
 export const skipKharchaRecurring = createServerFn({ method: "POST" })
 	.middleware([requireKharchaUser, withKharchaServices])
-	.validator(zodInput(recurringIdInput))
+	.validator(zodInput(recurringIdInputSchema))
 	.handler(({ data, context }): Promise<RecurringView[]> => skipRecurring(context, data.recurringId));
 
 export const deleteKharchaRecurring = createServerFn({ method: "POST" })
 	.middleware([requireKharchaUser, withKharchaServices])
-	.validator(zodInput(recurringIdInput))
+	.validator(zodInput(recurringIdInputSchema))
 	.handler(({ data, context }): Promise<RecurringView[]> => deleteRecurring(context, data.recurringId));

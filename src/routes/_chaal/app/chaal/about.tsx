@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { ChaalAbout } from "@/features/chaal/about/chaal-about";
-import { CHAAL_NAME } from "@/features/chaal/brand";
+import { ChaalAbout } from "@/features/chaal/about/components/chaal-about-page";
+import { CHAAL_NAME } from "@/features/chaal/lib/brand";
 import { CHAAL_PATHS } from "@/features/chaal/links";
 import { seo } from "@/lib/seo";
 import { m } from "@/paraglide/messages";
@@ -9,9 +9,9 @@ import { m } from "@/paraglide/messages";
 export const Route = createFileRoute("/_chaal/app/chaal/about")({
 	head: () =>
 		seo({
-			title: m.ch_about_title(),
+			title: m.chaal_about_title(),
 			siteName: CHAAL_NAME,
-			description: m.ch_about_description(),
+			description: m.chaal_about_description(),
 			path: CHAAL_PATHS.about,
 		}),
 	component: ChaalAbout,

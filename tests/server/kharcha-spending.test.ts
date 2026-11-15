@@ -1,6 +1,6 @@
 import { eq } from "drizzle-orm";
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from "vitest";
-import { DEFAULT_CATEGORIES, DEFAULT_METHODS } from "@/features/kharcha/settings";
+import { DEFAULT_CATEGORIES, DEFAULT_METHODS } from "@/features/kharcha/lib/settings";
 import { getLocale, overwriteGetLocale } from "@/paraglide/runtime";
 import * as schema from "@/server/db/schema";
 import * as expenses from "@/server/kharcha/expenses/service";

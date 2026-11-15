@@ -10,8 +10,7 @@ import {
 	DropdownMenuSeparator,
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { usePermissions } from "@/features/rbac/can";
-import { hasAll, type Permission } from "@/features/rbac/permissions";
+import type { Permission } from "@/features/rbac/lib/permissions";
 import { m } from "@/paraglide/messages";
 
 /**
@@ -32,18 +31,6 @@ export type RowAction = {
 	/** Left out for this row (the action doesn't apply: an admin can't be impersonated). */
 	hidden?: boolean;
 } & ({ onSelect: () => void; render?: never } | { render: (label: ReactNode) => ReactElement; onSelect?: never });
-
-/** The actions this user may run on this row. */
-export function usePermittedActions() {
-	const permissions = usePermissions();
-	return (actions: ReadonlyArray<RowAction>) =>
-		actions.filter((action) => {
-			if (action.hidden) return false;
-			if (!action.permission) return true;
-			const required = typeof action.permission === "string" ? [action.permission] : action.permission;
-			return hasAll(permissions, required);
-		});
-}
 
 const content = (action: RowAction) => {
 	const Icon = action.icon;

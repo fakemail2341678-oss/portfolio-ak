@@ -1,10 +1,10 @@
 import { queryOptions } from "@tanstack/react-query";
 import {
+	createChaalLocalGame,
 	deleteChaalLocalGame,
 	getChaalLocalGame,
 	importChaalLocalGames,
 	listChaalLocalGames,
-	saveChaalLocalGame,
 } from "@/functions/chaal/local-games";
 import { chaalKeys } from "../keys";
 import type { LocalGameRecord } from "./types";
@@ -26,6 +26,8 @@ export const localGameQueryOptions = (id: string) =>
 		retry: false,
 	});
 
-export const saveLocalGameOnAccount = (game: LocalGameRecord) => saveChaalLocalGame({ data: { game } });
-export const deleteLocalGameOnAccount = (id: string) => deleteChaalLocalGame({ data: { id } });
-export const importLocalGamesToAccount = (games: LocalGameRecord[]) => importChaalLocalGames({ data: { games } });
+export const chaalLocalMutations = {
+	save: (game: LocalGameRecord) => createChaalLocalGame({ data: { game } }),
+	delete: (id: string) => deleteChaalLocalGame({ data: { id } }),
+	import: (games: LocalGameRecord[]) => importChaalLocalGames({ data: { games } }),
+};

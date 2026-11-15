@@ -53,5 +53,5 @@ export const updatePardaProfile = fn(async (): Promise<ProfileSummary> => PROFIL
 );
 export const deletePardaProfile = fn(async () => ({ ok: true as const })).mockName("deletePardaProfile");
 export const setPardaProfilePin = fn(async () => ({ ok: true as const })).mockName("setPardaProfilePin");
-export const switchPardaProfile = fn(async () => ({ ok: true as const })).mockName("switchPardaProfile");
+export const setPardaActiveProfile = fn(async () => ({ ok: true as const })).mockName("setPardaActiveProfile");
 export const setPardaDigest = fn(async () => ({ ok: true as const })).mockName("setPardaDigest");

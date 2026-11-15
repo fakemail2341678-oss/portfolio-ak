@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { PARDA_BRAND, pardaTitle } from "@/features/parda/brand";
+import { PARDA_BRAND, pardaTitle } from "@/features/parda/lib/brand";
 import { pardaFontPreloads } from "@/features/parda/lib/fonts";
-import { PardaNotFound, PardaSection } from "@/features/parda/shell/section";
+import { PardaNotFound, PardaSection } from "@/features/parda/shell/components/section";
 import { NOINDEX } from "@/lib/seo";
 import { getLocale } from "@/paraglide/runtime";
 

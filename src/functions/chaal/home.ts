@@ -1,5 +1,5 @@
 import { createServerFn } from "@tanstack/react-start";
-import type { ChaalHome } from "@/features/chaal/home/curation";
+import type { ChaalHome } from "@/features/chaal/home/lib/curation";
 import { withChaalPublic } from "@/middleware/chaal";
 import { chaalHome } from "@/server/chaal/home";
 

@@ -1,8 +1,8 @@
 import { createFileRoute, Outlet, redirect } from "@tanstack/react-router";
 import { AdminShell } from "@/components/admin-shell/admin-shell";
 import { DbScope } from "@/components/layout/db-scope";
-import { canEnterAdmin } from "@/features/rbac/permissions";
-import { ensureAdminAccess } from "@/functions/auth";
+import { canEnterAdmin } from "@/features/rbac/lib/permissions";
+import { getAdminAccess } from "@/functions/auth";
 import { isAppError } from "@/lib/errors";
 import { fontPreloads } from "@/lib/fonts";
 import { NOINDEX } from "@/lib/seo";
@@ -11,7 +11,7 @@ import { getLocale } from "@/paraglide/runtime";
 
 /**
  * Admin area. Entering it (and every SSR request) checks the role ON THE SERVER
- * (ensureAdminAccess: the user must hold at least one permission, read from the database).
+ * (getAdminAccess: the user must hold at least one permission, read from the database).
  * Anonymous visitors go to /login with a return URL; signed-in non-admins get
  * the localized FORBIDDEN error page; admins who must turn on two-factor first
  * (AUTH_REQUIRE_ADMIN_2FA) go to the account page's two-factor section.
@@ -26,7 +26,7 @@ export const Route = createFileRoute("/_admin")({
 		const known = context.session;
 		if (cause === "stay" && known && canEnterAdmin(known.permissions)) return { session: known };
 		try {
-			return { session: await ensureAdminAccess() };
+			return { session: await getAdminAccess() };
 		} catch (error) {
 			if (isAppError(error) && error.code === "UNAUTHORIZED") {
 				throw redirect({ to: "/login", search: { redirect: location.href } });

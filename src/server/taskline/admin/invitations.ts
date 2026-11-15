@@ -2,7 +2,7 @@ import "@tanstack/react-start/server-only";
 import { waitUntil } from "@vercel/functions";
 import { and, desc, eq, gt, isNull } from "drizzle-orm";
 import { type AdminInvitation, INVITATION_DAYS, type InviteMemberInput } from "@/features/taskline/admin/schema";
-import { TASKLINE_NAME } from "@/features/taskline/brand";
+import { TASKLINE_NAME } from "@/features/taskline/lib/brand";
 import { TASKLINE_PATHS } from "@/features/taskline/links";
 import { localizedUrl } from "@/lib/seo";
 import { m } from "@/paraglide/messages";

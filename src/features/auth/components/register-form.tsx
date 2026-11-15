@@ -2,8 +2,9 @@ import { type FormEvent, type ReactNode, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { authClient } from "@/lib/auth-client";
 import { m } from "@/paraglide/messages";
-import { authErrorMessage } from "../errors";
-import { localizedPath } from "../use-auth-actions";
+import { localizedPath } from "../hooks/use-auth-actions";
+import { useTurnstile } from "../hooks/use-turnstile";
+import { authErrorMessage } from "../lib/errors";
 import {
 	collectErrors,
 	type FieldErrors,
@@ -12,10 +13,10 @@ import {
 	validateEmail,
 	validatePassword,
 	validateRequired,
-} from "../validation";
+} from "../lib/validation";
 import { AuthField, FormMessage } from "./auth-field";
-import { captchaFetchOptions, Honeypot, isBot, useTurnstile } from "./bot-check";
-import { CheckEmail } from "./check-email";
+import { captchaFetchOptions, Honeypot, isBot } from "./bot-check-field";
+import { CheckEmail } from "./check-email-card";
 
 type Field = "name" | "email" | "password" | "confirm";
 

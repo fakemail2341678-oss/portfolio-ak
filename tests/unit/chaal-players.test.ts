@@ -1,9 +1,10 @@
 import { describe, expect, it } from "vitest";
-import { clocksAt, JUDGEMENT_NAGS, replayEnding, replayLine, replayScores } from "@/features/chaal/game/replay";
-import { historyRows } from "@/features/chaal/players/history";
+import { clocksAt, JUDGEMENT_NAGS, replayEnding, replayLine, replayScores } from "@/features/chaal/game/lib/replay";
 import { gameKind, scoreOf } from "@/features/chaal/players/labels";
-import { gamesInputOf, mainPerf } from "@/features/chaal/players/queries";
-import { playerGamesInput, playerSearchInput } from "@/features/chaal/players/schema";
+import { gamesInputOf } from "@/features/chaal/players/lib/games-input";
+import { historyRows } from "@/features/chaal/players/lib/history";
+import { mainPerf } from "@/features/chaal/players/lib/perf";
+import { playerGamesInputSchema, playerSearchInputSchema } from "@/features/chaal/players/schema";
 import { playerSearch, playersSearch } from "@/features/chaal/search";
 import {
 	activityAnswer,
@@ -184,10 +185,10 @@ describe("A page of games", () => {
 		const search = playerSearch.parse({ tab: "games", mode: "casual", result: "win", vs: "x", before: "123" });
 		expect(search).toMatchObject({ tab: "games", mode: "casual", result: "win", vs: undefined, before: 123 });
 		expect(gamesInputOf("Player1", search)).toEqual({ username: "Player1", rated: false, result: "win", before: 123 });
-		expect(playerGamesInput.safeParse(gamesInputOf("Player1", search)).success).toBe(true);
+		expect(playerGamesInputSchema.safeParse(gamesInputOf("Player1", search)).success).toBe(true);
 		expect(playersSearch.parse({ perf: "correspondence" })).toEqual({ perf: undefined });
-		expect(playerSearchInput.safeParse({ term: "ab" }).success).toBe(false);
-		expect(playerSearchInput.safeParse({ term: "a b c" }).success).toBe(false);
+		expect(playerSearchInputSchema.safeParse({ term: "ab" }).success).toBe(false);
+		expect(playerSearchInputSchema.safeParse({ term: "a b c" }).success).toBe(false);
 	});
 });
 

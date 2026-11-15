@@ -13,7 +13,7 @@ import userEvent from "@testing-library/user-event";
 import type { ReactNode } from "react";
 import { renderToString } from "react-dom/server";
 import { describe, expect, it, vi } from "vitest";
-import { HomeTime } from "@/features/portfolio/components/chrome/home-time";
+import { HomeTime } from "@/features/portfolio/components/chrome/home-time-badge";
 import { PortfolioMenu } from "@/features/portfolio/components/chrome/portfolio-menu";
 import { CopyEmailButton } from "@/features/portfolio/components/contact/copy-email-button";
 import { SelectedWorkSection } from "@/features/portfolio/components/sections/selected-work-section";

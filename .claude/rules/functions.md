@@ -21,5 +21,5 @@ Guide: `docs/guides/routing-data.md` and `docs/guides/crud.md` ("Server"). The r
 - The name MUST start with a verb of the standard: `list`, `get`, `search`, `create`, `update`, `delete`, `set<Field>`, `add`, `remove`, `trash`, `restore`, `purge`, `reorder`, `is<Check>`, `import`, `export`, or a listed domain verb. NEVER `save`, `find`, `fetch`, `patch`, `toggle` or `mark`.
 - A function that takes data MUST validate it with `.validator(zodInput(schema))`. Inputs are `z.strictObject`.
 - The handler MUST be one call into a service in `src/server/**`, with an explicit return type. Logic NEVER lives in the handler.
-- Every function MUST have its row in `tests/server/guarded-functions.test.ts`; a product's function also in its access test.
+- Every function MUST have its row in `tests/server/functions-guards.test.ts`; a product's function also in its access test.
 - Writes are `POST`, reads are `GET`.

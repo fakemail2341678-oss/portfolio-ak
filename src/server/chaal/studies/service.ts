@@ -1,6 +1,6 @@
 import "@tanstack/react-start/server-only";
-import { readCommunityLimits } from "@/features/chaal/community/limits";
-import { type ReadStudy, readStudy } from "@/features/chaal/studies/chapters";
+import { readCommunityLimits } from "@/features/chaal/community/lib/limits";
+import { type ReadStudy, readStudy } from "@/features/chaal/studies/lib/chapters";
 import {
 	type ChaalStudy,
 	type ChaalStudyChapter,
@@ -20,7 +20,7 @@ import { readAsViewer, viewerOf } from "../viewer";
 
 /**
  * Studies (PLAN Task 83, decision 0273). Lichess exports a study as one PGN, a game per
- * chapter (src/features/chaal/studies/chapters.ts); the server keeps it read (five minutes
+ * chapter (src/features/chaal/studies/lib/chapters.ts); the server keeps it read (five minutes
  * public; a minute for a viewer who reads with their own token, which also opens their
  * private studies, kept apart by `owner`) and sends a page the chapters' list and the chapter
  * shown. An account's studies are public; the player's own (with private ones) and "Save to

@@ -1,5 +1,5 @@
 import { fn } from "storybook/test";
-import type { ChaalEventChallenge } from "../../../../src/features/chaal/live/events";
+import type { ChaalEventChallenge } from "../../../../src/features/chaal/live/lib/events";
 import type {
 	ChaalChallenges,
 	ChaalOpenChallenge,
@@ -28,13 +28,13 @@ export const getChaalChallenges = fn(
 export const challengeChaalPlayer = fn(async (): Promise<ChaalEventChallenge> => SAMPLE_CHALLENGE).mockName(
 	"challengeChaalPlayer",
 );
-export const openChaalChallenge = fn(
+export const createChaalChallenge = fn(
 	async (): Promise<ChaalOpenChallenge> => ({
 		id: "open1234",
 		link: "https://lichess.org/open1234?color=black",
 		color: "white",
 	}),
-).mockName("openChaalChallenge");
+).mockName("createChaalChallenge");
 export const acceptChaalChallenge = fn(async ({ data }: { data: { id: string } }) => ({ id: data.id })).mockName(
 	"acceptChaalChallenge",
 );

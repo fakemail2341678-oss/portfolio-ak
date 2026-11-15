@@ -1,6 +1,10 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
-import { importLocalGamesInput, type LocalGameSummary, saveLocalGameInput } from "@/features/chaal/local/schema";
+import {
+	importLocalGamesInputSchema,
+	type LocalGameSummary,
+	saveLocalGameInputSchema,
+} from "@/features/chaal/local/schema";
 import type { LocalGameRecord } from "@/features/chaal/local/types";
 import { zodInput } from "@/functions/_lib/validator";
 import { requireChaalUser, withChaalServices } from "@/middleware/chaal";
@@ -24,9 +28,9 @@ export const getChaalLocalGame = createServerFn({ method: "GET" })
 	.validator(zodInput(idInput))
 	.handler(({ context, data }): Promise<LocalGameRecord> => local.getLocalGame(context.db, context.user.id, data.id));
 
-export const saveChaalLocalGame = createServerFn({ method: "POST" })
+export const createChaalLocalGame = createServerFn({ method: "POST" })
 	.middleware([requireChaalUser, withChaalServices])
-	.validator(zodInput(saveLocalGameInput))
+	.validator(zodInput(saveLocalGameInputSchema))
 	.handler(
 		({ context, data }): Promise<LocalGameSummary> =>
 			local.saveLocalGame(context, context.user.id, data.game as LocalGameRecord),
@@ -39,7 +43,7 @@ export const deleteChaalLocalGame = createServerFn({ method: "POST" })
 
 export const importChaalLocalGames = createServerFn({ method: "POST" })
 	.middleware([requireChaalUser, withChaalServices])
-	.validator(zodInput(importLocalGamesInput))
+	.validator(zodInput(importLocalGamesInputSchema))
 	.handler(
 		({ context, data }): Promise<{ imported: string[] }> =>
 			local.importLocalGames(context, context.user.id, data.games as LocalGameRecord[]),

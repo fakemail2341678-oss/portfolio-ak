@@ -7,10 +7,9 @@ import { type AccountSession, revokeMySession } from "@/functions/auth";
 import { authClient } from "@/lib/auth-client";
 import { formatRelativeTimeFrom } from "@/lib/i18n/intl";
 import { m } from "@/paraglide/messages";
-import { authErrorMessage } from "../errors";
-import { accountSecurityQueryOptions, accountSessionsQueryOptions, authKeys } from "../queries";
-import { localizedPath, useAuthNavigation } from "../use-auth-actions";
-import { describeUserAgent } from "../user-agent";
+import { localizedPath, useAuthNavigation } from "../hooks/use-auth-actions";
+import { authErrorMessage } from "../lib/errors";
+import { describeUserAgent } from "../lib/user-agent";
 import {
 	collectErrors,
 	type FieldErrors,
@@ -19,7 +18,8 @@ import {
 	validateEmail,
 	validatePassword,
 	validateRequired,
-} from "../validation";
+} from "../lib/validation";
+import { accountSecurityQueryOptions, accountSessionsQueryOptions, authKeys } from "../queries";
 import { AccountDataSection } from "./account-data-section";
 import { AccountSection as Section, type Status } from "./account-section";
 import { AuthField, FormMessage } from "./auth-field";

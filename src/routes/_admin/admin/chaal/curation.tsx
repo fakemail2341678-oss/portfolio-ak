@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { ChaalCurationPage } from "@/features/chaal/admin/curation/curation-page";
+import { ChaalCurationPage } from "@/features/chaal/admin/curation/components/curation-page";
 import { chaalCurationSearch } from "@/features/chaal/admin/search";
 import { staticCrumb } from "@/lib/breadcrumbs";
 import { titleHead } from "@/lib/crud/route";
@@ -14,7 +14,7 @@ export const Route = createFileRoute("/_admin/admin/chaal/curation")({
 		const { chaalCurationQueryOptions } = await import("@/features/chaal/admin/queries");
 		await ensureQuery(context.queryClient, chaalCurationQueryOptions());
 	},
-	staticData: { breadcrumb: staticCrumb(m.ch_admin_curation_title) },
-	head: titleHead(m.ch_admin_curation_title),
+	staticData: { breadcrumb: staticCrumb(m.chaal_admin_curation_title) },
+	head: titleHead(m.chaal_admin_curation_title),
 	component: ChaalCurationPage,
 });

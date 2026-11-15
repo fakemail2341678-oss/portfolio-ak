@@ -1,6 +1,6 @@
 import { sql } from "drizzle-orm";
 import { check, index, jsonb, pgTable, text, timestamp, uniqueIndex, uuid } from "drizzle-orm/pg-core";
-import type { Answers, FormField } from "@/features/apps/forms/fields";
+import type { Answers, FormField } from "@/features/apps/forms/lib/fields";
 import { user } from "../auth";
 
 /**
@@ -23,7 +23,7 @@ export const form = pgTable(
 		slug: text().notNull(),
 		title: text().notNull(),
 		description: text().notNull().default(""),
-		/** The questions, written only after `formFieldsSchema` (src/features/apps/forms/fields.ts). */
+		/** The questions, written only after `formFieldsSchema` (src/features/apps/forms/lib/fields.ts). */
 		fields: jsonb().$type<FormField[]>().notNull().default([]),
 		status: text({ enum: ["draft", "published"] })
 			.notNull()

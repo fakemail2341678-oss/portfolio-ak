@@ -1,5 +1,9 @@
 import { createServerFn } from "@tanstack/react-start";
-import { type ChaalAdminSettings, chaalMaintenanceInput, chaalSettingsInput } from "@/features/chaal/admin/schema";
+import {
+	type ChaalAdminSettings,
+	chaalMaintenanceInputSchema,
+	chaalSettingsInputSchema,
+} from "@/features/chaal/admin/schema";
 import { zodInput } from "@/functions/_lib/validator";
 import { requirePermission } from "@/middleware/auth";
 import { withServices } from "@/middleware/services";
@@ -14,12 +18,12 @@ export const getChaalAdminSettings = createServerFn({ method: "GET" })
 
 export const updateChaalSettings = createServerFn({ method: "POST" })
 	.middleware([requirePermission("chaal:configure"), withServices])
-	.validator(zodInput(chaalSettingsInput))
+	.validator(zodInput(chaalSettingsInputSchema))
 	.handler(({ data, context }): Promise<ChaalAdminSettings> => settings.updateSettings(chaalAdmin(context), data));
 
 export const setChaalMaintenance = createServerFn({ method: "POST" })
 	.middleware([requirePermission("chaal:configure"), withServices])
-	.validator(zodInput(chaalMaintenanceInput))
+	.validator(zodInput(chaalMaintenanceInputSchema))
 	.handler(({ data, context }): Promise<ChaalAdminSettings> => settings.setMaintenance(chaalAdmin(context), data));
 
 export const purgeChaalCache = createServerFn({ method: "POST" })

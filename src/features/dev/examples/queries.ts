@@ -1,14 +1,7 @@
 import { queryOptions } from "@tanstack/react-query";
 import { getExampleSnapshot, getExampleTask, listExampleMessages, listExampleTasks } from "@/functions/examples";
+import { exampleKeys } from "./keys";
 import { EXAMPLE_SEARCH_DEFAULTS, type ExampleTaskSearch } from "./schema";
-
-export const exampleKeys = {
-	all: ["examples"] as const,
-	snapshot: () => [...exampleKeys.all, "snapshot"] as const,
-	tasks: () => [...exampleKeys.all, "tasks"] as const,
-	taskList: (search: ExampleTaskSearch) => [...exampleKeys.tasks(), "list", search] as const,
-	task: (id: string) => [...exampleKeys.tasks(), "detail", id] as const,
-};
 
 /**
  * Loader + Query example. The loader awaits ensureQuery on the server; the
@@ -43,10 +36,3 @@ export const exampleMessagesQueryOptions = () =>
 		queryKey: [...exampleKeys.all, "messages"] as const,
 		queryFn: () => listExampleMessages(),
 	});
-
-/**
- * The rows the optimistic example shows: the first page, newest first. Here, not next to
- * its collection, because the route's loader reads it: route options are in every page's
- * JavaScript (0151), and the collection module would bring TanStack DB with it (0189).
- */
-export const OPTIMISTIC_SEARCH: ExampleTaskSearch = { ...EXAMPLE_SEARCH_DEFAULTS, done: undefined };

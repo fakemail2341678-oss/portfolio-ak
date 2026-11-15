@@ -12,7 +12,7 @@ import { act, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { useState } from "react";
 import { describe, expect, it, vi } from "vitest";
-import { TimesheetGrid } from "@/features/taskline/time/timesheet";
+import { TimesheetGrid } from "@/features/taskline/time/components/timesheet-grid";
 import type { TimesheetRow } from "@/features/taskline/types";
 import { createPreferencesStore, DEFAULT_PREFERENCES } from "@/lib/stores/preferences";
 import type { RouterContext } from "@/router";

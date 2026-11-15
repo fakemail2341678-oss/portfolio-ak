@@ -1,5 +1,5 @@
 import type { ImageAsset } from "../../src/features/attachments/schema";
-import { NOTIFY_DEFAULTS, type ThreadKey } from "../../src/features/kharcha/notifications";
+import { NOTIFY_DEFAULTS, type ThreadKey } from "../../src/features/kharcha/lib/notifications";
 import type {
 	CommentView,
 	ExpenseDetail,

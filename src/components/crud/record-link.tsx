@@ -1,7 +1,7 @@
 import { Link, type RegisteredRouter, type ValidateLinkOptions } from "@tanstack/react-router";
 import type { ReactNode } from "react";
-import { useCan } from "@/features/rbac/can";
-import type { Permission } from "@/features/rbac/permissions";
+import { useCan } from "@/features/rbac/hooks/use-can";
+import type { Permission } from "@/features/rbac/lib/permissions";
 
 export type RecordLinkProps<TRouter extends RegisteredRouter = RegisteredRouter, TOptions = unknown> = {
 	/** Where the record opens (its edit page), type-checked like a Link's props. */

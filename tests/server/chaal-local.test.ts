@@ -1,6 +1,6 @@
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
-import { type PlayedMove, play } from "@/features/chaal/chess/rules";
-import { addLocalMove, endLocalGame, fenOf, newLocalGame, toRecord } from "@/features/chaal/local/game";
+import { type PlayedMove, play } from "@/features/chaal/chess/lib/rules";
+import { addLocalMove, endLocalGame, fenOf, newLocalGame, toRecord } from "@/features/chaal/local/lib/game";
 import { LOCAL_GAMES_MAX, type LocalGame } from "@/features/chaal/local/types";
 import { createChaalControls } from "@/server/chaal/controls";
 import { createChaalGuestData } from "@/server/chaal/guest-data";

@@ -11,7 +11,7 @@ const sampleSource: LabSource = {
 };
 
 export const listPardaLabSources = fn(async (): Promise<LabSource[]> => [sampleSource]).mockName("listPardaLabSources");
-export const openPardaLabPlayer = fn(
+export const previewPardaLabPlayer = fn(
 	async (): Promise<LabPlayer> => ({
 		url: "/parda/api/1/movie/550",
 		origins: [],
@@ -19,4 +19,4 @@ export const openPardaLabPlayer = fn(
 		sandbox: "none",
 		name: sampleSource.name,
 	}),
-).mockName("openPardaLabPlayer");
+).mockName("previewPardaLabPlayer");

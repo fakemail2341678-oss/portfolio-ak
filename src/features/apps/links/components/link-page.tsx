@@ -10,8 +10,8 @@ import { Button } from "@/components/ui/button";
 import { formatDate, formatDayMonth, formatNumber } from "@/lib/i18n/intl";
 import { m } from "@/paraglide/messages";
 import { getLocale } from "@/paraglide/runtime";
-import { displayTarget, shortUrl } from "../format";
 import { LINK_DEVICE_LABELS, LINK_STATE } from "../labels";
+import { displayTarget, shortUrl } from "../lib/format";
 import { linkStatsQueryOptions } from "../queries";
 import { LINK_DEVICES, type LinkDevice, type Tally } from "../types";
 

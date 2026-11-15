@@ -1,10 +1,10 @@
 import "@tanstack/react-start/server-only";
 import { waitUntil } from "@vercel/functions";
 import { and, desc, eq, gt, inArray, isNotNull, isNull, ne, or, sql } from "drizzle-orm";
-import { KHARCHA_NAME } from "@/features/kharcha/brand";
-import { threadKey } from "@/features/kharcha/notifications";
+import { KHARCHA_NAME } from "@/features/kharcha/lib/brand";
+import { threadKey } from "@/features/kharcha/lib/notifications";
 import type { SettleUpInput } from "@/features/kharcha/schema";
-import { REMIND_WINDOW_MS } from "@/features/kharcha/settle/remind";
+import { REMIND_WINDOW_MS } from "@/features/kharcha/settle/lib/remind";
 import type { Amount, RemindResult, RemindState, SettleChoice, SettleUp } from "@/features/kharcha/types";
 import { ruleError } from "@/lib/errors";
 import { localizedUrl } from "@/lib/seo";

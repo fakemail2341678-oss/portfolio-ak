@@ -1,7 +1,7 @@
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { type ReactNode, Suspense } from "react";
 import { homeQueryOptions, profileQueryOptions } from "../../queries";
-import { ArchivalFigure } from "../primitives/archival-picture";
+import { ArchivalFigure } from "../primitives/archival-image";
 import { ContactSection } from "../sections/contact-section";
 import { HeroSection } from "../sections/hero-section";
 import { ImpactSection } from "../sections/impact-section";

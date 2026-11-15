@@ -14,8 +14,8 @@ import {
 	newField,
 	OPTION_ID_PATTERN,
 	toZodSchema,
-} from "@/features/apps/forms/fields";
-import { answerCsv, answerText, summarize } from "@/features/apps/forms/results";
+} from "@/features/apps/forms/lib/fields";
+import { answerCsv, answerText, summarize } from "@/features/apps/forms/lib/results";
 import { overwriteGetLocale } from "@/paraglide/runtime";
 
 /**

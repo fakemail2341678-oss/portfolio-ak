@@ -42,7 +42,7 @@ Sign in at `/login` with the admin account, then open `/admin/test-crud`.
 
 ## Environment variables
 
-Everything is validated at startup with T3 Env (`src/server/env.ts` and `src/lib/env/client.schema.ts`). Only `VITE_` variables reach the browser.
+Everything is validated at startup with T3 Env (`src/server/env.ts` and `src/lib/env/client-schema.ts`). Only `VITE_` variables reach the browser.
 
 | Variable | Required | Purpose |
 | --- | --- | --- |

@@ -4,7 +4,7 @@ import {
 	ruleWithIds,
 	type TemplateDefinition,
 	templateCounts,
-} from "@/features/taskline/template-definition";
+} from "@/features/taskline/lib/template-definition";
 import {
 	BUILTIN_TEMPLATES,
 	type BuiltinTemplate,

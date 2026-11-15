@@ -3,7 +3,8 @@ import { lazy, Suspense } from "react";
 import { Field, FieldLabel } from "@/components/ui/field";
 import { cn } from "@/lib/utils";
 import { m } from "@/paraglide/messages";
-import { type FieldBaseProps, FieldLabelText, FieldMessages, useFieldA11y } from "../field-shell";
+import { type FieldBaseProps, FieldLabelText, FieldMessages } from "../field-shell";
+import { useFieldA11y } from "../use-field-a11y";
 import { RICH_TEXT_SURFACE, RICH_TEXT_TOOLBAR } from "./rich-text-frame";
 import type { MentionCandidate } from "./rich-text-mentions";
 

@@ -10,7 +10,7 @@ import {
 	parseFeaturedRef,
 	SECTION_KINDS,
 	sectionOf,
-} from "@/features/chaal/home/curation";
+} from "@/features/chaal/home/lib/curation";
 import { staleError } from "@/lib/concurrency";
 import { AppError } from "@/lib/errors";
 import type { Localized } from "@/lib/i18n/localized";
@@ -74,7 +74,7 @@ function fieldsOf(input: ChaalFeaturedInput) {
 	const ref = parseFeaturedRef(input.kind, input.ref);
 	if (ref === null) {
 		throw new AppError("BAD_REQUEST", `${FEATURED}: the id doesn't read`, {
-			fieldErrors: { ref: [m.ch_admin_featured_ref_invalid()] },
+			fieldErrors: { ref: [m.chaal_admin_featured_ref_invalid()] },
 		});
 	}
 	return {
@@ -89,7 +89,7 @@ function fieldsOf(input: ChaalFeaturedInput) {
 const duplicate = (error: unknown) =>
 	isUniqueViolation(error, "ch_featured_ref_unique")
 		? new AppError("CONFLICT", `${FEATURED}: already featured`, {
-				fieldErrors: { ref: [m.ch_admin_featured_duplicate()] },
+				fieldErrors: { ref: [m.chaal_admin_featured_duplicate()] },
 			})
 		: error;
 

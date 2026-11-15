@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { chaalHead } from "@/features/chaal/brand";
+import { chaalHead } from "@/features/chaal/lib/brand";
 import { studyPageSearch } from "@/features/chaal/search";
-import { ChaalStudyPage } from "@/features/chaal/studies/study-page";
+import { ChaalStudyPage } from "@/features/chaal/studies/components/study-page";
 import { m } from "@/paraglide/messages";
 
 /**
@@ -12,7 +12,7 @@ export const Route = createFileRoute("/_chaal/app/chaal/studies/$id")({
 	validateSearch: studyPageSearch,
 	loaderDeps: ({ search }) => search,
 	loader: async ({ context, params, deps }) =>
-		(await import("@/features/chaal/studies/queries")).loadStudyPage(context.queryClient, params.id, deps),
-	head: ({ loaderData }) => chaalHead(loaderData?.name ?? m.ch_studies_title()),
+		(await import("@/features/chaal/studies/load")).loadStudyPage(context.queryClient, params.id, deps),
+	head: ({ loaderData }) => chaalHead(loaderData?.name ?? m.chaal_studies_title()),
 	component: ChaalStudyPage,
 });

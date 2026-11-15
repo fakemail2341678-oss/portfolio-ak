@@ -1,7 +1,7 @@
 import "@tanstack/react-start/server-only";
 import { and, asc, eq, gte, inArray, isNull, lte, max, sql } from "drizzle-orm";
 import type { AdminReports } from "@/features/taskline/admin/schema";
-import { firstWeekOf, milestoneAtRisk, RANGE_WEEKS } from "@/features/taskline/reports/metrics";
+import { firstWeekOf, milestoneAtRisk, RANGE_WEEKS } from "@/features/taskline/reports/lib/metrics";
 import type { ReportRange } from "@/features/taskline/types";
 import { addDays, todayInZone } from "@/lib/i18n/date-only";
 import { tlActivity, tlMember, tlMilestone, tlProject, tlStatus, tlTask, tlTimeEntry } from "@/server/db/schema";

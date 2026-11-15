@@ -6,12 +6,12 @@ import {
 	deleteChaalFeatured,
 	getChaalCuration,
 	reorderChaalFeatured,
-	saveChaalAnnouncement,
-	saveChaalHomeSections,
+	setChaalAnnouncement,
+	setChaalHomeSections,
 	updateChaalFeatured,
 } from "@/functions/chaal-admin/curation";
 import { getChaalHealth, pingChaalLichess } from "@/functions/chaal-admin/health";
-import { checkChaalPublicLane, getChaalLab } from "@/functions/chaal-admin/lab";
+import { getChaalLab, pingChaalPublicLane } from "@/functions/chaal-admin/lab";
 import { getChaalOverview } from "@/functions/chaal-admin/overview";
 import {
 	getChaalAdminSettings,
@@ -20,7 +20,7 @@ import {
 	updateChaalSettings,
 } from "@/functions/chaal-admin/settings";
 import type { Localized } from "@/lib/i18n/localized";
-import type { ChaalFeaturedSection, ChaalHomeSectionKey } from "../home/curation";
+import type { ChaalFeaturedSection, ChaalHomeSectionKey } from "../home/lib/curation";
 import { chaalKeys } from "../keys";
 import type { ChaalBlockInput, ChaalFeaturedInput, ChaalSettingsInput } from "./schema";
 import type { ChaalBlockListInput, ChaalConnectionListInput, ChaalHealthRange, ChaalOverviewRange } from "./search";
@@ -28,9 +28,6 @@ import type { ChaalBlockListInput, ChaalConnectionListInput, ChaalHealthRange, C
 /** The admin's Chaal reads and writes (Task 71: the lab; Task 79: settings, connections, blocks, health). */
 
 export const chaalLabQueryOptions = () => queryOptions({ queryKey: chaalKeys.lab(), queryFn: () => getChaalLab() });
-
-export const checkPublicLaneMutationOptions = () =>
-	mutationOptions({ mutationKey: [...chaalKeys.lab(), "lane"], mutationFn: () => checkChaalPublicLane() });
 
 export const chaalAdminSettingsQueryOptions = () =>
 	queryOptions({ queryKey: chaalKeys.adminSettings(), queryFn: () => getChaalAdminSettings() });
@@ -110,16 +107,19 @@ export const chaalAdminMutations = {
 		mutationOptions({
 			mutationKey: [...chaalKeys.adminCuration(), "sections"],
 			mutationFn: (sections: Array<{ key: ChaalHomeSectionKey; visible: boolean }>) =>
-				saveChaalHomeSections({ data: { sections } }),
+				setChaalHomeSections({ data: { sections } }),
 		}),
 	saveAnnouncement: () =>
 		mutationOptions({
 			mutationKey: [...chaalKeys.adminCuration(), "announcement"],
-			mutationFn: (announcement: Localized) => saveChaalAnnouncement({ data: { announcement } }),
+			mutationFn: (announcement: Localized) => setChaalAnnouncement({ data: { announcement } }),
 		}),
 	ping: () =>
 		mutationOptions({
 			mutationKey: [...chaalKeys.admin(), "ping"],
 			mutationFn: () => pingChaalLichess(),
 		}),
+
+	checkPublicLane: () =>
+		mutationOptions({ mutationKey: [...chaalKeys.lab(), "lane"], mutationFn: () => pingChaalPublicLane() }),
 };

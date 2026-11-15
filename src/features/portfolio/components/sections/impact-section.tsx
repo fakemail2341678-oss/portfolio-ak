@@ -1,8 +1,8 @@
 import { m } from "@/paraglide/messages";
 import type { Metric } from "../../types";
-import { ArchivalFigure } from "../primitives/archival-picture";
-import { FigureLines } from "../primitives/figure-lines";
-import { SectionHeading } from "../primitives/section-heading";
+import { ArchivalFigure } from "../primitives/archival-image";
+import { FigureLines } from "../primitives/figure-lines-icon";
+import { SectionHeading } from "../primitives/section-header";
 
 /** A decade in numbers, stated quietly, beside Kangchenjunga at first light. */
 export function ImpactSection({ metrics }: { metrics: ReadonlyArray<Metric> }) {

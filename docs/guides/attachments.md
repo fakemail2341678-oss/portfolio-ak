@@ -16,8 +16,8 @@ Part 1 stored images in Postgres; that table and its import script are gone (016
 ## The flow
 
 1. **Sign:** the browser calls `signImageUpload({ scope })` (needs `attachments:upload`). The server picks the `public_id` and signs it together with the allowed formats.
-2. **Upload:** the browser POSTs the file straight to Cloudinary (`uploadImage` in `features/attachments/upload.ts`: progress, cancel).
-   - An area whose users hold no `attachments:upload` (the showcase apps' guests) passes its own `UploadTransport` to `uploadImage` and `ImageGalleryField` (`transport`): its sign, confirm and discard functions behind its own guard, and `permission: null`. Notes does (`features/apps/notes/uploads.ts`, decision 0190). <!-- @apps -->
+2. **Upload:** the browser POSTs the file straight to Cloudinary (`uploadImage` in `features/attachments/lib/upload.ts`: progress, cancel).
+   - An area whose users hold no `attachments:upload` (the showcase apps' guests) passes its own `UploadTransport` to `uploadImage` and `ImageGalleryField` (`transport`): its sign, confirm and discard functions behind its own guard, and `permission: null`. Notes does (`features/apps/notes/lib/uploads.ts`, decision 0190). <!-- @apps -->
 3. **Confirm:** `confirmImageUpload` reads the asset back with the Admin API, checks its format and size against the scope's rules, and records a *pending* attachment owned by the uploader (a library scope records it in its library instead). It returns an `ImageAsset`.
 4. **Save:** the item's own save links the pending uploads (`syncEntityAttachments`) in order, with their alt text, in the item's transaction. Images the item no longer lists are marked removed and their assets deleted.
 5. **Clean up:** removed rows and day-old pending uploads are deleted by `/api/cron/attachments` (and right away, when Cloudinary answers).

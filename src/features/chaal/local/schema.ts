@@ -53,9 +53,9 @@ export const localGameRecordSchema = z
 		path: ["clocks"],
 	});
 
-export const saveLocalGameInput = z.strictObject({ game: localGameRecordSchema });
+export const saveLocalGameInputSchema = z.strictObject({ game: localGameRecordSchema });
 
-export const importLocalGamesInput = z.strictObject({
+export const importLocalGamesInputSchema = z.strictObject({
 	games: z.array(localGameRecordSchema).max(LOCAL_GAMES_MAX),
 });
 

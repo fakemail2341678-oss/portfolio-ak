@@ -1,6 +1,6 @@
 import "@tanstack/react-start/server-only";
 import { inArray } from "drizzle-orm";
-import type { Permission } from "@/features/rbac/permissions";
+import type { Permission } from "@/features/rbac/lib/permissions";
 import type {
 	RoleInput,
 	RolePermissionsUpdate,

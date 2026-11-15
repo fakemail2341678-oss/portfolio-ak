@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { KHARCHA_NAME } from "@/features/kharcha/brand";
-import { assertRoutePermission } from "@/features/rbac/route-guard";
+import { KHARCHA_NAME } from "@/features/kharcha/lib/brand";
+import { assertRoutePermission } from "@/features/rbac/lib/route-guard";
 import { staticCrumb } from "@/lib/breadcrumbs";
 
 /** /admin/kharcha/*: Kharcha, run from the admin (PLAN Task 96). Every page needs kharcha:read; saving needs kharcha:configure. */

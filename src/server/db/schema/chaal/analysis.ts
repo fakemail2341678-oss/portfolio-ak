@@ -1,5 +1,5 @@
 import { index, integer, jsonb, pgTable, text, timestamp, uuid } from "drizzle-orm/pg-core";
-import type { GameTree } from "@/features/chaal/chess/tree";
+import type { GameTree } from "@/features/chaal/chess/lib/tree";
 import { user } from "../auth";
 
 /**
@@ -17,7 +17,7 @@ export const chAnalysis = pgTable(
 			.notNull()
 			.references(() => user.id, { onDelete: "cascade" }),
 		title: text().notNull(),
-		/** The tree (src/features/chaal/chess/tree.ts), at most PGN's 2,000 moves. */
+		/** The tree (src/features/chaal/chess/lib/tree.ts), at most PGN's 2,000 moves. */
 		tree: jsonb().$type<GameTree>().notNull(),
 		/** The root's position: the start, or a FEN the analysis began from. */
 		startFen: text().notNull(),

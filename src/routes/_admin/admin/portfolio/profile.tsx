@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { ProfilePage } from "@/features/portfolio/admin/components/profile-page";
-import { assertRoutePermission } from "@/features/rbac/route-guard";
+import { assertRoutePermission } from "@/features/rbac/lib/route-guard";
 import { staticCrumb } from "@/lib/breadcrumbs";
 import { loadDetailOr404, titleHead } from "@/lib/crud/route";
 import { m } from "@/paraglide/messages";

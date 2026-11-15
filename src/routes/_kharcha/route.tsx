@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { KHARCHA_BRAND, kharchaTitle } from "@/features/kharcha/brand";
+import { KHARCHA_BRAND, kharchaTitle } from "@/features/kharcha/lib/brand";
 import { kharchaFontPreloads } from "@/features/kharcha/lib/fonts";
-import { KharchaPublicNotFound, KharchaSection } from "@/features/kharcha/shell/section";
+import { KharchaPublicNotFound, KharchaSection } from "@/features/kharcha/shell/components/section";
 import { NOINDEX } from "@/lib/seo";
 import { getLocale } from "@/paraglide/runtime";
 

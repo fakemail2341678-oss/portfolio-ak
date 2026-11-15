@@ -1,12 +1,13 @@
 import { useQueryErrorResetBoundary } from "@tanstack/react-query";
 import { type ErrorComponentProps, Link, useLocation, useRouter } from "@tanstack/react-router";
 import { useEffect } from "react";
-import { MAIN_CONTENT, useInsideMain } from "@/components/layout/skip-link";
+import { MAIN_CONTENT } from "@/components/layout/skip-link";
 import { Button } from "@/components/ui/button";
 import { type AppErrorCode, FORM_ERROR_KEY, isAppError } from "@/lib/errors";
 import { captureException } from "@/lib/observability/sentry-client";
 import { m } from "@/paraglide/messages";
-import { useSectionHome } from "./section-home";
+import { useInsideMain } from "../layout/use-inside-main";
+import { useSectionHome } from "./use-section-home";
 
 const messages: Record<AppErrorCode, () => string> = {
 	BAD_REQUEST: m.error_bad_request,
@@ -24,8 +25,8 @@ export const errorMessage = (error: unknown): string => {
 	if (!isAppError(error)) return m.error_internal();
 	if (error.reason === "stale") return m.error_stale();
 	if (error.reason === "two-factor-required") return m.error_two_factor_required();
-	if (error.reason === "lichess-wait") return m.ch_error_lichess_wait(); // @chaal
-	if (error.reason === "lichess-reconnect") return m.ch_error_lichess_reconnect(); // @chaal
+	if (error.reason === "lichess-wait") return m.chaal_error_lichess_wait(); // @chaal
+	if (error.reason === "lichess-reconnect") return m.chaal_error_lichess_reconnect(); // @chaal
 	return error.fieldErrors?.[FORM_ERROR_KEY]?.[0] ?? messages[error.code]();
 };
 

@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { KharchaSenderList } from "@/features/kharcha/admin/senders/sender-list";
+import { KharchaSenderList } from "@/features/kharcha/admin/senders/components/sender-list";
 import { staticCrumb } from "@/lib/breadcrumbs";
 import { titleHead } from "@/lib/crud/route";
 import { ensureQuery } from "@/lib/query";

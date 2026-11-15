@@ -6,7 +6,7 @@ import { DISCIPLINES, type Discipline } from "../../constants";
 import { DISCIPLINE_LABELS } from "../../lib/labels";
 import { workQueryOptions } from "../../queries";
 import { PanoramaBoard } from "../art/panorama-board";
-import { SectionHeading } from "../primitives/section-heading";
+import { SectionHeading } from "../primitives/section-header";
 import { WorkRow } from "../work/work-row";
 
 const route = getRouteApi("/_site/work/");

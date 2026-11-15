@@ -4,8 +4,7 @@ import {
 	createTasklineWorkspaceAutomation,
 	deleteTasklineWorkspaceAutomation,
 	listTasklineWorkspaceAutomations,
-	previewTasklineWorkspaceAutomation,
-	toggleTasklineWorkspaceAutomation,
+	setTasklineWorkspaceAutomationEnabled,
 	updateTasklineWorkspaceAutomation,
 } from "@/functions/taskline-admin/automations";
 import {
@@ -16,15 +15,14 @@ import {
 } from "@/functions/taskline-admin/fields";
 import {
 	addTasklineMembers,
-	deactivateTasklineMember,
 	inviteTasklineMember,
 	listTasklineInvitations,
 	listTasklineMemberOptions,
 	listTasklineMembers,
-	reactivateTasklineMember,
 	resendTasklineInvitation,
 	revokeTasklineInvitation,
-	searchTasklineAccounts,
+	setTasklineMemberActive,
+	setTasklineMemberInactive,
 	updateTasklineMember,
 } from "@/functions/taskline-admin/members";
 import { getTasklineOverview } from "@/functions/taskline-admin/overview";
@@ -33,7 +31,6 @@ import {
 	deleteTasklineAdminProject,
 	exportTasklineAdminProject,
 	getTasklineAdminProject,
-	isTasklineProjectKeyFree,
 	listTasklineAdminProjects,
 	removeTasklineAdminProjectMember,
 	setTasklineAdminProjectArchived,
@@ -54,10 +51,10 @@ import {
 } from "@/functions/taskline-admin/settings";
 import {
 	createTasklineAdminTemplate,
+	createTasklineProjectTemplate,
 	deleteTasklineAdminTemplate,
 	listTasklineAdminTemplateChoices,
 	listTasklineAdminTemplates,
-	saveTasklineProjectAsTemplate,
 	updateTasklineAdminTemplate,
 } from "@/functions/taskline-admin/templates";
 import {
@@ -69,15 +66,7 @@ import {
 	setTasklineTimesheetLock,
 	updateTasklineAdminTimeEntry,
 } from "@/functions/taskline-admin/time";
-import type {
-	AutomationCondition,
-	ProjectHealth,
-	ProjectRole,
-	ProjectStatus,
-	ReportRange,
-	TasklineColor,
-	TeamRole,
-} from "../types";
+import type { ProjectHealth, ProjectRole, ProjectStatus, ReportRange, TasklineColor, TeamRole } from "../types";
 import { adminActivityKeys, adminMemberKeys, adminProjectKeys, adminTimeKeys, tasklineAdminKeys } from "./keys";
 import type {
 	AdminCreateAutomationInput,
@@ -139,12 +128,6 @@ export const adminReportsQueryOptions = (range: ReportRange) =>
 		queryFn: () => getTasklineAdminReports({ data: { range } }),
 	});
 
-/** How many of the team's open tasks some conditions match now (the builder's preview, keyed by the conditions). */
-export const adminAutomationPreviewSource = () => ({
-	queryKey: tasklineAdminKeys.automationPreview(),
-	run: (conditions: AutomationCondition[]) => previewTasklineWorkspaceAutomation({ data: { conditions } }),
-});
-
 /** Task 55: the workspace's custom fields. */
 export const adminFieldsQueryOptions = () =>
 	queryOptions({ queryKey: tasklineAdminKeys.fields(), queryFn: () => listTasklineWorkspaceFields() });
@@ -170,15 +153,6 @@ export const utilizationQueryOptions = (from: string, to: string) =>
 		queryKey: tasklineAdminKeys.utilization(from, to),
 		queryFn: () => getTasklineUtilization({ data: { from, to } }),
 	});
-
-/** The "Add people" picker's search (AsyncComboboxField, RelationField). */
-export const accountSearch = {
-	queryKey: tasklineAdminKeys.accounts(),
-	search: (q: string) => searchTasklineAccounts({ data: { q } }),
-};
-
-/** The create form's check while typing. */
-export const isProjectKeyFree = (key: string) => isTasklineProjectKeyFree({ data: { key } });
 
 const key = (name: string) => [...tasklineAdminKeys.all, "mutation", name] as const;
 
@@ -244,12 +218,12 @@ export const tasklineAdminMutations = {
 	deactivateMember: () =>
 		mutationOptions({
 			mutationKey: key("deactivate-member"),
-			mutationFn: (input: { id: string; reassignTo: string | null }) => deactivateTasklineMember({ data: input }),
+			mutationFn: (input: { id: string; reassignTo: string | null }) => setTasklineMemberInactive({ data: input }),
 		}),
 	reactivateMember: () =>
 		mutationOptions({
 			mutationKey: key("reactivate-member"),
-			mutationFn: (input: { id: string }) => reactivateTasklineMember({ data: input }),
+			mutationFn: (input: { id: string }) => setTasklineMemberActive({ data: input }),
 		}),
 	invite: () =>
 		mutationOptions({
@@ -323,7 +297,7 @@ export const tasklineAdminMutations = {
 	toggleAutomation: () =>
 		mutationOptions({
 			mutationKey: key("toggle-automation"),
-			mutationFn: (input: { id: string; enabled: boolean }) => toggleTasklineWorkspaceAutomation({ data: input }),
+			mutationFn: (input: { id: string; enabled: boolean }) => setTasklineWorkspaceAutomationEnabled({ data: input }),
 		}),
 	deleteAutomation: () =>
 		mutationOptions({
@@ -348,7 +322,7 @@ export const tasklineAdminMutations = {
 	saveProjectAsTemplate: () =>
 		mutationOptions({
 			mutationKey: key("save-project-as-template"),
-			mutationFn: (input: SaveProjectAsTemplateInput) => saveTasklineProjectAsTemplate({ data: input }),
+			mutationFn: (input: SaveProjectAsTemplateInput) => createTasklineProjectTemplate({ data: input }),
 		}),
 	updateTimeEntry: () =>
 		mutationOptions({

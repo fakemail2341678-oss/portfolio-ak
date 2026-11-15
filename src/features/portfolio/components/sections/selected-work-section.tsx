@@ -5,9 +5,9 @@ import { m } from "@/paraglide/messages";
 import { cn } from "../../lib/cn";
 import type { ProjectSummary } from "../../types";
 import { MountainFrame } from "../art/mountain-frame";
-import { ProjectMountain } from "../art/project-mountain";
-import { TextLink } from "../primitives/links";
-import { SectionHeading } from "../primitives/section-heading";
+import { ProjectMountain } from "../art/project-mountain-image";
+import { SectionHeading } from "../primitives/section-header";
+import { TextLink } from "../primitives/text-link";
 
 type SelectedWorkSectionProps = {
 	projects: ReadonlyArray<ProjectSummary>;

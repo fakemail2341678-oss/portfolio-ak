@@ -2,11 +2,11 @@ import { createServerFn } from "@tanstack/react-start";
 import { getCookie } from "@tanstack/react-start/server";
 import { z } from "zod";
 import type { PartyPageData } from "@/features/parda/party/types";
-import { PARDA_BANDS, PARDA_REPORT_KINDS } from "@/features/parda/player/playback";
-import type { WatchPageData } from "@/features/parda/player/watch-types";
+import { PARDA_BANDS, PARDA_REPORT_KINDS } from "@/features/parda/player/lib/playback";
+import type { WatchPageData } from "@/features/parda/player/lib/watch-types";
 import { PARDA_TYPES, titleParamsSchema } from "@/features/parda/search";
 import { zodInput } from "@/functions/_lib/validator";
-import { withPardaCatalog } from "@/middleware/parda";
+import { withPardaPublic } from "@/middleware/parda";
 import { locales } from "@/paraglide/runtime";
 import { db } from "@/server/db/client";
 import { partyPage } from "@/server/parda/party/service";
@@ -19,7 +19,7 @@ import { browsingProfile, PROFILE_COOKIE } from "@/server/parda/profiles/service
 
 /**
  * The watch page's functions (PLAN 12.5, decision 0236): open to everyone, like the
- * catalogue, each starting with `withPardaCatalog` (takedowns and the kill switch apply).
+ * catalogue, each starting with `withPardaPublic` (takedowns and the kill switch apply).
  * A playback's measurements and *Report a problem* are writes a visitor without a
  * session can make, so both are rate limited per user or IP.
  */
@@ -62,7 +62,7 @@ const reportInput = z.strictObject({
 });
 
 export const getPardaWatch = createServerFn({ method: "GET" })
-	.middleware([withPardaCatalog])
+	.middleware([withPardaPublic])
 	.validator(zodInput(watchInput))
 	.handler(async ({ data, context }): Promise<WatchPageData> => {
 		if (!context.catalog) return { configured: false };
@@ -85,7 +85,7 @@ export const getPardaWatch = createServerFn({ method: "GET" })
  * the viewer's language and under their cap. Joining is `joinPardaParty`, which needs a session.
  */
 export const getPardaParty = createServerFn({ method: "GET" })
-	.middleware([withPardaCatalog])
+	.middleware([withPardaPublic])
 	.validator(zodInput(z.strictObject({ code: z.string().regex(/^[\w-]{16}$/), locale })))
 	.handler(async ({ data, context }): Promise<PartyPageData> => {
 		if (!context.catalog) return { configured: false };
@@ -110,7 +110,7 @@ export const getPardaParty = createServerFn({ method: "GET" })
  * 0238), within its own limit; past it, the failure still counts in the daily rollup.
  */
 export const recordPardaPlay = createServerFn({ method: "POST" })
-	.middleware([withPardaCatalog])
+	.middleware([withPardaPublic])
 	.validator(zodInput(playInput))
 	.handler(async ({ data, context }): Promise<{ ok: true }> => {
 		if (!context.catalog) return { ok: true };
@@ -131,7 +131,7 @@ export const recordPardaPlay = createServerFn({ method: "POST" })
 
 /** *Report a problem*, with the `ads` kind among the rest. */
 export const reportPardaProblem = createServerFn({ method: "POST" })
-	.middleware([withPardaCatalog])
+	.middleware([withPardaPublic])
 	.validator(zodInput(reportInput))
 	.handler(async ({ data, context }): Promise<{ id: string }> => {
 		if (!context.catalog) return { id: "" };

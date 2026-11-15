@@ -1,7 +1,7 @@
 import { m } from "@/paraglide/messages";
 import type { ProjectTasks } from "../types";
-import type { TimelineGroup } from "./layout";
-import type { TimelineRowGroup } from "./timeline";
+import type { TimelineRowGroup } from "./components/timeline";
+import type { TimelineGroup } from "./lib/layout";
 
 /** Each group's heading: the epic, the milestone or the person, or "none of them". */
 export function labelGroups(groups: ReadonlyArray<TimelineGroup>, project: ProjectTasks): TimelineRowGroup[] {

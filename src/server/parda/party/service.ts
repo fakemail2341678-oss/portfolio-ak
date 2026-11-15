@@ -1,7 +1,7 @@
 import "@tanstack/react-start/server-only";
 import { randomBytes } from "node:crypto";
 import { eq } from "drizzle-orm";
-import { PARTY_MAX_MEMBERS, partySource } from "@/features/parda/party/source";
+import { PARTY_MAX_MEMBERS, partySource } from "@/features/parda/party/lib/source";
 import type { PartyJoin, PartyPageData, PartyPulse, PartySnapshot, PartyState } from "@/features/parda/party/types";
 import { AppError } from "@/lib/errors";
 import type { PardaMedia } from "@/server/db/schema";

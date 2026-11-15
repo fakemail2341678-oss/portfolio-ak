@@ -1,17 +1,17 @@
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { getRouteApi, notFound } from "@tanstack/react-router";
-import { appPath, isAppSlug } from "@/features/apps/registry"; // @apps
+import { appPath, isAppSlug } from "@/features/apps/lib/registry"; // @apps
 import { m } from "@/paraglide/messages";
 import { projectQueryOptions } from "../../queries";
-import { CaseStudyBody } from "../case-study/case-study-body";
+import { CaseStudyBody } from "../case-study/case-study-body-section";
 import { CaseStudyHero } from "../case-study/case-study-hero";
 import { FactSheet } from "../case-study/fact-sheet";
 import { KharchaLink } from "../case-study/kharcha-link"; // @kharcha
-import { NextProject } from "../case-study/next-project";
+import { NextProject } from "../case-study/next-project-link";
 import { TasklineLink } from "../case-study/taskline-link"; // @taskline
-import { DraftNotice } from "../chrome/draft-notice";
-import { FigureLines } from "../primitives/figure-lines";
-import { ButtonLink } from "../primitives/links"; // @apps
+import { DraftNotice } from "../chrome/draft-banner";
+import { FigureLines } from "../primitives/figure-lines-icon";
+import { ButtonLink } from "../primitives/text-link"; // @apps
 
 const route = getRouteApi("/_site/work/$slug");
 

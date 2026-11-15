@@ -1,7 +1,7 @@
 import { readFileSync } from "node:fs";
 import { describe, expect, it, vi } from "vitest";
-import { GENRE_LABELS } from "@/features/parda/genres";
-import { tmdbImage } from "@/features/parda/kit/image";
+import { tmdbImage } from "@/features/parda/kit/lib/image";
+import { GENRE_LABELS } from "@/features/parda/lib/genres";
 import { isAppError } from "@/lib/errors";
 import { PAGE_LAYOUTS, railContext } from "@/server/parda/catalog/rails";
 import { createTmdbCache, TMDB_TTL, tmdbCacheKey } from "@/server/parda/tmdb/cache";

@@ -1,5 +1,5 @@
 import "@tanstack/react-start/server-only";
-import { readCommunityLimits } from "@/features/chaal/community/limits";
+import { readCommunityLimits } from "@/features/chaal/community/lib/limits";
 import {
 	type ChaalTeamPage,
 	type ChaalTeams,

@@ -15,7 +15,7 @@ import {
 	uniqueIndex,
 	uuid,
 } from "drizzle-orm/pg-core";
-import type { Split } from "@/features/kharcha/money/split";
+import type { Split } from "@/features/kharcha/money/lib/split";
 import type { ExpenseKind } from "@/features/kharcha/types";
 import { khGroup } from "./group";
 import { khCategory, khMethod, khTag } from "./lists";
@@ -49,7 +49,7 @@ export const khExpense = pgTable(
 		currency: text().notNull(),
 		/** The calendar day it was spent. */
 		spentOn: date({ mode: "string" }).notNull(),
-		/** The split's method and inputs (src/features/kharcha/money/split.ts). */
+		/** The split's method and inputs (src/features/kharcha/money/lib/split.ts). */
 		split: jsonb().$type<Split>().notNull(),
 		/** Bumped by each save of the expense's form: a stale save is refused. */
 		version: integer().notNull().default(1),

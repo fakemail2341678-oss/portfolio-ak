@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { PlayerLabPage } from "@/features/parda/admin/player-lab/player-lab-page";
+import { PlayerLabPage } from "@/features/parda/admin/player-lab/components/player-lab-page";
 import { playerLabSearch } from "@/features/parda/admin/search";
-import { assertRoutePermission } from "@/features/rbac/route-guard";
+import { assertRoutePermission } from "@/features/rbac/lib/route-guard";
 import { staticCrumb } from "@/lib/breadcrumbs";
 import { titleHead } from "@/lib/crud/route";
 import { ensureQuery } from "@/lib/query";
@@ -16,7 +16,7 @@ export const Route = createFileRoute("/_admin/admin/parda/player-lab")({
 		const { pardaLabSourcesQueryOptions } = await import("@/features/parda/admin/queries");
 		await ensureQuery(context.queryClient, pardaLabSourcesQueryOptions());
 	},
-	staticData: { breadcrumb: staticCrumb(m.pd_lab_title) },
-	head: titleHead(m.pd_lab_title),
+	staticData: { breadcrumb: staticCrumb(m.parda_lab_title) },
+	head: titleHead(m.parda_lab_title),
 	component: PlayerLabPage,
 });

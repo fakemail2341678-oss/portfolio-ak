@@ -3,9 +3,9 @@ import { type IsoDate, isoDateInstant, weekdayOf } from "@/lib/i18n/date-only";
 import { formatDate, formatNumber } from "@/lib/i18n/intl";
 import { cn } from "@/lib/utils";
 import { m } from "@/paraglide/messages";
-import { appColor } from "../../colors";
-import { weekdayName } from "../format";
-import { isScheduled } from "../streaks";
+import { appColor } from "../../lib/colors";
+import { weekdayName } from "../lib/format";
+import { isScheduled } from "../lib/streaks";
 import type { HabitSummary } from "../types";
 
 /**

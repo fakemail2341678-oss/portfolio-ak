@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { chaalHead } from "@/features/chaal/brand";
+import { chaalHead } from "@/features/chaal/lib/brand";
 import { teamsSearch } from "@/features/chaal/search";
-import { ChaalTeamsPage } from "@/features/chaal/teams/teams-page";
+import { ChaalTeamsPage } from "@/features/chaal/teams/components/teams-page";
 import { m } from "@/paraglide/messages";
 
 /**
@@ -12,7 +12,7 @@ export const Route = createFileRoute("/_chaal/app/chaal/teams/")({
 	validateSearch: teamsSearch,
 	loaderDeps: ({ search }) => search,
 	loader: async ({ context, deps }) =>
-		(await import("@/features/chaal/teams/queries")).loadTeamsPage(context.queryClient, deps),
-	head: () => chaalHead(m.ch_teams_title()),
+		(await import("@/features/chaal/teams/load")).loadTeamsPage(context.queryClient, deps),
+	head: () => chaalHead(m.chaal_teams_title()),
 	component: ChaalTeamsPage,
 });

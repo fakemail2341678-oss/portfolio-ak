@@ -3,7 +3,7 @@ import { formatNumber } from "@/lib/i18n/intl";
 import { DISCIPLINE_LABELS } from "../../lib/labels";
 import type { ProjectSummary } from "../../types";
 import { MountainFrame } from "../art/mountain-frame";
-import { ProjectMountain } from "../art/project-mountain";
+import { ProjectMountain } from "../art/project-mountain-image";
 
 /**
  * One project in the work index: its mountain (or cover), its title in display

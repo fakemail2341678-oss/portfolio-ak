@@ -11,5 +11,7 @@ export const chaalStatusQueryOptions = () =>
 export const chaalConnectionQueryOptions = () =>
 	queryOptions({ queryKey: chaalKeys.connection(), queryFn: () => getChaalConnection() });
 
-export const disconnectChaalMutationOptions = () =>
-	mutationOptions({ mutationKey: [...chaalKeys.connection(), "disconnect"], mutationFn: () => disconnectChaal() });
+export const chaalMutations = {
+	disconnect: () =>
+		mutationOptions({ mutationKey: [...chaalKeys.connection(), "disconnect"], mutationFn: () => disconnectChaal() }),
+};

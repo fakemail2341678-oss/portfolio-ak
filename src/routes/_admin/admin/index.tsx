@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { Dashboard } from "@/features/admin/components/dashboard";
+import { Dashboard } from "@/features/admin/components/dashboard-page";
 import { ensureQuery } from "@/lib/query";
 import { pageTitle } from "@/lib/seo";
 import { m } from "@/paraglide/messages";

@@ -7,7 +7,6 @@ import {
 	DataTableSkeleton,
 	type RowAction,
 } from "@/components/data-table";
-import { useConfirm } from "@/components/dialogs/confirm";
 import { ActiveFilters, ClearFiltersButton, type FilterChip } from "@/components/filters/active-filters";
 import { FilterBar } from "@/components/filters/filter-bar";
 import { Pagination, type PaginationProps } from "@/components/navigation/pagination";
@@ -15,12 +14,13 @@ import type { SearchPatch } from "@/components/navigation/search-link";
 import { EmptyState } from "@/components/page/empty-state";
 import { Page, PageHeader } from "@/components/page/page";
 import { Button } from "@/components/ui/button";
-import { useCan } from "@/features/rbac/can";
-import type { Permission } from "@/features/rbac/permissions";
+import { useCan } from "@/features/rbac/hooks/use-can";
+import type { Permission } from "@/features/rbac/lib/permissions";
 import type { CrudCollection } from "@/lib/crud/collection";
 import { formatNumber } from "@/lib/i18n/intl";
 import type { Paged } from "@/lib/list/paging";
 import { m } from "@/paraglide/messages";
+import { useConfirm } from "../dialogs/use-confirm";
 import { useLiveRows } from "./use-crud-collection";
 
 /** A paginated list (what useListPage returns), or a short list read whole (`rows`, e.g. roles). */

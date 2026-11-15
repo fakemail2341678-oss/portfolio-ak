@@ -13,7 +13,7 @@ import {
 	uniqueIndex,
 	uuid,
 } from "drizzle-orm/pg-core";
-import type { SplitMethod } from "@/features/kharcha/money/split";
+import type { SplitMethod } from "@/features/kharcha/money/lib/split";
 import type { KharchaColor, KharchaStart } from "@/features/kharcha/types";
 import { user } from "../auth";
 

@@ -1,19 +1,8 @@
 import { mutationOptions, type QueryClient, queryOptions } from "@tanstack/react-query";
 import { createLink, deleteLink, getLinkStats, listLinks, updateLink } from "@/functions/apps/links";
+import { linksKeys } from "./keys";
 import type { CreateLinkInput, UpdateLinkInput } from "./schema";
 import type { LinkItem, LinkList } from "./types";
-
-/**
- * Links' reads and writes (decision 0191): plain Query, with optimistic pause and
- * delete on the list. Keys carry the user's id, so another account signing in on the
- * same tab never sees cached links.
- */
-export const linksKeys = {
-	all: ["apps", "links"] as const,
-	user: (userId: string) => [...linksKeys.all, userId] as const,
-	list: (userId: string) => [...linksKeys.user(userId), "list"] as const,
-	stats: (userId: string, id: string) => [...linksKeys.user(userId), "stats", id] as const,
-};
 
 export const linksListQueryOptions = (userId: string) =>
 	queryOptions({ queryKey: linksKeys.list(userId), queryFn: () => listLinks() });

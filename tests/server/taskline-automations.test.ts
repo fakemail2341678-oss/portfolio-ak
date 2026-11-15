@@ -1,7 +1,7 @@
 import { and, eq } from "drizzle-orm";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import type { Actor } from "@/features/rbac/types";
-import type { AutomationDefinition } from "@/features/taskline/automation-rules";
+import type { AutomationDefinition } from "@/features/taskline/lib/automation-rules";
 import { AUTOMATIONS_MAX, type TaskDetail } from "@/features/taskline/types";
 import { FORM_ERROR_KEY, isAppError } from "@/lib/errors";
 import { addDays, todayInZone, weekdayOf } from "@/lib/i18n/date-only";

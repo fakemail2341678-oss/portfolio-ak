@@ -10,7 +10,7 @@ import type {
 	ProjectExport,
 } from "@/features/taskline/admin/schema";
 import type { AdminProjectListInput } from "@/features/taskline/admin/search";
-import { fieldValueText } from "@/features/taskline/fields";
+import { fieldValueText } from "@/features/taskline/lib/fields";
 import type { ProjectHealth, ProjectRole, ProjectStatus, TaskFieldValues } from "@/features/taskline/types";
 import { toCsv } from "@/lib/csv";
 import { todayInZone } from "@/lib/i18n/date-only";

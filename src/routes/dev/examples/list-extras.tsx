@@ -6,8 +6,9 @@ import { DataTable, type DataTableColumn } from "@/components/data-table/data-ta
 import { errorMessage } from "@/components/errors/error-page";
 import { FilterBar } from "@/components/filters/filter-bar";
 import { SearchFilter } from "@/components/filters/filters";
-import { Demo, ExamplePage } from "@/features/dev/examples/example-page";
-import { exampleKeys, exampleTasksQueryOptions } from "@/features/dev/examples/queries";
+import { Demo, ExamplePage } from "@/features/dev/examples/components/example-page";
+import { exampleKeys } from "@/features/dev/examples/keys";
+import { exampleTasksQueryOptions } from "@/features/dev/examples/queries";
 import { EXAMPLE_SEARCH_DEFAULTS, type ExampleTask, exampleTaskSearchSchema } from "@/features/dev/examples/schema";
 import { deleteExampleTasks } from "@/functions/examples";
 import { useListQuery } from "@/hooks/use-list-query";

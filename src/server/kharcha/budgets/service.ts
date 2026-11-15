@@ -11,8 +11,8 @@ import {
 	periodOf,
 	periodShift,
 	thresholdsReached,
-} from "@/features/kharcha/budgets/period";
-import { budgetTarget } from "@/features/kharcha/notifications";
+} from "@/features/kharcha/budgets/lib/period";
+import { budgetTarget } from "@/features/kharcha/lib/notifications";
 import type { BudgetMonthInput, CreateBudgetInput, UpdateBudgetInput } from "@/features/kharcha/schema";
 import type { BudgetPeriodView, BudgetView } from "@/features/kharcha/types";
 import { ruleError } from "@/lib/errors";

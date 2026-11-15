@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { RELIEF_PRESETS } from "@/features/portfolio/components/art/relief";
+import { RELIEF_PRESETS } from "@/features/portfolio/components/art/relief-image";
 import { COVER_MOTIFS } from "@/features/portfolio/constants";
 import { HOME, minutesBehindHome, skyAt, sunTimes } from "@/features/portfolio/lib/daylight";
 import { fitEm, fitEmOfWords, widthUnits } from "@/features/portfolio/lib/fit";

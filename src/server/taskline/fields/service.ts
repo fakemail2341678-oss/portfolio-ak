@@ -1,5 +1,5 @@
 import "@tanstack/react-start/server-only";
-import type { FieldDefinition } from "@/features/taskline/fields";
+import type { FieldDefinition } from "@/features/taskline/lib/fields";
 import type { CreateFieldInput, FieldChanges, UpdateFieldInput } from "@/features/taskline/schema";
 import { FIELDS_MAX, isChoiceType, type TaskField } from "@/features/taskline/types";
 import { ruleError } from "@/lib/errors";

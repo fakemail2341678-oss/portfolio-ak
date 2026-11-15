@@ -3,10 +3,10 @@ import { FormDialog } from "@/components/dialogs/form-dialog";
 import { formValidators, handleSaveError, useAppForm } from "@/components/forms";
 import { formatNumber } from "@/lib/i18n/intl";
 import { m } from "@/paraglide/messages";
-import { APP_COLOR_LABELS, APP_COLORS, type AppColor } from "../../colors";
-import { weekdayName } from "../format";
+import { APP_COLOR_LABELS, APP_COLORS, type AppColor } from "../../lib/colors";
+import { weekdayName } from "../lib/format";
+import { daysMask, weekdaysOf } from "../lib/streaks";
 import { HABIT_NAME_MAX, type HabitFormValues, habitFormSchema } from "../schema";
-import { daysMask, weekdaysOf } from "../streaks";
 import { EVERY_DAY, HABIT_TARGET_MAX } from "../types";
 
 export type HabitDialogValues = { name: string; color: AppColor; days: number; target: number };

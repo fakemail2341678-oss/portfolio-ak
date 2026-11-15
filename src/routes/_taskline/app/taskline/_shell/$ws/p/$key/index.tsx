@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { tasklineTitle } from "@/features/taskline/brand";
-import { ProjectOverview } from "@/features/taskline/projects/project-overview";
+import { tasklineTitle } from "@/features/taskline/lib/brand";
+import { ProjectOverview } from "@/features/taskline/projects/components/project-overview-panel";
 import { loaderTitleCrumb } from "@/lib/breadcrumbs";
 import { loadDetailOr404 } from "@/lib/crud/route";
 

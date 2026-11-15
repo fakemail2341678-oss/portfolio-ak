@@ -65,7 +65,7 @@
  * - Radius (<html data-radius>) and density (<html data-density>) are presets too. The
  *   server renders all three from the preference cookies, so nothing flashes.
  * - Every text pair is 4.5:1 or more in every accent and theme:
- *   tests/unit/design-tokens.test.ts parses this file and checks them. Change a value,
+ *   tests/unit/styles-tokens.test.ts parses this file and checks them. Change a value,
  *   run that test.
  */
 :root {

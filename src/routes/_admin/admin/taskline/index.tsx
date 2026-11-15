@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { TasklineOverviewPage } from "@/features/taskline/admin/overview/overview-page";
-import { TASKLINE_NAME } from "@/features/taskline/brand";
+import { TasklineOverviewPage } from "@/features/taskline/admin/overview/components/overview-page";
+import { TASKLINE_NAME } from "@/features/taskline/lib/brand";
 import { titleHead } from "@/lib/crud/route";
 import { ensureQuery } from "@/lib/query";
 

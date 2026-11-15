@@ -7,10 +7,12 @@ export const listTasklineInbox = fn(async (): Promise<InboxPage> => sampleInbox)
 export const getTasklineUnread = fn(async (): Promise<UnreadCount> => ({ unread: sampleInbox.unread })).mockName(
 	"getTasklineUnread",
 );
-export const markTasklineRead = fn(async (): Promise<UnreadCount> => ({ unread: 0 })).mockName("markTasklineRead");
+export const setTasklineNotificationsRead = fn(async (): Promise<UnreadCount> => ({ unread: 0 })).mockName(
+	"setTasklineNotificationsRead",
+);
 export const getTasklineNotifySettings = fn(async (): Promise<NotifySettingsView> => sampleNotifySettings).mockName(
 	"getTasklineNotifySettings",
 );
-export const saveTasklineNotifySettings = fn(async (): Promise<NotifySettingsView> => sampleNotifySettings).mockName(
-	"saveTasklineNotifySettings",
+export const setTasklineNotifySettings = fn(async (): Promise<NotifySettingsView> => sampleNotifySettings).mockName(
+	"setTasklineNotifySettings",
 );

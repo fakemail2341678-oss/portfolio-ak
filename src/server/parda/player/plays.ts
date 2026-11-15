@@ -1,6 +1,6 @@
 import "@tanstack/react-start/server-only";
 import { eq, sql } from "drizzle-orm";
-import type { PardaBand, PardaReportKind, PardaViewerKind } from "@/features/parda/player/playback";
+import type { PardaBand, PardaReportKind, PardaViewerKind } from "@/features/parda/player/lib/playback";
 import { AppError } from "@/lib/errors";
 import type { PardaMedia } from "@/server/db/schema";
 import { pdPlay, pdReport } from "@/server/db/schema";

@@ -1,7 +1,7 @@
 import { readFileSync } from "node:fs";
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
-import { withinCap } from "@/features/parda/kids";
-import { PARTY_MAX_MEMBERS } from "@/features/parda/party/source";
+import { withinCap } from "@/features/parda/lib/kids";
+import { PARTY_MAX_MEMBERS } from "@/features/parda/party/lib/source";
 import type { Session } from "@/lib/session";
 import * as schema from "@/server/db/schema";
 import type { PardaCatalog } from "@/server/parda/catalog/context";
@@ -24,8 +24,8 @@ import { createTestDb } from "../utils/test-db";
  * title (or one over a kids' cap). Saving progress is refused with playback off. Every
  * profile operation acts on the caller's own profiles, and a kids' profile can only switch.
  * Every alerts operation (decision 0241) reads and marks the caller's own profile's alerts. The
- * functions' middleware (requirePardaViewer, then withPardaServices) is checked by
- * tests/server/guarded-functions.test.ts. Every party function (decision 0243) acts only
+ * functions' middleware (requirePardaUser, then withPardaServices) is checked by
+ * tests/server/functions-guards.test.ts. Every party function (decision 0243) acts only
  * on a party the caller is in, or is joining with its code.
  */
 let env: Awaited<ReturnType<typeof createTestDb>>;
@@ -66,9 +66,9 @@ type Operation = (context: library.PardaServices, id: number) => Promise<unknown
 const OPERATIONS: Record<string, Operation> = {
 	getPardaContinue: (context) => library.continueWatching(context, "en"),
 	getPardaTitleProgress: (context, id) => library.titleProgress(context, { media: "movie", id }, "en"),
-	savePardaProgress: (context, id) =>
+	setPardaProgress: (context, id) =>
 		library.saveProgress(context, { media: "movie", id, watched: 1200, duration: 7200, sourceId: null }),
-	markPardaWatched: (context, id) => library.mark(context, { media: "movie", id, scope: "title", watched: true }, "en"),
+	setPardaWatched: (context, id) => library.mark(context, { media: "movie", id, scope: "title", watched: true }, "en"),
 	removePardaContinue: (context, id) => library.removeFromContinue(context, { media: "movie", id }),
 	rewatchPardaTitle: (context, id) => library.rewatch(context, { media: "movie", id }),
 	importPardaProgress: (context, id) =>
@@ -83,7 +83,7 @@ const OPERATIONS: Record<string, Operation> = {
 	getPardaHistory: (context) => saved.history(context, 1, "en"),
 	removePardaHistory: (context, id) =>
 		saved.removeHistory(context, { media: "movie", id, day: new Date().toISOString().slice(0, 10) }),
-	clearPardaHistory: (context) => saved.clearHistory(context),
+	deletePardaHistory: (context) => saved.clearHistory(context),
 	getPardaForYou: (context) => saved.forYou(context, "en"),
 };
 
@@ -98,8 +98,8 @@ const libraryRows = async () => ({
 /** The operations a takedown refuses; the rest leave a blocked title out instead. */
 const REFUSED_WHEN_BLOCKED = new Set([
 	"getPardaTitleProgress",
-	"savePardaProgress",
-	"markPardaWatched",
+	"setPardaProgress",
+	"setPardaWatched",
 	"rewatchPardaTitle",
 	"setPardaListed",
 	"ratePardaTitle",
@@ -176,7 +176,7 @@ describe("Parda's library access matrix", () => {
 
 	it("refuses saving progress while playback is off", async () => {
 		await env.db.update(schema.pdSettings).set({ playbackEnabled: false });
-		await expect(OPERATIONS.savePardaProgress?.(await ctx("asha"), movie)).rejects.toMatchObject({ code: "FORBIDDEN" });
+		await expect(OPERATIONS.setPardaProgress?.(await ctx("asha"), movie)).rejects.toMatchObject({ code: "FORBIDDEN" });
 	});
 
 	it("leaves a blocked title out of the rail and the import", async () => {
@@ -212,13 +212,13 @@ const PROFILE_OPERATIONS: Record<string, (context: Viewer, target: string) => Pr
 	updatePardaProfile: (context, target) => profiles.updateProfile(context, target, fields("Renamed")),
 	deletePardaProfile: (context, target) => profiles.deleteProfile(context, target),
 	setPardaProfilePin: (context, target) => profiles.setPin(context, target, "1234"),
-	switchPardaProfile: (context, target) => profiles.switchProfile(context, target, undefined),
+	setPardaActiveProfile: (context, target) => profiles.switchProfile(context, target, undefined),
 	setPardaDigest: (context) => profiles.setDigest({ ...context, isGuest: context.viewer.isGuest }, true),
 };
 /** What only the profile's owner may do to a profile, by id. */
-const TARGETED = new Set(["updatePardaProfile", "deletePardaProfile", "setPardaProfilePin", "switchPardaProfile"]);
+const TARGETED = new Set(["updatePardaProfile", "deletePardaProfile", "setPardaProfilePin", "setPardaActiveProfile"]);
 /** What a kids' profile can still do: read its profiles and switch. */
-const KIDS_ALLOWED = new Set(["getPardaProfiles", "switchPardaProfile", "setPardaDigest"]);
+const KIDS_ALLOWED = new Set(["getPardaProfiles", "setPardaActiveProfile", "setPardaDigest"]);
 
 describe("Parda's profiles access matrix", () => {
 	it("has a row for every profile function", () => {
@@ -262,7 +262,7 @@ describe("Parda's profiles access matrix", () => {
 /** Every alerts function's service call (src/functions/parda/alerts.ts, decision 0241). */
 const ALERT_OPERATIONS: Record<string, (context: Viewer) => Promise<unknown>> = {
 	getPardaInbox: (context) => alerts.inbox(context, "en"),
-	markPardaInboxRead: (context) => alerts.markRead(context, null),
+	setPardaInboxRead: (context) => alerts.markRead(context, null),
 	getPardaFollowing: (context) => alerts.followingSchedule(context, "en", "2026-11-05"),
 };
 
@@ -293,13 +293,13 @@ const PARTY_OPERATIONS: Record<string, (context: Viewer, code: string) => Promis
 		const [source] = await env.db.select().from(schema.pdSource);
 		return party.setPartySource(context, code, source?.id ?? "");
 	},
-	takeOverPardaParty: (context, code) => party.takeOverParty(context, code),
-	endPardaParty: (context, code) => party.endPartyAsHost(context, code),
+	claimPardaParty: (context, code) => party.takeOverParty(context, code),
+	stopPardaParty: (context, code) => party.endPartyAsHost(context, code),
 };
 /** What someone holding only a party's code can do: joining is what the code is for, and leaving a party you're not in does nothing. */
 const OPEN_WITH_THE_CODE = new Set(["createPardaParty", "joinPardaParty", "leavePardaParty"]);
 /** What a seat alone doesn't allow: the host's. */
-const HOST_ONLY = new Set(["setPardaPartySource", "endPardaParty"]);
+const HOST_ONLY = new Set(["setPardaPartySource", "stopPardaParty"]);
 
 describe("Parda's party access matrix", () => {
 	const seedSource = () =>
@@ -332,7 +332,7 @@ describe("Parda's party access matrix", () => {
 			await party.joinParty(guest, realtime, code, "en");
 			if (HOST_ONLY.has(name)) {
 				await expect(operation(guest, code)).rejects.toMatchObject({ code: "FORBIDDEN" });
-			} else if (name === "takeOverPardaParty") {
+			} else if (name === "claimPardaParty") {
 				// The host is still here.
 				await expect(operation(guest, code)).rejects.toMatchObject({ code: "CONFLICT" });
 			} else {

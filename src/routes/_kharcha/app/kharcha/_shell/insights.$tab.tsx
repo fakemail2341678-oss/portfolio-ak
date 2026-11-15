@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { z } from "zod";
-import { kharchaHead } from "@/features/kharcha/brand";
-import { InsightsPage } from "@/features/kharcha/insights/insights-page";
+import { InsightsPage } from "@/features/kharcha/insights/components/insights-page";
+import { kharchaHead } from "@/features/kharcha/lib/brand";
 import { INSIGHTS_TABS, insightsSearch, statementOf } from "@/features/kharcha/search";
 import { parseParams } from "@/lib/list/params";
 import { ensureQuery } from "@/lib/query";

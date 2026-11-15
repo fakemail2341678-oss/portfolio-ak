@@ -34,7 +34,7 @@ import type { Db } from "@/server/db/types";
 import { mediaAssets } from "@/server/media/repository";
 import { sanitizeRichText } from "@/server/rich-text/sanitize";
 import type { PublicServices } from "@/server/services";
-import { findProfileRow } from "./profile-repository";
+import { findProfileRow } from "./profile/repository";
 
 /**
  * The public pages' reads (decision 0176): published content only, resolved to

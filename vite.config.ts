@@ -54,7 +54,7 @@ const validateEnv = async (command: "serve" | "build", mode: string) => {
 	for (const [key, value] of Object.entries(fileEnv)) process.env[key] ??= value;
 
 	const { createClientEnv, devRoutesInProduction, DEV_ROUTES_IN_PRODUCTION } = await import(
-		"./src/lib/env/client.schema.ts"
+		"./src/lib/env/client-schema.ts"
 	);
 	createClientEnv({ ...process.env });
 	if (devRoutesInProduction(process.env)) throw new Error(DEV_ROUTES_IN_PRODUCTION);

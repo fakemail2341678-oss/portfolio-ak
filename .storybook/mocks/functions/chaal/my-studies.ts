@@ -6,6 +6,6 @@ import { studyList } from "./studies";
 export const getChaalMyStudies = fn(async (): Promise<StudySummary[]> => studyList.studies).mockName(
 	"getChaalMyStudies",
 );
-export const saveChaalToStudy = fn(
+export const copyChaalToStudy = fn(
 	async (): Promise<SavedToStudy> => ({ study: "studyNp1", chapter: "chapNew1" }),
-).mockName("saveChaalToStudy");
+).mockName("copyChaalToStudy");

@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { type ArenaSummary, type SwissSummary, teamSlug } from "../events/schema";
+import { type ArenaSummary, type SwissSummary, teamSlugSchema } from "../events/schema";
 
 /**
  * Teams (PLAN Task 83, decision 0273): what the functions take and give. A team's words
@@ -10,17 +10,17 @@ import { type ArenaSummary, type SwissSummary, teamSlug } from "../events/schema
 export const TEAM_PAGES = 20;
 const teamPage = z.number().int().min(1).max(TEAM_PAGES);
 
-export const teamListInput = z.strictObject({ page: teamPage });
-export const teamSearchInput = z.strictObject({ q: z.string().trim().min(2).max(60), page: teamPage });
-export const teamInput = z.strictObject({ id: teamSlug });
+export const teamListInputSchema = z.strictObject({ page: teamPage });
+export const teamSearchInputSchema = z.strictObject({ q: z.string().trim().min(2).max(60), page: teamPage });
+export const teamInputSchema = z.strictObject({ id: teamSlugSchema });
 
 /** Joining a team: a closed team wants a message to its leaders, a private one a password. */
-export const teamJoinInput = z.strictObject({
-	id: teamSlug,
+export const teamJoinInputSchema = z.strictObject({
+	id: teamSlugSchema,
 	message: z.string().trim().max(2000).optional(),
 	password: z.string().trim().max(100).optional(),
 });
-export type TeamJoinInput = z.output<typeof teamJoinInput>;
+export type TeamJoinInput = z.output<typeof teamJoinInputSchema>;
 
 /** How many of a team's members, and of its tournaments of each kind, the page shows. */
 export const TEAM_MEMBERS_SHOWN = 30;

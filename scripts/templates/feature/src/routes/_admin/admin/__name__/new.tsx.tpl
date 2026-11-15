@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { __Pascal__NewPage } from "@/features/__name__/components/__name__-detail";
-import { assertRoutePermission } from "@/features/rbac/route-guard";
+import { assertRoutePermission } from "@/features/rbac/lib/route-guard";
 import { staticCrumb } from "@/lib/breadcrumbs";
 import { titleHead } from "@/lib/crud/route";
 import { m } from "@/paraglide/messages";

@@ -1,5 +1,10 @@
 import { createServerFn } from "@tanstack/react-start";
-import { type AdminSettings, playbackInput, settingsInput, sourceOrderModeInput } from "@/features/parda/admin/schema";
+import {
+	type AdminSettings,
+	playbackInputSchema,
+	settingsInputSchema,
+	sourceOrderModeInputSchema,
+} from "@/features/parda/admin/schema";
 import { zodInput } from "@/functions/_lib/validator";
 import { requirePermission } from "@/middleware/auth";
 import { withServices } from "@/middleware/services";
@@ -14,18 +19,18 @@ export const getPardaSettings = createServerFn({ method: "GET" })
 
 export const updatePardaSettings = createServerFn({ method: "POST" })
 	.middleware([requirePermission("parda:configure"), withServices])
-	.validator(zodInput(settingsInput))
+	.validator(zodInput(settingsInputSchema))
 	.handler(({ data, context }): Promise<AdminSettings> => settings.updateSettings(pardaAdmin(context), data));
 
 export const setPardaPlayback = createServerFn({ method: "POST" })
 	.middleware([requirePermission("parda:configure"), withServices])
-	.validator(zodInput(playbackInput))
+	.validator(zodInput(playbackInputSchema))
 	.handler(({ data, context }): Promise<AdminSettings> => settings.setPlayback(pardaAdmin(context), data));
 
 /** The sources' order: automatic (the daily scores) or the admin's (decision 0238). */
 export const setPardaSourceOrder = createServerFn({ method: "POST" })
 	.middleware([requirePermission("parda:configure"), withServices])
-	.validator(zodInput(sourceOrderModeInput))
+	.validator(zodInput(sourceOrderModeInputSchema))
 	.handler(({ data, context }): Promise<AdminSettings> => settings.setSourceOrder(pardaAdmin(context), data));
 
 export const purgePardaCache = createServerFn({ method: "POST" })

@@ -1,6 +1,6 @@
 import "@tanstack/react-start/server-only";
 import { eq } from "drizzle-orm";
-import { type ChaalPreferences, readPreferences } from "@/features/chaal/settings/preferences";
+import { type ChaalPreferences, readPreferences } from "@/features/chaal/settings/lib/preferences";
 import { chPreference } from "@/server/db/schema";
 import type { Db } from "@/server/db/types";
 

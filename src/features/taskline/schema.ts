@@ -2,11 +2,11 @@ import { z } from "zod";
 import { isOrderKey } from "@/lib/fractional-index";
 import { isoDate, optionalText, required } from "@/lib/validation";
 import { m } from "@/paraglide/messages";
-import { automationCondition, automationDefinition } from "./automation-rules";
-import { FIELD_NAME_MAX, fieldDefinition, fieldOptions, fieldValuesPatch } from "./fields";
-import { recurrenceRule } from "./recurrence";
+import { automationCondition, automationDefinition } from "./lib/automation-rules";
+import { FIELD_NAME_MAX, fieldDefinition, fieldOptions, fieldValuesPatch } from "./lib/fields";
+import { recurrenceRule } from "./lib/recurrence";
+import { projectSettings } from "./lib/settings";
 import { taskList } from "./search";
-import { projectSettings } from "./settings";
 import {
 	BUILTIN_TEMPLATES,
 	DAY_MINUTES,
@@ -83,13 +83,13 @@ export const parseTaskRef = (ref: string): { key: string; number: number } | nul
 	return match?.[1] && match[2] ? { key: match[1], number: Number(match[2]) } : null;
 };
 
-export const wsInput = z.strictObject({ ws: ws() });
-export const projectInput = z.strictObject({ ws: ws(), key: projectKey() });
-export const taskInput = z.strictObject({ ws: ws(), ref: taskRef() });
+export const wsInputSchema = z.strictObject({ ws: ws() });
+export const projectInputSchema = z.strictObject({ ws: ws(), key: projectKey() });
+export const taskInputSchema = z.strictObject({ ws: ws(), ref: taskRef() });
 
 // ---- Projects -------------------------------------------------------------------------------
 
-export const listProjectsInput = z.strictObject({ ws: ws(), archived: z.boolean().optional() });
+export const listProjectsInputSchema = z.strictObject({ ws: ws(), archived: z.boolean().optional() });
 
 const projectFields = {
 	name: required({ max: PROJECT_NAME_MAX }),
@@ -102,17 +102,17 @@ const projectFields = {
 };
 
 /** A built-in template's id or a saved one's (Task 57). */
-export const templateRef = z.union([z.enum(BUILTIN_TEMPLATES), id]);
+export const templateRefSchema = z.union([z.enum(BUILTIN_TEMPLATES), id]);
 
-export const createProjectInput = z.strictObject({
+export const createProjectInputSchema = z.strictObject({
 	ws: ws(),
 	key: projectKey(),
 	...projectFields,
-	template: templateRef.optional(),
+	template: templateRefSchema.optional(),
 });
 
 /** The project form: everything it shows, saved with the version it started from. */
-export const updateProjectInput = z.strictObject({
+export const updateProjectInputSchema = z.strictObject({
 	ws: ws(),
 	key: projectKey(),
 	version: z.number().int().positive(),
@@ -120,27 +120,27 @@ export const updateProjectInput = z.strictObject({
 	settings: projectSettings.partial().optional(),
 });
 
-export const setProjectStateInput = z.strictObject({
+export const setProjectStateInputSchema = z.strictObject({
 	ws: ws(),
 	key: projectKey(),
 	status: z.enum(PROJECT_STATUSES).exclude(["archived"]).optional(),
 	health: z.enum(PROJECT_HEALTHS).nullable().optional(),
 });
 
-export const setProjectArchivedInput = z.strictObject({ ws: ws(), key: projectKey(), archived: z.boolean() });
-export const setProjectStarInput = z.strictObject({ ws: ws(), key: projectKey(), starred: z.boolean() });
+export const setProjectArchivedInputSchema = z.strictObject({ ws: ws(), key: projectKey(), archived: z.boolean() });
+export const setProjectStarInputSchema = z.strictObject({ ws: ws(), key: projectKey(), starred: z.boolean() });
 
-export const setProjectMemberInput = z.strictObject({
+export const setProjectMemberInputSchema = z.strictObject({
 	ws: ws(),
 	key: projectKey(),
 	memberId: id,
 	role: z.enum(PROJECT_ROLES),
 });
-export const removeProjectMemberInput = z.strictObject({ ws: ws(), key: projectKey(), memberId: id });
+export const removeProjectMemberInputSchema = z.strictObject({ ws: ws(), key: projectKey(), memberId: id });
 
 // ---- Statuses and labels --------------------------------------------------------------------
 
-export const createStatusInput = z.strictObject({
+export const createStatusInputSchema = z.strictObject({
 	ws: ws(),
 	key: projectKey(),
 	id: id.optional(),
@@ -152,7 +152,7 @@ export const createStatusInput = z.strictObject({
 	wipLimit: z.number().int().positive().max(999).nullable().optional(),
 });
 
-export const updateStatusInput = z.strictObject({
+export const updateStatusInputSchema = z.strictObject({
 	ws: ws(),
 	key: projectKey(),
 	id,
@@ -164,23 +164,23 @@ export const updateStatusInput = z.strictObject({
 });
 
 /** A status with tasks moves them to `moveTo` (trashed ones too) before it goes. */
-export const deleteStatusInput = z.strictObject({ ws: ws(), key: projectKey(), id, moveTo: id.optional() });
+export const deleteStatusInputSchema = z.strictObject({ ws: ws(), key: projectKey(), id, moveTo: id.optional() });
 
-export const createLabelInput = z.strictObject({
+export const createLabelInputSchema = z.strictObject({
 	ws: ws(),
 	key: projectKey(),
 	id: id.optional(),
 	name: required({ max: LABEL_NAME_MAX }),
 	color: color.optional(),
 });
-export const updateLabelInput = z.strictObject({
+export const updateLabelInputSchema = z.strictObject({
 	ws: ws(),
 	key: projectKey(),
 	id,
 	name: required({ max: LABEL_NAME_MAX }).optional(),
 	color: color.optional(),
 });
-export const deleteLabelInput = z.strictObject({ ws: ws(), key: projectKey(), id });
+export const deleteLabelInputSchema = z.strictObject({ ws: ws(), key: projectKey(), id });
 
 // ---- Tasks ----------------------------------------------------------------------------------
 
@@ -189,9 +189,9 @@ const labelIds = z
 	.max(LABELS_PER_TASK_MAX)
 	.refine((ids) => new Set(ids).size === ids.length);
 
-export const checklistItem = z.strictObject({ id, text: required({ max: TASK_TITLE_MAX }), done: z.boolean() });
+export const checklistItemSchema = z.strictObject({ id, text: required({ max: TASK_TITLE_MAX }), done: z.boolean() });
 
-export const createTaskInput = z.strictObject({
+export const createTaskInputSchema = z.strictObject({
 	ws: ws(),
 	key: projectKey(),
 	id: id.optional(),
@@ -220,7 +220,7 @@ export const createTaskInput = z.strictObject({
 });
 
 /** The title and description: saved with the version they started from. */
-export const updateTaskInput = z.strictObject({
+export const updateTaskInputSchema = z.strictObject({
 	ws: ws(),
 	ref: taskRef(),
 	version: z.number().int().positive(),
@@ -229,7 +229,7 @@ export const updateTaskInput = z.strictObject({
 });
 
 /** One or more single fields, last write wins (each change is in the task's history). */
-export const patchTaskInput = z.strictObject({
+export const patchTaskInputSchema = z.strictObject({
 	ws: ws(),
 	ref: taskRef(),
 	type: z.enum(TASK_TYPES).optional(),
@@ -250,21 +250,26 @@ export const patchTaskInput = z.strictObject({
 });
 
 /** A drop on the board: a status and a position in it (an order key the browser computed). */
-export const moveTaskInput = z.strictObject({ ws: ws(), ref: taskRef(), statusId: id, position });
+export const moveTaskInputSchema = z.strictObject({ ws: ws(), ref: taskRef(), statusId: id, position });
 
 /** A drop on the backlog (Task 52): a sprint (null: the backlog) and a rank (an order key the browser computed). */
-export const rankTaskInput = z.strictObject({ ws: ws(), ref: taskRef(), sprintId: id.nullable(), rank: position });
-export type RankTaskInput = z.infer<typeof rankTaskInput>;
-
-export const setChecklistInput = z.strictObject({
+export const rankTaskInputSchema = z.strictObject({
 	ws: ws(),
 	ref: taskRef(),
-	checklist: z.array(checklistItem).max(CHECKLIST_MAX),
+	sprintId: id.nullable(),
+	rank: position,
+});
+export type RankTaskInput = z.infer<typeof rankTaskInputSchema>;
+
+export const setChecklistInputSchema = z.strictObject({
+	ws: ws(),
+	ref: taskRef(),
+	checklist: z.array(checklistItemSchema).max(CHECKLIST_MAX),
 });
 
 /** The list view's page: the list contract (taskList, search.ts) in a project. */
-export const taskListInput = taskList.input.extend({ ws: ws(), key: projectKey() });
-export type TaskListInput = z.infer<typeof taskListInput>;
+export const taskListInputSchema = taskList.input.extend({ ws: ws(), key: projectKey() });
+export type TaskListInput = z.infer<typeof taskListInputSchema>;
 
 export const BULK_MAX = 100;
 
@@ -272,7 +277,7 @@ export const BULK_MAX = 100;
  * The list's bulk actions on selected tasks of one project: one change at a time
  * (a status, an assignee, a priority, a label added or removed, or the trash).
  */
-export const bulkTasksInput = z
+export const bulkTasksInputSchema = z
 	.strictObject({
 		ws: ws(),
 		key: projectKey(),
@@ -291,7 +296,7 @@ export const bulkTasksInput = z
 			).length === 1,
 		{ error: "One change at a time" },
 	);
-export type BulkTasksInput = z.infer<typeof bulkTasksInput>;
+export type BulkTasksInput = z.infer<typeof bulkTasksInputSchema>;
 
 // ---- Comments, watching, files and notifications (Task 50) ---------------------------------
 
@@ -304,61 +309,61 @@ const files = z
 	.refine((ids) => new Set(ids).size === ids.length);
 
 /** A comment: rich text (mentions are member ids in it, which the server reads itself) and the files uploaded for it. */
-export const addCommentInput = z.strictObject({
+export const addCommentInputSchema = z.strictObject({
 	ws: ws(),
 	ref: taskRef(),
 	body: optionalText({ max: COMMENT_MAX }),
 	attachmentIds: files.optional(),
 });
-export const updateCommentInput = z.strictObject({
+export const updateCommentInputSchema = z.strictObject({
 	ws: ws(),
 	ref: taskRef(),
 	id,
 	body: optionalText({ max: COMMENT_MAX }),
 });
-export const deleteCommentInput = z.strictObject({ ws: ws(), ref: taskRef(), id });
-export const watchTaskInput = z.strictObject({ ws: ws(), ref: taskRef(), watching: z.boolean() });
-export const taskFilesInput = z.strictObject({ ws: ws(), ref: taskRef(), ids: files.min(1) });
-export const taskFileInput = z.strictObject({ ws: ws(), ref: taskRef(), id });
-export const confirmFileInput = z.strictObject({ publicId: z.string().min(1).max(255) });
-export const fileIdInput = z.strictObject({ id });
+export const deleteCommentInputSchema = z.strictObject({ ws: ws(), ref: taskRef(), id });
+export const watchTaskInputSchema = z.strictObject({ ws: ws(), ref: taskRef(), watching: z.boolean() });
+export const taskFilesInputSchema = z.strictObject({ ws: ws(), ref: taskRef(), ids: files.min(1) });
+export const taskFileInputSchema = z.strictObject({ ws: ws(), ref: taskRef(), id });
+export const confirmFileInputSchema = z.strictObject({ publicId: z.string().min(1).max(255) });
+export const fileIdInputSchema = z.strictObject({ id });
 
 export const INBOX_PAGE = 30;
-export const inboxInput = z.strictObject({
+export const inboxInputSchema = z.strictObject({
 	filter: z.enum(["unread", "all"]),
 	page: z.number().int().min(1).max(1000),
 });
 /** Marks some of the caller's notifications read (or unread), or all of them read. */
-export const markReadInput = z.union([
+export const markReadInputSchema = z.union([
 	z.strictObject({ ids: z.array(id).min(1).max(100), read: z.boolean() }),
 	z.strictObject({ all: z.literal(true) }),
 ]);
 /** The caller's modes per kind (missing: the team's default) and their email language. */
-export const notifySettingsInput = z.strictObject({
+export const notifySettingsInputSchema = z.strictObject({
 	modes: z.partialRecord(z.enum(NOTIFY_KINDS), z.enum(NOTIFY_MODES)),
 	locale: z.enum(["en", "ne"]).nullable(),
 });
 
 // ---- Task 57: project updates and reports ----------------------------------------------------------
 
-export const postProjectUpdateInput = z.strictObject({
+export const postProjectUpdateInputSchema = z.strictObject({
 	ws: ws(),
 	key: projectKey(),
 	health: z.enum(PROJECT_HEALTHS),
 	body: optionalText({ max: COMMENT_MAX }),
 });
-export const deleteProjectUpdateInput = z.strictObject({ ws: ws(), key: projectKey(), id });
-export const projectReportsInput = z.strictObject({ ws: ws(), key: projectKey(), range: z.enum(REPORT_RANGES) });
-export type PostProjectUpdateInput = z.infer<typeof postProjectUpdateInput>;
-export type DeleteProjectUpdateInput = z.infer<typeof deleteProjectUpdateInput>;
+export const deleteProjectUpdateInputSchema = z.strictObject({ ws: ws(), key: projectKey(), id });
+export const projectReportsInputSchema = z.strictObject({ ws: ws(), key: projectKey(), range: z.enum(REPORT_RANGES) });
+export type PostProjectUpdateInput = z.infer<typeof postProjectUpdateInputSchema>;
+export type DeleteProjectUpdateInput = z.infer<typeof deleteProjectUpdateInputSchema>;
 
-export type AddCommentInput = z.infer<typeof addCommentInput>;
-export type UpdateCommentInput = z.infer<typeof updateCommentInput>;
-export type DeleteCommentInput = z.infer<typeof deleteCommentInput>;
-export type TaskFilesInput = z.infer<typeof taskFilesInput>;
-export type InboxInput = z.infer<typeof inboxInput>;
-export type MarkReadInput = z.infer<typeof markReadInput>;
-export type NotifySettingsInput = z.infer<typeof notifySettingsInput>;
+export type AddCommentInput = z.infer<typeof addCommentInputSchema>;
+export type UpdateCommentInput = z.infer<typeof updateCommentInputSchema>;
+export type DeleteCommentInput = z.infer<typeof deleteCommentInputSchema>;
+export type TaskFilesInput = z.infer<typeof taskFilesInputSchema>;
+export type InboxInput = z.infer<typeof inboxInputSchema>;
+export type MarkReadInput = z.infer<typeof markReadInputSchema>;
+export type NotifySettingsInput = z.infer<typeof notifySettingsInputSchema>;
 
 // ---- Saved views, search and the CSV import (Task 51) ---------------------------------------
 
@@ -368,8 +373,8 @@ export const SAVED_VIEWS_MAX = 50;
 /** A view's search string: "" or "?…", no fragment, no spaces. */
 export const VIEW_SEARCH_PATTERN = /^(?:\?[^#\s]{0,1999})?$/;
 
-export const savedViewsInput = z.strictObject({ ws: ws(), key: projectKey(), view: z.enum(SAVED_VIEW_KINDS) });
-export const saveViewInput = z.strictObject({
+export const savedViewsInputSchema = z.strictObject({ ws: ws(), key: projectKey(), view: z.enum(SAVED_VIEW_KINDS) });
+export const saveViewInputSchema = z.strictObject({
 	ws: ws(),
 	key: projectKey(),
 	view: z.enum(SAVED_VIEW_KINDS),
@@ -377,16 +382,16 @@ export const saveViewInput = z.strictObject({
 	search: z.string().regex(VIEW_SEARCH_PATTERN),
 	shared: z.boolean(),
 });
-export const deleteViewInput = z.strictObject({ ws: ws(), key: projectKey(), id });
+export const deleteViewInputSchema = z.strictObject({ ws: ws(), key: projectKey(), id });
 
 /** /$ws/search's question: words (ranked full-text search) or a reference ("WEB-12"). */
-export const searchTasksInput = z.strictObject({
+export const searchTasksInputSchema = z.strictObject({
 	ws: ws(),
 	q: z.string().trim().min(1).max(80),
 	page: z.number().int().min(1).max(50),
 });
 /** The palette's question: across the caller's workspaces, the best few. */
-export const findTasksInput = z.strictObject({ q: z.string().trim().min(2).max(80) });
+export const findTasksInputSchema = z.strictObject({ q: z.string().trim().min(2).max(80) });
 
 export const IMPORT_ROWS_MAX = 1000;
 export const IMPORT_DESCRIPTION_MAX = 5000;
@@ -399,7 +404,7 @@ const importName = z.string().trim().max(IMPORT_NAME_MAX);
  * the server checks again): names (a status, an assignee, labels) are matched on the
  * server without case; one that matches nothing is left blank and reported.
  */
-export const importTaskRow = z.object({
+export const importTaskRowSchema = z.object({
 	title: required({ max: TASK_TITLE_MAX }),
 	/** Plain text: the server escapes it into paragraphs. */
 	description: z.string().max(IMPORT_DESCRIPTION_MAX),
@@ -413,18 +418,18 @@ export const importTaskRow = z.object({
 	/** Task 55: custom field values, already typed by the dialog (option and member names matched there). */
 	fields: fieldValuesPatch().optional(),
 });
-export type ImportTaskRow = z.infer<typeof importTaskRow>;
+export type ImportTaskRow = z.infer<typeof importTaskRowSchema>;
 
-export const importTasksInput = z.strictObject({
+export const importTasksInputSchema = z.strictObject({
 	ws: ws(),
 	key: projectKey(),
 	/** One key per import the user means to make (docs/guides/routing-data.md, "Idempotency keys"). */
 	idempotencyKey: id,
-	rows: z.array(importTaskRow).min(1).max(IMPORT_ROWS_MAX),
+	rows: z.array(importTaskRowSchema).min(1).max(IMPORT_ROWS_MAX),
 });
 
-export type SaveViewInput = z.infer<typeof saveViewInput>;
-export type ImportTasksInput = z.infer<typeof importTasksInput>;
+export type SaveViewInput = z.infer<typeof saveViewInputSchema>;
+export type ImportTasksInput = z.infer<typeof importTasksInputSchema>;
 
 // ---- Sprints (Task 52) ----------------------------------------------------------------------
 
@@ -459,10 +464,10 @@ const sprintDates = <T extends { startOn?: string; endOn?: string }>(input: T, c
 	}
 };
 
-export const createSprintInput = z
+export const createSprintInputSchema = z
 	.strictObject({ ws: ws(), key: projectKey(), ...sprintFields })
 	.superRefine(sprintDates);
-export const updateSprintInput = z
+export const updateSprintInputSchema = z
 	.strictObject({
 		ws: ws(),
 		key: projectKey(),
@@ -473,20 +478,20 @@ export const updateSprintInput = z
 		endOn: isoDate().optional(),
 	})
 	.superRefine(sprintDates);
-export const sprintInput = z.strictObject({ ws: ws(), key: projectKey(), id });
+export const sprintInputSchema = z.strictObject({ ws: ws(), key: projectKey(), id });
 /**
  * Completing the active sprint: its unfinished tasks go to the backlog, to a planned
  * sprint (`nextId`), or to a new sprint that starts the next day, as long as this one was.
  */
-export const completeSprintInput = z
+export const completeSprintInputSchema = z
 	.strictObject({ ws: ws(), key: projectKey(), id, carryTo: z.enum(SPRINT_CARRY), nextId: id.optional() })
 	.refine((input) => (input.carryTo === "next") === (input.nextId !== undefined), {
 		error: "A next sprint with `next`, none otherwise",
 	});
 
-export type CreateSprintInput = z.infer<typeof createSprintInput>;
-export type UpdateSprintInput = z.infer<typeof updateSprintInput>;
-export type CompleteSprintInput = z.infer<typeof completeSprintInput>;
+export type CreateSprintInput = z.infer<typeof createSprintInputSchema>;
+export type UpdateSprintInput = z.infer<typeof updateSprintInputSchema>;
+export type CompleteSprintInput = z.infer<typeof completeSprintInputSchema>;
 
 // ---- Time tracking (Task 53) ----------------------------------------------------------------
 
@@ -498,7 +503,7 @@ const minutes = z.number().int().min(1).max(DAY_MINUTES);
 const timeNote = optionalText({ max: TIME_NOTE_MAX });
 
 /** Time logged by hand on a task: a day, how long, a note, billable. */
-export const logTimeInput = z.strictObject({
+export const logTimeInputSchema = z.strictObject({
 	ws: ws(),
 	ref: taskRef(),
 	onDay: isoDate(),
@@ -507,7 +512,7 @@ export const logTimeInput = z.strictObject({
 	billable: z.boolean().optional(),
 });
 /** An entry changed (the caller's own, or anyone's in the team with `taskline:time`). */
-export const updateTimeEntryInput = z.strictObject({
+export const updateTimeEntryInputSchema = z.strictObject({
 	ws: ws(),
 	id,
 	onDay: isoDate().optional(),
@@ -515,27 +520,27 @@ export const updateTimeEntryInput = z.strictObject({
 	note: timeNote.optional(),
 	billable: z.boolean().optional(),
 });
-export const timeEntryInput = z.strictObject({ ws: ws(), id });
+export const timeEntryInputSchema = z.strictObject({ ws: ws(), id });
 /** The timesheet of the week holding `week` (any of its days). */
-export const timesheetInput = z.strictObject({ ws: ws(), week: isoDate() });
+export const timesheetInputSchema = z.strictObject({ ws: ws(), week: isoDate() });
 /** A timesheet cell's new total (0 clears it). */
-export const timesheetCellInput = z.strictObject({
+export const timesheetCellInputSchema = z.strictObject({
 	ws: ws(),
 	ref: taskRef(),
 	onDay: isoDate(),
 	minutes: z.number().int().min(0).max(DAY_MINUTES),
 });
 
-export type LogTimeInput = z.infer<typeof logTimeInput>;
-export type UpdateTimeEntryInput = z.infer<typeof updateTimeEntryInput>;
-export type TimesheetCellInput = z.infer<typeof timesheetCellInput>;
+export type LogTimeInput = z.infer<typeof logTimeInputSchema>;
+export type UpdateTimeEntryInput = z.infer<typeof updateTimeEntryInputSchema>;
+export type TimesheetCellInput = z.infer<typeof timesheetCellInputSchema>;
 
 // ---- Timeline, milestones and dependencies (Task 54) ----------------------------------------
 
 export const MILESTONE_NAME_MAX = 80;
 export const MILESTONE_DESCRIPTION_MAX = 2000;
 
-export const createMilestoneInput = z.strictObject({
+export const createMilestoneInputSchema = z.strictObject({
 	ws: ws(),
 	key: projectKey(),
 	id: id.optional(),
@@ -544,7 +549,7 @@ export const createMilestoneInput = z.strictObject({
 	dueOn: isoDate().nullable().optional(),
 });
 /** A milestone's fields, its place (an order key the browser computed), or whether it's complete. */
-export const updateMilestoneInput = z.strictObject({
+export const updateMilestoneInputSchema = z.strictObject({
 	ws: ws(),
 	key: projectKey(),
 	id,
@@ -554,30 +559,30 @@ export const updateMilestoneInput = z.strictObject({
 	position: position.optional(),
 	completed: z.boolean().optional(),
 });
-export const milestoneInput = z.strictObject({ ws: ws(), key: projectKey(), id });
+export const milestoneInputSchema = z.strictObject({ ws: ws(), key: projectKey(), id });
 
 /** A dependency seen from the task `ref`: `other` blocks it (`blocked_by`) or it blocks `other` (`blocks`). */
-export const dependencyInput = z.strictObject({
+export const dependencyInputSchema = z.strictObject({
 	ws: ws(),
 	ref: taskRef(),
 	relation: z.enum(DEPENDENCY_RELATIONS),
 	other: taskRef(),
 });
 
-export type CreateMilestoneInput = z.infer<typeof createMilestoneInput>;
-export type UpdateMilestoneInput = z.infer<typeof updateMilestoneInput>;
-export type DependencyInput = z.infer<typeof dependencyInput>;
+export type CreateMilestoneInput = z.infer<typeof createMilestoneInputSchema>;
+export type UpdateMilestoneInput = z.infer<typeof updateMilestoneInputSchema>;
+export type DependencyInput = z.infer<typeof dependencyInputSchema>;
 
 // ---- Custom fields (Task 55) ----------------------------------------------------------------
 
 /** A project's own field (its lead's): what it is, in the definition's shape. */
-export const createFieldInput = z.strictObject({ ws: ws(), key: projectKey(), field: fieldDefinition });
+export const createFieldInputSchema = z.strictObject({ ws: ws(), key: projectKey(), field: fieldDefinition });
 /**
  * A field's changes: its name, whether it's required, a select's options (an option
  * left out comes off every task), archived or not, or its place (an order key). Its
  * type never changes: values of one type don't become another's.
  */
-export const fieldChanges = {
+export const FIELD_CHANGES = {
 	id,
 	name: required({ max: FIELD_NAME_MAX }).optional(),
 	required: z.boolean().optional(),
@@ -585,19 +590,23 @@ export const fieldChanges = {
 	archived: z.boolean().optional(),
 	position: position.optional(),
 };
-export const updateFieldInput = z.strictObject({ ws: ws(), key: projectKey(), ...fieldChanges });
-export const deleteFieldInput = z.strictObject({ ws: ws(), key: projectKey(), id });
+export const updateFieldInputSchema = z.strictObject({ ws: ws(), key: projectKey(), ...FIELD_CHANGES });
+export const deleteFieldInputSchema = z.strictObject({ ws: ws(), key: projectKey(), id });
 
-export type CreateFieldInput = z.infer<typeof createFieldInput>;
-export type UpdateFieldInput = z.infer<typeof updateFieldInput>;
+export type CreateFieldInput = z.infer<typeof createFieldInputSchema>;
+export type UpdateFieldInput = z.infer<typeof updateFieldInputSchema>;
 export type FieldChanges = Omit<UpdateFieldInput, "ws" | "key">;
 
 // ---- Automations (Task 56) -----------------------------------------------------------------
 
 /** A project's own automations (its lead's), as the builder saves them. */
-export const createAutomationInput = z.strictObject({ ws: ws(), key: projectKey(), automation: automationDefinition });
+export const createAutomationInputSchema = z.strictObject({
+	ws: ws(),
+	key: projectKey(),
+	automation: automationDefinition,
+});
 /** The builder's form, against the version it started from. */
-export const updateAutomationInput = z.strictObject({
+export const updateAutomationInputSchema = z.strictObject({
 	ws: ws(),
 	key: projectKey(),
 	id,
@@ -605,30 +614,30 @@ export const updateAutomationInput = z.strictObject({
 	automation: automationDefinition,
 });
 /** On or off at once (last write wins; the version stays). */
-export const toggleAutomationInput = z.strictObject({ ws: ws(), key: projectKey(), id, enabled: z.boolean() });
-export const automationInput = z.strictObject({ ws: ws(), key: projectKey(), id });
+export const toggleAutomationInputSchema = z.strictObject({ ws: ws(), key: projectKey(), id, enabled: z.boolean() });
+export const automationInputSchema = z.strictObject({ ws: ws(), key: projectKey(), id });
 /** The builder's "would match N open tasks". */
-export const previewAutomationInput = z.strictObject({
+export const previewAutomationInputSchema = z.strictObject({
 	ws: ws(),
 	key: projectKey(),
 	conditions: z.array(automationCondition).max(10),
 });
 
-export type CreateAutomationInput = z.infer<typeof createAutomationInput>;
-export type UpdateAutomationInput = z.infer<typeof updateAutomationInput>;
-export type ToggleAutomationInput = z.infer<typeof toggleAutomationInput>;
-export type PreviewAutomationInput = z.infer<typeof previewAutomationInput>;
+export type CreateAutomationInput = z.infer<typeof createAutomationInputSchema>;
+export type UpdateAutomationInput = z.infer<typeof updateAutomationInputSchema>;
+export type ToggleAutomationInput = z.infer<typeof toggleAutomationInputSchema>;
+export type PreviewAutomationInput = z.infer<typeof previewAutomationInputSchema>;
 
 /** A project by id: where an old Kanban board's link goes (0210). */
-export const projectByIdInput = z.strictObject({ id });
+export const projectByIdInputSchema = z.strictObject({ id });
 
-export type CreateProjectInput = z.infer<typeof createProjectInput>;
-export type UpdateProjectInput = z.infer<typeof updateProjectInput>;
-export type SetProjectStateInput = z.infer<typeof setProjectStateInput>;
-export type CreateStatusInput = z.infer<typeof createStatusInput>;
-export type UpdateStatusInput = z.infer<typeof updateStatusInput>;
-export type CreateLabelInput = z.infer<typeof createLabelInput>;
-export type UpdateLabelInput = z.infer<typeof updateLabelInput>;
-export type CreateTaskInput = z.infer<typeof createTaskInput>;
-export type UpdateTaskInput = z.infer<typeof updateTaskInput>;
-export type PatchTaskInput = z.infer<typeof patchTaskInput>;
+export type CreateProjectInput = z.infer<typeof createProjectInputSchema>;
+export type UpdateProjectInput = z.infer<typeof updateProjectInputSchema>;
+export type SetProjectStateInput = z.infer<typeof setProjectStateInputSchema>;
+export type CreateStatusInput = z.infer<typeof createStatusInputSchema>;
+export type UpdateStatusInput = z.infer<typeof updateStatusInputSchema>;
+export type CreateLabelInput = z.infer<typeof createLabelInputSchema>;
+export type UpdateLabelInput = z.infer<typeof updateLabelInputSchema>;
+export type CreateTaskInput = z.infer<typeof createTaskInputSchema>;
+export type UpdateTaskInput = z.infer<typeof updateTaskInputSchema>;
+export type PatchTaskInput = z.infer<typeof patchTaskInputSchema>;

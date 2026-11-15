@@ -1,6 +1,6 @@
 import { createFileRoute, notFound } from "@tanstack/react-router";
-import { kharchaHead } from "@/features/kharcha/brand";
-import { JoinPage } from "@/features/kharcha/join/join-page";
+import { JoinPage } from "@/features/kharcha/join/components/join-page";
+import { kharchaHead } from "@/features/kharcha/lib/brand";
 import { JOIN_TOKEN } from "@/features/kharcha/search";
 import { isAppError } from "@/lib/errors";
 import { ensureQuery } from "@/lib/query";

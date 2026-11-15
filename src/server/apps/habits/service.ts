@@ -1,8 +1,7 @@
 import "@tanstack/react-start/server-only";
-import { type AppColor, isAppColor } from "@/features/apps/colors";
-import { heatmapStart } from "@/features/apps/habits/heatmap";
+import { heatmapStart } from "@/features/apps/habits/lib/heatmap";
+import { habitStats } from "@/features/apps/habits/lib/streaks";
 import type { CheckinInput, CreateHabitInput, UpdateHabitInput } from "@/features/apps/habits/schema";
-import { habitStats } from "@/features/apps/habits/streaks";
 import {
 	CHECKIN_DAYS_BACK,
 	checkinId,
@@ -14,6 +13,7 @@ import {
 	RATE_DAYS,
 	STRIP_DAYS,
 } from "@/features/apps/habits/types";
+import { type AppColor, isAppColor } from "@/features/apps/lib/colors";
 import { ruleError } from "@/lib/errors";
 import { addDays, type IsoDate, todayInZone } from "@/lib/i18n/date-only";
 import { APP_TIME_ZONE, formatNumber } from "@/lib/i18n/intl";
@@ -30,7 +30,7 @@ import * as repo from "./repository";
  * Habits' rules (decision 0193): every call acts on the caller's own habits (the
  * repository scopes by owner), a quota per user, check-ins only for today and the
  * year before (in the app's time zone). Streaks and rates come from
- * src/features/apps/habits/streaks.ts, the same code the tests check. Not audited:
+ * src/features/apps/habits/lib/streaks.ts, the same code the tests check. Not audited:
  * app data isn't an admin action (0186).
  */
 

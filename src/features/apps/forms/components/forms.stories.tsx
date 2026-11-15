@@ -2,10 +2,10 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import { useState } from "react";
 import { expect, fn, userEvent, within } from "storybook/test";
 import { m } from "@/paraglide/messages";
-import type { FormField } from "../fields";
-import { BuilderCanvas } from "./builder-canvas";
-import { FieldSettings } from "./field-settings";
-import { FormRenderer } from "./form-renderer";
+import type { FormField } from "../lib/fields";
+import { BuilderCanvas } from "./builder-canvas-panel";
+import { FieldSettings } from "./field-settings-panel";
+import { FormRenderer } from "./rendered-form";
 
 const FIELDS: FormField[] = [
 	{ id: "fname0001", type: "short_text", label: "Your name", help: "", required: true, maxLength: 80 },

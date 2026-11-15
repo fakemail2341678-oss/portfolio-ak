@@ -1,6 +1,6 @@
 import { localizedUrl, seo } from "@/lib/seo";
 import { getLocale } from "@/paraglide/runtime";
-import { CHAAL_NAME } from "./brand";
+import { CHAAL_NAME } from "./lib/brand";
 
 /**
  * An indexable Chaal page's head (PLAN 13.5, "SEO"): `seo()` with Chaal's name and the page

@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { formatDate, formatNumber } from "@/lib/i18n/intl";
 import { m } from "@/paraglide/messages";
 import { roleDescription, roleLabel } from "./labels";
-import { ALL_PERMISSIONS } from "./permissions";
+import { ALL_PERMISSIONS } from "./lib/permissions";
 import type { RoleSummary, UserListItem } from "./schema";
 
 /** Columns of /admin/roles. */

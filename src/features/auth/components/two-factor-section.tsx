@@ -4,9 +4,9 @@ import { renderSVG } from "uqr";
 import { Button } from "@/components/ui/button";
 import { authClient } from "@/lib/auth-client";
 import { m } from "@/paraglide/messages";
-import { authErrorMessage } from "../errors";
-import { refreshAuth } from "../queries";
-import { field, validateOtp, validateRequired } from "../validation";
+import { authErrorMessage } from "../lib/errors";
+import { refreshAuth } from "../lib/refresh";
+import { field, validateOtp, validateRequired } from "../lib/validation";
 import { AccountSection, type Status } from "./account-section";
 import { AuthField, FormMessage } from "./auth-field";
 

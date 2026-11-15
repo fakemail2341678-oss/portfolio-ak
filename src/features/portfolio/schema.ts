@@ -208,7 +208,7 @@ export const toProfileInput = (values: ProfileFormValues): ProfileInput => {
 
 const image = z.custom<ImageAsset>();
 
-export const profileDetail = z.object({
+export const profileDetailSchema = z.object({
 	id: z.literal(PROFILE_ID),
 	...profileFields,
 	portrait: image.nullable(),
@@ -216,7 +216,7 @@ export const profileDetail = z.object({
 	ogImage: image.nullable(),
 	updatedAt: isoDateTime(),
 });
-export type ProfileDetail = z.output<typeof profileDetail>;
+export type ProfileDetail = z.output<typeof profileDetailSchema>;
 
 // ---------------------------------------------------------------------------
 // Projects
@@ -271,7 +271,7 @@ export const toProjectInput = (values: ProjectFormValues): ProjectInput => {
 	return { ...rest, coverId: firstId(cover), gallery: gallery.map((item) => item.id) };
 };
 
-export const projectListItem = z.object({
+export const projectListItemSchema = z.object({
 	id: z.string(),
 	slug: z.string(),
 	title: z.string(),
@@ -286,19 +286,24 @@ export const projectListItem = z.object({
 	publishedAt: isoDateTime().nullable(),
 	updatedAt: isoDateTime(),
 });
-export type ProjectListItem = z.output<typeof projectListItem>;
+export type ProjectListItem = z.output<typeof projectListItemSchema>;
 export type ProjectPage = Paged<ProjectListItem>;
 
-export const projectDetail = projectListItem.extend({
+export const projectDetailSchema = projectListItemSchema.extend({
 	...projectFields,
 	gallery: z.array(image),
 	createdAt: isoDateTime(),
 });
-export type ProjectDetail = z.output<typeof projectDetail>;
+export type ProjectDetail = z.output<typeof projectDetailSchema>;
 
 /** The reorder dialog: every project, in order. */
-export const projectOrderItem = projectListItem.pick({ id: true, title: true, status: true, sortOrder: true });
-export type ProjectOrderItem = z.output<typeof projectOrderItem>;
+export const projectOrderItemSchema = projectListItemSchema.pick({
+	id: true,
+	title: true,
+	status: true,
+	sortOrder: true,
+});
+export type ProjectOrderItem = z.output<typeof projectOrderItemSchema>;
 
 // ---------------------------------------------------------------------------
 // Journal posts
@@ -328,7 +333,7 @@ export const toPostInput = (values: PostFormValues): PostInput => {
 
 const localizedDto = z.custom<Localized>();
 
-export const postListItem = z.object({
+export const postListItemSchema = z.object({
 	id: z.string(),
 	slug: z.string(),
 	title: localizedDto,
@@ -338,15 +343,15 @@ export const postListItem = z.object({
 	publishedAt: isoDateTime().nullable(),
 	updatedAt: isoDateTime(),
 });
-export type PostListItem = z.output<typeof postListItem>;
+export type PostListItem = z.output<typeof postListItemSchema>;
 export type PostPage = Paged<PostListItem>;
 
-export const postDetail = postListItem.extend({
+export const postDetailSchema = postListItemSchema.extend({
 	excerpt: localizedDto,
 	body: localizedDto,
 	createdAt: isoDateTime(),
 });
-export type PostDetail = z.output<typeof postDetail>;
+export type PostDetail = z.output<typeof postDetailSchema>;
 
 /** The slug check while typing: is `slug` free for the record `id` (absent for a new one)? */
 export const slugCheckSchema = z.strictObject({
@@ -380,7 +385,7 @@ export const experienceInputSchema = z
 	});
 export type ExperienceInput = z.output<typeof experienceInputSchema>;
 export const experienceUpdateSchema = experienceInputSchema.safeExtend(versioned);
-export const experienceItem = z.object({
+export const experienceItemSchema = z.object({
 	...sectionDto,
 	company: z.string(),
 	role: localizedDto,
@@ -389,7 +394,7 @@ export const experienceItem = z.object({
 	location: localizedDto,
 	summary: localizedDto,
 });
-export type ExperienceItem = z.output<typeof experienceItem>;
+export type ExperienceItem = z.output<typeof experienceItemSchema>;
 
 export const skillInputSchema = z.strictObject({
 	title: localizedText({ max: 80 }),
@@ -398,13 +403,13 @@ export const skillInputSchema = z.strictObject({
 });
 export type SkillInput = z.output<typeof skillInputSchema>;
 export const skillUpdateSchema = skillInputSchema.extend(versioned);
-export const skillItem = z.object({
+export const skillItemSchema = z.object({
 	...sectionDto,
 	title: localizedDto,
 	summary: localizedDto,
 	skills: z.array(z.string()),
 });
-export type SkillItem = z.output<typeof skillItem>;
+export type SkillItem = z.output<typeof skillItemSchema>;
 
 export const processStepInputSchema = z.strictObject({
 	title: localizedText({ max: 80 }),
@@ -413,13 +418,13 @@ export const processStepInputSchema = z.strictObject({
 });
 export type ProcessStepInput = z.output<typeof processStepInputSchema>;
 export const processStepUpdateSchema = processStepInputSchema.extend(versioned);
-export const processStepItem = z.object({
+export const processStepItemSchema = z.object({
 	...sectionDto,
 	title: localizedDto,
 	body: localizedDto,
 	outputs: z.array(localizedDto),
 });
-export type ProcessStepItem = z.output<typeof processStepItem>;
+export type ProcessStepItem = z.output<typeof processStepItemSchema>;
 
 export const testimonialInputSchema = z.strictObject({
 	quote: localizedText({ max: 600 }),
@@ -431,7 +436,7 @@ export const testimonialInputSchema = z.strictObject({
 });
 export type TestimonialInput = z.output<typeof testimonialInputSchema>;
 export const testimonialUpdateSchema = testimonialInputSchema.extend(versioned);
-export const testimonialItem = z.object({
+export const testimonialItemSchema = z.object({
 	...sectionDto,
 	quote: localizedDto,
 	name: z.string(),
@@ -439,7 +444,7 @@ export const testimonialItem = z.object({
 	company: z.string(),
 	published: z.boolean(),
 });
-export type TestimonialItem = z.output<typeof testimonialItem>;
+export type TestimonialItem = z.output<typeof testimonialItemSchema>;
 
 // ---------------------------------------------------------------------------
 // Contact messages (the public form → the admin inbox)
@@ -458,7 +463,7 @@ export const contactInputSchema = z.strictObject({
 });
 export type ContactInput = z.output<typeof contactInputSchema>;
 
-export const contactMessageItem = z.object({
+export const contactMessageItemSchema = z.object({
 	id: z.string(),
 	name: z.string(),
 	email: z.string(),
@@ -468,7 +473,7 @@ export const contactMessageItem = z.object({
 	archivedAt: isoDateTime().nullable(),
 	createdAt: isoDateTime(),
 });
-export type ContactMessageItem = z.output<typeof contactMessageItem>;
+export type ContactMessageItem = z.output<typeof contactMessageItemSchema>;
 export type ContactMessagePage = Paged<ContactMessageItem>;
 
 export const messageStateSchema = z.strictObject({

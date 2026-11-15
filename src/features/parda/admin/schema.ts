@@ -5,9 +5,9 @@ import { localizedText, optionalText, required, slug } from "@/lib/validation";
 import { m } from "@/paraglide/messages";
 import { locales } from "@/paraglide/runtime";
 import type { RailLabel } from "../home/types";
-import { KIDS_CAPS } from "../kids";
+import { KIDS_CAPS } from "../lib/kids";
 import type { PardaSourceAdapter, PlayerTarget } from "../player/adapters/types";
-import type { PardaReportKind, PardaReportStatus } from "../player/playback";
+import type { PardaReportKind, PardaReportStatus } from "../player/lib/playback";
 import type { PardaPage } from "../search";
 import { PARDA_PAGES, type PardaOverviewRange } from "./search";
 
@@ -33,7 +33,7 @@ export const SOURCE_ADAPTIVE = ["probe", "yes", "no"] as const;
 export const SOURCE_QUALITIES = ["probe", "2160", "1440", "1080", "720", "480", "360"] as const;
 
 /** Every field of a source but its place in the order (PLAN 12.5): new rows go last, the order is its own write. */
-export const sourceInput = z.strictObject({
+export const sourceInputSchema = z.strictObject({
 	name: localizedText({ max: 60 }),
 	movieTemplate: required({ max: 500 }),
 	tvTemplate: required({ max: 500 }),
@@ -50,20 +50,20 @@ export const sourceInput = z.strictObject({
 	enabled: z.boolean(),
 	pinned: z.boolean(),
 });
-export type SourceInput = z.output<typeof sourceInput>;
-export type SourceFormValues = z.input<typeof sourceInput>;
-export const sourceUpdateInput = sourceInput.extend({ id: z.uuid(), updatedAt: version() });
+export type SourceInput = z.output<typeof sourceInputSchema>;
+export type SourceFormValues = z.input<typeof sourceInputSchema>;
+export const sourceUpdateInputSchema = sourceInputSchema.extend({ id: z.uuid(), updatedAt: version() });
 
 /** Enabling or pinning from the list: last write wins, and an open form stays current. */
-export const sourceStateInput = z.strictObject({
+export const sourceStateInputSchema = z.strictObject({
 	id: z.uuid(),
 	enabled: z.boolean().optional(),
 	pinned: z.boolean().optional(),
 });
-export type SourceStateInput = z.output<typeof sourceStateInput>;
+export type SourceStateInput = z.output<typeof sourceStateInputSchema>;
 
 /** The whole order, every source once. */
-export const sourceOrderInput = z.strictObject({ ids: z.array(z.uuid()).min(1).max(100) });
+export const sourceOrderInputSchema = z.strictObject({ ids: z.array(z.uuid()).min(1).max(100) });
 
 /** A source's latest daily rollup (decision 0238), as the sources page shows it. */
 export type AdminSourceStanding = {
@@ -115,7 +115,7 @@ export type LabSource = {
 export const PLACEHOLDER_CUES = ["fail", "stall", "silent"] as const;
 export type PlaceholderCue = (typeof PLACEHOLDER_CUES)[number];
 
-export const labPlayerInput = z.strictObject({
+export const labPlayerInputSchema = z.strictObject({
 	sourceId: z.uuid(),
 	media: z.enum(["movie", "tv"]),
 	id: z.number().int().positive().max(999_999_999),
@@ -124,7 +124,7 @@ export const labPlayerInput = z.strictObject({
 	start: z.number().int().nonnegative().max(999_999),
 	cue: z.enum(PLACEHOLDER_CUES).nullable(),
 });
-export type LabPlayerInput = z.infer<typeof labPlayerInput>;
+export type LabPlayerInput = z.infer<typeof labPlayerInputSchema>;
 
 /** One filled player. An empty `origins` with a path means this app itself. */
 export type LabPlayer = {
@@ -144,13 +144,13 @@ export type LabPlayer = {
 export const PARDA_MEDIA = ["movie", "tv"] as const;
 export type PardaAdminMedia = (typeof PARDA_MEDIA)[number];
 
-export const takedownInput = z.strictObject({
+export const takedownInputSchema = z.strictObject({
 	media: z.enum(PARDA_MEDIA),
 	tmdbId: z.number().int().positive().max(999_999_999),
 	reason: required({ max: 500 }),
 });
-export type TakedownInput = z.output<typeof takedownInput>;
-export type TakedownFormValues = z.input<typeof takedownInput>;
+export type TakedownInput = z.output<typeof takedownInputSchema>;
+export type TakedownFormValues = z.input<typeof takedownInputSchema>;
 
 export type AdminTakedown = {
 	id: string;
@@ -170,11 +170,11 @@ export type AdminTakedownPage = Paged<AdminTakedown>;
 
 export const REPORT_STATUSES = ["open", "resolved", "dismissed"] as const satisfies ReadonlyArray<PardaReportStatus>;
 
-export const reportStatusInput = z.strictObject({
+export const reportStatusInputSchema = z.strictObject({
 	ids: z.array(z.uuid()).min(1).max(100),
 	status: z.enum(REPORT_STATUSES),
 });
-export type ReportStatusInput = z.output<typeof reportStatusInput>;
+export type ReportStatusInput = z.output<typeof reportStatusInputSchema>;
 
 export type AdminReport = {
 	id: string;
@@ -200,7 +200,7 @@ export type AdminReportPage = Paged<AdminReport>;
 
 /** The certifications a kids' profile may be capped at (TMDB's US ladder: NP has none, PLAN 12.4). */
 
-export const settingsInput = z.strictObject({
+export const settingsInputSchema = z.strictObject({
 	/** ISO 3166-1 alpha-2: TMDB's certifications and watch providers fall back to it. */
 	region: z
 		.string()
@@ -214,7 +214,7 @@ export const settingsInput = z.strictObject({
 	banner: localizedText({ max: 200, optional: true }),
 	updatedAt: version(),
 });
-export type SettingsInput = z.output<typeof settingsInput>;
+export type SettingsInput = z.output<typeof settingsInputSchema>;
 
 export type AdminSettings = {
 	region: string;
@@ -228,17 +228,18 @@ export type AdminSettings = {
 	updatedAt: string;
 };
 
-export const playbackInput = z.strictObject({ enabled: z.boolean() });
+export const playbackInputSchema = z.strictObject({ enabled: z.boolean() });
 
 export const SOURCE_ORDER_MODES = ["auto", "manual"] as const;
-export const sourceOrderModeInput = z.strictObject({ mode: z.enum(SOURCE_ORDER_MODES) });
+export const sourceOrderModeInputSchema = z.strictObject({ mode: z.enum(SOURCE_ORDER_MODES) });
 
 // ---------------------------------------------------------------------------
 // Curation (PLAN Task 69, decision 0242)
 // ---------------------------------------------------------------------------
 
 /** A title as the picker holds it: "movie:550". */
-const titleRef = () => z.string().regex(/^(movie|tv):[1-9][0-9]{0,8}$/, { error: () => m.pd_admin_title_required() });
+const titleRef = () =>
+	z.string().regex(/^(movie|tv):[1-9][0-9]{0,8}$/, { error: () => m.parda_admin_title_required() });
 
 export const parseTitleRef = (ref: string): { media: PardaAdminMedia; id: number } => {
 	const [media, id] = ref.split(":");
@@ -248,7 +249,7 @@ export const parseTitleRef = (ref: string): { media: PardaAdminMedia; id: number
 /** A title found by the picker. */
 export type TitleOption = { ref: string; media: PardaAdminMedia; id: number; title: string; year: number | null };
 
-export const titleSearchInput = z.strictObject({ q: z.string().trim().max(100) });
+export const titleSearchInputSchema = z.strictObject({ q: z.string().trim().max(100) });
 
 const dateField = () => z.iso.date().or(z.literal(""));
 
@@ -263,18 +264,18 @@ const billboardFields = z.strictObject({
 
 const datesInOrder = (value: { startsOn: string; endsOn: string }, context: z.RefinementCtx) => {
 	if (value.startsOn && value.endsOn && value.endsOn < value.startsOn) {
-		context.addIssue({ code: "custom", path: ["endsOn"], message: m.pd_admin_billboard_dates_order() });
+		context.addIssue({ code: "custom", path: ["endsOn"], message: m.parda_admin_billboard_dates_order() });
 	}
 };
 
-export const billboardInput = billboardFields.superRefine(datesInOrder);
-export type BillboardInput = z.output<typeof billboardInput>;
-export type BillboardFormValues = z.input<typeof billboardInput>;
-export const billboardUpdateInput = billboardFields
+export const billboardInputSchema = billboardFields.superRefine(datesInOrder);
+export type BillboardInput = z.output<typeof billboardInputSchema>;
+export type BillboardFormValues = z.input<typeof billboardInputSchema>;
+export const billboardUpdateInputSchema = billboardFields
 	.extend({ id: z.uuid(), updatedAt: version() })
 	.superRefine(datesInOrder);
 
-export const billboardOrderInput = z.strictObject({
+export const billboardOrderInputSchema = z.strictObject({
 	page: z.enum(PARDA_PAGES),
 	ids: z.array(z.uuid()).min(1).max(100),
 });
@@ -305,14 +306,14 @@ const collectionFields = z.strictObject({
 
 const publishedHasTitles = (value: { published: boolean; items: string[] }, context: z.RefinementCtx) => {
 	if (value.published && value.items.length === 0) {
-		context.addIssue({ code: "custom", path: ["items"], message: m.pd_admin_collection_needs_titles() });
+		context.addIssue({ code: "custom", path: ["items"], message: m.parda_admin_collection_needs_titles() });
 	}
 };
 
-export const collectionInput = collectionFields.superRefine(publishedHasTitles);
-export type CollectionInput = z.output<typeof collectionInput>;
-export type CollectionFormValues = z.input<typeof collectionInput>;
-export const collectionUpdateInput = collectionFields
+export const collectionInputSchema = collectionFields.superRefine(publishedHasTitles);
+export type CollectionInput = z.output<typeof collectionInputSchema>;
+export type CollectionFormValues = z.input<typeof collectionInputSchema>;
+export const collectionUpdateInputSchema = collectionFields
 	.extend({ id: z.uuid(), updatedAt: version() })
 	.superRefine(publishedHasTitles);
 
@@ -341,14 +342,14 @@ export type AdminLayoutRail = {
 
 export type AdminLayout = { page: PardaPage; saved: boolean; rails: AdminLayoutRail[] };
 
-export const layoutInput = z.strictObject({
+export const layoutInputSchema = z.strictObject({
 	page: z.enum(PARDA_PAGES),
 	rails: z
 		.array(z.strictObject({ key: z.string().regex(/^[a-z0-9-]{1,40}$/), visible: z.boolean() }))
 		.min(1)
 		.max(200),
 });
-export type LayoutInput = z.output<typeof layoutInput>;
+export type LayoutInput = z.output<typeof layoutInputSchema>;
 
 // ---------------------------------------------------------------------------
 // Overview

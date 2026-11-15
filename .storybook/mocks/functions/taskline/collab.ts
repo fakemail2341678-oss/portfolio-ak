@@ -8,7 +8,7 @@ const task = async (): Promise<TaskDetail> => sampleTaskDetail;
 export const addTasklineComment = fn(task).mockName("addTasklineComment");
 export const updateTasklineComment = fn(task).mockName("updateTasklineComment");
 export const deleteTasklineComment = fn(task).mockName("deleteTasklineComment");
-export const watchTasklineTask = fn(task).mockName("watchTasklineTask");
+export const followTasklineTask = fn(task).mockName("followTasklineTask");
 export const addTasklineTaskFiles = fn(task).mockName("addTasklineTaskFiles");
 export const removeTasklineTaskFile = fn(task).mockName("removeTasklineTaskFile");
 export const getTasklineUploadSettings = fn(async () => ({ enabled: false })).mockName("getTasklineUploadSettings");

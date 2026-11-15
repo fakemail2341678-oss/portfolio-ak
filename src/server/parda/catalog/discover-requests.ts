@@ -4,7 +4,7 @@
  * records exactly the requests the pages make.
  */
 import type { DiscoverSearch } from "@/features/parda/search";
-import { DISCOVER_COMPANIES, DISCOVER_GENRES } from "../../../features/parda/discover/options.ts";
+import { DISCOVER_COMPANIES, DISCOVER_GENRES } from "../../../features/parda/discover/lib/options.ts";
 import type { RailRequest } from "./rails";
 
 /** TMDB's `with_status` codes for series. */

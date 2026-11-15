@@ -1,11 +1,7 @@
-import { type QueryClient, queryOptions } from "@tanstack/react-query";
-import { notFound } from "@tanstack/react-router";
-import { joinChaalTournament, withdrawChaalTournament } from "@/functions/chaal/tournament-entry";
+import { queryOptions } from "@tanstack/react-query";
+import { joinChaalTournament, leaveChaalTournament } from "@/functions/chaal/tournament-entry";
 import { getChaalArena, getChaalSwiss, getChaalTournaments } from "@/functions/chaal/tournaments";
-import { isAppError } from "@/lib/errors";
-import { ensureQuery } from "@/lib/query";
 import { chaalKeys } from "../keys";
-import type { TournamentPageSearch } from "../search";
 import type { TournamentJoinInput, TournamentKind } from "./schema";
 
 /**
@@ -37,30 +33,7 @@ export const swissQueryOptions = (id: string) =>
 	});
 
 /** Joining and withdrawing; a test or a story passes its own. */
-export const tournamentCalls = {
+export const chaalEventsMutations = {
 	join: (input: TournamentJoinInput) => joinChaalTournament({ data: input }),
-	withdraw: (kind: TournamentKind, id: string) => withdrawChaalTournament({ data: { kind, id } }),
+	withdraw: (kind: TournamentKind, id: string) => leaveChaalTournament({ data: { kind, id } }),
 };
-
-/** /tournaments: the arenas' list (a failure is the page's to say). */
-export async function loadTournamentsPage(queryClient: QueryClient) {
-	await ensureQuery(queryClient, tournamentsQueryOptions()).catch(() => undefined);
-}
-
-/** /tournaments/$id: the tournament (one Lichess doesn't know is Chaal's 404); its name for the title. */
-export async function loadTournamentPage(
-	queryClient: QueryClient,
-	id: string,
-	search: TournamentPageSearch,
-): Promise<{ name: string } | undefined> {
-	const read =
-		search.kind === "swiss"
-			? ensureQuery(queryClient, swissQueryOptions(id)).then((page) => page.swiss.name)
-			: ensureQuery(queryClient, arenaQueryOptions(id, search.page ?? 1)).then((page) => page.arena.name);
-	const name = await read.catch((error: unknown) => {
-		if (isAppError(error) && error.code === "NOT_FOUND") throw notFound();
-		// Off, or Lichess away: the page says which.
-		return null;
-	});
-	return name ? { name } : undefined;
-}

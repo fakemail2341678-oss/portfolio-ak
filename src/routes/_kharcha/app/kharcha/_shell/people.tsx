@@ -1,6 +1,6 @@
 import { createFileRoute, stripSearchParams } from "@tanstack/react-router";
-import { kharchaHead } from "@/features/kharcha/brand";
-import { PeoplePage } from "@/features/kharcha/people/people-page";
+import { kharchaHead } from "@/features/kharcha/lib/brand";
+import { PeoplePage } from "@/features/kharcha/people/components/people-page";
 import { PEOPLE_SEARCH_DEFAULTS, peopleSearch } from "@/features/kharcha/search";
 import { ensureQuery } from "@/lib/query";
 import { m } from "@/paraglide/messages";

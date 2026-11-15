@@ -1,5 +1,5 @@
 import { fn } from "storybook/test";
-import type { Dashboard } from "../../../src/features/admin/dashboard";
+import type { Dashboard } from "../../../src/features/admin/lib/dashboard";
 import { sampleDashboard } from "../data";
 
 // Stand-in for src/functions/admin.ts.

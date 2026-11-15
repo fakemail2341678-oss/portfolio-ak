@@ -7,7 +7,7 @@ import { SlugField, slugValidators } from "@/components/forms/fields/slug-field"
 import { FormSection, StickyFormBar } from "@/components/page/form-layout";
 import { Button } from "@/components/ui/button";
 import { MediaField } from "@/features/media/components/media-field";
-import { useCan } from "@/features/rbac/can";
+import { useCan } from "@/features/rbac/hooks/use-can";
 import { isProjectSlugFree } from "@/functions/portfolio";
 import { formatNumber } from "@/lib/i18n/intl";
 import { m } from "@/paraglide/messages";
@@ -17,8 +17,8 @@ import { PROJECT_MAX_GALLERY, type ProjectDetail, toProjectInput } from "../../s
 import { projectKeys } from "../keys";
 import { MOTIF_LABELS, STATUS_LABELS } from "../labels";
 import { projectMutations } from "../queries";
-import { CaseStudyBlocks } from "./case-study-blocks";
-import { LinkFields, MetricFields } from "./field-groups";
+import { CaseStudyBlocks } from "./case-study-blocks-editor";
+import { LinkFields, MetricFields } from "./grouped-field";
 import { projectFormOptions } from "./project-form-options";
 
 const EMPTY = { en: "", ne: "" };

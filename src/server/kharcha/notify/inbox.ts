@@ -1,6 +1,6 @@
 import "@tanstack/react-start/server-only";
 import { and, count, desc, eq, inArray, isNotNull, isNull, lt } from "drizzle-orm";
-import { NOTIFY_KINDS, type NotifyEmail, type NotifyKind, notifyMode } from "@/features/kharcha/notifications";
+import { NOTIFY_KINDS, type NotifyEmail, type NotifyKind, notifyMode } from "@/features/kharcha/lib/notifications";
 import type { NotifySettingsInput } from "@/features/kharcha/schema";
 import type { NotificationView } from "@/features/kharcha/types";
 import { khNotification, khProfile } from "@/server/db/schema";

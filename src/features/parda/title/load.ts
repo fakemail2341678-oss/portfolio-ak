@@ -5,9 +5,9 @@ import { ensureQuery } from "@/lib/query";
 import { type JsonLd, localizedUrl, type SeoImage } from "@/lib/seo";
 import { m } from "@/paraglide/messages";
 import { getLocale, type Locale } from "@/paraglide/runtime";
-import { GENRE_LABELS } from "../genres";
 import type { HubTitle } from "../home/types";
-import { tmdbImage } from "../kit/image";
+import { tmdbImage } from "../kit/lib/image";
+import { GENRE_LABELS } from "../lib/genres";
 import { PARDA_PATHS, pardaLinks } from "../links";
 import {
 	pardaCollectionQueryOptions,
@@ -144,7 +144,7 @@ export async function loadTitlePage(
 	}
 	return {
 		title: title.year ? `${title.title} (${title.year})` : title.title,
-		description: describe(title.overview, m.pd_title_description({ title: title.title })),
+		description: describe(title.overview, m.parda_title_description({ title: title.title })),
 		path: PARDA_PATHS.title(title.media, title.id, title.slug),
 		image: preview(imageBase, title.backdrop, title.title),
 		jsonLd: titleJsonLd(title, imageBase, data),
@@ -163,10 +163,10 @@ export async function loadCreditsPage(
 	const { title, imageBase } = data;
 	toCanonical(params, title.slug, true);
 	const path = PARDA_PATHS.credits(title.media, title.id, title.slug);
-	const name = m.pd_credits_title({ title: title.title });
+	const name = m.parda_credits_title({ title: title.title });
 	return {
 		title: name,
-		description: m.pd_credits_description({
+		description: m.parda_credits_description({
 			title: title.title,
 			names: data.cast
 				.slice(0, 3)
@@ -206,7 +206,7 @@ export async function loadPersonPage(
 		.join(", ");
 	return {
 		title: person.name,
-		description: describe(person.biography, m.pd_person_description({ name: person.name, titles: known })),
+		description: describe(person.biography, m.parda_person_description({ name: person.name, titles: known })),
 		path,
 		image: portrait ? { url: portrait.src, width: 185, height: 278, alt: person.name } : null,
 		jsonLd: {
@@ -256,7 +256,7 @@ export async function loadCollectionPage(
 		title: collection.name,
 		description: describe(
 			collection.overview,
-			m.pd_collection_description({ name: collection.name, count: String(parts.length) }),
+			m.parda_collection_description({ name: collection.name, count: String(parts.length) }),
 		),
 		path,
 		image: preview(imageBase, collection.backdrop, collection.name),
@@ -278,7 +278,7 @@ export async function loadCuratedPage(
 		title: collection.name,
 		description: describe(
 			collection.description,
-			m.pd_curated_description({ name: collection.name, count: String(parts.length) }),
+			m.parda_curated_description({ name: collection.name, count: String(parts.length) }),
 		),
 		path,
 		image: preview(imageBase, collection.backdrop, collection.name),

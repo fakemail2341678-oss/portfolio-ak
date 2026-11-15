@@ -1,4 +1,4 @@
-import { type QueryClient, queryOptions } from "@tanstack/react-query";
+import { queryOptions } from "@tanstack/react-query";
 import {
 	getPardaContinue,
 	getPardaForYou,
@@ -93,7 +93,3 @@ export const pardaProfilesQueryOptions = (locale: Locale) =>
 		queryFn: () => getPardaProfiles({ data: { locale } }),
 		staleTime: 30_000,
 	});
-
-/** After a save, a mark or a Remove: the rail and the title's progress read again. */
-export const refreshLibrary = (queryClient: QueryClient) =>
-	queryClient.invalidateQueries({ queryKey: pardaLibraryKeys.all, refetchType: "active" });

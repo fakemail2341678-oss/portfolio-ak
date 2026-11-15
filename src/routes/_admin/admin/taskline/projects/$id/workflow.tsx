@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { AdminProjectWorkflow } from "@/features/taskline/admin/projects/project-tabs";
+import { AdminProjectWorkflow } from "@/features/taskline/admin/projects/components/project-tabs";
 import { staticCrumb } from "@/lib/breadcrumbs";
 import { m } from "@/paraglide/messages";
 

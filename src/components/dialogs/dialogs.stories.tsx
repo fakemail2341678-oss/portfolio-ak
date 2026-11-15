@@ -6,8 +6,8 @@ import { formValidators, useAppForm } from "@/components/forms";
 import { Button } from "@/components/ui/button";
 import { required } from "@/lib/validation";
 import { m } from "@/paraglide/messages";
-import { useConfirm } from "./confirm";
 import { FormDialog, FormSheet } from "./form-dialog";
+import { useConfirm } from "./use-confirm";
 
 const onAnswer = fn();
 const onSave = fn();

@@ -1,8 +1,8 @@
 import { formatDayMonth, formatNumber } from "@/lib/i18n/intl";
 import { m } from "@/paraglide/messages";
-import type { RecurringUnit } from "../recurring/cadence";
+import type { RecurringUnit } from "../recurring/lib/cadence";
 import type { BudgetView, RecurringProblem, RecurringView } from "../types";
-import type { BudgetPeriod, PeriodRange } from "./period";
+import type { BudgetPeriod, PeriodRange } from "./lib/period";
 
 /** Planning's words (Task 94): periods, cadences, a budget's name and a period's days. */
 

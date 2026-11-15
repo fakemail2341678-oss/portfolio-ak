@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { type LocalProgress, localContinue } from "@/features/parda/library/local";
+import { type LocalProgress, localContinue } from "@/features/parda/library/lib/local";
 import {
 	airedEpisodes,
 	continueEntry,
@@ -9,8 +9,8 @@ import {
 	nextUnwatched,
 	type ProgressRow,
 	type SeriesShape,
-} from "@/features/parda/library/progress";
-import { BLOCKER_STORES, blockerStore } from "@/features/parda/player/blocker";
+} from "@/features/parda/library/lib/progress";
+import { BLOCKER_STORES, blockerStore } from "@/features/parda/player/lib/blocker";
 import {
 	fallsBack,
 	firstSource,
@@ -21,10 +21,10 @@ import {
 	nextSource,
 	playOrder,
 	startFor,
-} from "@/features/parda/player/machine";
-import { connectionBand } from "@/features/parda/player/playback";
-import { fillTemplate, withStart } from "@/features/parda/player/templates";
-import type { WatchSource } from "@/features/parda/player/watch-types";
+} from "@/features/parda/player/lib/machine";
+import { connectionBand } from "@/features/parda/player/lib/playback";
+import { fillTemplate, withStart } from "@/features/parda/player/lib/templates";
+import type { WatchSource } from "@/features/parda/player/lib/watch-types";
 
 /**
  * Task 64's pure rules (PLAN 12.5, decision 0236): Continue watching, the watch page's

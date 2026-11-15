@@ -1,5 +1,5 @@
 import { m } from "@/paraglide/messages";
-import type { Permission, Resource } from "./permissions";
+import type { Permission, Resource } from "./lib/permissions";
 
 /** Localized names, called at render time. Every catalog entry must have one (a test checks). */
 export const RESOURCE_LABELS: Record<Resource, () => string> = {

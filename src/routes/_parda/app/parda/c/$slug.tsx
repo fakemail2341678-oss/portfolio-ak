@@ -1,7 +1,7 @@
 import { createFileRoute, notFound } from "@tanstack/react-router";
 import { curatedParamSchema } from "@/features/parda/search";
+import { PardaCuratedPage } from "@/features/parda/title/components/parda-collection-page";
 import { pardaContentHead } from "@/features/parda/title/head";
-import { PardaCuratedPage } from "@/features/parda/title/parda-collection-page";
 import { getLocale } from "@/paraglide/runtime";
 
 /** /app/parda/c/best-of-2024: a collection the admin put together (PLAN Task 69). Indexable. */

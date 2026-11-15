@@ -1,8 +1,8 @@
 import "@tanstack/react-start/server-only";
 import { waitUntil } from "@vercel/functions";
 import { and, asc, eq, gt, inArray, isNull, lt, or, sql } from "drizzle-orm";
-import { TASKLINE_NAME } from "@/features/taskline/brand";
-import { notificationSentence } from "@/features/taskline/notifications";
+import { TASKLINE_NAME } from "@/features/taskline/lib/brand";
+import { notificationSentence } from "@/features/taskline/lib/notifications";
 import { SANDBOX_SEGMENT } from "@/features/taskline/types";
 import { localizedUrl } from "@/lib/seo";
 import { baseLocale, isLocale, type Locale } from "@/paraglide/runtime";

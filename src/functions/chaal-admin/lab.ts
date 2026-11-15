@@ -9,6 +9,6 @@ export const getChaalLab = createServerFn({ method: "GET" })
 	.middleware([requirePermission("chaal:configure")])
 	.handler((): Promise<ChaalLabState> => lab.labState());
 
-export const checkChaalPublicLane = createServerFn({ method: "POST" })
+export const pingChaalPublicLane = createServerFn({ method: "POST" })
 	.middleware([requirePermission("chaal:configure")])
 	.handler((): Promise<ChaalLaneCheck> => lab.checkPublicLane());

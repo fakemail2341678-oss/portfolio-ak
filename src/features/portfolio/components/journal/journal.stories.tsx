@@ -1,9 +1,9 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { expect } from "storybook/test";
-import { demo, withPortfolioCanvas } from "../story-helpers";
+import { demo, withPortfolioCanvas } from "../story-frame";
 import { WorkRow } from "../work/work-row";
-import { ArticleBody } from "./article-body";
-import { PostLine } from "./post-line";
+import { ArticleBody } from "./article-body-section";
+import { PostLine } from "./post-row";
 
 /** Lists and the article body. */
 const meta = {

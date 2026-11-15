@@ -72,8 +72,8 @@ print("First word of a message key", firstWords, 45);
 
 // --- Permissions -------------------------------------------------------------------------------
 
-// The catalog's lines: `resource: ["action", …],` (src/features/rbac/permissions.ts).
-const catalog = read("src/features/rbac/permissions.ts").split("ALL_PERMISSIONS")[0] ?? "";
+// The catalog's lines: `resource: ["action", …],` (src/features/rbac/lib/permissions.ts).
+const catalog = read("src/features/rbac/lib/permissions.ts").split("ALL_PERMISSIONS")[0] ?? "";
 const permissions = [...catalog.matchAll(/^\s*"?([a-z][\w-]*)"?:\s*\[([^\]]*)\]/gm)]
 	.flatMap((match) =>
 		[...(match[2] ?? "").matchAll(/"([^"]+)"/g)].map((action) => `${match[1] ?? ""}:${action[1] ?? ""}`),

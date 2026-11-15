@@ -3,8 +3,8 @@ import { formatNumber } from "@/lib/i18n/intl";
 import { m } from "@/paraglide/messages";
 import { ARCHIVE } from "../../lib/archive";
 import type { Profile } from "../../types";
-import { FittedName } from "../primitives/fitted-name";
-import { TextAnchor } from "../primitives/links";
+import { FittedName } from "../primitives/fitted-name-mark";
+import { TextAnchor } from "../primitives/text-link";
 import { PORTFOLIO_NAV } from "./nav-items";
 
 type FooterProfile = Pick<Profile, "name" | "email" | "location" | "socials" | "since" | "updated">;

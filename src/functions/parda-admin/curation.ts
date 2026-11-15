@@ -4,14 +4,14 @@ import {
 	type AdminBillboard,
 	type AdminCollection,
 	type AdminLayout,
-	billboardInput,
-	billboardOrderInput,
-	billboardUpdateInput,
-	collectionInput,
-	collectionUpdateInput,
-	layoutInput,
+	billboardInputSchema,
+	billboardOrderInputSchema,
+	billboardUpdateInputSchema,
+	collectionInputSchema,
+	collectionUpdateInputSchema,
+	layoutInputSchema,
 	type TitleOption,
-	titleSearchInput,
+	titleSearchInputSchema,
 } from "@/features/parda/admin/schema";
 import { PARDA_PAGES } from "@/features/parda/admin/search";
 import { zodInput } from "@/functions/_lib/validator";
@@ -29,7 +29,7 @@ const layoutPage = z.strictObject({ page: z.enum(PARDA_PAGES) });
 /** The title picker: it asks TMDB, so only someone who can curate may. */
 export const searchPardaTitles = createServerFn({ method: "GET" })
 	.middleware([requirePermission("parda:curate"), withServices])
-	.validator(zodInput(titleSearchInput))
+	.validator(zodInput(titleSearchInputSchema))
 	.handler(({ data, context }): Promise<TitleOption[]> => curation.searchTitles(pardaCurator(context), data.q));
 
 export const listPardaBillboards = createServerFn({ method: "GET" })
@@ -43,17 +43,17 @@ export const getPardaBillboard = createServerFn({ method: "GET" })
 
 export const createPardaBillboard = createServerFn({ method: "POST" })
 	.middleware([requirePermission("parda:curate"), withServices])
-	.validator(zodInput(billboardInput))
+	.validator(zodInput(billboardInputSchema))
 	.handler(({ data, context }): Promise<AdminBillboard> => curation.createBillboard(pardaCurator(context), data));
 
 export const updatePardaBillboard = createServerFn({ method: "POST" })
 	.middleware([requirePermission("parda:curate"), withServices])
-	.validator(zodInput(billboardUpdateInput))
+	.validator(zodInput(billboardUpdateInputSchema))
 	.handler(({ data, context }): Promise<AdminBillboard> => curation.updateBillboard(pardaCurator(context), data));
 
 export const reorderPardaBillboards = createServerFn({ method: "POST" })
 	.middleware([requirePermission("parda:curate"), withServices])
-	.validator(zodInput(billboardOrderInput))
+	.validator(zodInput(billboardOrderInputSchema))
 	.handler(({ data, context }): Promise<{ moved: number }> => curation.reorderBillboards(pardaCurator(context), data));
 
 export const deletePardaBillboards = createServerFn({ method: "POST" })
@@ -74,12 +74,12 @@ export const getPardaAdminCollection = createServerFn({ method: "GET" })
 
 export const createPardaCollection = createServerFn({ method: "POST" })
 	.middleware([requirePermission("parda:curate"), withServices])
-	.validator(zodInput(collectionInput))
+	.validator(zodInput(collectionInputSchema))
 	.handler(({ data, context }): Promise<AdminCollection> => curation.createCollection(pardaCurator(context), data));
 
 export const updatePardaCollection = createServerFn({ method: "POST" })
 	.middleware([requirePermission("parda:curate"), withServices])
-	.validator(zodInput(collectionUpdateInput))
+	.validator(zodInput(collectionUpdateInputSchema))
 	.handler(({ data, context }): Promise<AdminCollection> => curation.updateCollection(pardaCurator(context), data));
 
 export const deletePardaCollections = createServerFn({ method: "POST" })
@@ -94,7 +94,7 @@ export const getPardaLayout = createServerFn({ method: "GET" })
 	.validator(zodInput(layoutPage))
 	.handler(({ data, context }): Promise<AdminLayout> => curation.getLayout(context, data.page));
 
-export const savePardaLayout = createServerFn({ method: "POST" })
+export const setPardaLayout = createServerFn({ method: "POST" })
 	.middleware([requirePermission("parda:curate"), withServices])
-	.validator(zodInput(layoutInput))
+	.validator(zodInput(layoutInputSchema))
 	.handler(({ data, context }): Promise<AdminLayout> => curation.saveLayout(pardaCurator(context), data));

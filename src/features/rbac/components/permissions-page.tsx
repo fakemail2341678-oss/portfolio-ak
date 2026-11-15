@@ -3,9 +3,9 @@ import { InfoIcon } from "lucide-react";
 import { Page, PageHeader } from "@/components/page/page";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { m } from "@/paraglide/messages";
-import { useActor, useCan } from "../can";
+import { useActor, useCan } from "../hooks/use-can";
 import { rolesQueryOptions } from "../queries";
-import { PermissionMatrix } from "./permission-matrix";
+import { PermissionMatrix } from "./permission-matrix-grid";
 import { RoleTabs } from "./role-tabs";
 
 /** /admin/roles/permissions: the matrix, editable with roles:manage (within the actor's own permissions). */

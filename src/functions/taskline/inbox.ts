@@ -1,5 +1,5 @@
 import { createServerFn } from "@tanstack/react-start";
-import { inboxInput, markReadInput, notifySettingsInput } from "@/features/taskline/schema";
+import { inboxInputSchema, markReadInputSchema, notifySettingsInputSchema } from "@/features/taskline/schema";
 import type { InboxPage, NotifySettingsView, UnreadCount } from "@/features/taskline/types";
 import { zodInput } from "@/functions/_lib/validator";
 import { requireTasklineUser, withTasklineServices } from "@/middleware/taskline";
@@ -9,7 +9,7 @@ import * as inbox from "@/server/taskline/notify/inbox";
 
 export const listTasklineInbox = createServerFn({ method: "GET" })
 	.middleware([requireTasklineUser, withTasklineServices])
-	.validator(zodInput(inboxInput))
+	.validator(zodInput(inboxInputSchema))
 	.handler(({ data, context }): Promise<InboxPage> => inbox.listInbox(context, data));
 
 /** What the sidebar's badge polls every minute. */
@@ -17,16 +17,16 @@ export const getTasklineUnread = createServerFn({ method: "GET" })
 	.middleware([requireTasklineUser, withTasklineServices])
 	.handler(({ context }): Promise<UnreadCount> => inbox.unreadCount(context));
 
-export const markTasklineRead = createServerFn({ method: "POST" })
+export const setTasklineNotificationsRead = createServerFn({ method: "POST" })
 	.middleware([requireTasklineUser, withTasklineServices])
-	.validator(zodInput(markReadInput))
+	.validator(zodInput(markReadInputSchema))
 	.handler(({ data, context }): Promise<UnreadCount> => inbox.markRead(context, data));
 
 export const getTasklineNotifySettings = createServerFn({ method: "GET" })
 	.middleware([requireTasklineUser, withTasklineServices])
 	.handler(({ context }): Promise<NotifySettingsView> => inbox.getNotifySettings(context));
 
-export const saveTasklineNotifySettings = createServerFn({ method: "POST" })
+export const setTasklineNotifySettings = createServerFn({ method: "POST" })
 	.middleware([requireTasklineUser, withTasklineServices])
-	.validator(zodInput(notifySettingsInput))
+	.validator(zodInput(notifySettingsInputSchema))
 	.handler(({ data, context }): Promise<NotifySettingsView> => inbox.saveNotifySettings(context, data));

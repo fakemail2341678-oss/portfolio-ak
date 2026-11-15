@@ -5,9 +5,9 @@ Things many projects need but the base doesn't ship in every app (Part 3 rule: w
 | Recipe | Example or script |
 | --- | --- |
 | [Background jobs](#background-jobs) | `/dev/examples/background-jobs`, `src/server/examples/jobs.ts` |
-| [Cursor pagination](#cursor-pagination) | `cursorPaginate()` in `src/server/db/list.ts`, `tests/server/recipes.test.ts` |
+| [Cursor pagination](#cursor-pagination) | `cursorPaginate()` in `src/server/db/list.ts`, `tests/server/rate-limit-and-cursor.test.ts` |
 | [Caching public pages](#caching-public-pages) | `/dev/examples/caching`, `publicCache()` in `src/lib/http/cache-control.ts` |
-| [Rate limiting server functions](#rate-limiting-server-functions) | `src/server/http/rate-limit.ts`, `tests/server/recipes.test.ts` |
+| [Rate limiting server functions](#rate-limiting-server-functions) | `src/server/http/rate-limit.ts`, `tests/server/rate-limit-and-cursor.test.ts` |
 | [Contact form](#contact-form) | `/dev/examples/contact` |
 | [Avatar upload](#avatar-upload) | `/dev/examples/attachments` (the same flow) |
 | [CSV export, undo, saved views](#csv-export-delete-with-undo-saved-views) | `/dev/examples/list-extras`, `src/lib/csv.ts` |
@@ -37,7 +37,7 @@ Vercel functions end with the response, so anything slow or retryable (bulk emai
 - the URL carries an opaque `?cursor=` instead of `?page=`; a broken cursor is the first page;
 - there is no total or "page 7 of 12": show "Load more" (or infinite scroll with `useInfiniteQuery`).
 
-Order with `cursorOrder(column, id, direction)` and return the sort value with `key`. For timestamps select it as text (`sql\`${table.publishedAt}::text\``): a JS `Date` drops microseconds and rows could be skipped. The search schema gets `cursor: z.string().max(200).optional().catch(undefined)`. `tests/server/recipes.test.ts` walks ten rows with shared timestamps in pages of four.
+Order with `cursorOrder(column, id, direction)` and return the sort value with `key`. For timestamps select it as text (`sql\`${table.publishedAt}::text\``): a JS `Date` drops microseconds and rows could be skipped. The search schema gets `cursor: z.string().max(200).optional().catch(undefined)`. `tests/server/rate-limit-and-cursor.test.ts` walks ten rows with shared timestamps in pages of four.
 
 ## Caching public pages
 
@@ -72,7 +72,7 @@ Better Auth limits its own endpoints (0128). For your public server functions (c
 
 ## Contact form
 
-`/dev/examples/contact`: a form with the honeypot field (`Honeypot` from `bot-check.tsx`), the Turnstile widget when `TURNSTILE_*` is set (`useTurnstile`, checked on the server by `verifyTurnstile` in `src/server/http/turnstile.ts`), and the rate limit above (3 per 10 minutes per IP). A filled honeypot gets the normal "sent" answer. The example logs the message; to send it:
+`/dev/examples/contact`: a form with the honeypot field (`Honeypot` from `hooks/use-turnstile.ts`), the Turnstile widget when `TURNSTILE_*` is set (`useTurnstile`, checked on the server by `verifyTurnstile` in `src/server/http/turnstile.ts`), and the rate limit above (3 per 10 minutes per IP). A filled honeypot gets the normal "sent" answer. The example logs the message; to send it:
 
 1. a template in `src/server/email/templates` (both languages, like the others) and its entry in the preview list;
 2. `CONTACT_TO` in `src/server/env.ts` (validated as an email);

@@ -2,8 +2,8 @@ import { StatusOf } from "@/components/data-display/status-badge";
 import type { DataTableColumn } from "@/components/data-table";
 import { formatDateTime, formatNumber } from "@/lib/i18n/intl";
 import { m } from "@/paraglide/messages";
-import { displayTarget, shortUrl } from "../format";
 import { LINK_STATE } from "../labels";
+import { displayTarget, shortUrl } from "../lib/format";
 import type { LinkModerationItem } from "./schema";
 
 /** Columns of /admin/links. */

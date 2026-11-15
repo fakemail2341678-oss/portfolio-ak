@@ -1,5 +1,5 @@
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from "vitest";
-import { ALL_PERMISSIONS } from "@/features/rbac/permissions";
+import { ALL_PERMISSIONS } from "@/features/rbac/lib/permissions";
 import { getDashboard } from "@/server/admin/dashboard";
 import { recordAudit } from "@/server/audit/record";
 import * as schema from "@/server/db/schema";

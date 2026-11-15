@@ -12,7 +12,7 @@ import {
 	uniqueIndex,
 	uuid,
 } from "drizzle-orm/pg-core";
-import type { ChaalFeaturedKind, ChaalHomeSectionKey } from "@/features/chaal/home/curation";
+import type { ChaalFeaturedKind, ChaalHomeSectionKey } from "@/features/chaal/home/lib/curation";
 import { localizedText } from "../columns";
 import type { ChaalActivityMode } from "./activity";
 
@@ -54,7 +54,7 @@ export const chFeatured = pgTable(
 
 /**
  * The home's sections under the hero, in the admin's order, each with a switch. No rows
- * means the default order (src/features/chaal/home/curation.ts); a section added in code
+ * means the default order (src/features/chaal/home/lib/curation.ts); a section added in code
  * joins at the end.
  */
 export const chHomeSection = pgTable("ch_home_section", {

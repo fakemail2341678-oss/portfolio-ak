@@ -12,7 +12,7 @@ import type {
 } from "@/features/parda/library/types";
 import { zodInput } from "@/functions/_lib/validator";
 import { isIsoDate } from "@/lib/i18n/date-only";
-import { requirePardaViewer, withPardaServices } from "@/middleware/parda";
+import { requirePardaUser, withPardaServices } from "@/middleware/parda";
 import { locales } from "@/paraglide/runtime";
 import * as saved from "@/server/parda/library/saved";
 import * as library from "@/server/parda/library/service";
@@ -21,7 +21,7 @@ import { guestDeletesAt, profilesOf } from "@/server/parda/profiles/service";
 /**
  * Parda's library (PLAN 12.5, decisions 0236 and 0240): progress, Continue watching and
  * marks, My List, ♥, likes, History and the home's personal rails, for anyone with a
- * session (guests included). Each runs `requirePardaViewer` (the session
+ * session (guests included). Each runs `requirePardaUser` (the session
  * and the active profile) then `withPardaServices`; every service call acts on that
  * profile only (tests/server/parda-access.test.ts).
  */
@@ -73,7 +73,7 @@ const importInput = z.strictObject({
 });
 
 export const getPardaViewer = createServerFn({ method: "GET" })
-	.middleware([requirePardaViewer, withPardaServices])
+	.middleware([requirePardaUser, withPardaServices])
 	.handler(
 		async ({ context }): Promise<PardaViewerData> => ({
 			profile: {
@@ -90,25 +90,25 @@ export const getPardaViewer = createServerFn({ method: "GET" })
 	);
 
 export const getPardaContinue = createServerFn({ method: "GET" })
-	.middleware([requirePardaViewer, withPardaServices])
+	.middleware([requirePardaUser, withPardaServices])
 	.validator(zodInput(z.strictObject({ locale })))
 	.handler(({ data, context }): Promise<ContinueRailData> => library.continueWatching(context, data.locale));
 
 export const getPardaTitleProgress = createServerFn({ method: "GET" })
-	.middleware([requirePardaViewer, withPardaServices])
+	.middleware([requirePardaUser, withPardaServices])
 	.validator(zodInput(titleInput.extend({ locale }).strict()))
 	.handler(
 		({ data, context }): Promise<TitleProgressData> =>
 			library.titleProgress(context, { media: data.media, id: data.id }, data.locale),
 	);
 
-export const savePardaProgress = createServerFn({ method: "POST" })
-	.middleware([requirePardaViewer, withPardaServices])
+export const setPardaProgress = createServerFn({ method: "POST" })
+	.middleware([requirePardaUser, withPardaServices])
 	.validator(zodInput(progressInput))
 	.handler(({ data, context }) => library.saveProgress(context, data));
 
-export const markPardaWatched = createServerFn({ method: "POST" })
-	.middleware([requirePardaViewer, withPardaServices])
+export const setPardaWatched = createServerFn({ method: "POST" })
+	.middleware([requirePardaUser, withPardaServices])
 	.validator(zodInput(markInput))
 	.handler(async ({ data, context }): Promise<{ ok: true }> => {
 		await library.mark(context, data, data.locale);
@@ -116,7 +116,7 @@ export const markPardaWatched = createServerFn({ method: "POST" })
 	});
 
 export const removePardaContinue = createServerFn({ method: "POST" })
-	.middleware([requirePardaViewer, withPardaServices])
+	.middleware([requirePardaUser, withPardaServices])
 	.validator(zodInput(titleInput))
 	.handler(async ({ data, context }): Promise<{ ok: true }> => {
 		await library.removeFromContinue(context, data);
@@ -124,7 +124,7 @@ export const removePardaContinue = createServerFn({ method: "POST" })
 	});
 
 export const rewatchPardaTitle = createServerFn({ method: "POST" })
-	.middleware([requirePardaViewer, withPardaServices])
+	.middleware([requirePardaUser, withPardaServices])
 	.validator(zodInput(titleInput))
 	.handler(async ({ data, context }): Promise<{ ok: true }> => {
 		await library.rewatch(context, data);
@@ -133,7 +133,7 @@ export const rewatchPardaTitle = createServerFn({ method: "POST" })
 
 /** The browser's progress from before the session, once. */
 export const importPardaProgress = createServerFn({ method: "POST" })
-	.middleware([requirePardaViewer, withPardaServices])
+	.middleware([requirePardaUser, withPardaServices])
 	.validator(zodInput(importInput))
 	.handler(({ data, context }) =>
 		library.importLocal(
@@ -144,12 +144,12 @@ export const importPardaProgress = createServerFn({ method: "POST" })
 
 /** What the profile saved, for every page's buttons (the layout reads it for a session). */
 export const getPardaSaved = createServerFn({ method: "GET" })
-	.middleware([requirePardaViewer, withPardaServices])
+	.middleware([requirePardaUser, withPardaServices])
 	.handler(({ context }): Promise<SavedState> => saved.savedState(context));
 
 /** + My List or ♥ on a title, or off. */
 export const setPardaListed = createServerFn({ method: "POST" })
-	.middleware([requirePardaViewer, withPardaServices])
+	.middleware([requirePardaUser, withPardaServices])
 	.validator(zodInput(listedInput))
 	.handler(async ({ data, context }): Promise<{ ok: true }> => {
 		await saved.setListed(context, data);
@@ -158,7 +158,7 @@ export const setPardaListed = createServerFn({ method: "POST" })
 
 /** ♥ on a person, or off. */
 export const setPardaPersonFavourite = createServerFn({ method: "POST" })
-	.middleware([requirePardaViewer, withPardaServices])
+	.middleware([requirePardaUser, withPardaServices])
 	.validator(zodInput(personInput))
 	.handler(async ({ data, context }): Promise<{ ok: true }> => {
 		await saved.setPersonFavourite(context, data);
@@ -167,7 +167,7 @@ export const setPardaPersonFavourite = createServerFn({ method: "POST" })
 
 /** Like, Not for me, or neither (null). */
 export const ratePardaTitle = createServerFn({ method: "POST" })
-	.middleware([requirePardaViewer, withPardaServices])
+	.middleware([requirePardaUser, withPardaServices])
 	.validator(zodInput(rateInput))
 	.handler(async ({ data, context }): Promise<{ ok: true }> => {
 		await saved.rate(context, data);
@@ -176,7 +176,7 @@ export const ratePardaTitle = createServerFn({ method: "POST" })
 
 /** My List or ♥, a page at a time (♥ also lists the favourite people). */
 export const getPardaLibrary = createServerFn({ method: "GET" })
-	.middleware([requirePardaViewer, withPardaServices])
+	.middleware([requirePardaUser, withPardaServices])
 	.validator(zodInput(libraryInput))
 	.handler(({ data, context }): Promise<LibraryListData | LibraryFavouritesData> => {
 		const query = { type: data.type, sort: data.sort, page: data.page };
@@ -186,13 +186,13 @@ export const getPardaLibrary = createServerFn({ method: "GET" })
 	});
 
 export const getPardaHistory = createServerFn({ method: "GET" })
-	.middleware([requirePardaViewer, withPardaServices])
+	.middleware([requirePardaUser, withPardaServices])
 	.validator(zodInput(historyInput))
 	.handler(({ data, context }): Promise<HistoryData> => saved.history(context, data.page, data.locale));
 
 /** Takes one title's day out of History. */
 export const removePardaHistory = createServerFn({ method: "POST" })
-	.middleware([requirePardaViewer, withPardaServices])
+	.middleware([requirePardaUser, withPardaServices])
 	.validator(zodInput(historyEntryInput))
 	.handler(async ({ data, context }): Promise<{ ok: true }> => {
 		await saved.removeHistory(context, data);
@@ -200,8 +200,8 @@ export const removePardaHistory = createServerFn({ method: "POST" })
 	});
 
 /** Clears History, and with it Continue watching. */
-export const clearPardaHistory = createServerFn({ method: "POST" })
-	.middleware([requirePardaViewer, withPardaServices])
+export const deletePardaHistory = createServerFn({ method: "POST" })
+	.middleware([requirePardaUser, withPardaServices])
 	.handler(async ({ context }): Promise<{ ok: true }> => {
 		await saved.clearHistory(context);
 		return { ok: true };
@@ -209,6 +209,6 @@ export const clearPardaHistory = createServerFn({ method: "POST" })
 
 /** The home's "Because you liked …" and "New from people you love". */
 export const getPardaForYou = createServerFn({ method: "GET" })
-	.middleware([requirePardaViewer, withPardaServices])
+	.middleware([requirePardaUser, withPardaServices])
 	.validator(zodInput(z.strictObject({ locale })))
 	.handler(({ data, context }): Promise<ForYouData> => saved.forYou(context, data.locale));

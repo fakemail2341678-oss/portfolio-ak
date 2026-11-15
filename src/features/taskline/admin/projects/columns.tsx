@@ -3,7 +3,7 @@ import { StatusOf } from "@/components/data-display/status-badge";
 import type { DataTableColumn } from "@/components/data-table";
 import { formatDateTime, formatNumber } from "@/lib/i18n/intl";
 import { m } from "@/paraglide/messages";
-import { tasklineColor } from "../../colors";
+import { tasklineColor } from "../../lib/colors";
 import { PROJECT_HEALTH, PROJECT_STATUS, VISIBILITY_LABELS } from "../labels";
 import type { AdminProjectItem } from "../schema";
 

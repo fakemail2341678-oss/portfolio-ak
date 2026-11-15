@@ -10,8 +10,8 @@ import {
 	DropdownMenuRadioItem,
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useTheme } from "@/lib/stores/hooks";
 import { type Preferences, THEMES, type ThemePreference } from "@/lib/stores/preferences";
+import { useTheme } from "@/lib/stores/use-stores";
 import { m } from "@/paraglide/messages";
 
 const DARK_QUERY = "(prefers-color-scheme: dark)";

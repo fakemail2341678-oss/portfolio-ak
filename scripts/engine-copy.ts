@@ -6,7 +6,7 @@
  * (1.85 MB), unmodified, and the licence as COPYING.txt; the package's other builds (about
  * 200 MB) stay in node_modules. The copies are named with a hash of both files, so they
  * can be cached for a year; a file whose hash isn't ENGINE_HASH
- * (src/features/chaal/engine/files.ts) is refused, so a new package version is a
+ * (src/features/chaal/engine/lib/files.ts) is refused, so a new package version is a
  * deliberate change there. The folder is gitignored.
  *
  * `chaalEngine()` is the Vite plugin that runs this before `vite dev` and `vite build`
@@ -26,7 +26,7 @@ import {
 	ENGINE_PACKAGE,
 	ENGINE_SCRIPT,
 	ENGINE_WASM,
-} from "../src/features/chaal/engine/files.ts";
+} from "../src/features/chaal/engine/lib/files.ts";
 
 const ROOT = path.resolve(import.meta.dirname, "..");
 const target = (served: string) => path.join(ROOT, "public", ...served.split("/").filter(Boolean));
@@ -43,7 +43,7 @@ export function copyEngine(): "copied" | "present" {
 	const pkg = JSON.parse(readFileSync(manifest, "utf8")) as { version?: string };
 	if (pkg.version !== ENGINE_PACKAGE.version) {
 		throw new Error(
-			`engine-copy: ${ENGINE_PACKAGE.name} is ${pkg.version}, expected ${ENGINE_PACKAGE.version} (src/features/chaal/engine/files.ts)`,
+			`engine-copy: ${ENGINE_PACKAGE.name} is ${pkg.version}, expected ${ENGINE_PACKAGE.version} (src/features/chaal/engine/lib/files.ts)`,
 		);
 	}
 	const dir = path.dirname(manifest);

@@ -3,8 +3,8 @@ import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { useState } from "react";
 import { describe, expect, it, vi } from "vitest";
-import { Backlog } from "@/features/taskline/sprints/backlog";
-import { backlogLayout } from "@/features/taskline/sprints/moves";
+import { Backlog } from "@/features/taskline/sprints/components/backlog-list";
+import { backlogLayout } from "@/features/taskline/sprints/lib/moves";
 import type { SprintSummary, TasklineStatus, TaskSummary } from "@/features/taskline/types";
 
 /**

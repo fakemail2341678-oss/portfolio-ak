@@ -1,7 +1,7 @@
 import { type ReactNode, useLayoutEffect } from "react";
-import type { BillboardItem } from "../../src/features/parda/kit/billboard";
-import type { EpisodeCardItem, PosterCardItem } from "../../src/features/parda/kit/cards";
-import type { PardaImage } from "../../src/features/parda/kit/image";
+import type { BillboardItem } from "../../src/features/parda/kit/components/billboard-hero";
+import type { EpisodeCardItem, PosterCardItem } from "../../src/features/parda/kit/components/title-card";
+import type { PardaImage } from "../../src/features/parda/kit/lib/image";
 import type { Session } from "../../src/lib/session";
 
 /**

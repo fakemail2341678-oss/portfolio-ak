@@ -19,9 +19,9 @@ export const idSchema = z.strictObject({ id: z.uuid() });
  * the wire. Parsing a row with the DTO schema turns one into the other, so
  * repositories don't write `toISOString()` by hand:
  *
- *   export const projectListItem = z.object({ id: z.string(), title: z.string(), updatedAt: isoDateTime() });
- *   export type ProjectListItem = z.output<typeof projectListItem>;   // updatedAt: string
- *   rows.map((row) => projectListItem.parse(row))                        // picks the fields, converts the dates
+ *   export const projectListItemSchema = z.object({ id: z.string(), title: z.string(), updatedAt: isoDateTime() });
+ *   export type ProjectListItem = z.output<typeof projectListItemSchema>;   // updatedAt: string
+ *   rows.map((row) => projectListItemSchema.parse(row))                        // picks the fields, converts the dates
  */
 export const isoDateTime = () =>
 	z.codec(z.date(), z.iso.datetime(), {

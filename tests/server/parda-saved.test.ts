@@ -1,6 +1,6 @@
 import { and, eq } from "drizzle-orm";
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
-import { withinCap } from "@/features/parda/kids";
+import { withinCap } from "@/features/parda/lib/kids";
 import type { Session } from "@/lib/session";
 import * as schema from "@/server/db/schema";
 import { claimGuest } from "@/server/guests/service";

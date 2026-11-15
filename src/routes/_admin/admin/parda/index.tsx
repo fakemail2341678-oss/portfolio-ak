@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { PardaOverviewPage } from "@/features/parda/admin/overview/overview-page";
+import { PardaOverviewPage } from "@/features/parda/admin/overview/components/overview-page";
 import { pardaOverviewSearch } from "@/features/parda/admin/search";
 import { titleHead } from "@/lib/crud/route";
 import { ensureQuery } from "@/lib/query";
@@ -14,6 +14,6 @@ export const Route = createFileRoute("/_admin/admin/parda/")({
 		const { pardaOverviewQueryOptions } = await import("@/features/parda/admin/queries");
 		await ensureQuery(context.queryClient, pardaOverviewQueryOptions(deps.range));
 	},
-	head: titleHead(m.pd_admin_overview_title),
+	head: titleHead(m.parda_admin_overview_title),
 	component: PardaOverviewPage,
 });

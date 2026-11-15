@@ -1,5 +1,5 @@
 import { createServerFn } from "@tanstack/react-start";
-import { type KharchaSender, suspendKharchaSenderInput } from "@/features/kharcha/admin/schema";
+import { type KharchaSender, suspendKharchaSenderInputSchema } from "@/features/kharcha/admin/schema";
 import { zodInput } from "@/functions/_lib/validator";
 import { requirePermission } from "@/middleware/auth";
 import { withServices } from "@/middleware/services";
@@ -11,7 +11,7 @@ export const listKharchaSenders = createServerFn({ method: "GET" })
 	.middleware([requirePermission("kharcha:read"), withServices])
 	.handler(({ context }): Promise<KharchaSender[]> => listSenders(context.db));
 
-export const suspendKharchaSender = createServerFn({ method: "POST" })
+export const setKharchaSenderSuspended = createServerFn({ method: "POST" })
 	.middleware([requirePermission("kharcha:configure"), withServices])
-	.validator(zodInput(suspendKharchaSenderInput))
+	.validator(zodInput(suspendKharchaSenderInputSchema))
 	.handler(({ data, context }): Promise<void> => suspendSender(context, data));

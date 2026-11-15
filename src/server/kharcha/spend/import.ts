@@ -1,7 +1,7 @@
 import "@tanstack/react-start/server-only";
 import { createHash } from "node:crypto";
 import { eq } from "drizzle-orm";
-import type { Split } from "@/features/kharcha/money/split";
+import type { Split } from "@/features/kharcha/money/lib/split";
 import { IMPORT_ROWS_MAX, type ImportInput } from "@/features/kharcha/schema";
 import { type ImportResult, KHARCHA_COLORS } from "@/features/kharcha/types";
 import { AppError } from "@/lib/errors";

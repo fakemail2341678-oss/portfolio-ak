@@ -1,5 +1,5 @@
 import { createServerFn } from "@tanstack/react-start";
-import { type FollowedPlayer, followInput } from "@/features/chaal/players/schema";
+import { type FollowedPlayer, followInputSchema } from "@/features/chaal/players/schema";
 import { zodInput } from "@/functions/_lib/validator";
 import { requireChaalUser, withChaalServices } from "@/middleware/chaal";
 import * as players from "@/server/chaal/players/service";
@@ -17,7 +17,7 @@ export const getChaalFollowing = createServerFn({ method: "GET" })
 
 export const followChaalPlayer = createServerFn({ method: "POST" })
 	.middleware([requireChaalUser, withChaalServices])
-	.validator(zodInput(followInput))
+	.validator(zodInput(followInputSchema))
 	.handler(
 		({ context, data }): Promise<void> => players.setFollowing(context, context.user.id, data.username, data.follow),
 	);

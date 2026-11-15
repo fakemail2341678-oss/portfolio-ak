@@ -1,6 +1,6 @@
 import { tasklineLinks } from "@/features/taskline/links";
 import { m } from "@/paraglide/messages";
-import { ButtonLink } from "../primitives/links";
+import { ButtonLink } from "../primitives/text-link";
 
 /**
  * A case study's way into Taskline, for a project whose "App" field says `taskline`:

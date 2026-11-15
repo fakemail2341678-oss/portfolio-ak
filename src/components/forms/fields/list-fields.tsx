@@ -13,8 +13,10 @@ import { formatNumber } from "@/lib/i18n/intl";
 import { cn } from "@/lib/utils";
 import { m } from "@/paraglide/messages";
 import { useFieldContext } from "../contexts";
-import { type FieldBaseProps, FieldLabelText, FieldMessages, useFieldA11y } from "../field-shell";
-import { fieldDomId, useFormMeta } from "../form-meta";
+import { type FieldBaseProps, FieldLabelText, FieldMessages } from "../field-shell";
+import { fieldDomId } from "../form-meta";
+import { useFieldA11y } from "../use-field-a11y";
+import { useFormMeta } from "../use-form-meta";
 import { SortableList } from "./sortable-list";
 
 /**

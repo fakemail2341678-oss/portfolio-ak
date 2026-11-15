@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { chaalHead } from "@/features/chaal/brand";
-import { ChaalLocalGamePage } from "@/features/chaal/local/local-game-page";
+import { chaalHead } from "@/features/chaal/lib/brand";
+import { ChaalLocalGamePage } from "@/features/chaal/local/components/local-game-page";
 import { m } from "@/paraglide/messages";
 
 /**
@@ -18,6 +18,6 @@ export const Route = createFileRoute("/_chaal/app/chaal/local/$id")({
 		// Not on the account (another player's, deleted, or still in this browser): the page decides.
 		await ensureQuery(context.queryClient, localGameQueryOptions(params.id)).catch(() => undefined);
 	},
-	head: () => chaalHead(m.ch_local_title()),
+	head: () => chaalHead(m.chaal_local_title()),
 	component: ChaalLocalGamePage,
 });

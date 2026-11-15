@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { chaalPageHead } from "@/features/chaal/head";
 import { CHAAL_PATHS } from "@/features/chaal/links";
-import { ChaalPlayHub } from "@/features/chaal/local/play-hub";
+import { ChaalPlayHub } from "@/features/chaal/local/components/play-hub-page";
 import { playSearch } from "@/features/chaal/search";
 import { m } from "@/paraglide/messages";
 
@@ -34,6 +34,6 @@ export const Route = createFileRoute("/_chaal/app/chaal/play")({
 			challenges(),
 		]);
 	},
-	head: () => chaalPageHead(CHAAL_PATHS.play, m.ch_play_title(), m.ch_play_description()),
+	head: () => chaalPageHead(CHAAL_PATHS.play, m.chaal_play_title(), m.chaal_play_description()),
 	component: ChaalPlayHub,
 });

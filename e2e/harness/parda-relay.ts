@@ -1,7 +1,7 @@
 /**
  * Stands in for the realtime service in e2e (decision 0243): one channel per party over a plain
  * WebSocket, with presence, checking the same tokens the real service would. CI never
- * calls the real service. The client's side is `connectRelay` in src/features/parda/party/channel.ts.
+ * calls the real service. The client's side is `connectRelay` in src/features/parda/party/lib/channel.ts.
  */
 import { createHmac, timingSafeEqual } from "node:crypto";
 import type { Server } from "node:http";

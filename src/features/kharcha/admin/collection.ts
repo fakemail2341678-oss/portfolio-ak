@@ -1,5 +1,5 @@
 import { crudCollection } from "@/lib/crud/collection";
-import { kharchaAdminKeys } from "./queries";
+import { kharchaAdminKeys } from "./keys";
 import type { KharchaSender } from "./schema";
 
 /**

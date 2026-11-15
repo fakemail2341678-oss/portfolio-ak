@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { TasklineActivityPage } from "@/features/taskline/admin/activity/activity-page";
+import { TasklineActivityPage } from "@/features/taskline/admin/activity/components/activity-page";
 import { adminActivityList, TL_ADMIN_ACTIVITY_TABLE_ID } from "@/features/taskline/admin/search";
 import { staticCrumb } from "@/lib/breadcrumbs";
 import { listLoader, listSearch, titleHead } from "@/lib/crud/route";

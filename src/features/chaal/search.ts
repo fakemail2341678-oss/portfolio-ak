@@ -10,7 +10,7 @@ import { CONNECT_RESULTS } from "./links";
 export const connectResultSearch = z.object({ lichess: z.enum(CONNECT_RESULTS).optional().catch(undefined) });
 
 /**
- * The analysis board's URL (Task 75, src/features/chaal/analysis/url.ts): the start
+ * The analysis board's URL (Task 75, src/features/chaal/analysis/lib/url.ts): the start
  * position, a line of UCI moves joined by "_", how far along it the board is, the side at
  * the bottom, or a saved analysis's id. Anything that doesn't read is dropped, so a mangled
  * link opens the board at the start.
@@ -40,7 +40,7 @@ export const playSearch = z.object({
 		.regex(/^[A-Za-z0-9_-]+$/)
 		.optional()
 		.catch(undefined),
-	/** A pace key: "600+5" or "d3" (src/features/chaal/play/controls.ts). */
+	/** A pace key: "600+5" or "d3" (src/features/chaal/play/lib/controls.ts). */
 	pace: z
 		.string()
 		.max(12)

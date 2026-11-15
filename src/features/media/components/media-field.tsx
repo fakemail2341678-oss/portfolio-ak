@@ -1,12 +1,13 @@
 import { ImagesIcon, Trash2Icon } from "lucide-react";
 import { lazy, Suspense, useState } from "react";
 import { useFieldContext } from "@/components/forms/contexts";
-import { FieldLabelText, FieldMessages, useFieldA11y } from "@/components/forms/field-shell";
+import { FieldLabelText, FieldMessages } from "@/components/forms/field-shell";
 import { moveItem, SortableList } from "@/components/forms/fields/sortable-list";
+import { useFieldA11y } from "@/components/forms/use-field-a11y";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import type { ImageAsset } from "@/features/attachments/schema";
-import { useCan } from "@/features/rbac/can";
+import { useCan } from "@/features/rbac/hooks/use-can";
 import { formatNumber } from "@/lib/i18n/intl";
 import { localizedValue } from "@/lib/i18n/localized";
 import { m } from "@/paraglide/messages";

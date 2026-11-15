@@ -4476,7 +4476,7 @@ As 10.1 (with 14.1's differences), and:
 | 98 | Baseline and audit: every gate timed, coverage, every deviation counted, package verdicts, the old plan's gaps | xhigh | context7, playwright | Done (decision 0295) |
 | 99 | Fast gates: find why the suites are slow, fix it, `pnpm gates` | high | context7 | Done (decision 0296) |
 | 100 | The standard: rules written, enforced by tests, AI rules, the generator | xhigh | context7, claude-code-setup | Done (decision 0297) |
-| 101 | Structure and names everywhere: one codemod, no behaviour change | high | typescript-lsp, serena | Planned |
+| 101 | Structure and names everywhere: one codemod, no behaviour change | high | typescript-lsp, serena | Done (decision 0298) |
 | 102 | Packages: upgrades, Pacer, Hotkeys, replacements | high | context7 | Planned |
 | 103 | Server core: requests, errors, auth, logs | xhigh | context7 | Planned |
 | 104 | Data core: repositories, migrations, seeds | high | context7 | Planned |
@@ -4521,6 +4521,7 @@ Task 98 measured these again and corrected the lines below where its counts diff
 - **State:** the tree is clean on `main` and `pnpm typecheck` is green. The last commit (`ac15bf9`, "optimistic trying still") is 0294's work: admin lists write through TanStack DB.
 - **Gate times (0295, 2 e2e workers, 4 Vitest workers):** typecheck 1 min 45 s with no cache and 58 s with nothing changed; `pnpm test` 207 files and 2,534 tests in 3 min 26 s; Storybook 394 stories twice, 55 s and 53 s at 7.3 GB; `pnpm test:e2e` 3,832 tests in 73 min 26 s, in ten shards to fit the tool's 10-minute limit; build 1 min 34 s; `build-storybook` 1 min 16 s. Everything but e2e takes 11 min 17 s. The owner's machine has 11.7 GB of memory, which caps the workers. **Since Task 99 (0296):** typecheck 1 min 13 s and 2 s, `pnpm test` 1 min 44 s (2,538 tests), Storybook 2 min 49 s on one page or 1 min 49 s on two, `pnpm test:e2e` 61 min 31 s for the same 3,832 tests; everything but e2e 9 min 13 s.
 - **Two folder conventions:** core features keep components in `components/` (Test CRUD, rbac, portfolio, auth: 140 `.tsx` files). The four products keep them beside the data files in module folders (taskline 111, chaal 93, kharcha 81, parda 74).
+- **Since Task 101 (0298), one folder convention and one set of names:** every feature folder, the products' modules included, holds the standard's files with `components/`, `hooks/` and `lib/`; every collection file is `collection.ts`, every server module a folder with `repository.ts` and `service.ts`, every server function starts with a standard or a domain verb, and the guards are the vocabulary's. The two lines around this one say what was there before.
 - **Names that differ:** `collection.ts` (10 files) and `collections.ts` (3); `repository.ts` and `service.ts` in a folder (core), `posts-repository.ts` style (portfolio), and many other file kinds in the products' server folders; function verbs outside the usual set (`save` 10, `find`, `locate`, `patch`, `toggle`, `add`/`remove` next to `create`/`delete`).
 - **Two write paths:** `useCrudMutation` (71 calls, the admin's, 0294) and raw `useMutation` (151 calls), in 122 files together. 36 of the 222 call sites are optimistic today. Collections: `crudCollection` descriptors for admin lists, and `queryCollectionOptions` collections in Notes, Habits and Taskline's board.
 - **Two read paths:** `useSuspenseQuery` (180) after a loader's `ensureQuery` (185), and `useQuery` (197, of which chaal 107), each of which needs a reason: 135 give none in the code.
@@ -4618,6 +4619,8 @@ A product adds `shell/`, `kit/` and `admin/`, each a feature folder.
 | `import-boundary` | 25 | 108 and 110 |
 | `documented-export` | 137 | 109 and 110 |
 | `table-name`, `migration-name`, `function-literal`, `function-validator` | 0 | hold today |
+
+Task 101 emptied its thirteen lists (0298): 687 known deviations are left under 10 rules, from `timer` down.
 
 ### 15.6 Optimistic writes: the position
 
@@ -4761,16 +4764,40 @@ The owner asked whether every operation can be optimistic, and said to do it if 
   - The working rules that lived only in Claude's memory on this machine (the effort question, targeted gates, workers, one commit on `main`) are now the `plan-task` and `gates` skills. The memory entries can stay or go.
   - Nothing is pushed, so CI has not run the template job with the standard's tests.
 
-### Task 101: Structure and names everywhere
+### Task 101: Structure and names everywhere (done)
 
-**Goal:** every file in its standard place with its standard name, in one move. Behaviour does not change.
+**Done** (2026-11-15, decision 0298). Behaviour did not change: no test, story or flow was changed for what it checks, only for the names it uses.
 
-- **One codemod** (`scripts/codemods/part9-structure.ts`, kept for reference): moves and renames files and exports for every layer, rewrites imports, and updates what holds paths as strings: `knip.json`, `scripts/strip-demo.ts`'s specs, Storybook's mocks, the guard tests' lists, lazy imports, `vite.config.ts`, the guides and CLAUDE.md.
-- **Covers:** components into `components/`, `collections.ts` to `collection.ts`, server files to `repository.ts` and `service.ts` in a folder per module, function verbs and guard names per 15.5, test files' names, message key prefixes that break the rule.
-- **The ratchet's lists it empties** (0297, the table in 15.5): `feature-file`, `feature-component`, `feature-lib`, `server-file`, `test-place`, `test-name`, `file-name`, `component-role`, `hook-file`, `export-name`, `message-name`, `function-verb` and `function-guards`, 1,239 deviations. Beyond the line above that means: other `.ts` files into `lib/` and hooks into `hooks/` as `use-<thing>.ts`, every schema renamed `<thing>Schema`, 172 component files given a role, 51 functions a standard verb, the products' guards the vocabulary's words, and `ch_` and `pd_` messages spelled out. The generator's templates, `.claude/rules/` and the skills follow the renames. After the moves, `pnpm standard --rewrite` writes the other lists again (their keys are paths); its diff must only rename keys.
-- **Renamed server functions** keep working for open tabs: check how Start derives a function's id, and say in the summary whether a deploy invalidates open pages.
-- **Database names don't change here.** A table or column rename is a migration with a cost; Task 104 decides each.
-- **Gates:** typecheck, check, knip, the full `pnpm test` and Storybook (a move can break any import), e2e for one flow per layer, the template matrix. The structure and name lists in the ratchets are empty afterwards.
+- **The codemod:** `scripts/codemods/part9-structure.ts` with its data in `part9-structure/plan.ts` (what was renamed to what), `workspace.ts` (TypeScript's language service over the files in memory), `names-in-text.ts` (old names in mocks, test lists, comments and guides) and `paths-in-guides.ts` (the guides' short paths). Kept for reference, not to run again.
+- **What moved:**
+
+  | | Count |
+  | --- | ---: |
+  | Files moved or renamed | 607 (components into `components/`, 172 of them given a role; other files into `lib/` and `hooks/`; 3 `collections.ts`; 11 server files into a folder per module; 15 tests) |
+  | Names changed by meaning | 352 (285 schemas to `<thing>Schema`, 51 server functions, 4 guards, 12 other exports) |
+  | Moves of declarations to another file | 56 (12 sets of query keys to `keys.ts`, Chaal's loaders to `load.ts`, hooks, helpers to `lib/` and `constants.ts`) |
+  | Exported hooks now in `use-<thing>` files | 39 (17 moved out of their file, 18 by renaming the file, 4 split by hand) |
+  | Single writes folded into a `<feature>Mutations` object | 14 |
+  | Imports rewritten, paths written as text | 3,338 and 106, then 118 short paths in the guides |
+  | Message keys spelled out (`ch_`, `pd_`) | 2,234, in 2,877 uses |
+  | Files in the diff | 1,506 |
+
+- **Numbers before and after:** known deviations 1,927 to 687. The thirteen lists of 15.5's first four rows are empty (1,239), and `route-import` lost one. Feature folders in the standard's shape: 9 of 129 before, all now. `pnpm test` 211 files and 2,608 tests, Storybook 394 stories twice, the entry bundle 297.1 kB: all as before.
+- **Renamed server functions and open tabs:** Start names a function by its file and its name (`sha256("<file>--<name>_createServerFn_handler")`). No functions file moved, so 531 ids stay; the 51 renamed functions have new ones. A page opened before the deploy that calls one of those gets "not found" until it is reloaded. `VERB_RENAMES` in `plan.ts` lists them.
+- **Database names did not change** (Task 104 decides each).
+- **Gates:** typecheck, Biome, knip, `pnpm standard`, `i18n:check`, the full `pnpm test` and Storybook, the build with the bundle budget, `build-storybook`, and every e2e flow (208 tests, more than the one per layer asked for). The template matrix: one row of seven ran whole (every layer stripped, the generator twice, then typecheck, Biome, knip, its 748 tests and the schema check) and passed after the three fixes below. The `--keep-apps` row got through the strip and the generator; the machine then ran out of memory and the run was stopped. The other five rows did not run.
+- **Deviations from the task as planned:**
+  - **Not everything was the codemod's.** Four hooks were split by hand before it ran (TypeScript's "Move to file" fails on two of them, one was an index file), and what its run left broken was fixed by hand: destructured dynamic imports, sixteen route loaders, three relative paths, a strip marker, four comments. `plan.ts` lists each, and decision 0298 says why.
+  - **The template row found three things no gate of the full tree shows:** the generator's templates (`.tpl`) still imported `@/features/rbac/route-guard`; `SectionHome` alone in its file was unused once no product was left (its context stays with it now); and two gaps from Task 100: `form-method.test.ts` was named after a file only Taskline has (now `forms-method.test.ts`), and the `landing_` messages of the page `pnpm strip-demo` writes had no word, so `landing` joined `SHARED_MESSAGE_WORDS`.
+  - **A second pass** renamed three collection exports and moved five declarations that the first pass turned into deviations (a moved declaration makes what it used an export).
+  - **`pnpm standard --rewrite` was run as planned,** and its diff was checked by counts, not by keys: every rule outside the thirteen has the count it had, except `route-import`, one lower.
+  - **Component exports keep their names** (`chaal-about-page.tsx` exports `ChaalAbout`): only file names carry a role. **Services keep their method names** (`forms.saveForm` behind `updateForm`).
+  - **Chaal's `chaal<Module>Mutations` objects hold plain calls,** not `mutationOptions`: named now, shaped in Task 105 and Task 118.
+  - **The guides were updated by script, not rewritten:** full paths and 118 short ones follow the moves. A short name that could mean two files (`settings.ts`) was left as it was; the layer tasks rewrite their guides (checklist line 9).
+- **Left for the owner:**
+  - Nothing is pushed, so CI has not run. Its template job is the full matrix: six of its seven rows have not run whole here (`--keep-apps`, `--keep-portfolio`, `--keep-taskline`, `--keep-parda`, `--keep-chaal`, `--keep-kharcha`). Each takes about six minutes and wants memory the machine did not have beside this session.
+  - The production build, `build-storybook` and the e2e flows ran before the last three fixes (the section-home context, a test's name, a vocabulary word); typecheck, Biome, knip, the standard and the tests those fixes touch ran after them.
+  - The 51 new function ids on the next deploy, as above.
 
 ### Task 102: Packages: upgrades, Pacer, Hotkeys, replacements
 

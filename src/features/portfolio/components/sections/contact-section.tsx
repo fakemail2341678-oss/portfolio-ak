@@ -1,10 +1,10 @@
 import { m } from "@/paraglide/messages";
 import type { Profile } from "../../types";
-import { AvailabilityNote } from "../chrome/availability";
-import { HomeTime } from "../chrome/home-time";
-import { ArchivalFigure } from "../primitives/archival-picture";
-import { FittedEmail } from "../primitives/fitted-email";
-import { TextAnchor, TextLink } from "../primitives/links";
+import { AvailabilityNote } from "../chrome/availability-badge";
+import { HomeTime } from "../chrome/home-time-badge";
+import { ArchivalFigure } from "../primitives/archival-image";
+import { FittedEmail } from "../primitives/fitted-email-link";
+import { TextAnchor, TextLink } from "../primitives/text-link";
 
 type ContactProfile = Pick<Profile, "email" | "availability" | "generatedAt" | "location" | "resume">;
 

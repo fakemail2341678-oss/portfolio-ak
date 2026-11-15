@@ -1,8 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { MessagesInbox, MessagesPending } from "@/features/portfolio/admin/components/messages-inbox";
+import { MessagesInbox, MessagesPending } from "@/features/portfolio/admin/components/messages-inbox-page";
 import { MESSAGES_TABLE_ID } from "@/features/portfolio/constants";
 import { messageList } from "@/features/portfolio/search";
-import { assertRoutePermission } from "@/features/rbac/route-guard";
+import { assertRoutePermission } from "@/features/rbac/lib/route-guard";
 import { staticCrumb } from "@/lib/breadcrumbs";
 import { listLoader, listSearch, titleHead } from "@/lib/crud/route";
 import { m } from "@/paraglide/messages";

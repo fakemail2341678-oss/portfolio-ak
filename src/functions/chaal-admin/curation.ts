@@ -2,11 +2,11 @@ import { createServerFn } from "@tanstack/react-start";
 import {
 	type ChaalAdminCuration,
 	type ChaalAdminFeatured,
-	chaalAnnouncementInput,
-	chaalFeaturedInput,
-	chaalFeaturedOrderInput,
-	chaalFeaturedUpdateInput,
-	chaalHomeSectionsInput,
+	chaalAnnouncementInputSchema,
+	chaalFeaturedInputSchema,
+	chaalFeaturedOrderInputSchema,
+	chaalFeaturedUpdateInputSchema,
+	chaalHomeSectionsInputSchema,
 } from "@/features/chaal/admin/schema";
 import { zodInput } from "@/functions/_lib/validator";
 import type { Localized } from "@/lib/i18n/localized";
@@ -24,17 +24,17 @@ export const getChaalCuration = createServerFn({ method: "GET" })
 
 export const createChaalFeatured = createServerFn({ method: "POST" })
 	.middleware([requirePermission("chaal:curate"), withServices])
-	.validator(zodInput(chaalFeaturedInput))
+	.validator(zodInput(chaalFeaturedInputSchema))
 	.handler(({ data, context }): Promise<ChaalAdminFeatured> => curation.createFeatured(chaalAdmin(context), data));
 
 export const updateChaalFeatured = createServerFn({ method: "POST" })
 	.middleware([requirePermission("chaal:curate"), withServices])
-	.validator(zodInput(chaalFeaturedUpdateInput))
+	.validator(zodInput(chaalFeaturedUpdateInputSchema))
 	.handler(({ data, context }): Promise<ChaalAdminFeatured> => curation.updateFeatured(chaalAdmin(context), data));
 
 export const reorderChaalFeatured = createServerFn({ method: "POST" })
 	.middleware([requirePermission("chaal:curate"), withServices])
-	.validator(zodInput(chaalFeaturedOrderInput))
+	.validator(zodInput(chaalFeaturedOrderInputSchema))
 	.handler(({ data, context }): Promise<{ moved: number }> => curation.reorderFeatured(chaalAdmin(context), data));
 
 export const deleteChaalFeatured = createServerFn({ method: "POST" })
@@ -42,15 +42,15 @@ export const deleteChaalFeatured = createServerFn({ method: "POST" })
 	.validator(zodInput(bulkIdsSchema()))
 	.handler(({ data, context }): Promise<{ deleted: number }> => curation.deleteFeatured(chaalAdmin(context), data.ids));
 
-export const saveChaalHomeSections = createServerFn({ method: "POST" })
+export const setChaalHomeSections = createServerFn({ method: "POST" })
 	.middleware([requirePermission("chaal:curate"), withServices])
-	.validator(zodInput(chaalHomeSectionsInput))
+	.validator(zodInput(chaalHomeSectionsInputSchema))
 	.handler(
 		({ data, context }): Promise<ChaalAdminCuration["sections"]> =>
 			curation.saveHomeSections(chaalAdmin(context), data),
 	);
 
-export const saveChaalAnnouncement = createServerFn({ method: "POST" })
+export const setChaalAnnouncement = createServerFn({ method: "POST" })
 	.middleware([requirePermission("chaal:curate"), withServices])
-	.validator(zodInput(chaalAnnouncementInput))
+	.validator(zodInput(chaalAnnouncementInputSchema))
 	.handler(({ data, context }): Promise<Localized> => curation.saveAnnouncement(chaalAdmin(context), data));

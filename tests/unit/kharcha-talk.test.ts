@@ -8,7 +8,7 @@ import {
 	parseThread,
 	threadKey,
 	threadPath,
-} from "@/features/kharcha/notifications";
+} from "@/features/kharcha/lib/notifications";
 
 /** Kharcha's comments as text (Task 92): links and mentions found when shown, never stored as markup. */
 describe("commentParts", () => {

@@ -1,5 +1,5 @@
 import "@tanstack/react-start/server-only";
-import { TASKLINE_NAME } from "@/features/taskline/brand";
+import { TASKLINE_NAME } from "@/features/taskline/lib/brand";
 import { m } from "@/paraglide/messages";
 import { getTextDirection, type Locale, localizeHref } from "@/paraglide/runtime";
 

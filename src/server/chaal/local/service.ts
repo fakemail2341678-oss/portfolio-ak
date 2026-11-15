@@ -1,7 +1,7 @@
 import "@tanstack/react-start/server-only";
 import { and, desc, eq, ne, notInArray } from "drizzle-orm";
-import { PGN_MAX_MOVES } from "@/features/chaal/chess/pgn";
-import { fromRecord } from "@/features/chaal/local/game";
+import { PGN_MAX_MOVES } from "@/features/chaal/chess/lib/pgn";
+import { fromRecord } from "@/features/chaal/local/lib/game";
 import { type LocalGameSummary, localGameRecordSchema, summaryOfRecord } from "@/features/chaal/local/schema";
 import { LOCAL_GAMES_MAX, type LocalGameRecord } from "@/features/chaal/local/types";
 import { AppError } from "@/lib/errors";

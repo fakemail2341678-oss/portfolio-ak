@@ -1,7 +1,11 @@
 import { eq } from "drizzle-orm";
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
-import { type ChaalFeaturedInput, chaalFeaturedInput, chaalHomeSectionsInput } from "@/features/chaal/admin/schema";
-import { CHAAL_HOME_SECTIONS, mergedSections, parseFeaturedRef } from "@/features/chaal/home/curation";
+import {
+	type ChaalFeaturedInput,
+	chaalFeaturedInputSchema,
+	chaalHomeSectionsInputSchema,
+} from "@/features/chaal/admin/schema";
+import { CHAAL_HOME_SECTIONS, mergedSections, parseFeaturedRef } from "@/features/chaal/home/lib/curation";
 import { AppError } from "@/lib/errors";
 import type { ChaalAdminServices } from "@/server/chaal/admin/context";
 import * as curation from "@/server/chaal/admin/curation";
@@ -78,10 +82,12 @@ describe("parseFeaturedRef", () => {
 	});
 
 	it("the input refuses an unknown theme, `mix` and dates out of order", () => {
-		expect(chaalFeaturedInput.safeParse(item({ kind: "theme", ref: "fork" })).success).toBe(true);
-		expect(chaalFeaturedInput.safeParse(item({ kind: "theme", ref: "mix" })).success).toBe(false);
-		expect(chaalFeaturedInput.safeParse(item({ kind: "theme", ref: "nosuchtheme" })).success).toBe(false);
-		expect(chaalFeaturedInput.safeParse(item({ startsOn: "2026-11-10", endsOn: "2026-11-01" })).success).toBe(false);
+		expect(chaalFeaturedInputSchema.safeParse(item({ kind: "theme", ref: "fork" })).success).toBe(true);
+		expect(chaalFeaturedInputSchema.safeParse(item({ kind: "theme", ref: "mix" })).success).toBe(false);
+		expect(chaalFeaturedInputSchema.safeParse(item({ kind: "theme", ref: "nosuchtheme" })).success).toBe(false);
+		expect(chaalFeaturedInputSchema.safeParse(item({ startsOn: "2026-11-10", endsOn: "2026-11-01" })).success).toBe(
+			false,
+		);
 	});
 });
 
@@ -190,7 +196,7 @@ describe("the home", () => {
 			...CHAAL_HOME_SECTIONS.filter((key) => key !== "themes"),
 		]);
 		expect(
-			chaalHomeSectionsInput.safeParse({
+			chaalHomeSectionsInputSchema.safeParse({
 				sections: CHAAL_HOME_SECTIONS.map(() => ({ key: "start", visible: true })),
 			}).success,
 		).toBe(false);

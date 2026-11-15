@@ -24,8 +24,8 @@ export const getPardaContinue = fn(async (): Promise<ContinueRailData> => ({ ima
 export const getPardaTitleProgress = fn(
 	async (): Promise<TitleProgressData> => ({ cta: null, share: null, episodes: [] }),
 ).mockName("getPardaTitleProgress");
-export const savePardaProgress = fn(async () => ({ saved: true })).mockName("savePardaProgress");
-export const markPardaWatched = fn(async () => ({ ok: true as const })).mockName("markPardaWatched");
+export const setPardaProgress = fn(async () => ({ saved: true })).mockName("setPardaProgress");
+export const setPardaWatched = fn(async () => ({ ok: true as const })).mockName("setPardaWatched");
 export const removePardaContinue = fn(async () => ({ ok: true as const })).mockName("removePardaContinue");
 export const rewatchPardaTitle = fn(async () => ({ ok: true as const })).mockName("rewatchPardaTitle");
 export const importPardaProgress = fn(async () => ({ imported: 0 })).mockName("importPardaProgress");
@@ -49,7 +49,7 @@ export const getPardaHistory = fn(
 	async (): Promise<HistoryData> => ({ imageBase: "", days: [], page: 1, hasMore: false }),
 ).mockName("getPardaHistory");
 export const removePardaHistory = fn(async () => ({ ok: true as const })).mockName("removePardaHistory");
-export const clearPardaHistory = fn(async () => ({ ok: true as const })).mockName("clearPardaHistory");
+export const deletePardaHistory = fn(async () => ({ ok: true as const })).mockName("deletePardaHistory");
 export const getPardaForYou = fn(
 	async (): Promise<ForYouData> => ({ imageBase: "", because: null, people: null, episodes: null }),
 ).mockName("getPardaForYou");

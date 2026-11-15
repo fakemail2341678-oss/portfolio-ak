@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { PUZZLE_ANGLES } from "./angles";
+import { PUZZLE_ANGLES } from "./lib/angles";
 
 /**
  * Puzzles (PLAN Task 80, decision 0269): what the functions return and take. Route files
@@ -52,9 +52,9 @@ const puzzleId = z.string().regex(/^[A-Za-z0-9]{4,10}$/);
 /** Lichess theme keys: camelCase letters and digits. */
 const themeKey = z.string().regex(/^[A-Za-z0-9]{1,40}$/);
 
-export const puzzleIdInput = z.strictObject({ id: puzzleId });
+export const puzzleIdInputSchema = z.strictObject({ id: puzzleId });
 
-export const puzzleBatchInput = z.strictObject({
+export const puzzleBatchInputSchema = z.strictObject({
 	angle: z.enum(PUZZLE_ANGLES),
 	difficulty: z.enum(PUZZLE_DIFFICULTIES).optional(),
 	color: z.enum(PUZZLE_COLORS).optional(),
@@ -66,7 +66,7 @@ export const puzzleBatchInput = z.strictObject({
 	/** The streak's puzzles are anyone's, never the player's own (they aren't rated). */
 	streak: z.boolean(),
 });
-export type PuzzleBatchInput = z.output<typeof puzzleBatchInput>;
+export type PuzzleBatchInput = z.output<typeof puzzleBatchInputSchema>;
 
 /** A finished puzzle, as the browser keeps it and the server stores it. */
 export const puzzleAttemptSchema = z.strictObject({
@@ -87,15 +87,15 @@ export const puzzleAttemptSchema = z.strictObject({
 });
 export type PuzzleAttempt = z.output<typeof puzzleAttemptSchema>;
 
-export const recordPuzzleAttemptInput = z.strictObject({ attempt: puzzleAttemptSchema });
+export const recordPuzzleAttemptInputSchema = z.strictObject({ attempt: puzzleAttemptSchema });
 
 /** What a session imports from this browser at once. */
 export const PUZZLE_IMPORT_MAX = 200;
-export const importPuzzleAttemptsInput = z.strictObject({
+export const importPuzzleAttemptsInputSchema = z.strictObject({
 	attempts: z.array(puzzleAttemptSchema).max(PUZZLE_IMPORT_MAX),
 });
 
-export const puzzleReplayInput = z.strictObject({ theme: z.enum(PUZZLE_ANGLES) });
+export const puzzleReplayInputSchema = z.strictObject({ theme: z.enum(PUZZLE_ANGLES) });
 
 /** How many days the progress panel and Lichess's dashboard look back. */
 export const PROGRESS_DAYS = 30;

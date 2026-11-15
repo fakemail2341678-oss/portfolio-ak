@@ -15,8 +15,8 @@ import {
 	SidebarRail,
 	useSidebar,
 } from "@/components/ui/sidebar";
-import { ADMIN_GROUP_LABELS, ADMIN_GROUPS, type AdminSection, permittedSections } from "@/features/admin/sections";
-import { usePermissions } from "@/features/rbac/can";
+import { ADMIN_GROUP_LABELS, ADMIN_GROUPS, type AdminSection, permittedSections } from "@/features/admin/lib/sections";
+import { usePermissions } from "@/features/rbac/hooks/use-can";
 import { clientEnv } from "@/lib/env/client";
 import { m } from "@/paraglide/messages";
 import { UserMenu } from "./user-menu";

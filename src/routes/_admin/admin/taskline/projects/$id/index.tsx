@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { AdminProjectDetails } from "@/features/taskline/admin/projects/project-details";
+import { AdminProjectDetails } from "@/features/taskline/admin/projects/components/project-detail";
 import { ensureQuery } from "@/lib/query";
 
 /** /admin/taskline/projects/$id: the details tab. */

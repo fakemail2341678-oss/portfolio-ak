@@ -1,5 +1,5 @@
 import { createServerFn } from "@tanstack/react-start";
-import { type ChaalAdminConnectionPage, connectionIdsInput } from "@/features/chaal/admin/schema";
+import { type ChaalAdminConnectionPage, connectionIdsInputSchema } from "@/features/chaal/admin/schema";
 import { chaalConnectionList } from "@/features/chaal/admin/search";
 import { zodInput } from "@/functions/_lib/validator";
 import { requirePermission } from "@/middleware/auth";
@@ -16,7 +16,7 @@ export const listChaalConnections = createServerFn({ method: "GET" })
 
 export const revokeChaalConnections = createServerFn({ method: "POST" })
 	.middleware([requirePermission("chaal:moderate"), withServices])
-	.validator(zodInput(connectionIdsInput))
+	.validator(zodInput(connectionIdsInputSchema))
 	.handler(
 		({ data, context }): Promise<{ revoked: number }> => connections.revokeConnections(chaalAdmin(context), data.ids),
 	);

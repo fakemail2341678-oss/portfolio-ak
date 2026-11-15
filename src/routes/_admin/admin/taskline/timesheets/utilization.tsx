@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { utilizationRange, utilizationSearch } from "@/features/taskline/admin/search";
-import { UtilizationPage } from "@/features/taskline/admin/time/utilization-page";
+import { UtilizationPage } from "@/features/taskline/admin/time/components/utilization-page";
 import { staticCrumb } from "@/lib/breadcrumbs";
 import { titleHead } from "@/lib/crud/route";
 import { ensureQuery } from "@/lib/query";

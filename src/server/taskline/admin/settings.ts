@@ -6,7 +6,7 @@ import type {
 	UpdateWorkflowsInput,
 	UpdateWorkspaceInput,
 } from "@/features/taskline/admin/schema";
-import { RESERVED_SLUGS, type StoredWorkspaceSettings, workspaceSettings } from "@/features/taskline/settings";
+import { RESERVED_SLUGS, type StoredWorkspaceSettings, workspaceSettings } from "@/features/taskline/lib/settings";
 import type { TasklineColor } from "@/features/taskline/types";
 import { AppError, type FieldErrors } from "@/lib/errors";
 import { formatNumber } from "@/lib/i18n/intl";

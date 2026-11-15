@@ -1,7 +1,7 @@
 import "@tanstack/react-start/server-only";
 import { createHash, createHmac } from "node:crypto";
 import { getRequest } from "@tanstack/react-start/server";
-import type { PardaViewerKind } from "@/features/parda/player/playback";
+import type { PardaViewerKind } from "@/features/parda/player/lib/playback";
 import type { Session } from "@/lib/session";
 import { clientIpHash, trustedClientIp } from "@/server/auth/client-ip";
 import { db } from "@/server/db/client";

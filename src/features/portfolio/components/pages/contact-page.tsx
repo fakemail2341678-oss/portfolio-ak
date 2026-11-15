@@ -3,13 +3,13 @@ import { authFeaturesQueryOptions } from "@/features/auth/queries";
 import { m } from "@/paraglide/messages";
 import { cssVars } from "../../lib/css-vars";
 import { profileQueryOptions } from "../../queries";
-import { AvailabilityNote } from "../chrome/availability";
-import { HomeTime } from "../chrome/home-time";
+import { AvailabilityNote } from "../chrome/availability-badge";
+import { HomeTime } from "../chrome/home-time-badge";
 import { ContactForm } from "../contact/contact-form";
 import { CopyEmailButton } from "../contact/copy-email-button";
-import { ArchivalFigure } from "../primitives/archival-picture";
-import { FittedEmail } from "../primitives/fitted-email";
-import { TextAnchor } from "../primitives/links";
+import { ArchivalFigure } from "../primitives/archival-image";
+import { FittedEmail } from "../primitives/fitted-email-link";
+import { TextAnchor } from "../primitives/text-link";
 
 const FIT = [m.portfolio_contact_fit_1, m.portfolio_contact_fit_2, m.portfolio_contact_fit_3] as const;
 

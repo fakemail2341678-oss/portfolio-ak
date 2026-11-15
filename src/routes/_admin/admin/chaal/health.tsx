@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { ChaalHealthPage } from "@/features/chaal/admin/health/health-page";
+import { ChaalHealthPage } from "@/features/chaal/admin/health/components/health-page";
 import { chaalHealthSearch } from "@/features/chaal/admin/search";
 import { staticCrumb } from "@/lib/breadcrumbs";
 import { titleHead } from "@/lib/crud/route";
@@ -15,7 +15,7 @@ export const Route = createFileRoute("/_admin/admin/chaal/health")({
 		const { chaalHealthQueryOptions } = await import("@/features/chaal/admin/queries");
 		await ensureQuery(context.queryClient, chaalHealthQueryOptions(deps.range));
 	},
-	staticData: { breadcrumb: staticCrumb(m.ch_admin_health_title) },
-	head: titleHead(m.ch_admin_health_title),
+	staticData: { breadcrumb: staticCrumb(m.chaal_admin_health_title) },
+	head: titleHead(m.chaal_admin_health_title),
 	component: ChaalHealthPage,
 });

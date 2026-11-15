@@ -1,7 +1,7 @@
 import { m } from "@/paraglide/messages";
 import { cssVars } from "../../lib/css-vars";
 import type { Skill } from "../../types";
-import { SectionHeading } from "../primitives/section-heading";
+import { SectionHeading } from "../primitives/section-header";
 
 type SkillsSectionProps = {
 	skills: ReadonlyArray<Skill>;

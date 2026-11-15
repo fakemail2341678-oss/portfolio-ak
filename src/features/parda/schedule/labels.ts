@@ -14,9 +14,9 @@ export function episodeRangeLabel(
 	const options = locale ? { locale } : {};
 	const number = (value: number) => formatNumber(value, {}, locale);
 	return range.lastEpisode > range.episode
-		? m.pd_episode_range(
+		? m.parda_episode_range(
 				{ season: number(range.season), first: number(range.episode), last: number(range.lastEpisode) },
 				options,
 			)
-		: m.pd_episode_code({ season: number(range.season), episode: number(range.episode) }, options);
+		: m.parda_episode_code({ season: number(range.season), episode: number(range.episode) }, options);
 }

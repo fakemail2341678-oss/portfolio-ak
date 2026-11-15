@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { AppearanceSettings } from "@/features/admin/components/appearance-settings";
+import { AppearanceSettings } from "@/features/admin/components/appearance-settings-section";
 import { staticCrumb } from "@/lib/breadcrumbs";
 import { privateHead } from "@/lib/seo";
 import { m } from "@/paraglide/messages";

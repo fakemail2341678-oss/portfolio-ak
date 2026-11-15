@@ -11,8 +11,8 @@
  * files that import nothing at run time.
  */
 import { createHash, randomUUID } from "node:crypto";
-import { expenseDebts, paymentDebt } from "../../src/features/kharcha/money/ledger.ts";
-import { computeShares, type Split } from "../../src/features/kharcha/money/split.ts";
+import { expenseDebts, paymentDebt } from "../../src/features/kharcha/money/lib/ledger.ts";
+import { computeShares, type Split } from "../../src/features/kharcha/money/lib/split.ts";
 import type { DemoQuery } from "./demo-data.ts";
 
 export const KHARCHA_DEMO = [

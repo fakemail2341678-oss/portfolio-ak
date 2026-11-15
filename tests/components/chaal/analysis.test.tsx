@@ -1,17 +1,17 @@
 // @vitest-environment jsdom
 import { act, fireEvent, render, renderHook, screen } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { EnginePanel } from "@/features/chaal/analysis/engine-panel";
-import { NodeTools } from "@/features/chaal/analysis/node-tools";
-import { TablebasePanel } from "@/features/chaal/analysis/tablebase-panel";
-import { OpeningName } from "@/features/chaal/board/opening-name";
-import { START_FEN } from "@/features/chaal/chess/rules";
-import { createTree, nodeOf, playOn } from "@/features/chaal/chess/tree";
-import type { Engine, SearchResult } from "@/features/chaal/engine/engine";
-import { DEFAULT_ENGINE_LIMITS } from "@/features/chaal/engine/limits";
-import type { EngineInfo } from "@/features/chaal/engine/uci";
-import { useEngine } from "@/features/chaal/engine/use-engine";
-import { setLiveGames, useFairPlay } from "@/features/chaal/live/fair-play";
+import { EnginePanel } from "@/features/chaal/analysis/components/engine-panel";
+import { NodeTools } from "@/features/chaal/analysis/components/node-tools-bar";
+import { TablebasePanel } from "@/features/chaal/analysis/components/tablebase-panel";
+import { OpeningName } from "@/features/chaal/board/components/opening-name-badge";
+import { START_FEN } from "@/features/chaal/chess/lib/rules";
+import { createTree, nodeOf, playOn } from "@/features/chaal/chess/lib/tree";
+import { useEngine } from "@/features/chaal/engine/hooks/use-engine";
+import type { Engine, SearchResult } from "@/features/chaal/engine/lib/engine";
+import { DEFAULT_ENGINE_LIMITS } from "@/features/chaal/engine/lib/limits";
+import type { EngineInfo } from "@/features/chaal/engine/lib/uci";
+import { setLiveGames, useFairPlay } from "@/features/chaal/live/hooks/use-fair-play";
 import { overwriteGetLocale } from "@/paraglide/runtime";
 
 /**

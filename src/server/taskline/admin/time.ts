@@ -9,8 +9,8 @@ import {
 	TIME_EXPORT_MAX,
 } from "@/features/taskline/admin/schema";
 import type { AdminTimeListInput } from "@/features/taskline/admin/search";
-import type { StoredWorkspaceSettings } from "@/features/taskline/settings";
-import { capacityFor } from "@/features/taskline/time/sheet";
+import type { StoredWorkspaceSettings } from "@/features/taskline/lib/settings";
+import { capacityFor } from "@/features/taskline/time/lib/sheet";
 import type { TimeEntry } from "@/features/taskline/types";
 import { toCsv } from "@/lib/csv";
 import { ruleError } from "@/lib/errors";

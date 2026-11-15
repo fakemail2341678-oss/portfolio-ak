@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { chaalHead } from "@/features/chaal/brand";
-import { ChaalPuzzlePage } from "@/features/chaal/puzzles/puzzles-page";
+import { chaalHead } from "@/features/chaal/lib/brand";
+import { ChaalPuzzlePage } from "@/features/chaal/puzzles/components/puzzles-page";
 import { m } from "@/paraglide/messages";
 
 /**
@@ -9,11 +9,11 @@ import { m } from "@/paraglide/messages";
  */
 export const Route = createFileRoute("/_chaal/app/chaal/puzzles/$id")({
 	loader: async ({ context, params }) =>
-		(await import("@/features/chaal/puzzles/queries")).loadPuzzlePage(
+		(await import("@/features/chaal/puzzles/load")).loadPuzzlePage(
 			context.queryClient,
 			Boolean(context.session),
 			params.id,
 		),
-	head: () => chaalHead(m.ch_puzzle_title()),
+	head: () => chaalHead(m.chaal_puzzle_title()),
 	component: ChaalPuzzlePage,
 });

@@ -1,6 +1,6 @@
 import { sql } from "drizzle-orm";
 import { check, index, jsonb, pgTable, primaryKey, text, timestamp, uuid } from "drizzle-orm/pg-core";
-import type { NotificationData, NotifyEmail, NotifyKind } from "@/features/kharcha/notifications";
+import type { NotificationData, NotifyEmail, NotifyKind } from "@/features/kharcha/lib/notifications";
 import { user } from "../auth";
 import { khExpense } from "./expense";
 import { khGroup } from "./group";
@@ -13,7 +13,7 @@ import { khPerson } from "./person";
  *
  * A thread is a group's (`group_id`), the thread of two people (`person_lo` < `person_hi`,
  * as `kh_activity`) or an expense's (`expense_id`). Outside the tables it is named by a key
- * from the reader's side (`threadKey` in src/features/kharcha/notifications.ts):
+ * from the reader's side (`threadKey` in src/features/kharcha/lib/notifications.ts):
  * `g:<group>`, `f:<the other person>`, `e:<expense>`.
  */
 

@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { ChaalBlocksPage, ChaalBlocksPending } from "@/features/chaal/admin/blocks/block-list";
+import { ChaalBlocksPage, ChaalBlocksPending } from "@/features/chaal/admin/blocks/components/block-list";
 import { CHAAL_BLOCKS_TABLE_ID, chaalBlockList } from "@/features/chaal/admin/search";
 import { staticCrumb } from "@/lib/breadcrumbs";
 import { listLoader, listSearch, titleHead } from "@/lib/crud/route";
@@ -14,8 +14,8 @@ export const Route = createFileRoute("/_admin/admin/chaal/blocks/")({
 		const { chaalBlocksQueryOptions } = await import("@/features/chaal/admin/queries");
 		return listLoader(route, { tableId: CHAAL_BLOCKS_TABLE_ID, query: chaalBlocksQueryOptions });
 	},
-	staticData: { breadcrumb: staticCrumb(m.ch_admin_blocks_title) },
-	head: titleHead(m.ch_admin_blocks_title),
+	staticData: { breadcrumb: staticCrumb(m.chaal_admin_blocks_title) },
+	head: titleHead(m.chaal_admin_blocks_title),
 	pendingComponent: ChaalBlocksPending,
 	component: ChaalBlocksPage,
 });

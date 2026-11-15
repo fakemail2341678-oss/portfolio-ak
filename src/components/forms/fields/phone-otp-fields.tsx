@@ -9,7 +9,8 @@ import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { m } from "@/paraglide/messages";
 import { useFieldContext } from "../contexts";
-import { type FieldBaseProps, FieldLabelText, FieldMessages, useFieldA11y } from "../field-shell";
+import { type FieldBaseProps, FieldLabelText, FieldMessages } from "../field-shell";
+import { useFieldA11y } from "../use-field-a11y";
 import { OptionList } from "./choice-fields";
 
 // ---------------------------------------------------------------------------

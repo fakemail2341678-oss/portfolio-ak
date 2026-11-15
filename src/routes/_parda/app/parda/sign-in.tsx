@@ -1,7 +1,7 @@
 import { createFileRoute, redirect } from "@tanstack/react-router";
 import { authFeaturesQueryOptions } from "@/features/auth/queries";
-import { PardaSignIn } from "@/features/parda/auth/parda-sign-in";
-import { pardaHead } from "@/features/parda/brand";
+import { PardaSignIn } from "@/features/parda/auth/components/parda-sign-in-page";
+import { pardaHead } from "@/features/parda/lib/brand";
 import { PARDA_PATHS } from "@/features/parda/links";
 import { redirectSearchSchema } from "@/lib/http/redirect";
 import { ensureQuery } from "@/lib/query";
@@ -20,6 +20,6 @@ export const Route = createFileRoute("/_parda/app/parda/sign-in")({
 		}
 	},
 	loader: ({ context }) => ensureQuery(context.queryClient, authFeaturesQueryOptions()),
-	head: () => pardaHead(m.pd_sign_in()),
+	head: () => pardaHead(m.parda_sign_in()),
 	component: PardaSignIn,
 });

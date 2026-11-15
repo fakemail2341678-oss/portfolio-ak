@@ -1,4 +1,4 @@
-import type { WatchPageData } from "../player/watch-types";
+import type { WatchPageData } from "../player/lib/watch-types";
 
 /** What the party's functions return (PLAN 12.5, "Watch party"; decision 0243). */
 

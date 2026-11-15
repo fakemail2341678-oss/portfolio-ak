@@ -9,7 +9,7 @@ import {
 	type Reaction,
 	type ThreadKey,
 	threadKey,
-} from "@/features/kharcha/notifications";
+} from "@/features/kharcha/lib/notifications";
 import type { CreateCommentInput, ReactInput, UpdateCommentInput } from "@/features/kharcha/schema";
 import type { CommentView, MentionHandle, ThreadState, ThreadTalk } from "@/features/kharcha/types";
 import { ruleError } from "@/lib/errors";

@@ -1,6 +1,6 @@
 import "@tanstack/react-start/server-only";
-import { continueEntry, isFinished } from "@/features/parda/library/progress";
-import type { WatchPageData, WatchSource } from "@/features/parda/player/watch-types";
+import { continueEntry, isFinished } from "@/features/parda/library/lib/progress";
+import type { WatchPageData, WatchSource } from "@/features/parda/player/lib/watch-types";
 import { AppError, isAppError } from "@/lib/errors";
 import { originOf } from "@/lib/http/csp";
 import type { PardaMedia } from "@/server/db/schema";

@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { KharchaOverviewPage } from "@/features/kharcha/admin/overview/overview-page";
+import { KharchaOverviewPage } from "@/features/kharcha/admin/overview/components/overview-page";
 import { titleHead } from "@/lib/crud/route";
 import { ensureQuery } from "@/lib/query";
 import { m } from "@/paraglide/messages";

@@ -1,7 +1,7 @@
 import "@tanstack/react-start/server-only";
 import { and, arrayOverlaps, eq, inArray, isNull, ne, or, type SQL, sql } from "drizzle-orm";
 import type { ImageAsset } from "@/features/attachments/schema";
-import { MEDIA_ENTITY, type MediaPage, type MediaUsage, mediaItem } from "@/features/media/schema";
+import { MEDIA_ENTITY, type MediaPage, type MediaUsage, mediaItemSchema } from "@/features/media/schema";
 import type { MediaListInput } from "@/features/media/search";
 import { AppError } from "@/lib/errors";
 import { localizedValue } from "@/lib/i18n/localized";
@@ -100,7 +100,7 @@ export function listMedia(db: Db, input: MediaListInput, store: ImageStore): Pro
 				rows.map((row) => row.id),
 			);
 			return rows.map((row) =>
-				mediaItem.parse({
+				mediaItemSchema.parse({
 					...row,
 					image: toImageAsset(store, row),
 					name: fileName(row),

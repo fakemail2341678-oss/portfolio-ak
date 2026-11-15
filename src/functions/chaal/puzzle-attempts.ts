@@ -2,10 +2,10 @@ import { createServerFn } from "@tanstack/react-start";
 import {
 	type ChaalPuzzleProgress,
 	type ChaalPuzzleReplay,
-	importPuzzleAttemptsInput,
+	importPuzzleAttemptsInputSchema,
 	type PuzzleAttempt,
-	puzzleReplayInput,
-	recordPuzzleAttemptInput,
+	puzzleReplayInputSchema,
+	recordPuzzleAttemptInputSchema,
 } from "@/features/chaal/puzzles/schema";
 import { zodInput } from "@/functions/_lib/validator";
 import { requireChaalUser, withChaalServices } from "@/middleware/chaal";
@@ -20,7 +20,7 @@ import * as puzzles from "@/server/chaal/puzzles/service";
 
 export const recordChaalPuzzleAttempt = createServerFn({ method: "POST" })
 	.middleware([requireChaalUser, withChaalServices])
-	.validator(zodInput(recordPuzzleAttemptInput))
+	.validator(zodInput(recordPuzzleAttemptInputSchema))
 	.handler(
 		({ context, data }): Promise<void> =>
 			puzzles.recordAttempt(context, context.user.id, data.attempt as PuzzleAttempt),
@@ -28,7 +28,7 @@ export const recordChaalPuzzleAttempt = createServerFn({ method: "POST" })
 
 export const importChaalPuzzleAttempts = createServerFn({ method: "POST" })
 	.middleware([requireChaalUser, withChaalServices])
-	.validator(zodInput(importPuzzleAttemptsInput))
+	.validator(zodInput(importPuzzleAttemptsInputSchema))
 	.handler(
 		({ context, data }): Promise<{ imported: string[] }> =>
 			puzzles.importAttempts(context, context.user.id, data.attempts as PuzzleAttempt[]),
@@ -40,5 +40,5 @@ export const getChaalPuzzleProgress = createServerFn({ method: "GET" })
 
 export const getChaalPuzzleReplay = createServerFn({ method: "GET" })
 	.middleware([requireChaalUser, withChaalServices])
-	.validator(zodInput(puzzleReplayInput))
+	.validator(zodInput(puzzleReplayInputSchema))
 	.handler(({ context, data }): Promise<ChaalPuzzleReplay> => puzzles.replay(context, context.user.id, data.theme));

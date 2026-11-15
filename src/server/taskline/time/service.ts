@@ -1,9 +1,9 @@
 import "@tanstack/react-start/server-only";
 import { and, eq, inArray, isNull } from "drizzle-orm";
-import { startOfWeek, weekOf } from "@/features/taskline/calendar/grid";
+import { startOfWeek, weekOf } from "@/features/taskline/calendar/lib/grid";
 import type { LogTimeInput, TimesheetCellInput, UpdateTimeEntryInput } from "@/features/taskline/schema";
 import { TASK_TIME_ENTRIES } from "@/features/taskline/schema";
-import { planCell } from "@/features/taskline/time/sheet";
+import { planCell } from "@/features/taskline/time/lib/sheet";
 import {
 	type CopyWeekResult,
 	isClosedCategory,

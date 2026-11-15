@@ -1,7 +1,7 @@
 import { createFileRoute, notFound } from "@tanstack/react-router";
 import { titleRouteParams } from "@/features/parda/search";
+import { PardaCreditsPage } from "@/features/parda/title/components/parda-credits-page";
 import { pardaContentHead } from "@/features/parda/title/head";
-import { PardaCreditsPage } from "@/features/parda/title/parda-credits-page";
 import { getLocale } from "@/paraglide/runtime";
 
 /** /app/parda/movie/550-fight-club/credits: the full cast and crew, by department (PLAN Task 63). Indexable. */

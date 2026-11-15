@@ -6,7 +6,7 @@ import {
 	featuredState,
 	mergedSections,
 	sectionOf,
-} from "@/features/chaal/home/curation";
+} from "@/features/chaal/home/lib/curation";
 import { todayInZone } from "@/lib/i18n/date-only";
 import { APP_TIME_ZONE } from "@/lib/i18n/intl";
 import type { ChaalControls } from "./controls";

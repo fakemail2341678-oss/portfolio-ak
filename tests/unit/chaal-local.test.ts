@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { type PlayedMove, play, START_FEN } from "@/features/chaal/chess/rules";
-import { movesInPgn } from "@/features/chaal/local/browser";
+import { type PlayedMove, play, START_FEN } from "@/features/chaal/chess/lib/rules";
+import { movesInPgn } from "@/features/chaal/local/lib/browser";
 import {
 	addLocalMove,
 	analysisLineOf,
@@ -16,7 +16,7 @@ import {
 	stateOf,
 	takeBack,
 	toRecord,
-} from "@/features/chaal/local/game";
+} from "@/features/chaal/local/lib/game";
 import { localGameRecordSchema } from "@/features/chaal/local/schema";
 import type { LocalGame } from "@/features/chaal/local/types";
 

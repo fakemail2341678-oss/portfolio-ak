@@ -3,8 +3,8 @@ import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { useState } from "react";
 import { describe, expect, it } from "vitest";
-import { timelineGroups, timelineRange } from "@/features/taskline/timeline/layout";
-import { Timeline } from "@/features/taskline/timeline/timeline";
+import { Timeline } from "@/features/taskline/timeline/components/timeline";
+import { timelineGroups, timelineRange } from "@/features/taskline/timeline/lib/layout";
 import type { Milestone, TaskSummary } from "@/features/taskline/types";
 
 /**

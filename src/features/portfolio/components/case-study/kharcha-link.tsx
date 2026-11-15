@@ -1,6 +1,6 @@
 import { kharchaLinks } from "@/features/kharcha/links";
 import { m } from "@/paraglide/messages";
-import { ButtonLink } from "../primitives/links";
+import { ButtonLink } from "../primitives/text-link";
 
 /**
  * A case study's way into Kharcha, for a project whose "App" field says `kharcha` (the

@@ -164,7 +164,7 @@ A cool, low-chroma mountain palette (snow, granite, ridge blue, pine, night) wit
 
 **The Whole Field Rule.** A section takes one whole ground and the inks that read on it (`hm-field-*`). Neighbouring sections never share a field. Fields are never cards, insets or tinted boxes.
 
-**The Contrast Floor Rule.** Every text pair is at least 4.5:1 on its ground and its second ground, in both themes, on every field and on the art (`tests/unit/himal-tokens.test.ts`). Text on a new colour adds a pair there.
+**The Contrast Floor Rule.** Every text pair is at least 4.5:1 on its ground and its second ground, in both themes, on every field and on the art (`tests/unit/portfolio-tokens.test.ts`). Text on a new colour adds a pair there.
 
 ## Typography
 

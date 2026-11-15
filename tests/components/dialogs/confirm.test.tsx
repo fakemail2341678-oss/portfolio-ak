@@ -2,7 +2,8 @@
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
-import { ConfirmProvider, useConfirm } from "@/components/dialogs/confirm";
+import { ConfirmProvider } from "@/components/dialogs/confirm";
+import { useConfirm } from "@/components/dialogs/use-confirm";
 
 function Asker({ onAnswer }: { onAnswer: (answer: boolean) => void }) {
 	const confirm = useConfirm();

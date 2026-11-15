@@ -1,7 +1,7 @@
 import { existsSync } from "node:fs";
 import { type AnyRoute, createRouter, isNotFound } from "@tanstack/react-router";
 import { describe, expect, it, vi } from "vitest";
-import { EXAMPLES } from "@/features/dev/examples/registry";
+import { EXAMPLES } from "@/features/dev/examples/lib/registry";
 import type { RouterContext } from "@/router";
 import { routeTree } from "@/routeTree.gen";
 

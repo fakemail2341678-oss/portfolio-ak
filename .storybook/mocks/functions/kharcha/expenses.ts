@@ -17,7 +17,7 @@ export const deleteKharchaExpense = fn(
 	}),
 ).mockName("deleteKharchaExpense");
 export const restoreKharchaExpense = fn(expense).mockName("restoreKharchaExpense");
-export const markKharchaDuplicate = fn(expense).mockName("markKharchaDuplicate");
+export const setKharchaNotDuplicate = fn(expense).mockName("setKharchaNotDuplicate");
 export const listKharchaSpend = fn(async (): Promise<SpendPage> => sampleKharchaSpend).mockName("listKharchaSpend");
 export const getKharchaMerchants = fn(async (): Promise<MerchantSuggestion[]> => sampleKharchaMerchants).mockName(
 	"getKharchaMerchants",

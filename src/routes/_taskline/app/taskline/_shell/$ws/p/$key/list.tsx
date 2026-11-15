@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { tasklineTitle } from "@/features/taskline/brand";
-import { ListPage } from "@/features/taskline/list/list-page";
+import { tasklineTitle } from "@/features/taskline/lib/brand";
+import { ListPage } from "@/features/taskline/list/components/list-page";
 import { TASKS_TABLE_ID, taskList, taskListSearch } from "@/features/taskline/search";
 import { tableListInput } from "@/hooks/use-list-page";
 import { staticCrumb } from "@/lib/breadcrumbs";

@@ -1,8 +1,8 @@
 import { useQuery } from "@tanstack/react-query";
 import { Link, type LinkProps } from "@tanstack/react-router";
+import { useAuthNavigation } from "@/features/auth/hooks/use-auth-actions";
 import { sessionQueryOptions } from "@/features/auth/queries";
-import { useAuthNavigation } from "@/features/auth/use-auth-actions";
-import { canEnterAdmin } from "@/features/rbac/permissions";
+import { canEnterAdmin } from "@/features/rbac/lib/permissions";
 import { clientEnv } from "@/lib/env/client";
 import { m } from "@/paraglide/messages";
 import { LanguageSwitcher } from "./language-switcher";

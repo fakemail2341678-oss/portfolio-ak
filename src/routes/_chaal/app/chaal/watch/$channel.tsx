@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { chaalHead } from "@/features/chaal/brand";
-import { ChaalChannelPage } from "@/features/chaal/watch/channel-page";
+import { chaalHead } from "@/features/chaal/lib/brand";
+import { ChaalChannelPage } from "@/features/chaal/watch/components/channel-page";
 import { m } from "@/paraglide/messages";
 
 /**
@@ -9,7 +9,7 @@ import { m } from "@/paraglide/messages";
  */
 export const Route = createFileRoute("/_chaal/app/chaal/watch/$channel")({
 	loader: async ({ context, params }) =>
-		(await import("@/features/chaal/watch/queries")).loadChannelPage(context.queryClient, params.channel),
-	head: () => chaalHead(m.ch_watch_tv()),
+		(await import("@/features/chaal/watch/load")).loadChannelPage(context.queryClient, params.channel),
+	head: () => chaalHead(m.chaal_watch_tv()),
 	component: ChaalChannelPage,
 });

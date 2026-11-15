@@ -3,8 +3,8 @@ import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { useState } from "react";
 import { describe, expect, it } from "vitest";
-import { Calendar } from "@/features/taskline/calendar/calendar";
-import { calendarWeeks } from "@/features/taskline/calendar/grid";
+import { Calendar } from "@/features/taskline/calendar/components/calendar";
+import { calendarWeeks } from "@/features/taskline/calendar/lib/grid";
 import type { TasklineStatus, TaskSummary } from "@/features/taskline/types";
 
 /**

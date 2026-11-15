@@ -1,19 +1,11 @@
 import { mutationOptions, queryOptions } from "@tanstack/react-query";
 import { getKharchaOverview } from "@/functions/kharcha-admin/overview";
-import { listKharchaSenders, suspendKharchaSender } from "@/functions/kharcha-admin/senders";
+import { listKharchaSenders, setKharchaSenderSuspended } from "@/functions/kharcha-admin/senders";
 import { getKharchaAdminSettings, updateKharchaSettings } from "@/functions/kharcha-admin/settings";
+import { kharchaAdminKeys } from "./keys";
 import type { SuspendKharchaSenderInput, UpdateKharchaSettingsInput } from "./schema";
 
 /** /admin/kharcha's reads and writes (Task 96); routes load this on demand (0194). */
-
-const ROOT = ["kharcha-admin"] as const;
-
-export const kharchaAdminKeys = {
-	all: ROOT,
-	overview: () => [...ROOT, "overview"] as const,
-	settings: () => [...ROOT, "settings"] as const,
-	senders: () => [...ROOT, "senders"] as const,
-};
 
 export const kharchaOverviewQueryOptions = () =>
 	queryOptions({ queryKey: kharchaAdminKeys.overview(), queryFn: () => getKharchaOverview() });
@@ -27,7 +19,7 @@ export const kharchaSendersQueryOptions = () =>
 export const kharchaAdminMutations = {
 	updateSettings: () =>
 		mutationOptions({
-			mutationKey: [...ROOT, "update-settings"],
+			mutationKey: [...kharchaAdminKeys.all, "update-settings"],
 			mutationFn: (input: UpdateKharchaSettingsInput & { id: string }) => {
 				const { id: _id, ...data } = input;
 				return updateKharchaSettings({ data });
@@ -35,7 +27,7 @@ export const kharchaAdminMutations = {
 		}),
 	suspend: () =>
 		mutationOptions({
-			mutationKey: [...ROOT, "suspend"],
-			mutationFn: (input: SuspendKharchaSenderInput) => suspendKharchaSender({ data: input }),
+			mutationKey: [...kharchaAdminKeys.all, "suspend"],
+			mutationFn: (input: SuspendKharchaSenderInput) => setKharchaSenderSuspended({ data: input }),
 		}),
 };

@@ -1,7 +1,7 @@
 import "@tanstack/react-start/server-only";
 import { z } from "zod";
-import type { Score } from "@/features/chaal/chess/eval";
-import { play, START_FEN, turnOf } from "@/features/chaal/chess/rules";
+import type { Score } from "@/features/chaal/chess/lib/eval";
+import { play, START_FEN, turnOf } from "@/features/chaal/chess/lib/rules";
 import {
 	type ArenaFeatured,
 	type ArenaPodium,
@@ -25,7 +25,7 @@ import type {
 	ChaalGameLine,
 	ChaalGamePlayer,
 	ChaalGameState,
-} from "@/features/chaal/live/events";
+} from "@/features/chaal/live/lib/events";
 import {
 	type ActivityDay,
 	type ActivityGames,

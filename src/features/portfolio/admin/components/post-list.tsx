@@ -15,7 +15,7 @@ import { postColumns } from "../columns";
 import { PostFilterControls, postFilters } from "../filters";
 import { postKeys } from "../keys";
 import { postListQueryOptions, postMutations } from "../queries";
-import { PreviewLink } from "./shared";
+import { PreviewLink } from "./preview-link";
 
 const route = getRouteApi("/_admin/admin/portfolio/journal/");
 

@@ -1,4 +1,5 @@
 import "@tanstack/react-start/server-only";
+import { projectSettings } from "@/features/taskline/lib/settings";
 import type {
 	CompleteSprintInput,
 	CreateSprintInput,
@@ -6,7 +7,6 @@ import type {
 	UpdateSprintInput,
 } from "@/features/taskline/schema";
 import { PLANNED_SPRINTS_MAX } from "@/features/taskline/schema";
-import { projectSettings } from "@/features/taskline/settings";
 import type { SprintReport, SprintSummary, SprintTotals, TaskSummary } from "@/features/taskline/types";
 import { ruleError } from "@/lib/errors";
 import { addDays, todayInZone } from "@/lib/i18n/date-only";

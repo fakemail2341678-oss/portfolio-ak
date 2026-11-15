@@ -175,11 +175,11 @@ const attribute = (value: string) => value.replaceAll("&", "&amp;").replaceAll('
 
 export function renderPlaceholder(request: PlaceholderRequest, nonce: string): string {
 	const locale = { locale: request.lang };
-	const heading = m.pd_placeholder_heading({ server: request.server }, locale);
+	const heading = m.parda_placeholder_heading({ server: request.server }, locale);
 	const title =
 		request.media === "movie"
-			? m.pd_placeholder_movie({ id: request.id }, locale)
-			: m.pd_placeholder_episode(
+			? m.parda_placeholder_movie({ id: request.id }, locale)
+			: m.parda_placeholder_episode(
 					{ id: request.id, season: request.season ?? 1, episode: request.episode ?? 1 },
 					locale,
 				);
@@ -194,8 +194,8 @@ export function renderPlaceholder(request: PlaceholderRequest, nonce: string): s
 		start: request.start,
 		cue: request.cue,
 		duration: DURATION[request.media],
-		play: m.pd_placeholder_play({}, locale),
-		pause: m.pd_placeholder_pause({}, locale),
+		play: m.parda_placeholder_play({}, locale),
+		pause: m.parda_placeholder_pause({}, locale),
 	}).replaceAll("<", "\\u003c");
 	return `<!doctype html>
 <html lang="${request.lang}">
@@ -210,9 +210,9 @@ export function renderPlaceholder(request: PlaceholderRequest, nonce: string): s
 <main>
 <h1>${attribute(heading)}</h1>
 <p>${attribute(title)}</p>
-<p>${attribute(m.pd_placeholder_note({}, locale))}</p>
+<p>${attribute(m.parda_placeholder_note({}, locale))}</p>
 <p id="clock">00:00</p>
-<button id="toggle" type="button">${attribute(m.pd_placeholder_play({}, locale))}</button>
+<button id="toggle" type="button">${attribute(m.parda_placeholder_play({}, locale))}</button>
 </main>
 <script id="config" type="application/json" nonce="${nonce}">${config}</script>
 <script nonce="${nonce}">${SCRIPT}</script>

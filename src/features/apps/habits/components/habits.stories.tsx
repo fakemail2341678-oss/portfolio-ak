@@ -2,11 +2,11 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import { expect, fn, userEvent, within } from "storybook/test";
 import { addDays } from "@/lib/i18n/date-only";
 import { m } from "@/paraglide/messages";
-import { daysMask } from "../streaks";
+import { daysMask } from "../lib/streaks";
 import { EVERY_DAY } from "../types";
 import { CheckinButton } from "./checkin-button";
 import HabitDialog from "./habit-dialog";
-import { HabitHeatmap } from "./habit-heatmap";
+import { HabitHeatmap } from "./habit-heatmap-chart";
 
 const TODAY = "2026-10-30";
 

@@ -3,7 +3,7 @@ import { useCrudForm } from "@/components/crud/use-crud-form";
 import { FormDialog } from "@/components/dialogs/form-dialog";
 import { formValidators, useAppForm } from "@/components/forms";
 import { m } from "@/paraglide/messages";
-import { RBAC_REFRESH, roleKeys } from "../keys";
+import { rbacRefreshKeys, roleKeys } from "../keys";
 import { roleMutations } from "../queries";
 import { ROLE_NAME_MAX, type RoleFormValues, type RoleSummary, roleInputSchema } from "../schema";
 
@@ -24,7 +24,7 @@ export function RoleDialog({ role, onClose }: { role?: RoleSummary | undefined; 
 		toInput: (values: RoleFormValues) => roleInputSchema.parse(values),
 		create: roleMutations.create(),
 		update: roleMutations.update(),
-		invalidate: RBAC_REFRESH,
+		invalidate: rbacRefreshKeys,
 		reload: roleKeys.lists(),
 		onSaved: onClose,
 	});

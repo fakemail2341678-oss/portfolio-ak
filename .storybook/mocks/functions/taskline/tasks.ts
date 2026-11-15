@@ -22,9 +22,9 @@ export const createTasklineTask = fn(
 export const updateTasklineTask = fn(
 	async (_options: { data: unknown }): Promise<TaskDetail> => sampleTaskDetail,
 ).mockName("updateTasklineTask");
-export const patchTasklineTask = fn(
+export const setTasklineTaskField = fn(
 	async (_options: { data: unknown }): Promise<TaskDetail> => sampleTaskDetail,
-).mockName("patchTasklineTask");
+).mockName("setTasklineTaskField");
 export const moveTasklineTask = fn(
 	async (_options: { data: unknown }): Promise<TaskSummary> => sampleTasks[0] as TaskSummary,
 ).mockName("moveTasklineTask");
@@ -41,9 +41,9 @@ export const listTasklineTrash = fn(async (): Promise<TrashedTask[]> => []).mock
 export const listTasklineTaskPage = fn(
 	async (): Promise<Paged<TaskSummary>> => ({ items: sampleTasks, total: sampleTasks.length, page: 1, pageCount: 1 }),
 ).mockName("listTasklineTaskPage");
-export const bulkUpdateTasklineTasks = fn(
+export const updateTasklineTasks = fn(
 	async (_options: { data: unknown }): Promise<BulkResult> => ({ count: 1 }),
-).mockName("bulkUpdateTasklineTasks");
+).mockName("updateTasklineTasks");
 export const purgeTasklineTask = fn(async (_options: { data: unknown }): Promise<void> => undefined).mockName(
 	"purgeTasklineTask",
 );

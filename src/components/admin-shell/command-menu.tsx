@@ -12,11 +12,11 @@ import {
 	CommandSeparator,
 } from "@/components/ui/command";
 import { permittedCommands } from "@/features/admin/commands";
-import { ADMIN_SECTIONS, type AdminPath, permittedSections } from "@/features/admin/sections";
-import { useAuthNavigation } from "@/features/auth/use-auth-actions";
-import { usePermissions } from "@/features/rbac/can";
-import { useTheme } from "@/lib/stores/hooks";
+import { ADMIN_SECTIONS, type AdminPath, permittedSections } from "@/features/admin/lib/sections";
+import { useAuthNavigation } from "@/features/auth/hooks/use-auth-actions";
+import { usePermissions } from "@/features/rbac/hooks/use-can";
 import { THEMES } from "@/lib/stores/preferences";
+import { useTheme } from "@/lib/stores/use-stores";
 import { m } from "@/paraglide/messages";
 import { getLocale, type Locale, locales, localizeHref } from "@/paraglide/runtime";
 

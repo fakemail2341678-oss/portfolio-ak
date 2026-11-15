@@ -98,7 +98,7 @@ export const submitExampleSignup = createServerFn({ method: "POST" })
 	});
 
 /** Errors: throws what the example asks for. A plain Error reaches the client as INTERNAL. */
-export const failExample = createServerFn({ method: "POST" })
+export const getExampleFailure = createServerFn({ method: "POST" })
 	.middleware([requireDev])
 	.validator(zodInput(exampleErrorSchema))
 	.handler(({ data }): never => {
@@ -139,7 +139,7 @@ export const submitExampleContact = createServerFn({ method: "POST" })
 	});
 
 /** Background jobs recipe: runs the example job in process, the second step failing `failures` times. */
-export const runExampleJobFn = createServerFn({ method: "POST" })
+export const startExampleJob = createServerFn({ method: "POST" })
 	.middleware([requireDev])
 	.validator(zodInput(exampleJobSchema))
 	.handler(({ data }) => runExampleJob(data.failures));

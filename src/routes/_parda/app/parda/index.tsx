@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { PardaHome } from "@/features/parda/home/components/parda-page";
 import { pardaPageHead } from "@/features/parda/home/head";
-import { PardaHome } from "@/features/parda/home/parda-page";
 import { getLocale } from "@/paraglide/runtime";
 
 /** /app/parda: Parda's home, its billboard and rails (PLAN Task 62). Indexable. */

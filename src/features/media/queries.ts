@@ -1,11 +1,8 @@
 import { mutationOptions, queryOptions } from "@tanstack/react-query";
 import { deleteMedia, listMedia, updateMediaAlt } from "@/functions/media";
-import { createCrudKeys } from "@/lib/crud/keys";
+import { mediaKeys } from "./keys";
 import type { MediaAltInput } from "./schema";
 import type { MediaListInput } from "./search";
-
-/** The media library's keys (the shared shape), reads and writes. */
-export const mediaKeys = createCrudKeys<MediaListInput>("media");
 
 export const mediaListQueryOptions = (input: MediaListInput) =>
 	queryOptions({ queryKey: mediaKeys.list(input), queryFn: () => listMedia({ data: input }) });

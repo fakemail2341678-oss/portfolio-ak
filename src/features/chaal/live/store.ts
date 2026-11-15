@@ -1,5 +1,4 @@
-import { useSyncExternalStore } from "react";
-import type { ChaalEvent, ChaalEventChallenge, ChaalEventGame } from "./events";
+import type { ChaalEvent, ChaalEventChallenge, ChaalEventGame } from "./lib/events";
 
 /**
  * What the event stream says now, for this tab (PLAN 13.5, "Live play"; decision 0266): the
@@ -198,7 +197,3 @@ export function createLiveStore(initial: LiveState = IDLE): LiveStore {
 
 /** This tab's store: the frame starts following when the player is connected for play. */
 export const liveStore = createLiveStore();
-
-export function useLive(store: LiveStore = liveStore): LiveState {
-	return useSyncExternalStore(store.subscribe, store.get, () => IDLE);
-}

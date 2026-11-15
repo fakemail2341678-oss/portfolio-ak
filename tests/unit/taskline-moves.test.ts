@@ -6,7 +6,7 @@ import {
 	cardStep,
 	endPosition,
 	type TaskMove,
-} from "@/features/taskline/board/moves";
+} from "@/features/taskline/board/lib/moves";
 import type { TasklineStatus, TaskSummary } from "@/features/taskline/types";
 
 /** The board's moves (Kanban's, decision 0188, on statuses): each one is a single new position, the same for pointer and keys. */

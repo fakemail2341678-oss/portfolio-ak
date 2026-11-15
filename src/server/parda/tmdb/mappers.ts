@@ -1,6 +1,6 @@
 import "@tanstack/react-start/server-only";
 import { z } from "zod";
-import { titleSlug } from "@/features/parda/slug";
+import { titleSlug } from "@/features/parda/lib/slug";
 import type {
 	CreditPerson,
 	EpisodeRef,

@@ -1,7 +1,7 @@
 import { readdirSync, readFileSync, statSync } from "node:fs";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { chaalFontPreloads } from "@/features/chaal/lib/fonts";
-import { CHAAL_BOARD_THEMES } from "@/features/chaal/look/board-themes";
+import { CHAAL_BOARD_THEMES } from "@/features/chaal/look/lib/board-themes";
 import { contrast, parseOklch, readRules, resolve, tokensWhere } from "../utils/css-tokens";
 
 /**

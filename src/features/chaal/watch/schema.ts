@@ -1,7 +1,7 @@
 import { z } from "zod";
-import type { ChaalColor } from "../live/events";
+import type { ChaalColor } from "../live/lib/events";
 import type { GamePlayerSummary } from "../players/schema";
-import type { TvChannel } from "./limits";
+import type { TvChannel } from "./lib/limits";
 
 /**
  * Watch (PLAN Task 82, decision 0272): what the functions take and give. Every answer is
@@ -48,16 +48,19 @@ export type ChaalStreamer = {
 // --- Broadcasts --------------------------------------------------------------------------
 
 /** A broadcast id: a tournament's, a round's or a board's (a study chapter). */
-export const broadcastId = z.string().regex(/^[A-Za-z0-9]{8}$/);
+export const broadcastIdSchema = z.string().regex(/^[A-Za-z0-9]{8}$/);
 
 export const BROADCAST_PAGES = 20;
-export const broadcastPage = z.number().int().min(1).max(BROADCAST_PAGES);
+export const broadcastPageSchema = z.number().int().min(1).max(BROADCAST_PAGES);
 
-export const broadcastListInput = z.strictObject({ page: broadcastPage });
-export const broadcastSearchInput = z.strictObject({ q: z.string().trim().min(2).max(60), page: broadcastPage });
-export const broadcastTourInput = z.strictObject({ id: broadcastId });
-export const broadcastRoundInput = z.strictObject({ id: broadcastId });
-export const broadcastBoardInput = z.strictObject({ round: broadcastId, board: broadcastId });
+export const broadcastListInputSchema = z.strictObject({ page: broadcastPageSchema });
+export const broadcastSearchInputSchema = z.strictObject({
+	q: z.string().trim().min(2).max(60),
+	page: broadcastPageSchema,
+});
+export const broadcastTourInputSchema = z.strictObject({ id: broadcastIdSchema });
+export const broadcastRoundInputSchema = z.strictObject({ id: broadcastIdSchema });
+export const broadcastBoardInputSchema = z.strictObject({ round: broadcastIdSchema, board: broadcastIdSchema });
 
 export type RoundState = "upcoming" | "ongoing" | "finished";
 

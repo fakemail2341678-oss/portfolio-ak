@@ -1,4 +1,5 @@
 import { createServerFn } from "@tanstack/react-start";
+import { withPublic } from "@/middleware/services";
 import { checkAppDatabase } from "@/server/db/health";
 
 /**
@@ -6,4 +7,6 @@ import { checkAppDatabase } from "@/server/db/health";
  * The handler runs only on the server; the Start compiler replaces it with an
  * RPC stub in the client bundle, which prunes the db imports.
  */
-export const getDbHealth = createServerFn({ method: "GET" }).handler(() => checkAppDatabase());
+export const getDbHealth = createServerFn({ method: "GET" })
+	.middleware([withPublic])
+	.handler(() => checkAppDatabase());

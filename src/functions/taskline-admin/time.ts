@@ -3,11 +3,11 @@ import {
 	type AdminTimeOptions,
 	type AdminTimePage,
 	type AdminUtilization,
-	adminTimeEntryInput,
-	adminUpdateTimeEntryInput,
+	adminTimeEntryInputSchema,
+	adminUpdateTimeEntryInputSchema,
 	type ProjectExport,
-	timesheetLockInput,
-	utilizationInput,
+	timesheetLockInputSchema,
+	utilizationInputSchema,
 } from "@/features/taskline/admin/schema";
 import { adminTimeList } from "@/features/taskline/admin/search";
 import type { TimeEntry } from "@/features/taskline/types";
@@ -29,22 +29,22 @@ export const getTasklineTimeOptions = createServerFn({ method: "GET" })
 
 export const updateTasklineAdminTimeEntry = createServerFn({ method: "POST" })
 	.middleware([requirePermission("taskline:time"), withServices])
-	.validator(zodInput(adminUpdateTimeEntryInput))
+	.validator(zodInput(adminUpdateTimeEntryInputSchema))
 	.handler(({ data, context }): Promise<TimeEntry> => time.update(context, data));
 
 export const deleteTasklineAdminTimeEntry = createServerFn({ method: "POST" })
 	.middleware([requirePermission("taskline:time"), withServices])
-	.validator(zodInput(adminTimeEntryInput))
+	.validator(zodInput(adminTimeEntryInputSchema))
 	.handler(({ data, context }): Promise<void> => time.remove(context, data.id));
 
 export const setTasklineTimesheetLock = createServerFn({ method: "POST" })
 	.middleware([requirePermission("taskline:time"), withServices])
-	.validator(zodInput(timesheetLockInput))
+	.validator(zodInput(timesheetLockInputSchema))
 	.handler(({ data, context }): Promise<{ lockOn: string | null }> => time.setLock(context, data.lockOn));
 
 export const getTasklineUtilization = createServerFn({ method: "GET" })
 	.middleware([requirePermission("taskline:time"), withServices])
-	.validator(zodInput(utilizationInput))
+	.validator(zodInput(utilizationInputSchema))
 	.handler(({ data, context }): Promise<AdminUtilization> => time.utilization(context, data));
 
 export const exportTasklineTimeEntries = createServerFn({ method: "POST" })

@@ -1,5 +1,5 @@
 import { fn } from "storybook/test";
-import { newLocalGame, toRecord } from "../../../../src/features/chaal/local/game";
+import { newLocalGame, toRecord } from "../../../../src/features/chaal/local/lib/game";
 import type { LocalGameSummary } from "../../../../src/features/chaal/local/schema";
 import type { LocalGameRecord } from "../../../../src/features/chaal/local/types";
 
@@ -22,9 +22,9 @@ export const listChaalLocalGames = fn(async (): Promise<LocalGameSummary[]> => [
 	"listChaalLocalGames",
 );
 export const getChaalLocalGame = fn(async (): Promise<LocalGameRecord> => PLAYING).mockName("getChaalLocalGame");
-export const saveChaalLocalGame = fn(
+export const createChaalLocalGame = fn(
 	async ({ data }: { data: { game: LocalGameRecord } }): Promise<LocalGameSummary> => summary(data.game, 0),
-).mockName("saveChaalLocalGame");
+).mockName("createChaalLocalGame");
 export const deleteChaalLocalGame = fn(async (): Promise<void> => {}).mockName("deleteChaalLocalGame");
 export const importChaalLocalGames = fn(
 	async ({ data }: { data: { games: LocalGameRecord[] } }): Promise<{ imported: string[] }> => ({

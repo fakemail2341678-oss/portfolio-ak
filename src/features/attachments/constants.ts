@@ -1,4 +1,4 @@
-import type { Permission } from "@/features/rbac/permissions";
+import type { Permission } from "@/features/rbac/lib/permissions";
 
 /**
  * Upload rules shared by the browser (early checks, the file picker's `accept`)

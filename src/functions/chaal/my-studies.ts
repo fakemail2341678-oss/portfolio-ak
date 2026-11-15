@@ -1,5 +1,5 @@
 import { createServerFn } from "@tanstack/react-start";
-import { type SavedToStudy, type StudySummary, saveToStudyInput } from "@/features/chaal/studies/schema";
+import { type SavedToStudy, type StudySummary, saveToStudyInputSchema } from "@/features/chaal/studies/schema";
 import { zodInput } from "@/functions/_lib/validator";
 import { requireChaalUser, withChaalServices } from "@/middleware/chaal";
 import * as studies from "@/server/chaal/studies/service";
@@ -15,7 +15,7 @@ export const getChaalMyStudies = createServerFn({ method: "GET" })
 	.middleware([requireChaalUser, withChaalServices])
 	.handler(({ context }): Promise<StudySummary[]> => studies.myStudies(context, context.user.id));
 
-export const saveChaalToStudy = createServerFn({ method: "POST" })
+export const copyChaalToStudy = createServerFn({ method: "POST" })
 	.middleware([requireChaalUser, withChaalServices])
-	.validator(zodInput(saveToStudyInput))
+	.validator(zodInput(saveToStudyInputSchema))
 	.handler(({ context, data }): Promise<SavedToStudy> => studies.saveToStudy(context, context.user.id, data));

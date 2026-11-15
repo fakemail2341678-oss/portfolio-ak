@@ -10,13 +10,12 @@ import {
 	listPardaBillboards,
 	listPardaCollections,
 	reorderPardaBillboards,
-	savePardaLayout,
-	searchPardaTitles,
+	setPardaLayout,
 	updatePardaBillboard,
 	updatePardaCollection,
 } from "@/functions/parda-admin/curation";
 import { getPardaOverview } from "@/functions/parda-admin/overview";
-import { listPardaLabSources, openPardaLabPlayer } from "@/functions/parda-admin/player-lab";
+import { listPardaLabSources, previewPardaLabPlayer } from "@/functions/parda-admin/player-lab";
 import { listPardaReports, setPardaReportStatus } from "@/functions/parda-admin/reports";
 import {
 	getPardaSettings,
@@ -102,12 +101,6 @@ export const pardaAdminCollectionQueryOptions = (id: string) =>
 
 export const pardaLayoutQueryOptions = (page: PardaPage) =>
 	queryOptions({ queryKey: pardaAdminKeys.layout(page), queryFn: () => getPardaLayout({ data: { page } }) });
-
-/** The title picker's search (forms that pick a title). */
-export const searchTitleOptions = (q: string) => searchPardaTitles({ data: { q } });
-
-export const openLabPlayerMutationOptions = () =>
-	mutationOptions({ mutationFn: (data: LabPlayerInput) => openPardaLabPlayer({ data }) });
 
 /** Writes, keyed. useCrudMutation and useCrudForm add the rest. */
 export const pardaAdminMutations = {
@@ -205,11 +198,13 @@ export const pardaAdminMutations = {
 	saveLayout: () =>
 		mutationOptions({
 			mutationKey: [...pardaAdminKeys.all, "layout", "save"],
-			mutationFn: (data: LayoutInput) => savePardaLayout({ data }),
+			mutationFn: (data: LayoutInput) => setPardaLayout({ data }),
 		}),
 	purgeCache: () =>
 		mutationOptions({
 			mutationKey: [...pardaAdminKeys.settings(), "purge"],
 			mutationFn: () => purgePardaCache(),
 		}),
+
+	openLabPlayer: () => mutationOptions({ mutationFn: (data: LabPlayerInput) => previewPardaLabPlayer({ data }) }),
 };

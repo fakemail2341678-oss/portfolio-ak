@@ -1,7 +1,7 @@
 import { createFileRoute, stripSearchParams } from "@tanstack/react-router";
-import { pardaHead } from "@/features/parda/brand";
+import { pardaHead } from "@/features/parda/lib/brand";
 import { searchPageSchema } from "@/features/parda/search";
-import { PardaSearchPage } from "@/features/parda/search/search-page";
+import { PardaSearchPage } from "@/features/parda/search/components/search-page";
 import { m } from "@/paraglide/messages";
 import { getLocale } from "@/paraglide/runtime";
 
@@ -17,6 +17,7 @@ export const Route = createFileRoute("/_parda/app/parda/search")({
 		const { loadSearchPage } = await import("@/features/parda/search/load");
 		await loadSearchPage(context.queryClient, getLocale(), deps, !preload);
 	},
-	head: ({ match }) => pardaHead(match.search.q ? m.pd_search_title_for({ q: match.search.q }) : m.pd_search_title()),
+	head: ({ match }) =>
+		pardaHead(match.search.q ? m.parda_search_title_for({ q: match.search.q }) : m.parda_search_title()),
 	component: PardaSearchPage,
 });

@@ -1,5 +1,5 @@
 import "@tanstack/react-start/server-only";
-import { projectSettings } from "@/features/taskline/settings";
+import { projectSettings } from "@/features/taskline/lib/settings";
 import type { LinkedTask, StatusCategory, TaskDependencies } from "@/features/taskline/types";
 import { isAppError, ruleError } from "@/lib/errors";
 import { formatNumber } from "@/lib/i18n/intl";

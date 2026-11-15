@@ -1,5 +1,5 @@
 import { createServerFn } from "@tanstack/react-start";
-import { personIdInput, settleUpInput } from "@/features/kharcha/schema";
+import { personIdInputSchema, settleUpInputSchema } from "@/features/kharcha/schema";
 import type { RemindResult, SettleUp } from "@/features/kharcha/types";
 import { zodInput } from "@/functions/_lib/validator";
 import { requireKharchaUser, withKharchaServices } from "@/middleware/kharcha";
@@ -14,11 +14,11 @@ import * as settle from "@/server/kharcha/settle/service";
 
 export const getKharchaSettleUp = createServerFn({ method: "GET" })
 	.middleware([requireKharchaUser, withKharchaServices])
-	.validator(zodInput(settleUpInput))
+	.validator(zodInput(settleUpInputSchema))
 	.handler(({ data, context }): Promise<SettleUp> => settle.getSettleUp(context, data));
 
 /** An email to a friend who owes the caller: once a day per friend, never from a guest. */
 export const remindKharchaFriend = createServerFn({ method: "POST" })
 	.middleware([requireKharchaUser, withKharchaServices])
-	.validator(zodInput(personIdInput))
+	.validator(zodInput(personIdInputSchema))
 	.handler(({ data, context }): Promise<RemindResult> => settle.remindFriend(context, data.personId));

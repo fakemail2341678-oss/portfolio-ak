@@ -80,4 +80,4 @@ export const deletePardaCollections = fn(async (): Promise<{ deleted: number }> 
 	"deletePardaCollections",
 );
 export const getPardaLayout = fn(async (): Promise<AdminLayout> => layout).mockName("getPardaLayout");
-export const savePardaLayout = fn(async (): Promise<AdminLayout> => layout).mockName("savePardaLayout");
+export const setPardaLayout = fn(async (): Promise<AdminLayout> => layout).mockName("setPardaLayout");

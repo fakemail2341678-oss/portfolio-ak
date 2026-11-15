@@ -23,9 +23,9 @@ import { idSchema } from "@/lib/crud/schema";
 import { bulkIdsSchema } from "@/lib/list/paging";
 import { requirePermission } from "@/middleware/auth";
 import { withServices } from "@/middleware/services";
-import * as posts from "@/server/portfolio/posts-service";
-import * as profile from "@/server/portfolio/profile-service";
-import * as projects from "@/server/portfolio/projects-service";
+import * as posts from "@/server/portfolio/posts/service";
+import * as profile from "@/server/portfolio/profile/service";
+import * as projects from "@/server/portfolio/projects/service";
 
 /**
  * The portfolio admin's server functions (/admin/portfolio, decision 0176): the

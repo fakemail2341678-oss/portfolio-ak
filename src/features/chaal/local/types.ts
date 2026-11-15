@@ -1,5 +1,5 @@
-import type { TimeControl } from "../chess/clock";
-import type { Color, GameEndReason, GameResult } from "../chess/rules";
+import type { TimeControl } from "../chess/lib/clock";
+import type { Color, GameEndReason, GameResult } from "../chess/lib/rules";
 
 /**
  * Local games' types and constants (PLAN Task 76, decision 0265), apart from the model

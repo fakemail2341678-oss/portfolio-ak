@@ -7,7 +7,7 @@ import {
 	startOfWeek,
 	stepCalendar,
 	weekOf,
-} from "@/features/taskline/calendar/grid";
+} from "@/features/taskline/calendar/lib/grid";
 
 /** Taskline's calendar days (Task 51): weeks from the workspace's week start (Sunday by default), My work's groups. */
 describe("the calendar grid", () => {

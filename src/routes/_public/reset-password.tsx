@@ -4,8 +4,14 @@ import { z } from "zod";
 import { MAIN_CONTENT } from "@/components/layout/skip-link";
 import { Button } from "@/components/ui/button";
 import { AuthField, FormMessage } from "@/features/auth/components/auth-field";
-import { authErrorMessage } from "@/features/auth/errors";
-import { collectErrors, type FieldErrors, field, validateConfirm, validatePassword } from "@/features/auth/validation";
+import { authErrorMessage } from "@/features/auth/lib/errors";
+import {
+	collectErrors,
+	type FieldErrors,
+	field,
+	validateConfirm,
+	validatePassword,
+} from "@/features/auth/lib/validation";
 import { authClient } from "@/lib/auth-client";
 import { privateHead } from "@/lib/seo";
 import { m } from "@/paraglide/messages";

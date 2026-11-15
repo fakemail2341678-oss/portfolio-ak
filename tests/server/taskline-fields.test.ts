@@ -1,7 +1,7 @@
 import { eq } from "drizzle-orm";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import type { Actor } from "@/features/rbac/types";
-import type { FieldDefinition } from "@/features/taskline/fields";
+import type { FieldDefinition } from "@/features/taskline/lib/fields";
 import { taskList } from "@/features/taskline/search";
 import { FIELDS_MAX, type TaskField } from "@/features/taskline/types";
 import { FORM_ERROR_KEY, isAppError } from "@/lib/errors";

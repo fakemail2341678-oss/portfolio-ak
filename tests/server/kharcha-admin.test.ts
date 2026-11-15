@@ -1,7 +1,7 @@
 import { eq } from "drizzle-orm";
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from "vitest";
-import { updateKharchaSettingsInput } from "@/features/kharcha/admin/schema";
-import { DEFAULT_CATEGORIES, kharchaSettings } from "@/features/kharcha/settings";
+import { updateKharchaSettingsInputSchema } from "@/features/kharcha/admin/schema";
+import { DEFAULT_CATEGORIES, kharchaSettings } from "@/features/kharcha/lib/settings";
 import { auditEvent, khDailyStat, khExpense, khInvite } from "@/server/db/schema";
 import { rollupDaily } from "@/server/kharcha/admin/daily";
 import { getOverview } from "@/server/kharcha/admin/overview";
@@ -161,10 +161,10 @@ describe("the settings", () => {
 		const settings = kharchaSettings.parse({});
 		const first = DEFAULT_CATEGORIES[0];
 		const twice = { ...settings, categories: [first, first] };
-		expect(updateKharchaSettingsInput.safeParse({ updatedAt: "1", settings: twice }).success).toBe(false);
+		expect(updateKharchaSettingsInputSchema.safeParse({ updatedAt: "1", settings: twice }).success).toBe(false);
 		const none = { ...settings, categories: [] };
-		expect(updateKharchaSettingsInput.safeParse({ updatedAt: "1", settings: none }).success).toBe(false);
-		expect(updateKharchaSettingsInput.safeParse({ updatedAt: "1", settings }).success).toBe(true);
+		expect(updateKharchaSettingsInputSchema.safeParse({ updatedAt: "1", settings: none }).success).toBe(false);
+		expect(updateKharchaSettingsInputSchema.safeParse({ updatedAt: "1", settings }).success).toBe(true);
 	});
 });
 

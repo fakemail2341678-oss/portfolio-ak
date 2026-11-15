@@ -1,4 +1,5 @@
 import { createServerFn } from "@tanstack/react-start";
+import { withPublic } from "@/middleware/services";
 import { isFlagEnabled } from "@/server/analytics/posthog";
 
 /** PostHog flag keys used by the app. Create them in PostHog; unknown or absent flags are off. */
@@ -12,6 +13,6 @@ export type HomeFlags = { showItemsCta: boolean };
  * render and the hydrated client render use the same value (no flicker, no
  * hydration mismatch, no client-side flag request).
  */
-export const getHomeFlags = createServerFn({ method: "GET" }).handler(
-	async (): Promise<HomeFlags> => ({ showItemsCta: await isFlagEnabled(FLAGS.homeItemsCta) }),
-);
+export const getHomeFlags = createServerFn({ method: "GET" })
+	.middleware([withPublic])
+	.handler(async (): Promise<HomeFlags> => ({ showItemsCta: await isFlagEnabled(FLAGS.homeItemsCta) }));

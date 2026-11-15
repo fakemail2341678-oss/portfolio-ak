@@ -1,6 +1,6 @@
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
-import type { ChaalChallengeLine, ChaalGameLine, ChaalSeekLine } from "@/features/chaal/live/events";
-import { ndjsonLines, parseLine } from "@/features/chaal/live/ndjson";
+import type { ChaalChallengeLine, ChaalGameLine, ChaalSeekLine } from "@/features/chaal/live/lib/events";
+import { ndjsonLines, parseLine } from "@/features/chaal/live/lib/ndjson";
 import { pruneActivity } from "@/server/chaal/activity";
 import type { ConnectDeps } from "@/server/chaal/connect/service";
 import { createVault, type Vault } from "@/server/chaal/connect/vault";

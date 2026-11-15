@@ -1,11 +1,11 @@
 import { createServerFn } from "@tanstack/react-start";
 import {
 	type BroadcastTourSummary,
-	broadcastBoardInput,
-	broadcastListInput,
-	broadcastRoundInput,
-	broadcastSearchInput,
-	broadcastTourInput,
+	broadcastBoardInputSchema,
+	broadcastListInputSchema,
+	broadcastRoundInputSchema,
+	broadcastSearchInputSchema,
+	broadcastTourInputSchema,
 	type ChaalBroadcastGame,
 	type ChaalBroadcastRound,
 	type ChaalBroadcastSearch,
@@ -35,7 +35,7 @@ export const getChaalStreamers = createServerFn({ method: "GET" })
 
 export const getChaalBroadcasts = createServerFn({ method: "GET" })
 	.middleware([withChaalPublic])
-	.validator(zodInput(broadcastListInput))
+	.validator(zodInput(broadcastListInputSchema))
 	.handler(({ context, data }): Promise<ChaalBroadcasts> => watch.broadcasts(context.chaal, data.page));
 
 export const getChaalOfficialBroadcasts = createServerFn({ method: "GET" })
@@ -44,24 +44,24 @@ export const getChaalOfficialBroadcasts = createServerFn({ method: "GET" })
 
 export const searchChaalBroadcasts = createServerFn({ method: "GET" })
 	.middleware([withChaalPublic])
-	.validator(zodInput(broadcastSearchInput))
+	.validator(zodInput(broadcastSearchInputSchema))
 	.handler(
 		({ context, data }): Promise<ChaalBroadcastSearch> => watch.searchBroadcasts(context.chaal, data.q, data.page),
 	);
 
 export const getChaalBroadcastTour = createServerFn({ method: "GET" })
 	.middleware([withChaalPublic])
-	.validator(zodInput(broadcastTourInput))
+	.validator(zodInput(broadcastTourInputSchema))
 	.handler(({ context, data }): Promise<ChaalBroadcastTour> => watch.broadcastTour(context.chaal, data.id));
 
 export const getChaalBroadcastRound = createServerFn({ method: "GET" })
 	.middleware([withChaalPublic])
-	.validator(zodInput(broadcastRoundInput))
+	.validator(zodInput(broadcastRoundInputSchema))
 	.handler(({ context, data }): Promise<ChaalBroadcastRound> => watch.broadcastRound(context.chaal, data.id));
 
 export const getChaalBroadcastGame = createServerFn({ method: "GET" })
 	.middleware([withChaalPublic])
-	.validator(zodInput(broadcastBoardInput))
+	.validator(zodInput(broadcastBoardInputSchema))
 	.handler(
 		({ context, data }): Promise<ChaalBroadcastGame> => watch.broadcastGame(context.chaal, data.round, data.board),
 	);

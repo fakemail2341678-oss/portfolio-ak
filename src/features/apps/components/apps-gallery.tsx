@@ -1,15 +1,15 @@
 import { Link } from "@tanstack/react-router";
 import { ArrowRightIcon } from "lucide-react";
 import { Page, PageHeader } from "@/components/page/page";
-import { KHARCHA_NAME } from "@/features/kharcha/brand"; // @kharcha
+import { KHARCHA_NAME } from "@/features/kharcha/lib/brand"; // @kharcha
 import { kharchaLinks } from "@/features/kharcha/links"; // @kharcha
-import { TASKLINE_NAME } from "@/features/taskline/brand"; // @taskline
+import { TASKLINE_NAME } from "@/features/taskline/lib/brand"; // @taskline
 import { tasklineLinks } from "@/features/taskline/links"; // @taskline
-import { TasklineMark } from "@/features/taskline/shell/taskline-mark"; // @taskline
+import { TasklineMark } from "@/features/taskline/shell/components/taskline-mark"; // @taskline
 import { GUEST_LIFETIME_DAYS } from "@/lib/guests";
 import { formatNumber } from "@/lib/i18n/intl";
 import { m } from "@/paraglide/messages";
-import { APPS, appPath } from "../registry";
+import { APPS, appPath } from "../lib/registry";
 
 /** /apps (decision 0187): every showcase app, each one to try without signing up. */
 export function AppsGallery() {

@@ -8,7 +8,7 @@ import { formValidators, useAppForm } from "@/components/forms";
 import { type FieldImage, ImageGalleryField } from "@/features/attachments/components/image-gallery-field";
 import type { ImageAsset } from "@/features/attachments/schema";
 import { sessionQueryOptions } from "@/features/auth/queries";
-import { ALL_PERMISSIONS } from "@/features/rbac/permissions";
+import { ALL_PERMISSIONS } from "@/features/rbac/lib/permissions";
 import type { Session } from "@/lib/session";
 
 /** Server functions: a ticket, then the verified image (the real ones need the Start runtime). */

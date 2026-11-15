@@ -5,16 +5,16 @@ import { toast } from "sonner";
 import { useCrudCollection, useLiveRows } from "@/components/crud/use-crud-collection";
 import { crudFormKey } from "@/components/crud/use-crud-form";
 import { useCrudMutation } from "@/components/crud/use-crud-mutation";
-import { useConfirm } from "@/components/dialogs/confirm";
+import { useConfirm } from "@/components/dialogs/use-confirm";
 import { moveItem, SortableList } from "@/components/forms/fields/sortable-list";
 import { EmptyState } from "@/components/page/empty-state";
 import { Page, PageHeader } from "@/components/page/page";
 import { Button } from "@/components/ui/button";
-import { useCan } from "@/features/rbac/can";
+import { useCan } from "@/features/rbac/hooks/use-can";
 import { type CrudCollectionOptions, deleteRows, updateRows } from "@/lib/crud/collection";
 import { m } from "@/paraglide/messages";
 import type { SectionRow } from "../collection";
-import type { SectionQueries } from "../queries";
+import type { SectionQueries } from "../lib/sections";
 
 /** What a section's sheet gets: the entry to edit (none: a new one) and how to close. */
 export type SectionSheetProps<TItem> = { item?: TItem; onClose: () => void };

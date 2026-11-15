@@ -1,4 +1,4 @@
-import { type QueryClient, queryOptions } from "@tanstack/react-query";
+import { queryOptions } from "@tanstack/react-query";
 import { getAccountSecurity, getAuthFeatures, getSession, listMySessions } from "@/functions/auth";
 import { authKeys } from "./keys";
 
@@ -22,7 +22,3 @@ export const accountSessionsQueryOptions = () =>
 /** Password, Google and two-factor state for the account page's security sections. */
 export const accountSecurityQueryOptions = () =>
 	queryOptions({ queryKey: authKeys.security, queryFn: () => getAccountSecurity(), staleTime: 0 });
-
-/** Drop cached auth state after sign-in, sign-out or account changes. */
-export const refreshAuth = (queryClient: QueryClient) =>
-	queryClient.invalidateQueries({ queryKey: authKeys.all, refetchType: "all" });

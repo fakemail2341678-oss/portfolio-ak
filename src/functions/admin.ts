@@ -1,5 +1,5 @@
 import { createServerFn } from "@tanstack/react-start";
-import type { Dashboard } from "@/features/admin/dashboard";
+import type { Dashboard } from "@/features/admin/lib/dashboard";
 import { requireAdminAccess } from "@/middleware/auth";
 import { getDashboard as buildDashboard } from "@/server/admin/dashboard";
 import { db } from "@/server/db/client";

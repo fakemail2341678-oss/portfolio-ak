@@ -1,12 +1,12 @@
 import { createServerFn } from "@tanstack/react-start";
 import {
-	bulkInput,
-	importInput,
-	listIdInput,
-	renameSearchInput,
-	reorderInput,
-	savedSearchInput,
-	spendExportInput,
+	bulkInputSchema,
+	importInputSchema,
+	listIdInputSchema,
+	renameSearchInputSchema,
+	reorderInputSchema,
+	savedSearchInputSchema,
+	spendExportInputSchema,
 } from "@/features/kharcha/schema";
 import { spendChartInput } from "@/features/kharcha/search";
 import type { BulkResult, ImportResult, SavedSearch, SpendChart, SpendExportRow } from "@/features/kharcha/types";
@@ -31,36 +31,36 @@ export const getKharchaSpendChart = createServerFn({ method: "GET" })
 /** The search, or the rows chosen, as CSV lines (POST: a selection's ids don't fit an address). */
 export const exportKharchaSpend = createServerFn({ method: "POST" })
 	.middleware([requireKharchaUser, withKharchaServices])
-	.validator(zodInput(spendExportInput))
+	.validator(zodInput(spendExportInputSchema))
 	.handler(({ data, context }): Promise<SpendExportRow[]> => exportSpend(context, data));
 
-export const bulkKharchaExpenses = createServerFn({ method: "POST" })
+export const updateKharchaExpenses = createServerFn({ method: "POST" })
 	.middleware([requireKharchaUser, withKharchaServices])
-	.validator(zodInput(bulkInput))
+	.validator(zodInput(bulkInputSchema))
 	.handler(({ data, context }): Promise<BulkResult> => bulkExpenses(context, data));
 
-export const saveKharchaSearch = createServerFn({ method: "POST" })
+export const createKharchaSearch = createServerFn({ method: "POST" })
 	.middleware([requireKharchaUser, withKharchaServices])
-	.validator(zodInput(savedSearchInput))
+	.validator(zodInput(savedSearchInputSchema))
 	.handler(({ data, context }): Promise<SavedSearch[]> => saveSearch(context, data));
 
-export const renameKharchaSearch = createServerFn({ method: "POST" })
+export const setKharchaSearchName = createServerFn({ method: "POST" })
 	.middleware([requireKharchaUser, withKharchaServices])
-	.validator(zodInput(renameSearchInput))
+	.validator(zodInput(renameSearchInputSchema))
 	.handler(({ data, context }): Promise<SavedSearch[]> => renameSearch(context, data));
 
 export const reorderKharchaSearches = createServerFn({ method: "POST" })
 	.middleware([requireKharchaUser, withKharchaServices])
-	.validator(zodInput(reorderInput))
+	.validator(zodInput(reorderInputSchema))
 	.handler(({ data, context }): Promise<SavedSearch[]> => reorderSearches(context, data.ids));
 
 export const deleteKharchaSearch = createServerFn({ method: "POST" })
 	.middleware([requireKharchaUser, withKharchaServices])
-	.validator(zodInput(listIdInput))
+	.validator(zodInput(listIdInputSchema))
 	.handler(({ data, context }): Promise<SavedSearch[]> => deleteSearch(context, data.id));
 
 /** A CSV's rows, once per idempotency key. */
 export const importKharchaSpend = createServerFn({ method: "POST" })
 	.middleware([requireKharchaUser, withKharchaServices])
-	.validator(zodInput(importInput))
+	.validator(zodInput(importInputSchema))
 	.handler(({ data, context }): Promise<ImportResult> => importSpend(context, data));

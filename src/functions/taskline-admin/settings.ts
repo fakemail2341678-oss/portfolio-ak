@@ -2,11 +2,11 @@ import { createServerFn } from "@tanstack/react-start";
 import {
 	type AdminWorkflows,
 	type AdminWorkspace,
-	deleteWorkspaceLabelInput,
-	updateWorkflowsInput,
-	updateWorkspaceInput,
-	updateWorkspaceLabelInput,
-	workspaceLabelInput,
+	deleteWorkspaceLabelInputSchema,
+	updateWorkflowsInputSchema,
+	updateWorkspaceInputSchema,
+	updateWorkspaceLabelInputSchema,
+	workspaceLabelInputSchema,
 } from "@/features/taskline/admin/schema";
 import { zodInput } from "@/functions/_lib/validator";
 import { requirePermission } from "@/middleware/auth";
@@ -21,7 +21,7 @@ export const getTasklineWorkspace = createServerFn({ method: "GET" })
 
 export const updateTasklineWorkspace = createServerFn({ method: "POST" })
 	.middleware([requirePermission("taskline:configure"), withServices])
-	.validator(zodInput(updateWorkspaceInput))
+	.validator(zodInput(updateWorkspaceInputSchema))
 	.handler(({ data, context }): Promise<AdminWorkspace> => settings.updateWorkspace(context, data));
 
 export const getTasklineWorkflows = createServerFn({ method: "GET" })
@@ -30,20 +30,20 @@ export const getTasklineWorkflows = createServerFn({ method: "GET" })
 
 export const updateTasklineWorkflows = createServerFn({ method: "POST" })
 	.middleware([requirePermission("taskline:configure"), withServices])
-	.validator(zodInput(updateWorkflowsInput))
+	.validator(zodInput(updateWorkflowsInputSchema))
 	.handler(({ data, context }): Promise<AdminWorkflows> => settings.updateWorkflows(context, data));
 
 export const createTasklineWorkspaceLabel = createServerFn({ method: "POST" })
 	.middleware([requirePermission("taskline:configure"), withServices])
-	.validator(zodInput(workspaceLabelInput))
+	.validator(zodInput(workspaceLabelInputSchema))
 	.handler(({ data, context }): Promise<AdminWorkflows["labels"]> => settings.createLabel(context, data));
 
 export const updateTasklineWorkspaceLabel = createServerFn({ method: "POST" })
 	.middleware([requirePermission("taskline:configure"), withServices])
-	.validator(zodInput(updateWorkspaceLabelInput))
+	.validator(zodInput(updateWorkspaceLabelInputSchema))
 	.handler(({ data, context }): Promise<AdminWorkflows["labels"]> => settings.updateLabel(context, data));
 
 export const deleteTasklineWorkspaceLabel = createServerFn({ method: "POST" })
 	.middleware([requirePermission("taskline:configure"), withServices])
-	.validator(zodInput(deleteWorkspaceLabelInput))
+	.validator(zodInput(deleteWorkspaceLabelInputSchema))
 	.handler(({ data, context }): Promise<AdminWorkflows["labels"]> => settings.deleteLabel(context, data));

@@ -1,12 +1,12 @@
 import { fn } from "storybook/test";
 import type { ChaalAdminSettings } from "../../../../src/features/chaal/admin/schema";
-import { DEFAULT_COMMUNITY_LIMITS } from "../../../../src/features/chaal/community/limits";
-import { DEFAULT_ENGINE_LIMITS } from "../../../../src/features/chaal/engine/limits";
-import { CHAAL_FEATURES, type ChaalFeature } from "../../../../src/features/chaal/features";
-import { DEFAULT_PLAY_LIMITS } from "../../../../src/features/chaal/play/controls";
-import { DEFAULT_PUZZLE_LIMITS } from "../../../../src/features/chaal/puzzles/limits";
-import { DEFAULT_CHAAL_DEFAULTS } from "../../../../src/features/chaal/settings/preferences";
-import { DEFAULT_WATCH_LIMITS } from "../../../../src/features/chaal/watch/limits";
+import { DEFAULT_COMMUNITY_LIMITS } from "../../../../src/features/chaal/community/lib/limits";
+import { DEFAULT_ENGINE_LIMITS } from "../../../../src/features/chaal/engine/lib/limits";
+import { CHAAL_FEATURES, type ChaalFeature } from "../../../../src/features/chaal/lib/features";
+import { DEFAULT_PLAY_LIMITS } from "../../../../src/features/chaal/play/lib/controls";
+import { DEFAULT_PUZZLE_LIMITS } from "../../../../src/features/chaal/puzzles/lib/limits";
+import { DEFAULT_CHAAL_DEFAULTS } from "../../../../src/features/chaal/settings/lib/preferences";
+import { DEFAULT_WATCH_LIMITS } from "../../../../src/features/chaal/watch/lib/limits";
 
 // Stand-ins for src/functions/chaal-admin/settings.ts.
 export const chaalAdminSettings: ChaalAdminSettings = {

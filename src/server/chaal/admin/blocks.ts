@@ -98,7 +98,7 @@ export async function createBlock(services: ChaalAdminServices, input: ChaalBloc
 				.select({ id: user.id })
 				.from(user)
 				.where(eq(sql`lower(${user.email})`, input.target.toLowerCase()));
-			if (!found) throw fieldError(m.ch_admin_block_no_account());
+			if (!found) throw fieldError(m.chaal_admin_block_no_account());
 			values = { userId: found.id };
 		} else {
 			values = { lichessId: input.target.toLowerCase() };
@@ -109,9 +109,9 @@ export async function createBlock(services: ChaalAdminServices, input: ChaalBloc
 			.values({ ...values, reason: input.reason, blockedBy: actor.id })
 			.onConflictDoNothing()
 			.returning();
-		if (!row) throw fieldError(m.ch_admin_block_exists());
+		if (!row) throw fieldError(m.chaal_admin_block_exists());
 		const [item] = await toAdmin(tx, [row]);
-		if (!item) throw fieldError(m.ch_admin_block_exists());
+		if (!item) throw fieldError(m.chaal_admin_block_exists());
 		audit({ action: "chaal.block.create", target: targetOf(item), after: { kind: item.kind, reason: row.reason } });
 		return { item, row };
 	});

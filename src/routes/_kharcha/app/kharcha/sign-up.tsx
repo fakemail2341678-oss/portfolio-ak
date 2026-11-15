@@ -1,7 +1,7 @@
 import { createFileRoute, redirect } from "@tanstack/react-router";
 import { authFeaturesQueryOptions } from "@/features/auth/queries";
-import { KharchaSignUp } from "@/features/kharcha/auth/kharcha-sign-up";
-import { kharchaHead } from "@/features/kharcha/brand";
+import { KharchaSignUp } from "@/features/kharcha/auth/components/kharcha-sign-up-page";
+import { kharchaHead } from "@/features/kharcha/lib/brand";
 import { KHARCHA_PATHS } from "@/features/kharcha/links";
 import { redirectSearchSchema } from "@/lib/http/redirect";
 import { ensureQuery } from "@/lib/query";

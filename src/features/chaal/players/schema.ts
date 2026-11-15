@@ -1,7 +1,7 @@
 import { z } from "zod";
-import type { Score } from "../chess/eval";
-import type { ChaalColor } from "../live/events";
-import { lichessGameId, lichessUsername } from "../play/schema";
+import type { Score } from "../chess/lib/eval";
+import type { ChaalColor } from "../live/lib/events";
+import { lichessGameIdSchema, lichessUsernameSchema } from "../play/schema";
 
 /**
  * Players and games (PLAN Task 81, decision 0271): what the functions take and give. Every
@@ -22,11 +22,11 @@ export const LEADERBOARD_SIZE = 50;
 
 // --- Inputs ------------------------------------------------------------------------------
 
-export const leaderboardInput = z.strictObject({ perf: z.enum(LEADERBOARD_PERFS) });
-export const usernameInput = z.strictObject({ username: lichessUsername });
-export const perfStatsInput = z.strictObject({ username: lichessUsername, perf: z.enum(PLAYER_PERFS) });
-export const followInput = z.strictObject({ username: lichessUsername, follow: z.boolean() });
-export const playerSearchInput = z.strictObject({
+export const leaderboardInputSchema = z.strictObject({ perf: z.enum(LEADERBOARD_PERFS) });
+export const usernameInputSchema = z.strictObject({ username: lichessUsernameSchema });
+export const perfStatsInputSchema = z.strictObject({ username: lichessUsernameSchema, perf: z.enum(PLAYER_PERFS) });
+export const followInputSchema = z.strictObject({ username: lichessUsernameSchema, follow: z.boolean() });
+export const playerSearchInputSchema = z.strictObject({
 	term: z
 		.string()
 		.trim()
@@ -34,7 +34,7 @@ export const playerSearchInput = z.strictObject({
 		.max(30)
 		.regex(/^[A-Za-z0-9_-]+$/),
 });
-export const gameIdInput = z.strictObject({ id: lichessGameId });
+export const gameIdInputSchema = z.strictObject({ id: lichessGameIdSchema });
 
 const GAME_RESULTS = ["win", "loss", "draw"] as const;
 
@@ -45,18 +45,18 @@ const day = z.string().regex(/^\d{4}-\d{2}-\d{2}$/);
  * A page of a player's games (`?tab=games`): the filters as the URL holds them, and `before`,
  * the page's cursor (the oldest game seen so far, as Lichess's `until` takes it).
  */
-export const playerGamesInput = z.strictObject({
-	username: lichessUsername,
+export const playerGamesInputSchema = z.strictObject({
+	username: lichessUsernameSchema,
 	perf: z.enum(PLAYER_PERFS).optional(),
 	color: z.enum(["white", "black"]).optional(),
 	rated: z.boolean().optional(),
 	result: z.enum(GAME_RESULTS).optional(),
-	vs: lichessUsername.optional(),
+	vs: lichessUsernameSchema.optional(),
 	since: day.optional(),
 	until: day.optional(),
 	before: z.number().int().positive().optional(),
 });
-export type PlayerGamesInput = z.infer<typeof playerGamesInput>;
+export type PlayerGamesInput = z.infer<typeof playerGamesInputSchema>;
 
 /** A page of games. */
 export const GAMES_PAGE_SIZE = 20;

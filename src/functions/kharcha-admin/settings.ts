@@ -1,5 +1,5 @@
 import { createServerFn } from "@tanstack/react-start";
-import { type KharchaAdminSettings, updateKharchaSettingsInput } from "@/features/kharcha/admin/schema";
+import { type KharchaAdminSettings, updateKharchaSettingsInputSchema } from "@/features/kharcha/admin/schema";
 import { zodInput } from "@/functions/_lib/validator";
 import { requirePermission } from "@/middleware/auth";
 import { withServices } from "@/middleware/services";
@@ -13,5 +13,5 @@ export const getKharchaAdminSettings = createServerFn({ method: "GET" })
 
 export const updateKharchaSettings = createServerFn({ method: "POST" })
 	.middleware([requirePermission("kharcha:configure"), withServices])
-	.validator(zodInput(updateKharchaSettingsInput))
+	.validator(zodInput(updateKharchaSettingsInputSchema))
 	.handler(({ data, context }): Promise<KharchaAdminSettings> => updateAdminSettings(context, data));

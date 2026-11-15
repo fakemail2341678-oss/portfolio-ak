@@ -1,5 +1,9 @@
 import { createServerFn } from "@tanstack/react-start";
-import { blockLinksInput, deleteLinksInput, type LinkModerationPage } from "@/features/apps/links/admin/schema";
+import {
+	blockLinksInputSchema,
+	deleteLinksInputSchema,
+	type LinkModerationPage,
+} from "@/features/apps/links/admin/schema";
 import { linkModerationList } from "@/features/apps/links/admin/search";
 import { zodInput } from "@/functions/_lib/validator";
 import { requirePermission } from "@/middleware/auth";
@@ -15,10 +19,10 @@ export const listLinksForModeration = createServerFn({ method: "GET" })
 
 export const setLinksBlocked = createServerFn({ method: "POST" })
 	.middleware([requirePermission("links:moderate"), withServices])
-	.validator(zodInput(blockLinksInput))
+	.validator(zodInput(blockLinksInputSchema))
 	.handler(({ data, context }): Promise<void> => links.setLinksBlocked(context, data));
 
 export const deleteModeratedLinks = createServerFn({ method: "POST" })
 	.middleware([requirePermission("links:moderate"), withServices])
-	.validator(zodInput(deleteLinksInput))
+	.validator(zodInput(deleteLinksInputSchema))
 	.handler(({ data, context }): Promise<void> => links.deleteLinks(context, data.ids));

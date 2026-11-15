@@ -6,7 +6,7 @@ import { errorMessage } from "@/components/errors/error-page";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Demo, ExamplePage } from "@/features/dev/examples/example-page";
+import { Demo, ExamplePage } from "@/features/dev/examples/components/example-page";
 import { exampleMessagesQueryOptions } from "@/features/dev/examples/queries";
 import { resetExampleMessages, sendExampleMessage } from "@/functions/examples";
 import { staticCrumb } from "@/lib/breadcrumbs";

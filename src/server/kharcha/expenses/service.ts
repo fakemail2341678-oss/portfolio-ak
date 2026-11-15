@@ -1,9 +1,15 @@
 import "@tanstack/react-start/server-only";
 import { and, asc, eq, inArray, isNotNull, isNull } from "drizzle-orm";
-import { firstRule } from "@/features/kharcha/lists";
-import { splitProblemMessage } from "@/features/kharcha/money/problem";
-import { computeShares, type Paid, payersProblem, type Split, type SplitProblem } from "@/features/kharcha/money/split";
-import { threadKey } from "@/features/kharcha/notifications";
+import { firstRule } from "@/features/kharcha/lib/lists";
+import { threadKey } from "@/features/kharcha/lib/notifications";
+import { splitProblemMessage } from "@/features/kharcha/money/lib/problem";
+import {
+	computeShares,
+	type Paid,
+	payersProblem,
+	type Split,
+	type SplitProblem,
+} from "@/features/kharcha/money/lib/split";
 import type { CreateExpenseInput, UpdateExpenseInput } from "@/features/kharcha/schema";
 import type {
 	ActivityData,

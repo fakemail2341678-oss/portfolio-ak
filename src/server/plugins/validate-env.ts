@@ -9,7 +9,7 @@
  */
 import "../env";
 import { definePlugin } from "nitro";
-import { DEV_ROUTES_IN_PRODUCTION, devRoutesInProduction } from "@/lib/env/client.schema";
+import { DEV_ROUTES_IN_PRODUCTION, devRoutesInProduction } from "@/lib/env/client-schema";
 import { getEmailProvider } from "../email/config";
 
 export default definePlugin(() => {

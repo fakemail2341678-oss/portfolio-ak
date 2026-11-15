@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { FormsHome } from "@/features/apps/forms/components/forms-home";
+import { FormsHome } from "@/features/apps/forms/components/forms-home-page";
 import { ensureQuery } from "@/lib/query";
 import { seo } from "@/lib/seo";
 import { m } from "@/paraglide/messages";

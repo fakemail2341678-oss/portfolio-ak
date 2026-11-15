@@ -1,7 +1,7 @@
 import "@tanstack/react-start/server-only";
 import type { z } from "zod";
-import { checkFen } from "@/features/chaal/chess/rules";
-import { ndjsonLines, parseLine } from "@/features/chaal/live/ndjson";
+import { checkFen } from "@/features/chaal/chess/lib/rules";
+import { ndjsonLines, parseLine } from "@/features/chaal/live/lib/ndjson";
 import type {
 	ChaalCloudEval,
 	ChaalExplorer,

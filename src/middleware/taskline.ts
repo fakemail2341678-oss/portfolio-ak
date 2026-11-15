@@ -32,7 +32,7 @@ export const requireTasklineUser = createMiddleware({ type: "function" })
  *
  *   createServerFn({ method: "POST" })
  *     .middleware([requireTasklineUser, withTasklineServices])
- *     .validator(zodInput(createTaskInput))
+ *     .validator(zodInput(createTaskInputSchema))
  *     .handler(({ data, context }) => tasks.createTask(context, data));
  */
 export const withTasklineServices = createMiddleware({ type: "function" })

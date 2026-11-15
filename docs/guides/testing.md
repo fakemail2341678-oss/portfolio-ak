@@ -13,11 +13,9 @@ Vitest for logic, server code and components; Storybook for every component in a
 
 | Folder | For |
 | --- | --- |
-| `tests/unit/` | Pure logic: schemas, list and search helpers, SEO and route-wide head rules, CSP, env, errors, intl |
+| `tests/unit/` | Pure logic: schemas, list and search helpers, SEO and route-wide head rules, CSP, env, errors, intl; the messages (`i18n-message-parity`, `i18n-message-usage`, `i18n-locale-routing`) and every email template in both languages (`email-templates`) |
 | `tests/server/` | Code with a database or server: repositories and services on PGlite, middleware, guards, permissions, attachments, sitemap |
 | `tests/components/` | jsdom tests of fields, filters, breadcrumbs, masking, preferences UI, permissions UI, the attachments editor |
-| `tests/i18n/` | Message parity, translation, unused keys, locale routing |
-| `tests/email/` | Every template in both languages |
 | `e2e/` | Playwright: `review.spec.ts` (every page), `flows/` (auth, account, Test CRUD, edit conflicts, permissions, user management and the audit log, no-JS lists, health), `harness/` (the server it runs against), `support/` (fixtures, page list, checks) |
 
 ## pnpm gates
@@ -89,7 +87,7 @@ Everything but e2e: 9 min 13 s (11 min 17 s before). The full set: 72 minutes (8
 - **The three projects** (`vitest.config.ts`, 0296) all run on worker threads. `unit` shares one module graph per worker (`isolate: false`): its tests keep nothing between files, and importing was over half their time. `components` and `server` stay isolated per file: run in a shuffled order without isolation, a file of each failed. So a `tests/unit` file must not rely on a fresh module (a `vi.mock` there needs `vi.resetModules()`), and a test that needs isolation belongs in the other two folders.
 - **Workers:** each project takes what the machine's free memory allows when the run starts (`scripts/lib/workers.ts`, measured per worker), so no command needs `--maxWorkers`. `GATE_WORKERS=<n>` overrides it.
 - **Messages are loaded by Node, not through Vite** (`server.deps.external` for `src/paraglide`): nearly every test file imports them, and 10 MB of compiled messages took 0.8 s a file through Vite's module runner. Don't `vi.mock` a Paraglide module; use `overwriteGetLocale`.
-- **Server functions** run only inside Start. Test the functions they call, and the wiring with static checks: `tests/server/guarded-functions.test.ts` asserts each function's `requirePermission` and that every file in `src/functions` is declared, and `env-boundary.test.ts` asserts no client code imports `src/server`.
+- **Server functions** run only inside Start. Test the functions they call, and the wiring with static checks: `tests/server/functions-guards.test.ts` asserts each function's `requirePermission` and that every file in `src/functions` is declared, and `env-boundary.test.ts` asserts no client code imports `src/server`.
 - **Routes:**
   - `createRouter({ routeTree, context: {} as RouterContext })` resolves real route ids (see `route-seo.test.ts`, `dev-examples.test.ts`);
   - `createMemoryHistory` plus a test route tree renders components that need a router (`breadcrumbs.test.tsx`, `route-masking.test.tsx`).
@@ -100,7 +98,7 @@ Everything but e2e: 9 min 13 s (11 min 17 s before). The full set: 72 minutes (8
 - **Timeouts:** unit tests have 15 s (jsdom interaction tests are slow on a busy machine). Import heavy modules at the top of a test file, not inside a test: module loading doesn't count against the timeout there.
 - **Guards as tests:**
   - every route's head rules (`route-seo.test.ts`);
-  - every `<form>`'s method (`form-method.test.ts`);
+  - every `<form>`'s method (`forms-method.test.ts`);
   - the example registry against the routes;
   - unused messages.
 
@@ -144,7 +142,7 @@ Ports: the app on `E2E_PORT` (3100), the harness on `E2E_HARNESS_PORT` (3101); P
 
 ### The browser review (`e2e/review.spec.ts`)
 
-- **Pages:** `REVIEWED_PAGES` in `e2e/support/pages.ts`, each with who visits it (`as`), how a `$param` gets a value (from `/sitemap.xml`, a seeded row's id or slug, or a fixed `path`), and an expected status (the 403 and 404 pages). `tests/unit/e2e-pages.test.ts` compares the list with `src/routeTree.gen.ts`, so **a new route fails `pnpm test` until it's reviewed** or listed in `NOT_REVIEWED` with a reason. The `/dev` pages are reviewed like the others: the harness's build keeps them.
+- **Pages:** `REVIEWED_PAGES` in `e2e/support/pages.ts`, each with who visits it (`as`), how a `$param` gets a value (from `/sitemap.xml`, a seeded row's id or slug, or a fixed `path`), and an expected status (the 403 and 404 pages). `tests/unit/pages-review.test.ts` compares the list with `src/routeTree.gen.ts`, so **a new route fails `pnpm test` until it's reviewed** or listed in `NOT_REVIEWED` with a reason. The `/dev` pages are reviewed like the others: the harness's build keeps them.
 - **Matrix:** en/ne × light/dark × 390/768/1280, one test each.
 - **Checks** (`e2e/support/review.ts`):
   - the HTTP status;

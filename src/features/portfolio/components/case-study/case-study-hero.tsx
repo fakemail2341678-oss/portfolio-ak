@@ -1,7 +1,7 @@
 import { formatNumber } from "@/lib/i18n/intl";
 import type { Project } from "../../types";
 import { MountainFrame } from "../art/mountain-frame";
-import { ProjectMountain } from "../art/project-mountain";
+import { ProjectMountain } from "../art/project-mountain-image";
 
 type CaseStudyHeroProps = {
 	project: Pick<Project, "slug" | "title" | "client" | "year" | "summary" | "cover">;

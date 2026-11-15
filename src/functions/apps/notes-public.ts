@@ -1,5 +1,5 @@
 import { createServerFn } from "@tanstack/react-start";
-import { sharedNoteInput } from "@/features/apps/notes/schema";
+import { sharedNoteInputSchema } from "@/features/apps/notes/schema";
 import type { SharedNote } from "@/features/apps/notes/types";
 import { zodInput } from "@/functions/_lib/validator";
 import { withPublic } from "@/middleware/services";
@@ -12,5 +12,5 @@ import { getSharedNote as readSharedNote } from "@/server/apps/notes/service";
  */
 export const getSharedNote = createServerFn({ method: "GET" })
 	.middleware([withPublic])
-	.validator(zodInput(sharedNoteInput))
+	.validator(zodInput(sharedNoteInputSchema))
 	.handler(({ data, context }): Promise<SharedNote> => readSharedNote(context, data.token));

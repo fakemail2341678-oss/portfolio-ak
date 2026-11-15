@@ -1,5 +1,5 @@
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from "vitest";
-import { MAX_PROFILES } from "@/features/parda/profiles/options";
+import { MAX_PROFILES } from "@/features/parda/profiles/lib/options";
 import type { Session } from "@/lib/session";
 import * as schema from "@/server/db/schema";
 import * as profileRepo from "@/server/parda/profiles/repository";

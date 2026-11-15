@@ -1,5 +1,5 @@
 import "@tanstack/react-start/server-only";
-import { scopesFor } from "@/features/chaal/features";
+import { scopesFor } from "@/features/chaal/lib/features";
 import type { ChaalLabState, ChaalLaneCheck } from "@/features/chaal/schema";
 import { serverEnv } from "@/server/env";
 import { redirectUriFor } from "../connect/oauth";

@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { tasklineTitle } from "@/features/taskline/brand";
-import { CalendarPage } from "@/features/taskline/calendar/calendar-page";
+import { CalendarPage } from "@/features/taskline/calendar/components/calendar-page";
+import { tasklineTitle } from "@/features/taskline/lib/brand";
 import { calendarSearch } from "@/features/taskline/search";
 import { staticCrumb } from "@/lib/breadcrumbs";
 import { listSearch } from "@/lib/crud/route";

@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { m } from "@/paraglide/messages";
-import { type KharchaSettings, kharchaSettings } from "../settings";
+import { type KharchaSettings, kharchaSettings } from "../lib/settings";
 
 /**
  * /admin/kharcha (PLAN Task 96, decision 0290): what its functions send and take. Counts
@@ -40,7 +40,7 @@ export type KharchaAdminSettings = {
 };
 
 /** The form saves every setting at once, from the version it opened at. */
-export const updateKharchaSettingsInput = z.strictObject({
+export const updateKharchaSettingsInputSchema = z.strictObject({
 	updatedAt: z.string().regex(/^\d+$/),
 	settings: kharchaSettings.extend({
 		categories: kharchaSettings.shape.categories
@@ -51,7 +51,7 @@ export const updateKharchaSettingsInput = z.strictObject({
 			}),
 	}),
 });
-export type UpdateKharchaSettingsInput = z.infer<typeof updateKharchaSettingsInput>;
+export type UpdateKharchaSettingsInput = z.infer<typeof updateKharchaSettingsInputSchema>;
 
 /** An account that sent invites lately, or whose sending is suspended. */
 export type KharchaSender = {
@@ -68,8 +68,8 @@ export type KharchaSender = {
 	suspendedAt: string | null;
 };
 
-export const suspendKharchaSenderInput = z.strictObject({
+export const suspendKharchaSenderInputSchema = z.strictObject({
 	userId: z.string().min(1).max(100),
 	suspend: z.boolean(),
 });
-export type SuspendKharchaSenderInput = z.infer<typeof suspendKharchaSenderInput>;
+export type SuspendKharchaSenderInput = z.infer<typeof suspendKharchaSenderInputSchema>;

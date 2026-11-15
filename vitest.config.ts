@@ -87,7 +87,7 @@ export default defineConfig({
 				test: {
 					...nodeTests,
 					name: "unit",
-					include: ["tests/{unit,i18n,email}/**/*.test.{ts,tsx}"],
+					include: ["tests/unit/**/*.test.{ts,tsx}"],
 					environment: "node",
 					setupFiles: ["tests/setup/env.ts", "tests/setup/dom.ts"],
 					// One module graph per worker, not per file: these tests keep no state between files (they

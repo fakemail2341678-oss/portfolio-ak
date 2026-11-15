@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
-import { ADAPTERS, acceptMessage } from "@/features/parda/player/adapters";
-import { createStallDetector, SEEK_GRACE_MS, STALL_AFTER_MS } from "@/features/parda/player/stall";
-import { fillTemplate, sourceProblems } from "@/features/parda/player/templates";
+import { ADAPTERS, acceptMessage } from "@/features/parda/player/lib/adapters";
+import { createStallDetector, SEEK_GRACE_MS, STALL_AFTER_MS } from "@/features/parda/player/lib/stall";
+import { fillTemplate, sourceProblems } from "@/features/parda/player/lib/templates";
 import { buildCsp } from "@/lib/http/csp";
 import { parsePlaceholderUrl, placeholderCsp, renderPlaceholder } from "@/server/parda/player/placeholder";
 import { embedOrigins, playerUrl, TRAILER_ORIGIN } from "@/server/parda/player/sources";

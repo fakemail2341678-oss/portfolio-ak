@@ -1,15 +1,15 @@
 import { readdirSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import { z } from "zod";
-import { readPgn } from "@/features/chaal/chess/pgn";
-import { DEFAULT_COMMUNITY_LIMITS, readCommunityLimits } from "@/features/chaal/community/limits";
+import { readPgn } from "@/features/chaal/chess/lib/pgn";
+import { DEFAULT_COMMUNITY_LIMITS, readCommunityLimits } from "@/features/chaal/community/lib/limits";
 import { tourPace } from "@/features/chaal/events/labels";
-import { tournamentJoinInput } from "@/features/chaal/events/schema";
+import { tournamentJoinInputSchema } from "@/features/chaal/events/schema";
 import { studiesSearch, teamsSearch, tournamentPageSearch, tournamentsSearch } from "@/features/chaal/search";
-import { chapterIdOf, readStudy, splitStudy, studyAddress, tagsOf } from "@/features/chaal/studies/chapters";
-import { chapterShown } from "@/features/chaal/studies/queries";
-import { saveToStudyInput } from "@/features/chaal/studies/schema";
-import { teamJoinInput } from "@/features/chaal/teams/schema";
+import { chapterIdOf, readStudy, splitStudy, studyAddress, tagsOf } from "@/features/chaal/studies/lib/chapters";
+import { chapterShown } from "@/features/chaal/studies/load";
+import { saveToStudyInputSchema } from "@/features/chaal/studies/schema";
+import { teamJoinInputSchema } from "@/features/chaal/teams/schema";
 import { createLichess } from "@/server/chaal/lichess/client";
 import {
 	arenaAnswer,
@@ -251,13 +251,13 @@ describe("Community's controls and contracts", () => {
 	});
 
 	it("takes only what joining and saving need", () => {
-		expect(tournamentJoinInput.safeParse({ kind: "arena", id: "abcdEFGH", team: "Team A" }).success).toBe(false);
+		expect(tournamentJoinInputSchema.safeParse({ kind: "arena", id: "abcdEFGH", team: "Team A" }).success).toBe(false);
 		expect(
-			tournamentJoinInput.safeParse({ kind: "arena", id: "abcdEFGH", team: "team-a", pairMeAsap: true }).success,
+			tournamentJoinInputSchema.safeParse({ kind: "arena", id: "abcdEFGH", team: "team-a", pairMeAsap: true }).success,
 		).toBe(true);
-		expect(teamJoinInput.safeParse({ id: "lichess-swiss", message: "x".repeat(2001) }).success).toBe(false);
+		expect(teamJoinInputSchema.safeParse({ id: "lichess-swiss", message: "x".repeat(2001) }).success).toBe(false);
 		expect(
-			saveToStudyInput.safeParse({ study: "abcdEFGH", name: " ", pgn: "1. e4 *", orientation: "white" }).success,
+			saveToStudyInputSchema.safeParse({ study: "abcdEFGH", name: " ", pgn: "1. e4 *", orientation: "white" }).success,
 		).toBe(false);
 	});
 

@@ -1,7 +1,7 @@
 import "@tanstack/react-start/server-only";
 import { IMAGE_MAX_BYTES, type UploadScope, uploadRule } from "@/features/attachments/constants";
 import type { ImageAsset, UploadTicket } from "@/features/attachments/schema";
-import { hasAll } from "@/features/rbac/permissions";
+import { hasAll } from "@/features/rbac/lib/permissions";
 import { AppError, ruleError } from "@/lib/errors";
 import { formatNumber } from "@/lib/i18n/intl";
 import { m } from "@/paraglide/messages";

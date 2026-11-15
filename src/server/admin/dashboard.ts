@@ -1,8 +1,8 @@
 import "@tanstack/react-start/server-only";
 import { count, eq, gte, type SQL, sql } from "drizzle-orm";
-import { DASHBOARD_ACTIVITY_SIZE, DASHBOARD_RECENT_DAYS, type Dashboard } from "@/features/admin/dashboard";
+import { DASHBOARD_ACTIVITY_SIZE, DASHBOARD_RECENT_DAYS, type Dashboard } from "@/features/admin/lib/dashboard";
 import { auditList } from "@/features/audit/search";
-import type { Permission } from "@/features/rbac/permissions";
+import type { Permission } from "@/features/rbac/lib/permissions";
 import { listAuditEvents } from "@/server/audit/repository";
 import { role, testCrud, user } from "@/server/db/schema";
 import type { Db } from "@/server/db/types";

@@ -1,8 +1,8 @@
 import { describe, expect, it } from "vitest";
 import { utilizationRange } from "@/features/taskline/admin/search";
-import { burnSeries } from "@/features/taskline/sprints/burndown";
-import { durationInput, elapsedClock, formatDuration, parseDuration } from "@/features/taskline/time/duration";
-import { capacityFor, planCell, sheetTotals } from "@/features/taskline/time/sheet";
+import { burnSeries } from "@/features/taskline/sprints/lib/burndown";
+import { durationInput, elapsedClock, formatDuration, parseDuration } from "@/features/taskline/time/lib/duration";
+import { capacityFor, planCell, sheetTotals } from "@/features/taskline/time/lib/sheet";
 import type { SprintReport } from "@/features/taskline/types";
 
 /** Time tracking's pure parts (Task 53): durations as typed, a cell's plan, totals, capacity, hours in sprints. */

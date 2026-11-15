@@ -1,5 +1,5 @@
 import type { IsoDate } from "@/lib/i18n/date-only";
-import type { AppColor } from "../colors";
+import type { AppColor } from "../lib/colors";
 
 /** Habits' limits per user (decision 0193): a guest's habits count the same. */
 export const HABITS_QUOTAS = { habits: 20 } as const;

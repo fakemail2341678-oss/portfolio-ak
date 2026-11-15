@@ -1,8 +1,8 @@
 import "@tanstack/react-start/server-only";
 import { and, eq, gte, inArray, lt, sql } from "drizzle-orm";
 import { z } from "zod";
-import { withinCap } from "@/features/parda/kids";
-import { CONTINUE_MAX_AGE_MS } from "@/features/parda/library/progress";
+import { withinCap } from "@/features/parda/lib/kids";
+import { CONTINUE_MAX_AGE_MS } from "@/features/parda/library/lib/progress";
 import { isAppError } from "@/lib/errors";
 import { todayInZone } from "@/lib/i18n/date-only";
 import {

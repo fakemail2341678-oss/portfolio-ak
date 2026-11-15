@@ -2,18 +2,19 @@
 import { act, fireEvent, render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { Clock } from "@/features/chaal/board/clock";
-import { EvalBar } from "@/features/chaal/board/eval-bar";
-import { EvalGraph } from "@/features/chaal/board/eval-graph";
-import { GameControls, type Step, useBoardKeys } from "@/features/chaal/board/game-controls";
-import { Material } from "@/features/chaal/board/material";
-import { MoveInput } from "@/features/chaal/board/move-input";
-import { MoveList } from "@/features/chaal/board/move-list";
-import { PlayerStrip } from "@/features/chaal/board/player-strip";
-import { ResultBanner } from "@/features/chaal/board/result-banner";
-import { readPgn } from "@/features/chaal/chess/pgn";
-import { START_FEN } from "@/features/chaal/chess/rules";
-import { mainline } from "@/features/chaal/chess/tree";
+import { Clock } from "@/features/chaal/board/components/clock-badge";
+import { EvalBar } from "@/features/chaal/board/components/eval-bar";
+import { EvalGraph } from "@/features/chaal/board/components/eval-chart";
+import { GameControls, type Step } from "@/features/chaal/board/components/game-controls-bar";
+import { Material } from "@/features/chaal/board/components/material-row";
+import { MoveInput } from "@/features/chaal/board/components/move-input";
+import { MoveList } from "@/features/chaal/board/components/move-list";
+import { PlayerStrip } from "@/features/chaal/board/components/player-bar";
+import { ResultBanner } from "@/features/chaal/board/components/result-banner";
+import { useBoardKeys } from "@/features/chaal/board/hooks/use-board-keys";
+import { readPgn } from "@/features/chaal/chess/lib/pgn";
+import { START_FEN } from "@/features/chaal/chess/lib/rules";
+import { mainline } from "@/features/chaal/chess/lib/tree";
 import { overwriteGetLocale } from "@/paraglide/runtime";
 
 /** The rest of Chaal's board kit (Task 74): typing moves, the move list, clocks, controls, evals, material, results. */

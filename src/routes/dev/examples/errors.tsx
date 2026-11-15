@@ -4,9 +4,9 @@ import { toast } from "sonner";
 import { z } from "zod";
 import { errorMessage } from "@/components/errors/error-page";
 import { Button } from "@/components/ui/button";
-import { Demo, ExamplePage } from "@/features/dev/examples/example-page";
+import { Demo, ExamplePage } from "@/features/dev/examples/components/example-page";
 import { EXAMPLE_ERROR_CASES, type ExampleErrorCase } from "@/features/dev/examples/schema";
-import { failExample } from "@/functions/examples";
+import { getExampleFailure } from "@/functions/examples";
 import { staticCrumb } from "@/lib/breadcrumbs";
 import { privateHead } from "@/lib/seo";
 import { setErrorStatus } from "@/lib/start/http-status";
@@ -29,9 +29,9 @@ export const Route = createFileRoute("/dev/examples/errors")({
 		if (deps.case === undefined) return;
 		if (deps.case === "not-found") throw notFound();
 		// On demand: the server functions stay out of every page's JavaScript (0194).
-		const { failExample } = await import("@/functions/examples");
+		const { getExampleFailure } = await import("@/functions/examples");
 		try {
-			await failExample({ data: { case: deps.case } });
+			await getExampleFailure({ data: { case: deps.case } });
 		} catch (error) {
 			await setErrorStatus(error);
 			throw error;
@@ -50,7 +50,7 @@ const CASE_LABELS: Record<ExampleErrorCase, () => string> = {
 
 function ErrorsExample() {
 	const action = useMutation({
-		mutationFn: () => failExample({ data: { case: "forbidden" } }),
+		mutationFn: () => getExampleFailure({ data: { case: "forbidden" } }),
 		onError: (error) => toast.error(m.examples_failed(), { description: errorMessage(error) }),
 	});
 	return (

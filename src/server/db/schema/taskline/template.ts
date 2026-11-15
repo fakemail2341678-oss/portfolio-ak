@@ -1,6 +1,6 @@
 import { sql } from "drizzle-orm";
 import { check, index, integer, jsonb, pgTable, text, timestamp, uniqueIndex, uuid } from "drizzle-orm/pg-core";
-import type { TemplateDefinition } from "../../../../features/taskline/template-definition";
+import type { TemplateDefinition } from "../../../../features/taskline/lib/template-definition";
 import type { ProjectHealth } from "../../../../features/taskline/types";
 import { tlProject } from "./project";
 import { tlMember, tlWorkspace } from "./workspace";

@@ -1,6 +1,6 @@
 import { sql } from "drizzle-orm";
 import { check, index, integer, jsonb, pgTable, text, timestamp, uniqueIndex, uuid } from "drizzle-orm/pg-core";
-import type { StoredWorkspaceSettings } from "../../../../features/taskline/settings";
+import type { StoredWorkspaceSettings } from "../../../../features/taskline/lib/settings";
 import type { NotifyMode } from "../../../../features/taskline/types";
 import { user } from "../auth";
 

@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { TV_CHANNELS } from "@/features/chaal/watch/limits";
+import { TV_CHANNELS } from "@/features/chaal/watch/lib/limits";
 import type { ChaalPublic } from "@/server/chaal/context";
 import { type ChaalSettingsRow, DEFAULT_CHAAL_SETTINGS } from "@/server/chaal/controls";
 import { createChaalCache } from "@/server/chaal/lichess/cache";

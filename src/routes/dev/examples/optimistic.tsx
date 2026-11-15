@@ -8,9 +8,10 @@ import { DbScope } from "@/components/layout/db-scope";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
-import { type ExampleUpdateMetadata, exampleTasksCollection } from "@/features/dev/examples/collection";
-import { Demo, ExamplePage } from "@/features/dev/examples/example-page";
-import { exampleTasksQueryOptions, OPTIMISTIC_SEARCH } from "@/features/dev/examples/queries";
+import { type ExampleUpdateMetadata, exampleTasksRows } from "@/features/dev/examples/collection";
+import { Demo, ExamplePage } from "@/features/dev/examples/components/example-page";
+import { OPTIMISTIC_SEARCH } from "@/features/dev/examples/constants";
+import { exampleTasksQueryOptions } from "@/features/dev/examples/queries";
 import type { ExampleTask } from "@/features/dev/examples/schema";
 import { staticCrumb } from "@/lib/breadcrumbs";
 import { ensureQuery } from "@/lib/query";
@@ -30,7 +31,10 @@ import { m } from "@/paraglide/messages";
 export const Route = createFileRoute("/dev/examples/optimistic")({
 	loader: async ({ context }) => {
 		// On demand: the queries and their server functions stay out of every page's JavaScript (0194).
-		const { exampleTasksQueryOptions, OPTIMISTIC_SEARCH } = await import("@/features/dev/examples/queries");
+		const [{ exampleTasksQueryOptions }, { OPTIMISTIC_SEARCH }] = await Promise.all([
+			import("@/features/dev/examples/queries"),
+			import("@/features/dev/examples/constants"),
+		]);
 		await ensureQuery(context.queryClient, exampleTasksQueryOptions(OPTIMISTIC_SEARCH));
 	},
 	staticData: { breadcrumb: staticCrumb(m.examples_optimistic_title) },
@@ -45,7 +49,7 @@ export const Route = createFileRoute("/dev/examples/optimistic")({
 function OptimisticExample() {
 	const { data: page } = useQuery(exampleTasksQueryOptions(OPTIMISTIC_SEARCH));
 	const dbClient = useDbClient();
-	const collection = useMemo(() => dbClient.collection(exampleTasksCollection), [dbClient]);
+	const collection = useMemo(() => dbClient.collection(exampleTasksRows), [dbClient]);
 	const live = useLiveQuery({ query: (q) => q.from({ task: collection }) });
 	const [fail, setFail] = useState(false);
 	const failId = useId();

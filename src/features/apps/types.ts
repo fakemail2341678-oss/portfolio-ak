@@ -1,4 +1,4 @@
-import type { AppSlug } from "./registry";
+import type { AppSlug } from "./lib/registry";
 
 /** /admin/apps (decision 0187): guests now, and per app who has data and how many rows. */
 export type AppsUsage = {

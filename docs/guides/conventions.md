@@ -84,7 +84,7 @@ PRODUCT.md, DESIGN.md  the portfolio's product record and design system for the 
 - `server/` for code that touches the database or server, on PGlite
 - `components/` for jsdom tests
 
-(`tests/i18n` and `tests/email` are from before the standard; Task 101 moves them into `unit/`.) Every other name is in the next section.
+Every other name is in the next section.
 
 ## The standard
 
@@ -243,7 +243,7 @@ In the admin area the topbar renders the trail (`components/admin-shell/topbar.t
 - **Server functions are thin.** `requirePermission(…)` then `withServices`, `.validator(zodInput(schema))`, one call into the service with `context` (crud.md; the chain, the verbs and the guards' words are in "The standard"). Logic goes in `src/server/<name>/` over the call's services, so it can be tested on PGlite.
 - **Edits carry their version.** An update sends the record's `updatedAt` (`versionSchema()`), the repository saves with `updateVersioned` (the check is in the UPDATE's WHERE; a stale save is a CONFLICT), and `useCrudForm` shows `StaleVersionAlert` ([forms.md](forms.md), 0122). Whole-record edits only: single-field toggles and deletes don't need it.
 - **Import Zod as `zod`.** It resolves to `src/lib/zod.ts` (jitless, CSP-safe). Never import `zod/v4` directly in app code.
-- **Every string goes through Paraglide** in en and ne. Delete keys when their UI goes away; `tests/i18n/message-usage.test.ts` enforces it.
+- **Every string goes through Paraglide** in en and ne. Delete keys when their UI goes away; `tests/unit/i18n-message-usage.test.ts` enforces it.
 - **No layout shift:** fixed image aspect boxes, skeletons with the page's footprint, and preferences read from cookies on the server.
 - **Every page has one `<main>` that is the skip link's target.** Use `Page` (it spreads `MAIN_CONTENT`), or spread `MAIN_CONTENT` from `components/layout/skip-link.tsx` on a hand-written `<main>`. The browser review fails a page whose first tab stop isn't a skip link to a `<main>` (0137).
 - **Motion respects the user.** `app.css` finishes every animation and transition at once under `prefers-reduced-motion: reduce`; don't add motion that only works with `!important` of its own (0137).
@@ -288,7 +288,7 @@ The admin shell's palette (`components/admin-shell/command-menu.tsx`, decision 0
 - **Recent pages** are kept in `localStorage` (a per-browser convenience; every access is in try/catch).
 - **View transitions:** the palette navigates with `viewTransition: true`; `navigate({ to, viewTransition: true })` (or `<Link viewTransition>`) cross-fades the old and new page where the browser supports it. For every navigation, set `defaultViewTransition: true` in `src/router.tsx`. Name elements with `view-transition-name` to animate them between pages (the portfolio does, 0109). Reduced motion removes the animation (`app.css`).
 
-**Adding an example:** a route under `src/routes/dev/examples/` built with `ExamplePage` and `Demo`, an entry in `features/dev/examples/registry.ts` (a test checks the two match), `privateHead()` and a breadcrumb, server functions with `requireDev`, and a link from the guide.
+**Adding an example:** a route under `src/routes/dev/examples/` built with `ExamplePage` and `Demo`, an entry in `features/dev/examples/lib/registry.ts` (a test checks the two match), `privateHead()` and a breadcrumb, server functions with `requireDev`, and a link from the guide.
 
 ## Pitfalls already solved
 

@@ -1,6 +1,6 @@
 /**
  * The browser review: every page in REVIEWED_PAGES, in en/ne × light/dark × 390/768/1280.
- * A route missing from the list fails tests/unit/e2e-pages.test.ts.
+ * A route missing from the list fails tests/unit/pages-review.test.ts.
  */
 
 import { KHARCHA_DEMO_INVITE_TOKEN } from "../scripts/lib/kharcha-seed.ts"; // @kharcha

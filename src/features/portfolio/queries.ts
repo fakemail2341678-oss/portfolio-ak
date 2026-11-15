@@ -10,6 +10,7 @@ import {
 	getWork,
 } from "@/functions/portfolio-public";
 import { getLocale } from "@/paraglide/runtime";
+import { portfolioKeys } from "./keys";
 
 /**
  * The public pages' reads (decision 0176): one server function per page, so a
@@ -20,19 +21,7 @@ import { getLocale } from "@/paraglide/runtime";
  * entry (it may hold a draft).
  */
 
-const scope = () => ["portfolio", getLocale()] as const;
 const input = () => ({ data: { locale: getLocale() } });
-
-export const portfolioKeys = {
-	all: ["portfolio"] as const,
-	profile: () => [...scope(), "profile"] as const,
-	home: () => [...scope(), "home"] as const,
-	work: () => [...scope(), "work"] as const,
-	project: (slug: string, preview: boolean) => [...scope(), "project", slug, { preview }] as const,
-	about: () => [...scope(), "about"] as const,
-	journal: () => [...scope(), "journal"] as const,
-	post: (slug: string, preview: boolean) => [...scope(), "post", slug, { preview }] as const,
-};
 
 /** The owner, for every page's header and footer. */
 export const profileQueryOptions = () =>

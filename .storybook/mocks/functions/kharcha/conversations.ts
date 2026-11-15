@@ -14,9 +14,9 @@ export const deleteKharchaComment = fn(async (): Promise<void> => undefined).moc
 export const reactKharchaComment = fn(async (): Promise<CommentView> => sampleKharchaComment).mockName(
 	"reactKharchaComment",
 );
-export const markKharchaThreadRead = fn(async (): Promise<void> => undefined).mockName("markKharchaThreadRead");
-export const markKharchaNotificationsRead = fn(async (): Promise<void> => undefined).mockName(
-	"markKharchaNotificationsRead",
+export const setKharchaThreadRead = fn(async (): Promise<void> => undefined).mockName("setKharchaThreadRead");
+export const setKharchaNotificationsRead = fn(async (): Promise<void> => undefined).mockName(
+	"setKharchaNotificationsRead",
 );
 export const updateKharchaNotifySettings = fn(async (): Promise<void> => undefined).mockName(
 	"updateKharchaNotifySettings",

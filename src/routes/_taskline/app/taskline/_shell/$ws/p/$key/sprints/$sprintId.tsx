@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { tasklineTitle } from "@/features/taskline/brand";
+import { tasklineTitle } from "@/features/taskline/lib/brand";
 import { sprintReportSearch } from "@/features/taskline/search";
-import { SprintReportPage } from "@/features/taskline/sprints/sprint-report";
+import { SprintReportPage } from "@/features/taskline/sprints/components/sprint-report-page";
 import { loaderTitleCrumb } from "@/lib/breadcrumbs";
 import { loadDetailOr404 } from "@/lib/crud/route";
 

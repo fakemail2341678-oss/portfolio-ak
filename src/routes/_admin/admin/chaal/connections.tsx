@@ -1,5 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { ChaalConnectionsPage, ChaalConnectionsPending } from "@/features/chaal/admin/connections/connection-list";
+import {
+	ChaalConnectionsPage,
+	ChaalConnectionsPending,
+} from "@/features/chaal/admin/connections/components/connection-list";
 import { CHAAL_CONNECTIONS_TABLE_ID, chaalConnectionList } from "@/features/chaal/admin/search";
 import { staticCrumb } from "@/lib/breadcrumbs";
 import { listLoader, listSearch, titleHead } from "@/lib/crud/route";
@@ -14,8 +17,8 @@ export const Route = createFileRoute("/_admin/admin/chaal/connections")({
 		const { chaalConnectionsQueryOptions } = await import("@/features/chaal/admin/queries");
 		return listLoader(route, { tableId: CHAAL_CONNECTIONS_TABLE_ID, query: chaalConnectionsQueryOptions });
 	},
-	staticData: { breadcrumb: staticCrumb(m.ch_admin_connections_title) },
-	head: titleHead(m.ch_admin_connections_title),
+	staticData: { breadcrumb: staticCrumb(m.chaal_admin_connections_title) },
+	head: titleHead(m.chaal_admin_connections_title),
 	pendingComponent: ChaalConnectionsPending,
 	component: ChaalConnectionsPage,
 });

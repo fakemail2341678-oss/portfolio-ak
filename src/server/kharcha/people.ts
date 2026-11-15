@@ -1,6 +1,6 @@
 import "@tanstack/react-start/server-only";
 import { and, eq, inArray, isNull, sql } from "drizzle-orm";
-import type { Split } from "@/features/kharcha/money/split";
+import type { Split } from "@/features/kharcha/money/lib/split";
 import { KHARCHA_COLORS, type KharchaColor, type KharchaPerson } from "@/features/kharcha/types";
 import { notFound } from "@/server/db/crud";
 import {

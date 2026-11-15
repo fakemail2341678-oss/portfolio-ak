@@ -1,6 +1,6 @@
 import { readFileSync } from "node:fs";
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { ndjsonLines, parseLine } from "@/features/chaal/live/ndjson";
+import { ndjsonLines, parseLine } from "@/features/chaal/live/lib/ndjson";
 import { AppError } from "@/lib/errors";
 import { chaalCacheKey, createChaalCache, untilUtcMidnight } from "@/server/chaal/lichess/cache";
 import {

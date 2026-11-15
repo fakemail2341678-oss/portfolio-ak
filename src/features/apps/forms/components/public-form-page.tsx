@@ -6,14 +6,15 @@ import { BrandName } from "@/components/brand/brand";
 import { LanguageSwitcher } from "@/components/layout/language-switcher";
 import { ThemeToggle } from "@/components/layout/theme";
 import { Page, PageHeader } from "@/components/page/page";
-import { Honeypot, useTurnstile } from "@/features/auth/components/bot-check";
+import { Honeypot } from "@/features/auth/components/bot-check-field";
+import { useTurnstile } from "@/features/auth/hooks/use-turnstile";
 import { authFeaturesQueryOptions } from "@/features/auth/queries";
 import { submitFormResponse } from "@/functions/apps/forms-public";
 import { ruleError } from "@/lib/errors";
 import { m } from "@/paraglide/messages";
 import { publicFormQueryOptions } from "../queries";
 import type { PublicForm } from "../types";
-import { FormRenderer } from "./form-renderer";
+import { FormRenderer } from "./rendered-form";
 
 const route = getRouteApi("/f/$slug");
 

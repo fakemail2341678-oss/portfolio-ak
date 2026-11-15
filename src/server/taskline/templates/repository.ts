@@ -1,6 +1,6 @@
 import "@tanstack/react-start/server-only";
 import { and, asc, count, eq, sql } from "drizzle-orm";
-import { templateDefinition } from "@/features/taskline/template-definition";
+import { templateDefinition } from "@/features/taskline/lib/template-definition";
 import { type TlTemplateRow, tlTemplate } from "@/server/db/schema";
 import type { Db, Tx } from "@/server/db/types";
 

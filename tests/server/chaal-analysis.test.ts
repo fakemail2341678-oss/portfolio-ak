@@ -1,7 +1,7 @@
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 import { ANALYSES_PER_USER } from "@/features/chaal/analysis/schema";
-import { START_FEN } from "@/features/chaal/chess/rules";
-import { createTree, type GameTree, nodeOf, playOn } from "@/features/chaal/chess/tree";
+import { START_FEN } from "@/features/chaal/chess/lib/rules";
+import { createTree, type GameTree, nodeOf, playOn } from "@/features/chaal/chess/lib/tree";
 import type { Session } from "@/lib/session";
 import * as data from "@/server/chaal/analysis/lichess";
 import * as analyses from "@/server/chaal/analysis/service";

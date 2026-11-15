@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
-import { ALL_PERMISSIONS, type Permission } from "@/features/rbac/permissions";
+import { ALL_PERMISSIONS, type Permission } from "@/features/rbac/lib/permissions";
 import { AppError } from "@/lib/errors";
 import type { Session } from "@/lib/session";
 import {

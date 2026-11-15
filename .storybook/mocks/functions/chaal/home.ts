@@ -1,5 +1,5 @@
 import { fn } from "storybook/test";
-import type { ChaalHome } from "../../../../src/features/chaal/home/curation";
+import type { ChaalHome } from "../../../../src/features/chaal/home/lib/curation";
 
 // Stand-ins for src/functions/chaal/home.ts: an announcement, the ways in, and a few picks.
 export const chaalHome: ChaalHome = {

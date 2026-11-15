@@ -1,7 +1,7 @@
 import { readFileSync } from "node:fs";
 import { asc, eq } from "drizzle-orm";
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
-import { sourceProblems } from "@/features/parda/player/templates";
+import { sourceProblems } from "@/features/parda/player/lib/templates";
 import { AppError, isAppError } from "@/lib/errors";
 import * as schema from "@/server/db/schema";
 import { listLabSources, openLabPlayer } from "@/server/parda/admin/player-lab";

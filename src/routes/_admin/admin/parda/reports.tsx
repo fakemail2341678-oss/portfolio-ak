@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { PardaReportsPage, PardaReportsPending } from "@/features/parda/admin/reports/report-list";
+import { PardaReportsPage, PardaReportsPending } from "@/features/parda/admin/reports/components/report-list";
 import { PARDA_REPORTS_TABLE_ID, pardaReportList } from "@/features/parda/admin/search";
 import { staticCrumb } from "@/lib/breadcrumbs";
 import { listLoader, listSearch, titleHead } from "@/lib/crud/route";
@@ -19,8 +19,8 @@ export const Route = createFileRoute("/_admin/admin/parda/reports")({
 			also: (queryClient) => ensureQuery(queryClient, pardaSourcesQueryOptions()),
 		});
 	},
-	staticData: { breadcrumb: staticCrumb(m.pd_admin_reports_title) },
-	head: titleHead(m.pd_admin_reports_title),
+	staticData: { breadcrumb: staticCrumb(m.parda_admin_reports_title) },
+	head: titleHead(m.parda_admin_reports_title),
 	pendingComponent: PardaReportsPending,
 	component: PardaReportsPage,
 });

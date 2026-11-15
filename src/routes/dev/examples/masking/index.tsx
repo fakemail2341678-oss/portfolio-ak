@@ -4,7 +4,7 @@ import { z } from "zod";
 import { useCloseOverlay } from "@/components/navigation/use-close-overlay";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Demo, ExamplePage } from "@/features/dev/examples/example-page";
+import { Demo, ExamplePage } from "@/features/dev/examples/components/example-page";
 import { PRIORITY_LABELS } from "@/features/dev/examples/labels";
 import { exampleTaskQueryOptions, exampleTasksQueryOptions } from "@/features/dev/examples/queries";
 import { EXAMPLE_SEARCH_DEFAULTS, type ExampleTaskSearch } from "@/features/dev/examples/schema";

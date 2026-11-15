@@ -1,6 +1,6 @@
 import "@tanstack/react-start/server-only";
 import { and, count, desc, eq, sql } from "drizzle-orm";
-import type { Answers, FormField } from "@/features/apps/forms/fields";
+import type { Answers, FormField } from "@/features/apps/forms/lib/fields";
 import { staleError } from "@/lib/concurrency";
 import { ownedBy } from "@/server/apps/ownership";
 import { sameVersion } from "@/server/db/concurrency";

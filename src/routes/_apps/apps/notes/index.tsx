@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { NotesHome } from "@/features/apps/notes/components/notes-home";
+import { NotesHome } from "@/features/apps/notes/components/notes-home-page";
 import { notesSearchSchema } from "@/features/apps/notes/search";
 import { listSearch } from "@/lib/crud/route";
 import { ensureQuery } from "@/lib/query";

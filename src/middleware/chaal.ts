@@ -6,7 +6,7 @@ import { withSession } from "./auth";
  * Chaal's public gate (PLAN 13.5, decision 0254): open to everyone, signed in or not.
  * Adds `context.chaal`: the Lichess client, its cache, the controls and the settings.
  * Anonymous calls over HTTP are limited per IP. Every public function in src/functions/chaal
- * starts with it (tests/server/guarded-functions.test.ts):
+ * starts with it (tests/server/functions-guards.test.ts):
  *
  *   createServerFn({ method: "GET" })
  *     .middleware([withChaalPublic])

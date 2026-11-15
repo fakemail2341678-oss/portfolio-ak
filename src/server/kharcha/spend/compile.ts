@@ -1,8 +1,8 @@
 import "@tanstack/react-start/server-only";
 import { and, eq, gt, gte, ilike, inArray, isNull, lt, lte, not, or, type SQL, sql } from "drizzle-orm";
 import type { AnyPgColumn } from "drizzle-orm/pg-core";
-import type { FieldTerm, QueryTerm, SpendQuery } from "@/features/kharcha/spend/query/ast";
-import { dateRange, parseQueryAmount, parseQueryCurrency, usableTerms } from "@/features/kharcha/spend/query/check";
+import type { FieldTerm, QueryTerm, SpendQuery } from "@/features/kharcha/spend/lib/query/ast";
+import { dateRange, parseQueryAmount, parseQueryCurrency, usableTerms } from "@/features/kharcha/spend/lib/query/check";
 import { CURRENCIES, minorDigits } from "@/lib/i18n/currency";
 import type { IsoDate } from "@/lib/i18n/date-only";
 import { likePattern } from "@/server/db/list";

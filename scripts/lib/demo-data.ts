@@ -8,7 +8,7 @@
  * that themselves have no imports.
  */
 import { randomUUID } from "node:crypto";
-import { isPermission } from "../../src/features/rbac/permissions.ts";
+import { isPermission } from "../../src/features/rbac/lib/permissions.ts";
 
 export type DemoQuery = (
 	sql: string,

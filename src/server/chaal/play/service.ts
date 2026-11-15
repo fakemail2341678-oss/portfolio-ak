@@ -1,8 +1,8 @@
 import "@tanstack/react-start/server-only";
-import { featureOn } from "@/features/chaal/features";
-import type { ChaalColor, ChaalEventChallenge } from "@/features/chaal/live/events";
-import { ndjsonLines, parseLine } from "@/features/chaal/live/ndjson";
-import { quickPairAllows, ratingRangeOf, readPlayLimits } from "@/features/chaal/play/controls";
+import { featureOn } from "@/features/chaal/lib/features";
+import type { ChaalColor, ChaalEventChallenge } from "@/features/chaal/live/lib/events";
+import { ndjsonLines, parseLine } from "@/features/chaal/live/lib/ndjson";
+import { quickPairAllows, ratingRangeOf, readPlayLimits } from "@/features/chaal/play/lib/controls";
 import type {
 	ChaalChallenges,
 	ChaalLiveGame,

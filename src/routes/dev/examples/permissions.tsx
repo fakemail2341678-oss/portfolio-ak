@@ -4,9 +4,9 @@ import { DescriptionList } from "@/components/data-display/description-list";
 import { errorMessage } from "@/components/errors/error-page";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Demo, ExamplePage } from "@/features/dev/examples/example-page";
-import { Can, useActor, useCan } from "@/features/rbac/can";
-import { exampleManageRoles, exampleReadItems } from "@/functions/examples-permissions";
+import { Demo, ExamplePage } from "@/features/dev/examples/components/example-page";
+import { Can, useActor, useCan } from "@/features/rbac/hooks/use-can";
+import { pingExampleManageRoles, pingExampleReadItems } from "@/functions/examples-permissions";
 import { staticCrumb } from "@/lib/breadcrumbs";
 import { privateHead } from "@/lib/seo";
 import { m } from "@/paraglide/messages";
@@ -62,8 +62,8 @@ function PermissionsExample() {
 				</Can>
 			</Demo>
 			<Demo title={m.examples_permissions_server()} note={m.examples_permissions_server_note()}>
-				<ServerCall label="test-crud:read" call={() => exampleReadItems()} />
-				<ServerCall label="roles:manage" call={() => exampleManageRoles()} />
+				<ServerCall label="test-crud:read" call={() => pingExampleReadItems()} />
+				<ServerCall label="roles:manage" call={() => pingExampleManageRoles()} />
 			</Demo>
 		</ExamplePage>
 	);

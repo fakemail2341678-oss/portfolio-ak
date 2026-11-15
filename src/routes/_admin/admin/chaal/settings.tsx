@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { ChaalAdminSettingsPage } from "@/features/chaal/admin/settings/settings-page";
+import { ChaalAdminSettingsPage } from "@/features/chaal/admin/settings/components/settings-page";
 import { staticCrumb } from "@/lib/breadcrumbs";
 import { titleHead } from "@/lib/crud/route";
 import { ensureQuery } from "@/lib/query";
@@ -12,7 +12,7 @@ export const Route = createFileRoute("/_admin/admin/chaal/settings")({
 		const { chaalAdminSettingsQueryOptions } = await import("@/features/chaal/admin/queries");
 		await ensureQuery(context.queryClient, chaalAdminSettingsQueryOptions());
 	},
-	staticData: { breadcrumb: staticCrumb(m.ch_admin_settings_title) },
-	head: titleHead(m.ch_admin_settings_title),
+	staticData: { breadcrumb: staticCrumb(m.chaal_admin_settings_title) },
+	head: titleHead(m.chaal_admin_settings_title),
 	component: ChaalAdminSettingsPage,
 });

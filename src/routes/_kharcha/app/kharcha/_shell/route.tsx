@@ -1,6 +1,6 @@
 import { createFileRoute, redirect } from "@tanstack/react-router";
 import { kharchaLinks } from "@/features/kharcha/links";
-import { KharchaShellLayout, KharchaShellNotFound } from "@/features/kharcha/shell/section";
+import { KharchaShellLayout, KharchaShellNotFound } from "@/features/kharcha/shell/components/section";
 import { ensureQuery } from "@/lib/query";
 
 /**

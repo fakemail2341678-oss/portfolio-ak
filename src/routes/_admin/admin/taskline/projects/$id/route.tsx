@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { AdminProjectLayout } from "@/features/taskline/admin/projects/project-layout";
+import { AdminProjectLayout } from "@/features/taskline/admin/projects/components/project-layout";
 import { loaderTitleCrumb } from "@/lib/breadcrumbs";
 import { loadDetailOr404 } from "@/lib/crud/route";
 import { idSchema } from "@/lib/crud/schema";

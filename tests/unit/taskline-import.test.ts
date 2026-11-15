@@ -7,7 +7,7 @@ import {
 	previewTaskImport,
 	taskTableProblem,
 	unmatchedNames,
-} from "@/features/taskline/import";
+} from "@/features/taskline/lib/import";
 import { parseCsv } from "@/lib/csv";
 
 /** Taskline's CSV import, its middle step (Task 51): the mapping's guess, the cells, the preview by the server's schema. */

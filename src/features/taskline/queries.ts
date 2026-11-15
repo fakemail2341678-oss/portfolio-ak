@@ -3,25 +3,24 @@ import {
 	createTasklineAutomation,
 	deleteTasklineAutomation,
 	listTasklineAutomations,
-	previewTasklineAutomation,
-	toggleTasklineAutomation,
+	setTasklineAutomationEnabled,
 	updateTasklineAutomation,
 } from "@/functions/taskline/automations";
 import {
 	addTasklineComment,
 	addTasklineTaskFiles,
 	deleteTasklineComment,
+	followTasklineTask,
 	removeTasklineTaskFile,
 	updateTasklineComment,
-	watchTasklineTask,
 } from "@/functions/taskline/collab";
 import { createTasklineField, deleteTasklineField, updateTasklineField } from "@/functions/taskline/fields";
 import {
+	createTasklineSavedView,
 	deleteTasklineSavedView,
-	findTasklineTasks,
 	importTasklineTasks,
+	listTasklineFindResults,
 	listTasklineSavedViews,
-	saveTasklineSavedView,
 	searchTasklineTasks,
 } from "@/functions/taskline/find";
 import { getTasklineNav, listMyTasklineTasks } from "@/functions/taskline/home";
@@ -29,17 +28,17 @@ import {
 	getTasklineNotifySettings,
 	getTasklineUnread,
 	listTasklineInbox,
-	markTasklineRead,
-	saveTasklineNotifySettings,
+	setTasklineNotificationsRead,
+	setTasklineNotifySettings,
 } from "@/functions/taskline/inbox";
 import {
 	createTasklineProject,
+	createTasklineProjectUpdate,
 	deleteTasklineProjectUpdate,
 	joinTasklineProject,
 	listTasklineProjectMembers,
 	listTasklineProjects,
 	listTasklineProjectUpdates,
-	postTasklineProjectUpdate,
 	removeTasklineProjectMember,
 	setTasklineProjectArchived,
 	setTasklineProjectMember,
@@ -57,7 +56,6 @@ import {
 	updateTasklineSprint,
 } from "@/functions/taskline/sprints";
 import {
-	bulkUpdateTasklineTasks,
 	createTasklineTask,
 	getTasklineProjectRev,
 	getTasklineTask,
@@ -66,12 +64,13 @@ import {
 	listTasklineTasks,
 	listTasklineTrash,
 	moveTasklineTask,
-	patchTasklineTask,
 	purgeTasklineTask,
 	restoreTasklineTask,
 	setTasklineChecklist,
+	setTasklineTaskField,
 	trashTasklineTask,
 	updateTasklineTask,
+	updateTasklineTasks,
 } from "@/functions/taskline/tasks";
 import { listTasklineTemplates } from "@/functions/taskline/templates";
 import {
@@ -79,7 +78,7 @@ import {
 	deleteTasklineTimeEntry,
 	getTasklineProjectTime,
 	getTasklineTimesheet,
-	logTasklineTime,
+	recordTasklineTime,
 	setTasklineTimesheetCell,
 	startTasklineTimer,
 	stopTasklineTimer,
@@ -101,6 +100,8 @@ import {
 	updateTasklineStatus,
 } from "@/functions/taskline/workflow";
 import { getTasklineWorkspace, listTasklineMembers, startTasklineSandbox } from "@/functions/taskline/workspaces";
+import { tasklineKeys } from "./keys";
+import { refreshTaskline } from "./lib/refresh";
 import type {
 	AddCommentInput,
 	BulkTasksInput,
@@ -138,59 +139,7 @@ import type {
 	UpdateTaskInput,
 	UpdateTimeEntryInput,
 } from "./schema";
-import type { AutomationCondition, ChecklistItem, ProjectRole, ReportRange, SavedViewKind } from "./types";
-
-/**
- * Taskline's reads and writes (Query; the board's TanStack DB collection reads the
- * project query, board/collections.ts). Keys carry the user's id, so another account
- * signing in on the same tab never sees cached data, and every write refreshes
- * everything under it: the sidebar, Home and the open views too.
- */
-export const tasklineKeys = {
-	all: ["taskline"] as const,
-	user: (userId: string) => [...tasklineKeys.all, userId] as const,
-	nav: (userId: string) => [...tasklineKeys.user(userId), "nav"] as const,
-	myTasks: (userId: string) => [...tasklineKeys.user(userId), "my-tasks"] as const,
-	workspace: (userId: string, ws: string) => [...tasklineKeys.user(userId), "ws", ws] as const,
-	members: (userId: string, ws: string) => [...tasklineKeys.workspace(userId, ws), "members"] as const,
-	projects: (userId: string, ws: string, archived: boolean) =>
-		[...tasklineKeys.workspace(userId, ws), "projects", { archived }] as const,
-	project: (userId: string, ws: string, key: string) =>
-		[...tasklineKeys.workspace(userId, ws), "project", key] as const,
-	/** The project's own data (statuses, members, tasks): what the board's collection reads. */
-	projectTasks: (userId: string, ws: string, key: string) =>
-		[...tasklineKeys.project(userId, ws, key), "tasks"] as const,
-	taskPage: (userId: string, input: TaskListInput) =>
-		[...tasklineKeys.project(userId, input.ws, input.key), "list", input] as const,
-	task: (userId: string, ws: string, ref: string) => [...tasklineKeys.workspace(userId, ws), "task", ref] as const,
-	/** Task 50: the inbox (and the sidebar's count, under it) and "My settings". */
-	inbox: (userId: string) => [...tasklineKeys.user(userId), "inbox"] as const,
-	unread: (userId: string) => [...tasklineKeys.inbox(userId), "unread"] as const,
-	notifySettings: (userId: string) => [...tasklineKeys.user(userId), "notify-settings"] as const,
-	/** Task 51: a project's saved views of one kind, the search page, the palette's results. */
-	views: (userId: string, ws: string, key: string, view: SavedViewKind) =>
-		[...tasklineKeys.project(userId, ws, key), "views", view] as const,
-	search: (userId: string, ws: string, q: string, page: number) =>
-		[...tasklineKeys.workspace(userId, ws), "search", { q, page }] as const,
-	find: (userId: string, q: string) => [...tasklineKeys.user(userId), "find", q] as const,
-	/** Task 52: a sprint's report (under its project, so the project's refresh reads it again). */
-	sprintReport: (userId: string, ws: string, key: string, id: string) =>
-		[...tasklineKeys.project(userId, ws, key), "sprint", id] as const,
-	/** Task 53: the caller's timesheet of a week, and a project's time (under its project). */
-	timesheet: (userId: string, ws: string, week: string) =>
-		[...tasklineKeys.workspace(userId, ws), "timesheet", week] as const,
-	projectTime: (userId: string, ws: string, key: string) => [...tasklineKeys.project(userId, ws, key), "time"] as const,
-	/** Task 56: a project's automations and their runs, and the builder's preview of some conditions. */
-	automations: (userId: string, ws: string, key: string) =>
-		[...tasklineKeys.project(userId, ws, key), "automations"] as const,
-	automationPreview: (userId: string, ws: string, key: string) =>
-		[...tasklineKeys.project(userId, ws, key), "automation-preview"] as const,
-	/** Task 57: what "New project" offers in a workspace, a project's reports and its updates. */
-	templates: (userId: string, ws: string) => [...tasklineKeys.workspace(userId, ws), "templates"] as const,
-	reports: (userId: string, ws: string, key: string, range: string) =>
-		[...tasklineKeys.project(userId, ws, key), "reports", { range }] as const,
-	updates: (userId: string, ws: string, key: string) => [...tasklineKeys.project(userId, ws, key), "updates"] as const,
-};
+import type { ChecklistItem, ProjectRole, ReportRange, SavedViewKind } from "./types";
 
 /** A project's automations (its lead's settings page). */
 export const projectAutomationsQueryOptions = (userId: string, ws: string, key: string) =>
@@ -198,12 +147,6 @@ export const projectAutomationsQueryOptions = (userId: string, ws: string, key: 
 		queryKey: tasklineKeys.automations(userId, ws, key),
 		queryFn: () => listTasklineAutomations({ data: { ws, key } }),
 	});
-
-/** How many of the project's open tasks some conditions match now (the builder's preview, keyed by the conditions). */
-export const automationPreviewSource = (userId: string, ws: string, key: string) => ({
-	queryKey: tasklineKeys.automationPreview(userId, ws, key),
-	run: (conditions: AutomationCondition[]) => previewTasklineAutomation({ data: { ws, key, conditions } }),
-});
 
 /** My timesheet: the week holding `week` (any of its days). */
 export const timesheetQueryOptions = (userId: string, ws: string, week: string) =>
@@ -267,7 +210,7 @@ export const searchQueryOptions = (userId: string, ws: string, q: string, page: 
 export const findTasksQueryOptions = (userId: string, q: string) =>
 	queryOptions({
 		queryKey: tasklineKeys.find(userId, q),
-		queryFn: () => findTasklineTasks({ data: { q } }),
+		queryFn: () => listTasklineFindResults({ data: { q } }),
 		enabled: q.trim().length >= 2,
 		staleTime: 30_000,
 		placeholderData: keepPreviousData,
@@ -370,26 +313,11 @@ export const projectRevQueryOptions = (userId: string, ws: string, key: string) 
 		staleTime: 0,
 	});
 
-/** After any write: everything of the user's in Taskline is stale (active queries refetch). */
-export const refreshTaskline = (queryClient: QueryClient, userId: string) =>
-	queryClient.invalidateQueries({ queryKey: tasklineKeys.user(userId) });
-
 const write = <TInput, TResult>(
 	queryClient: QueryClient,
 	userId: string,
 	mutationFn: (input: TInput) => Promise<TResult>,
 ) => mutationOptions({ mutationFn, onSettled: () => refreshTaskline(queryClient, userId) });
-
-export const starProjectMutation = (queryClient: QueryClient, userId: string) =>
-	write(queryClient, userId, (input: { ws: string; key: string; starred: boolean }) =>
-		setTasklineProjectStar({ data: input }),
-	);
-
-export const createProjectMutation = (queryClient: QueryClient, userId: string) =>
-	write(queryClient, userId, (input: CreateProjectInput) => createTasklineProject({ data: input }));
-
-export const startSandboxMutation = (queryClient: QueryClient, userId: string) =>
-	write(queryClient, userId, () => startTasklineSandbox());
 
 /** Every write the views, the task and the lead's settings make. */
 export const tasklineMutations = {
@@ -398,7 +326,7 @@ export const tasklineMutations = {
 	updateTask: (queryClient: QueryClient, userId: string) =>
 		write(queryClient, userId, (input: UpdateTaskInput) => updateTasklineTask({ data: input })),
 	patchTask: (queryClient: QueryClient, userId: string) =>
-		write(queryClient, userId, (input: PatchTaskInput) => patchTasklineTask({ data: input })),
+		write(queryClient, userId, (input: PatchTaskInput) => setTasklineTaskField({ data: input })),
 	moveTask: (queryClient: QueryClient, userId: string) =>
 		write(queryClient, userId, (input: { ws: string; ref: string; statusId: string; position: string }) =>
 			moveTasklineTask({ data: input }),
@@ -414,13 +342,13 @@ export const tasklineMutations = {
 	purgeTask: (queryClient: QueryClient, userId: string) =>
 		write(queryClient, userId, (input: { ws: string; ref: string }) => purgeTasklineTask({ data: input })),
 	bulk: (queryClient: QueryClient, userId: string) =>
-		write(queryClient, userId, (input: BulkTasksInput) => bulkUpdateTasklineTasks({ data: input })),
+		write(queryClient, userId, (input: BulkTasksInput) => updateTasklineTasks({ data: input })),
 	updateProject: (queryClient: QueryClient, userId: string) =>
 		write(queryClient, userId, (input: UpdateProjectInput) => updateTasklineProject({ data: input })),
 	setProjectState: (queryClient: QueryClient, userId: string) =>
 		write(queryClient, userId, (input: SetProjectStateInput) => setTasklineProjectState({ data: input })),
 	postProjectUpdate: (queryClient: QueryClient, userId: string) =>
-		write(queryClient, userId, (input: PostProjectUpdateInput) => postTasklineProjectUpdate({ data: input })),
+		write(queryClient, userId, (input: PostProjectUpdateInput) => createTasklineProjectUpdate({ data: input })),
 	deleteProjectUpdate: (queryClient: QueryClient, userId: string) =>
 		write(queryClient, userId, (input: DeleteProjectUpdateInput) => deleteTasklineProjectUpdate({ data: input })),
 	joinProject: (queryClient: QueryClient, userId: string) =>
@@ -468,7 +396,7 @@ export const tasklineMutations = {
 	updateAutomation: (queryClient: QueryClient, userId: string) =>
 		write(queryClient, userId, (input: UpdateAutomationInput) => updateTasklineAutomation({ data: input })),
 	toggleAutomation: (queryClient: QueryClient, userId: string) =>
-		write(queryClient, userId, (input: ToggleAutomationInput) => toggleTasklineAutomation({ data: input })),
+		write(queryClient, userId, (input: ToggleAutomationInput) => setTasklineAutomationEnabled({ data: input })),
 	deleteAutomation: (queryClient: QueryClient, userId: string) =>
 		write(queryClient, userId, (input: { ws: string; key: string; id: string }) =>
 			deleteTasklineAutomation({ data: input }),
@@ -483,7 +411,7 @@ export const tasklineMutations = {
 		),
 	watch: (queryClient: QueryClient, userId: string) =>
 		write(queryClient, userId, (input: { ws: string; ref: string; watching: boolean }) =>
-			watchTasklineTask({ data: input }),
+			followTasklineTask({ data: input }),
 		),
 	addFiles: (queryClient: QueryClient, userId: string) =>
 		write(queryClient, userId, (input: { ws: string; ref: string; ids: string[] }) =>
@@ -495,12 +423,12 @@ export const tasklineMutations = {
 		),
 	markRead: (queryClient: QueryClient, userId: string) =>
 		mutationOptions({
-			mutationFn: (input: MarkReadInput) => markTasklineRead({ data: input }),
+			mutationFn: (input: MarkReadInput) => setTasklineNotificationsRead({ data: input }),
 			onSettled: () => queryClient.invalidateQueries({ queryKey: tasklineKeys.inbox(userId) }),
 		}),
 	saveView: (queryClient: QueryClient, userId: string) =>
 		mutationOptions({
-			mutationFn: (input: SaveViewInput) => saveTasklineSavedView({ data: input }),
+			mutationFn: (input: SaveViewInput) => createTasklineSavedView({ data: input }),
 			onSettled: (_data, _error, input) =>
 				queryClient.invalidateQueries({ queryKey: tasklineKeys.views(userId, input.ws, input.key, input.view) }),
 		}),
@@ -515,7 +443,7 @@ export const tasklineMutations = {
 		write(queryClient, userId, (input: ImportTasksInput) => importTasklineTasks({ data: input })),
 	saveNotifySettings: (queryClient: QueryClient, userId: string) =>
 		mutationOptions({
-			mutationFn: (input: NotifySettingsInput) => saveTasklineNotifySettings({ data: input }),
+			mutationFn: (input: NotifySettingsInput) => setTasklineNotifySettings({ data: input }),
 			onSuccess: (saved) => queryClient.setQueryData(tasklineKeys.notifySettings(userId), saved),
 		}),
 	createSprint: (queryClient: QueryClient, userId: string) =>
@@ -536,7 +464,7 @@ export const tasklineMutations = {
 		write(queryClient, userId, (input: { ws: string; ref: string }) => startTasklineTimer({ data: input })),
 	stopTimer: (queryClient: QueryClient, userId: string) => write(queryClient, userId, () => stopTasklineTimer()),
 	logTime: (queryClient: QueryClient, userId: string) =>
-		write(queryClient, userId, (input: LogTimeInput) => logTasklineTime({ data: input })),
+		write(queryClient, userId, (input: LogTimeInput) => recordTasklineTime({ data: input })),
 	updateTimeEntry: (queryClient: QueryClient, userId: string) =>
 		write(queryClient, userId, (input: UpdateTimeEntryInput) => updateTasklineTimeEntry({ data: input })),
 	deleteTimeEntry: (queryClient: QueryClient, userId: string) =>
@@ -557,4 +485,12 @@ export const tasklineMutations = {
 		write(queryClient, userId, (input: DependencyInput) => addTasklineDependency({ data: input })),
 	removeDependency: (queryClient: QueryClient, userId: string) =>
 		write(queryClient, userId, (input: DependencyInput) => removeTasklineDependency({ data: input })),
+
+	starProject: (queryClient: QueryClient, userId: string) =>
+		write(queryClient, userId, (input: { ws: string; key: string; starred: boolean }) =>
+			setTasklineProjectStar({ data: input }),
+		),
+	createProject: (queryClient: QueryClient, userId: string) =>
+		write(queryClient, userId, (input: CreateProjectInput) => createTasklineProject({ data: input })),
+	startSandbox: (queryClient: QueryClient, userId: string) => write(queryClient, userId, () => startTasklineSandbox()),
 };

@@ -1,5 +1,5 @@
 import { createServerFn } from "@tanstack/react-start";
-import { type ChaalAdminBlock, type ChaalAdminBlockPage, chaalBlockInput } from "@/features/chaal/admin/schema";
+import { type ChaalAdminBlock, type ChaalAdminBlockPage, chaalBlockInputSchema } from "@/features/chaal/admin/schema";
 import { chaalBlockList } from "@/features/chaal/admin/search";
 import { zodInput } from "@/functions/_lib/validator";
 import { bulkIdsSchema } from "@/lib/list/paging";
@@ -17,7 +17,7 @@ export const listChaalBlocks = createServerFn({ method: "GET" })
 
 export const blockChaal = createServerFn({ method: "POST" })
 	.middleware([requirePermission("chaal:moderate"), withServices])
-	.validator(zodInput(chaalBlockInput))
+	.validator(zodInput(chaalBlockInputSchema))
 	.handler(({ data, context }): Promise<ChaalAdminBlock> => blocks.createBlock(chaalAdmin(context), data));
 
 export const unblockChaal = createServerFn({ method: "POST" })

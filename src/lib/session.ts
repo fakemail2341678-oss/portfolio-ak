@@ -1,5 +1,5 @@
 // biome-ignore lint/style/noRestrictedImports: a type only, erased at build: the standard allows it, the lint rule cannot tell
-import type { Permission } from "@/features/rbac/permissions";
+import type { Permission } from "@/features/rbac/lib/permissions";
 
 /** Better Auth's admin flag ("admin" holds every permission; see decisions.md 0094). */
 export type Role = "user" | "admin";

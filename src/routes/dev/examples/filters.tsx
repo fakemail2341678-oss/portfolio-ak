@@ -5,7 +5,7 @@ import { BooleanFilter, SearchFilter, SelectFilter } from "@/components/filters/
 import { Pagination } from "@/components/navigation/pagination";
 import { EmptyState } from "@/components/page/empty-state";
 import { Badge } from "@/components/ui/badge";
-import { Demo, ExamplePage } from "@/features/dev/examples/example-page";
+import { Demo, ExamplePage } from "@/features/dev/examples/components/example-page";
 import { PRIORITY_LABELS } from "@/features/dev/examples/labels";
 import { exampleTasksQueryOptions } from "@/features/dev/examples/queries";
 import {

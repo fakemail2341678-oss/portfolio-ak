@@ -1,6 +1,6 @@
 import "@tanstack/react-start/server-only";
 import { z } from "zod";
-import { withinCap } from "@/features/parda/kids";
+import { withinCap } from "@/features/parda/lib/kids";
 import { AppError } from "@/lib/errors";
 import type { PardaMedia } from "@/server/db/schema";
 import { type PardaControls, titleKey } from "../controls";

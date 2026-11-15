@@ -13,8 +13,8 @@ export const createTasklineAutomation = fn(async (): Promise<Automation> => rule
 export const updateTasklineAutomation = fn(async (): Promise<Automation> => rule()).mockName(
 	"updateTasklineAutomation",
 );
-export const toggleTasklineAutomation = fn(async (): Promise<Automation> => rule()).mockName(
-	"toggleTasklineAutomation",
+export const setTasklineAutomationEnabled = fn(async (): Promise<Automation> => rule()).mockName(
+	"setTasklineAutomationEnabled",
 );
 export const deleteTasklineAutomation = fn(async (): Promise<void> => undefined).mockName("deleteTasklineAutomation");
 export const previewTasklineAutomation = fn(

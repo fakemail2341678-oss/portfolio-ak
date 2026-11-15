@@ -6,7 +6,7 @@ import { NavigationProgress } from "@/components/layout/navigation-progress";
 import { MAIN_CONTENT } from "@/components/layout/skip-link";
 import { PortfolioFooter } from "@/features/portfolio/components/chrome/portfolio-footer";
 import { PortfolioHeader } from "@/features/portfolio/components/chrome/portfolio-header";
-import { PortfolioNotFound } from "@/features/portfolio/components/chrome/portfolio-not-found";
+import { PortfolioNotFound } from "@/features/portfolio/components/chrome/portfolio-not-found-page";
 import { PortfolioPending } from "@/features/portfolio/components/chrome/portfolio-pending";
 import { portfolioFontPreloads } from "@/features/portfolio/lib/fonts";
 import { profileQueryOptions } from "@/features/portfolio/queries";

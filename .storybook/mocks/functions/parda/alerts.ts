@@ -5,7 +5,7 @@ import type { FollowingSchedule, InboxData } from "../../../../src/features/pard
 export const getPardaInbox = fn(async (): Promise<InboxData> => ({ imageBase: "", items: [], unread: 0 })).mockName(
 	"getPardaInbox",
 );
-export const markPardaInboxRead = fn(async () => ({ ok: true as const })).mockName("markPardaInboxRead");
+export const setPardaInboxRead = fn(async () => ({ ok: true as const })).mockName("setPardaInboxRead");
 export const getPardaFollowing = fn(async (): Promise<FollowingSchedule> => ({ imageBase: "", entries: [] })).mockName(
 	"getPardaFollowing",
 );

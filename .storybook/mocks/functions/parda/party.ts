@@ -23,5 +23,5 @@ export const pulsePardaParty = fn(async (): Promise<PartyPulse> => ({ now: 0, ho
 );
 export const leavePardaParty = fn(async () => ({ ok: true as const })).mockName("leavePardaParty");
 export const setPardaPartySource = fn(async () => ({ ok: true as const })).mockName("setPardaPartySource");
-export const takeOverPardaParty = fn(async () => ({ hostMemberId: "" })).mockName("takeOverPardaParty");
-export const endPardaParty = fn(async () => ({ ok: true as const })).mockName("endPardaParty");
+export const claimPardaParty = fn(async () => ({ hostMemberId: "" })).mockName("claimPardaParty");
+export const stopPardaParty = fn(async () => ({ ok: true as const })).mockName("stopPardaParty");

@@ -1,7 +1,7 @@
 import "@tanstack/react-start/server-only";
 import { and, eq, isNotNull, isNull, lt, sql } from "drizzle-orm";
-import { dueByNow, nextDue, shiftedStart } from "@/features/taskline/recurrence";
-import { workspaceSettings } from "@/features/taskline/settings";
+import { dueByNow, nextDue, shiftedStart } from "@/features/taskline/lib/recurrence";
+import { workspaceSettings } from "@/features/taskline/lib/settings";
 import { todayInZone } from "@/lib/i18n/date-only";
 import { lockQuota } from "@/server/db/quota";
 import { type TlTaskRow, tlProject, tlTask, tlWorkspace } from "@/server/db/schema";

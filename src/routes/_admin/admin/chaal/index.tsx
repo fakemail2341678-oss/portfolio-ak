@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { ChaalOverviewPage } from "@/features/chaal/admin/overview/overview-page";
+import { ChaalOverviewPage } from "@/features/chaal/admin/overview/components/overview-page";
 import { chaalOverviewSearch } from "@/features/chaal/admin/search";
 import { titleHead } from "@/lib/crud/route";
 import { ensureQuery } from "@/lib/query";
@@ -14,6 +14,6 @@ export const Route = createFileRoute("/_admin/admin/chaal/")({
 		const { chaalOverviewQueryOptions } = await import("@/features/chaal/admin/queries");
 		await ensureQuery(context.queryClient, chaalOverviewQueryOptions(deps.range));
 	},
-	head: titleHead(m.ch_admin_overview_title),
+	head: titleHead(m.chaal_admin_overview_title),
 	component: ChaalOverviewPage,
 });

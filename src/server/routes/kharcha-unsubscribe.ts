@@ -9,7 +9,7 @@
  *   nothing. A plain page of its own, with no script: Kharcha's pages need a session.
  */
 import { defineHandler } from "nitro";
-import { KHARCHA_NAME } from "../../features/kharcha/brand";
+import { KHARCHA_NAME } from "../../features/kharcha/lib/brand";
 import { m } from "../../paraglide/messages.js";
 import { baseLocale, isLocale, type Locale } from "../../paraglide/runtime.js";
 import { db } from "../db/client";

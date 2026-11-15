@@ -5,25 +5,12 @@ import {
 	getForm,
 	getFormResults,
 	listForms,
-	saveForm,
 	setFormStatus,
+	updateForm,
 } from "@/functions/apps/forms";
 import { getPublicForm } from "@/functions/apps/forms-public";
+import { formsKeys } from "./keys";
 import type { CreateFormInput, SaveFormInput, SetFormStatusInput } from "./schema";
-
-/**
- * Forms' reads and writes (decision 0195). Keys carry the user's id, so another
- * account signing in on the same tab never sees cached forms. Writes are Query
- * mutations that refresh the user's keys; the public page's read has no user.
- */
-export const formsKeys = {
-	all: ["apps", "forms"] as const,
-	user: (userId: string) => [...formsKeys.all, userId] as const,
-	list: (userId: string) => [...formsKeys.user(userId), "list"] as const,
-	form: (userId: string, id: string) => [...formsKeys.user(userId), "form", id] as const,
-	results: (userId: string, id: string, page: number) => [...formsKeys.user(userId), "results", id, page] as const,
-	public: (slug: string) => [...formsKeys.all, "public", slug] as const,
-};
 
 export const formsListQueryOptions = (userId: string) =>
 	queryOptions({ queryKey: formsKeys.list(userId), queryFn: () => listForms() });
@@ -52,7 +39,7 @@ export const formMutations = {
 	/** The builder's save: the answer is the saved form, put in its query (the next save starts from its version). */
 	save: (queryClient: QueryClient, userId: string) =>
 		mutationOptions({
-			mutationFn: (input: SaveFormInput) => saveForm({ data: input }),
+			mutationFn: (input: SaveFormInput) => updateForm({ data: input }),
 			onSuccess: (form) => queryClient.setQueryData(formsKeys.form(userId, form.id), form),
 			onSettled: () => queryClient.invalidateQueries({ queryKey: formsKeys.list(userId) }),
 		}),

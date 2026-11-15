@@ -7,7 +7,7 @@ import {
 	type SourceInput,
 	type SourceStateInput,
 } from "@/features/parda/admin/schema";
-import { sourceFieldProblems, type TemplateProblem } from "@/features/parda/player/templates";
+import { sourceFieldProblems, type TemplateProblem } from "@/features/parda/player/lib/templates";
 import { AppError } from "@/lib/errors";
 import { m } from "@/paraglide/messages";
 import { changes } from "@/server/audit/record";
@@ -30,10 +30,10 @@ import { type PardaAdminServices, saveVersioned } from "./context";
 const WHAT = "Parda source";
 
 const PROBLEM_MESSAGES: Readonly<Record<TemplateProblem, () => string>> = {
-	"not-https": m.pd_admin_source_problem_not_https,
-	"origin-not-listed": m.pd_admin_source_problem_origin,
-	"unknown-token": m.pd_admin_source_problem_token,
-	"invalid-origin": m.pd_admin_source_problem_invalid_origin,
+	"not-https": m.parda_admin_source_problem_not_https,
+	"origin-not-listed": m.parda_admin_source_problem_origin,
+	"unknown-token": m.parda_admin_source_problem_token,
+	"invalid-origin": m.parda_admin_source_problem_invalid_origin,
 };
 
 function checkTemplates(input: Pick<SourceInput, "movieTemplate" | "tvTemplate" | "origins">) {

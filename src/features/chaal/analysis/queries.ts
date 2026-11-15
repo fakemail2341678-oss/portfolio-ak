@@ -3,7 +3,7 @@ import {
 	deleteChaalAnalysis,
 	getChaalAnalysis,
 	listChaalAnalyses,
-	saveChaalAnalysis,
+	updateChaalAnalysis,
 } from "@/functions/chaal/analyses";
 import { getChaalCloudEval, getChaalExplorer, getChaalTablebase, importChaalGame } from "@/functions/chaal/analysis";
 import { chaalKeys } from "../keys";
@@ -50,8 +50,20 @@ export const tablebaseQueryOptions = (fen: string) =>
 		...FOR_THE_VISIT,
 	});
 
-/** A finished Lichess game, for "Import" (not cached: it's read once). */
-export const importLichessGame = (id: string) => importChaalGame({ data: { id } });
+export const chaalAnalysisMutations = {
+	save: () =>
+		mutationOptions({
+			mutationKey: [...chaalKeys.analyses(), "save"],
+			mutationFn: (input: AnalysisInput) => updateChaalAnalysis({ data: input }),
+		}),
+	delete: () =>
+		mutationOptions({
+			mutationKey: [...chaalKeys.analyses(), "delete"],
+			mutationFn: (id: string) => deleteChaalAnalysis({ data: { id } }),
+		}),
+	/** A finished Lichess game, for "Import" (not cached: it's read once). */
+	importGame: (id: string) => importChaalGame({ data: { id } }),
+};
 
 export const analysesQueryOptions = () =>
 	queryOptions({ queryKey: chaalKeys.analyses(), queryFn: () => listChaalAnalyses() });
@@ -59,15 +71,3 @@ export const analysesQueryOptions = () =>
 export const analysisQueryOptions = (id: string) =>
 	// A missing analysis stays missing: no retries.
 	queryOptions({ queryKey: chaalKeys.analysis(id), queryFn: () => getChaalAnalysis({ data: { id } }), retry: false });
-
-export const saveAnalysisMutationOptions = () =>
-	mutationOptions({
-		mutationKey: [...chaalKeys.analyses(), "save"],
-		mutationFn: (input: AnalysisInput) => saveChaalAnalysis({ data: input }),
-	});
-
-export const deleteAnalysisMutationOptions = () =>
-	mutationOptions({
-		mutationKey: [...chaalKeys.analyses(), "delete"],
-		mutationFn: (id: string) => deleteChaalAnalysis({ data: { id } }),
-	});

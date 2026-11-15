@@ -3,7 +3,7 @@ import { type AccountSecurity, sessionIdSchema, setPasswordSchema } from "@/feat
 import { zodInput } from "@/functions/_lib/validator";
 import type { Session } from "@/lib/session";
 import { requireAccountOwner, requireAdminAccess, requireUser, withSession } from "@/middleware/auth";
-import { withServices } from "@/middleware/services";
+import { withPublic, withServices } from "@/middleware/services";
 
 /** Current session or null. Used by the root route to fill the router context. */
 export const getSession = createServerFn({ method: "GET" })
@@ -11,17 +11,19 @@ export const getSession = createServerFn({ method: "GET" })
 	.handler(({ context }): Session | null => context.session);
 
 /** Which optional sign-in methods are configured (the Google button depends on this). */
-export const getAuthFeatures = createServerFn({ method: "GET" }).handler(async () => {
-	const { authFeatures } = await import("@/server/auth/auth");
-	return authFeatures;
-});
+export const getAuthFeatures = createServerFn({ method: "GET" })
+	.middleware([withPublic])
+	.handler(async () => {
+		const { authFeatures } = await import("@/server/auth/auth");
+		return authFeatures;
+	});
 
 /**
  * Server-side gate for the _admin layout: the user must hold at least one
  * permission. Throws UNAUTHORIZED/FORBIDDEN; permissions come from the database
  * for this request, never from client state.
  */
-export const ensureAdminAccess = createServerFn({ method: "GET" })
+export const getAdminAccess = createServerFn({ method: "GET" })
 	.middleware([requireAdminAccess])
 	.handler(({ context }): Session => ({ user: context.user, permissions: context.permissions }));
 

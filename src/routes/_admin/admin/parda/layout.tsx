@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { PardaLayoutPage } from "@/features/parda/admin/curation/layout-page";
+import { PardaLayoutPage } from "@/features/parda/admin/curation/components/layout-page";
 import { pardaPageSearch } from "@/features/parda/admin/search";
 import { staticCrumb } from "@/lib/breadcrumbs";
 import { titleHead } from "@/lib/crud/route";
@@ -15,7 +15,7 @@ export const Route = createFileRoute("/_admin/admin/parda/layout")({
 		const { pardaLayoutQueryOptions } = await import("@/features/parda/admin/queries");
 		await ensureQuery(context.queryClient, pardaLayoutQueryOptions(deps.page));
 	},
-	staticData: { breadcrumb: staticCrumb(m.pd_admin_layout_title) },
-	head: titleHead(m.pd_admin_layout_title),
+	staticData: { breadcrumb: staticCrumb(m.parda_admin_layout_title) },
+	head: titleHead(m.parda_admin_layout_title),
 	component: PardaLayoutPage,
 });

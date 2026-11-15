@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { pardaHead } from "@/features/parda/brand";
-import { PardaProfilesPage } from "@/features/parda/profiles/profiles-page";
+import { pardaHead } from "@/features/parda/lib/brand";
+import { PardaProfilesPage } from "@/features/parda/profiles/components/profiles-page";
 import { m } from "@/paraglide/messages";
 import { getLocale } from "@/paraglide/runtime";
 
@@ -14,6 +14,6 @@ export const Route = createFileRoute("/_parda/app/parda/profiles")({
 		]);
 		await ensureQuery(context.queryClient, pardaProfilesQueryOptions(getLocale()));
 	},
-	head: () => pardaHead(m.pd_profiles_title()),
+	head: () => pardaHead(m.parda_profiles_title()),
 	component: PardaProfilesPage,
 });

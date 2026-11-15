@@ -119,7 +119,7 @@ if (status.status !== 0) fail("needs a git checkout (it restores the tree with g
 if (status.stdout.trim() !== "") fail("commit or stash your changes first: a failed run restores the tree with git");
 
 if (existsSync(path.join(root, "src/features", feature))) fail(`src/features/${feature} already exists`);
-if (new RegExp(`^\\s*"?${feature}"?: \\[`, "m").test(read("src/features/rbac/permissions.ts"))) {
+if (new RegExp(`^\\s*"?${feature}"?: \\[`, "m").test(read("src/features/rbac/lib/permissions.ts"))) {
 	fail(`the permission catalog already has "${feature}"`);
 }
 // Files only: apps keep their tables in a subfolder (src/server/db/schema/apps/).
@@ -169,7 +169,7 @@ const addImport = (file: string, line: string) => {
 const { name: n, snake: s, camel: c, Pascal: P } = names;
 const ACTIONS = ["read", "create", "update", "delete"];
 insert("src/server/db/schema/index.ts", "schema", [`export * from "./${n}";`]);
-insert("src/features/rbac/permissions.ts", "permissions", [
+insert("src/features/rbac/lib/permissions.ts", "permissions", [
 	`"${n}": ${JSON.stringify(ACTIONS).replaceAll(",", ", ")},`,
 ]);
 insert("src/features/rbac/labels.ts", "resource-labels", [`"${n}": m.perm_resource_${s},`]);
@@ -190,7 +190,7 @@ insert(
 	["create", "update", "delete"].map((action) => `"${n}.${action}": m.audit_action_${s}_${action},`),
 );
 insert("src/features/audit/labels.ts", "audit-target-labels", [`"${n}": m.audit_target_${s},`]);
-insert("src/features/admin/sections.ts", "admin-sections", [
+insert("src/features/admin/lib/sections.ts", "admin-sections", [
 	"{",
 	`\t...linkOptions({ to: "/admin/${n}" }),`,
 	`\tlabel: m.admin_nav_${s},`,
@@ -203,16 +203,16 @@ insert("src/features/admin/sections.ts", "admin-sections", [
 // The icon goes into the icons' import (unless an earlier feature added it), first: the last name may
 // carry a trailing `// @layer` comment. Biome sorts the names.
 const iconImport = /import \{([^}]*)\} from "lucide-react";/;
-const sectionsFile = read("src/features/admin/sections.ts");
+const sectionsFile = read("src/features/admin/lib/sections.ts");
 if (!/\bFolderIcon\b/.test(iconImport.exec(sectionsFile)?.[1] ?? "")) {
 	write(
-		"src/features/admin/sections.ts",
+		"src/features/admin/lib/sections.ts",
 		sectionsFile.replace(iconImport, (_, list: string) => `import { FolderIcon,${list}} from "lucide-react";`),
 	);
 }
 addImport("src/features/admin/commands.ts", `import { ${c}Commands } from "@/features/${n}/commands";`);
 insert("src/features/admin/commands.ts", "commands", [`...${c}Commands,`]);
-insert("tests/server/guarded-functions.test.ts", "guarded-functions", [
+insert("tests/server/functions-guards.test.ts", "guarded-functions", [
 	`"${n}.ts": [`,
 	`\t["list${P}", "${n}:read"],`,
 	`\t["get${P}", "${n}:read"],`,
@@ -234,7 +234,7 @@ insert("e2e/support/pages.ts", "not-reviewed", [
 		: []),
 ]);
 if (flags.public) {
-	insert("tests/server/guarded-functions.test.ts", "unguarded-functions", [
+	insert("tests/server/functions-guards.test.ts", "unguarded-functions", [
 		`"${n}-public.ts": {`,
 		'\twhy: "public pages: published rows only, read without signing in",',
 		`\tfunctions: ["listPublic${P}", "getPublic${P}"],`,

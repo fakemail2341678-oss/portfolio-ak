@@ -1,6 +1,6 @@
 import "@tanstack/react-start/server-only";
 import { getCookie, getRequest, getRequestHeader } from "@tanstack/react-start/server";
-import { isTmdbRegion } from "@/features/parda/profiles/options";
+import { isTmdbRegion } from "@/features/parda/profiles/lib/options";
 import { isAppError } from "@/lib/errors";
 import { todayInZone } from "@/lib/i18n/date-only";
 import { APP_TIME_ZONE } from "@/lib/i18n/intl";
@@ -14,7 +14,7 @@ import { pardaCache, pardaControls, pardaTmdb } from "../tmdb/store";
 import type { CatalogScope, CatalogServices } from "./service";
 
 /**
- * What `withPardaCatalog` hands a catalogue function (PLAN 12.5): the services, and the
+ * What `withPardaPublic` hands a catalogue function (PLAN 12.5): the services, and the
  * scope's region and cap, and the profile's players' language. Null when TMDB_READ_TOKEN
  * is unset: the page then says the catalogue isn't configured.
  */

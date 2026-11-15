@@ -1,6 +1,6 @@
 import "@tanstack/react-start/server-only";
 import { and, asc, count, eq, inArray, isNull, sql } from "drizzle-orm";
-import { projectSettings } from "@/features/taskline/settings";
+import { projectSettings } from "@/features/taskline/lib/settings";
 import type {
 	ProjectCan,
 	ProjectDetail,

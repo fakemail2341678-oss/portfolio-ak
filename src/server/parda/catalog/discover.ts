@@ -1,5 +1,5 @@
 import "@tanstack/react-start/server-only";
-import { DISCOVER_LANGUAGES } from "@/features/parda/discover/options";
+import { DISCOVER_LANGUAGES } from "@/features/parda/discover/lib/options";
 import { type DiscoverSearch, TMDB_MAX_PAGE } from "@/features/parda/search";
 import type { DiscoverPageData } from "@/features/parda/search/types";
 import { isAppError } from "@/lib/errors";

@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { AdminProjectList } from "@/features/taskline/admin/projects/project-list";
+import { AdminProjectList } from "@/features/taskline/admin/projects/components/project-list";
 import { adminProjectList, TL_ADMIN_PROJECTS_TABLE_ID } from "@/features/taskline/admin/search";
 import { listLoader, listSearch, titleHead } from "@/lib/crud/route";
 import { ensureQuery } from "@/lib/query";

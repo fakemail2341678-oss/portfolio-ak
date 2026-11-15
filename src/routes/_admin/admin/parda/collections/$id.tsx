@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { PardaCollectionEditPage } from "@/features/parda/admin/curation/collection-form";
-import { assertRoutePermission } from "@/features/rbac/route-guard";
+import { PardaCollectionEditPage } from "@/features/parda/admin/curation/components/collection-form";
+import { assertRoutePermission } from "@/features/rbac/lib/route-guard";
 import { loaderTitleCrumb } from "@/lib/breadcrumbs";
 import { loadDetailOr404, titleHead } from "@/lib/crud/route";
 import { idSchema } from "@/lib/crud/schema";
@@ -19,6 +19,6 @@ export const Route = createFileRoute("/_admin/admin/parda/collections/$id")({
 		return { title: localizedValue(collection.name) };
 	},
 	staticData: { breadcrumb: loaderTitleCrumb },
-	head: titleHead(m.pd_admin_collection_edit_title),
+	head: titleHead(m.parda_admin_collection_edit_title),
 	component: PardaCollectionEditPage,
 });

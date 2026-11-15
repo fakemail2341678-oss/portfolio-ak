@@ -1,6 +1,6 @@
 import "@tanstack/react-start/server-only";
 import { and, desc, eq, gt, inArray, isNull, or, type SQL, sql } from "drizzle-orm";
-import type { EpisodeKey } from "@/features/parda/library/progress";
+import type { EpisodeKey } from "@/features/parda/library/lib/progress";
 import type { PardaMedia } from "@/server/db/schema";
 import { pdContinueState, pdProgress } from "@/server/db/schema";
 import type { Db, Tx } from "@/server/db/types";

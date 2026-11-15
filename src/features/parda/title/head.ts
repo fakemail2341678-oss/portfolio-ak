@@ -1,6 +1,6 @@
 import { type JsonLd, type SeoImage, seo } from "@/lib/seo";
-import { PARDA_NAME, pardaHead } from "../brand";
-import type { PardaImage } from "../kit/image";
+import type { PardaImage } from "../kit/lib/image";
+import { PARDA_NAME, pardaHead } from "../lib/brand";
 
 /**
  * The head of a page titled by TMDB: a title, its credits, a person, a collection

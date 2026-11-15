@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { assertRoutePermission } from "@/features/rbac/route-guard";
-import { NewAdminProjectPage } from "@/features/taskline/admin/projects/new-project-page";
+import { assertRoutePermission } from "@/features/rbac/lib/route-guard";
+import { NewAdminProjectPage } from "@/features/taskline/admin/projects/components/new-project-page";
 import { staticCrumb } from "@/lib/breadcrumbs";
 import { titleHead } from "@/lib/crud/route";
 import { ensureQuery } from "@/lib/query";

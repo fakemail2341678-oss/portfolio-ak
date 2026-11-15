@@ -97,7 +97,7 @@ export async function blockTitle({ db, actor, controls }: PardaAdminServices, in
 			.returning();
 		if (!row) {
 			throw new AppError("CONFLICT", `${WHAT}: already blocked`, {
-				fieldErrors: { tmdbId: [m.pd_admin_takedown_exists()] },
+				fieldErrors: { tmdbId: [m.parda_admin_takedown_exists()] },
 			});
 		}
 		const [item] = await toAdmin(tx, [row]);

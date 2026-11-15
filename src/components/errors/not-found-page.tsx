@@ -2,7 +2,7 @@ import { Link } from "@tanstack/react-router";
 import { MAIN_CONTENT } from "@/components/layout/skip-link";
 import { Button } from "@/components/ui/button";
 import { m } from "@/paraglide/messages";
-import { useSectionHome } from "./section-home";
+import { useSectionHome } from "./use-section-home";
 
 /** The router's 404 (`notFoundComponent`, so it takes no props of its own). */
 export function NotFoundPage() {

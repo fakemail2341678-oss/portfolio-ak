@@ -4,7 +4,7 @@ import { CrudListPage } from "@/components/crud/crud-list-page";
 import { useCrudCollection } from "@/components/crud/use-crud-collection";
 import { useCrudMutation } from "@/components/crud/use-crud-mutation";
 import type { RowAction } from "@/components/data-table";
-import { useCan } from "@/features/rbac/can";
+import { useCan } from "@/features/rbac/hooks/use-can";
 import { useListPage } from "@/hooks/use-list-page";
 import { useListQuery } from "@/hooks/use-list-query";
 import { deleteRows, updateRows } from "@/lib/crud/collection";

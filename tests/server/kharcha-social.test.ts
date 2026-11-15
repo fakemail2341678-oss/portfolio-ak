@@ -1,6 +1,6 @@
 import { eq } from "drizzle-orm";
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from "vitest";
-import type { Split } from "@/features/kharcha/money/split";
+import type { Split } from "@/features/kharcha/money/lib/split";
 import { khExpenseShare, khInvite, khPerson, khSettings, user } from "@/server/db/schema";
 import type { InviteEmail } from "@/server/kharcha/access";
 import * as expenses from "@/server/kharcha/expenses/service";

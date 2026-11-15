@@ -32,7 +32,7 @@ They redefine Graphite's `--background`, `--primary`, `--border` and the rest, s
 | File | Holds |
 | --- | --- |
 | `src/routes/_parda/route.tsx` | The layout: `PARDA_BRAND` in `staticData`, the `· Parda` title, `noindex` unless a page uses `seo()`, `pardaFontPreloads`, the 404 |
-| `src/features/parda/brand.ts` | `PARDA_NAME`, `pardaTitle`, `pardaHead` (a private page's head), `PARDA_BRAND` (`id: "parda"`, `defaultScheme: "dark"`, `themeColors` from the masks, icons, manifest) |
+| `src/features/parda/lib/brand.ts` | `PARDA_NAME`, `pardaTitle`, `pardaHead` (a private page's head), `PARDA_BRAND` (`id: "parda"`, `defaultScheme: "dark"`, `themeColors` from the masks, icons, manifest) |
 | `src/features/parda/links.ts` | `pardaLinks`, `PARDA_PATHS` and `PARDA_SITEMAP`: every link into Parda. A link arrives with its route |
 | `src/features/parda/search.ts` | The URL contract: `PARDA_HUBS`, `isPardaHub`, `PARDA_TYPES` (`series` in the URL is TMDB's `tv`), `titleParamsSchema` |
 | `src/features/parda/shell/` | `PardaFrame` (top mask, footer with the wordmark, tab bar), `PardaSection` and `PardaNotFound`, the wordmark, the account menu |
@@ -41,7 +41,7 @@ They redefine Graphite's `--background`, `--primary`, `--border` and the rest, s
 | `public/parda/` | The icons, rendered from `icon.svg` |
 
 - **One frame on every page** (decision 0233): the layout renders it, and the page renders its `<main>`. The top mask is always solid, so nothing in it sits on a picture.
-- **Sections:** Home, Movies, Series, Anime, Discover, My List and About: the top mask's links from `md` up (My List and the language from `lg`, About from `xl`, decisions 0239 and 0240; the account menu has My List below), the tab bar below (without About: the footer links it). Search sits in the top mask at every width. Add a section to `SECTIONS` in `parda-frame.tsx` when its route exists, and check the top mask at 768 px. The frame keeps the tab bar's height clear on phones.
+- **Sections:** Home, Movies, Series, Anime, Discover, My List and About: the top mask's links from `md` up (My List and the language from `lg`, About from `xl`, decisions 0239 and 0240; the account menu has My List below), the tab bar below (without About: the footer links it). Search sits in the top mask at every width. Add a section to `SECTIONS` in `components/parda-frame.tsx` when its route exists, and check the top mask at 768 px. The frame keeps the tab bar's height clear on phones.
 - **The 404:** `/app/parda/$` throws `notFound()`, so the layout's `notFoundComponent` answers in the frame. One segment (`/app/parda/whatever`) reaches `$hub`, whose loader does the same for anything but a hub.
 - **SEO:** pages are `noindex` through the layout. An indexable page uses `seo({ siteName: PARDA_NAME })`, goes in `INDEXABLE` (`tests/unit/route-seo.test.ts`) and the sitemap. Today that's the home, the hubs and `/app/parda/about` (`PARDA_SITEMAP`), and the title pages (`catalog/sitemap.ts`, from `pd_title`). A page titled by TMDB also goes in `CONTENT_TITLED`.
 - **The notice page** (`/app/parda/about`) says the catalogue is Parda's own (no provider is named anywhere in Parda, decision 0249), JustWatch's attribution, playback, players' ads, the uBlock Origin Lite stores (`BLOCKER_STORES`, the section `#ad-blocker` Task 64's button falls back to) and takedowns.
@@ -53,7 +53,7 @@ They redefine Graphite's `--background`, `--primary`, `--border` and the rest, s
 
 | Piece | Notes |
 | --- | --- |
-| `TmdbImage` | A `PardaImage` (`{ src, srcSet, width, height }`, built by `tmdbImage(imageBase, path, kind)` in `kit/image.ts`) in a fixed box: `poster` 2:3, `backdrop` 16:9, `scope` 2.39:1. Lazy unless `priority`. No picture: the title (`label`) on a piece of mask |
+| `TmdbImage` | A `PardaImage` (`{ src, srcSet, width, height }`, built by `tmdbImage(imageBase, path, kind)` in `kit/lib/image.ts`) in a fixed box: `poster` 2:3, `backdrop` 16:9, `scope` 2.39:1. Lazy unless `priority`. No picture: the title (`label`) on a piece of mask |
 | `PosterCard` | Poster and caption. A preview (backdrop, year, genres, score, overview) opens on a resting mouse; touch never opens it |
 | `BackdropCard`, `EpisodeCard`, `PersonCard` | Wide cards with a detail line; an episode row; a portrait with the part or the job |
 | `Rail`, `RailItem`, `RailSkeleton` | Core, in `src/components/data-display/rail.tsx`: scroll-snap, a named region, buttons for fine pointers. Give each item a width |
@@ -64,19 +64,19 @@ They redefine Graphite's `--background`, `--primary`, `--border` and the rest, s
 
 Cards take links as `LinkOptions` (what `pardaLinks` returns). Captions sit under pictures, never on them; pass `alt=""` where the caption names the title.
 
-**The billboard:** a poster between the masks on phones (narrowed to the height left by the masks and the tab bar, so Play is on the first screen, 0244), a 2.39:1 backdrop at `md`, and from `lg` exactly the first screen under the top mask (`100svh - 3.75rem`, at least 32rem), the backdrop cover-fit in what the lower mask leaves (0249), the tagline as a subtitle over the scrim (none when TMDB has none), and the title, facts and `actions` in the lower mask. It moves every 6 s (4 s on phones, 0249) and stops for its visible pause button, a mouse resting on its lower mask (not the picture, which from `lg` is the whole screen, 0250), focus inside it and a hidden tab; under reduced motion it never moves and the button is hidden by CSS. Only the current, previous and next pictures are mounted. The title box has one height (two lines on phones, one from `md`, a long title at half size in two lines), so moving on shifts nothing. The billboard preloads its first picture itself (`preloadHero` in `kit/hero-preload.ts`: `ReactDOM.preload` with `fetchPriority: "high"`, which React puts first in `<head>`; a route `head()` link lands after every modulepreload, 0245), and the title hero does the same. The home gives it Play (to the watch page, when `isPlayable` finds a source; *Details* otherwise), My list and *Surprise me*.
+**The billboard:** a poster between the masks on phones (narrowed to the height left by the masks and the tab bar, so Play is on the first screen, 0244), a 2.39:1 backdrop at `md`, and from `lg` exactly the first screen under the top mask (`100svh - 3.75rem`, at least 32rem), the backdrop cover-fit in what the lower mask leaves (0249), the tagline as a subtitle over the scrim (none when TMDB has none), and the title, facts and `actions` in the lower mask. It moves every 6 s (4 s on phones, 0249) and stops for its visible pause button, a mouse resting on its lower mask (not the picture, which from `lg` is the whole screen, 0250), focus inside it and a hidden tab; under reduced motion it never moves and the button is hidden by CSS. Only the current, previous and next pictures are mounted. The title box has one height (two lines on phones, one from `md`, a long title at half size in two lines), so moving on shifts nothing. The billboard preloads its first picture itself (`preloadHero` in `kit/lib/hero-preload.ts`: `ReactDOM.preload` with `fetchPriority: "high"`, which React puts first in `<head>`; a route `head()` link lands after every modulepreload, 0245), and the title hero does the same. The home gives it Play (to the watch page, when `isPlayable` finds a source; *Details* otherwise), My list and *Surprise me*.
 
 **Captions** have one height: two lines for the title, one for the detail, so cards line up and a skeleton is exactly its card's size. **Numbers and dates** go through `formatNumber` and `formatDate` (`src/lib/i18n/intl.ts`), never `Intl.*(getLocale())`: Chrome has no Nepali ICU data, so it would print Latin digits where the server printed Devanagari and break hydration.
 
 ## Home and hubs
 
-`/app/parda` and `/app/parda/$hub` (movies, series, anime), decision 0234. One component (`home/parda-page.tsx`) renders either from `getPardaHub`.
+`/app/parda` and `/app/parda/$hub` (movies, series, anime), decision 0234. One component (`home/components/parda-page.tsx`) renders either from `getPardaHub`.
 
 | File | Holds |
 | --- | --- |
 | `src/server/parda/catalog/rails.ts` | The layout of each page: its rails in order (id, `top10` or `poster`, label, the TMDB request), and the rail that fills the billboard. No runtime imports, so `pnpm tmdb:record` records exactly these requests. The admin orders and hides them (`pd_rail`, see "Curation and the overview") |
 | `src/server/parda/catalog/hubs.ts` | `hubPage` (the billboard with each title's details, and the first `AWAITED_RAILS` rails) and `hubRail` (one later rail) |
-| `src/features/parda/home/` | `load.ts` (the loader: awaits the page, starts every later rail, returns nothing), `head.ts` (`seo()`, JSON-LD), `title-rails.tsx` (`TitleRail`, `StreamedRail`), `rail-labels.ts`, `types.ts` (the DTOs) |
+| `src/features/parda/home/` | `load.ts` (the loader: awaits the page, starts every later rail, returns nothing), `head.ts` (`seo()`, JSON-LD), `components/title-rail.tsx` (`TitleRail`, `StreamedRail`), `rail-labels.ts`, `types.ts` (the DTOs) |
 
 - **Streaming:** the first two rails come with the page; each later one is its own `getPardaRail` query, started by the loader and rendered under `<Suspense>` with a skeleton of its size, so it streams into the same response.
 - **Failure:** a rail TMDB can't answer is `null` and says "couldn't load" in a box of a rail's height; in the browser a `CatchBoundary` does the same. An empty rail isn't shown. Only `UPSTREAM_UNAVAILABLE` degrades.
@@ -90,12 +90,12 @@ Cards take links as `LinkOptions` (what `pardaLinks` returns). Captions sit unde
 
 | File | Holds |
 | --- | --- |
-| `src/features/parda/slug.ts` | `titleSlug` (from the English title), `titleParam`, `parseTitleParam` |
+| `src/features/parda/lib/slug.ts` | `titleSlug` (from the English title), `titleParam`, `parseTitleParam` |
 | `src/server/parda/catalog/title-page.ts` | `titlePage` (every section, names of countries and languages in the page's language, the player for Play), `seasonPage` (30 episodes a page), `creditsPage` |
 | `src/server/parda/catalog/people.ts` | `personPage`, `collectionPage`, `surprise` |
 | `src/features/parda/title/load.ts` | The loaders: data, the 301 to the canonical slug, the head (`ContentHead`: title, description, path, preview image, JSON-LD, a preload for collection pages; the title page's hero preloads itself). Imported lazily |
 | `src/features/parda/title/head.ts` | `pardaContentHead`: renders the loader's head (route options, so small) |
-| `src/features/parda/title/` | `title-hero.tsx`, `episodes.tsx`, `title-sections.tsx`, `gallery.tsx`, `video-dialog.tsx`, the four pages, `labels.ts` (TMDB's English statuses, departments, jobs and video kinds named) |
+| `src/features/parda/title/` | `components/title-hero.tsx`, `components/episodes-section.tsx`, `components/title-section.tsx`, `components/gallery.tsx`, `components/video-dialog.tsx`, the four pages, `labels.ts` (TMDB's English statuses, departments, jobs and video kinds named) |
 
 - **The title page, in order:** the hero (backdrop, tagline, poster, logo or title, facts, status and next episode; Play, Trailer, Share), the overview, a series' "New episode" banner and episodes, the cast rail and key crew, details, where to watch legally (with JustWatch's credit), videos, the gallery, the franchise banner, More like this, Similar, reviews and links.
 - **The URL holds the episodes' state:** `?season`, `?page` (30 a page; some seasons have over a thousand) and `?episode` (its sheet). Season and page links don't scroll.
@@ -113,14 +113,14 @@ Cards take links as `LinkOptions` (what `pardaLinks` returns). Captions sit unde
 | File | Holds |
 | --- | --- |
 | `src/server/parda/player/watch.ts` | `watchPage`: the title, the episode and its neighbours, every enabled source filled except `{start}`, the `ok` and `slow` orders (see "Ranking"), the deadlines, the resume |
-| `src/features/parda/player/machine.ts` | The pure choices: the order, the next source (another CDN group first), the start position, stuttering, Up next |
-| `src/features/parda/player/use-watch-player.ts` | The player's life: picks on mount, loads, falls back, saves progress and `pd_play`, offers a smoother server, the redirect guard |
-| `src/features/parda/player/watch-page.tsx`, `watch-panels.tsx` | The page: the box, the click shield and Parda's controls, the bar (server, episodes, theater, report), Up next, the episodes sheet, *Report a problem*, the ad-blocker hint |
-| `src/features/parda/player/blocker.ts` | `BLOCKER_STORES` and `blockerStore(userAgent)` |
-| `src/features/parda/library/progress.ts` | Continue watching's rules, pure and isomorphic |
-| `src/features/parda/library/local.ts` | The browser's own progress (`pd_progress`), the pick (`pd_server`), the hint (`pd_blocker_hint`), the `pd_local` cookie |
+| `src/features/parda/player/lib/machine.ts` | The pure choices: the order, the next source (another CDN group first), the start position, stuttering, Up next |
+| `src/features/parda/player/hooks/use-watch-player.ts` | The player's life: picks on mount, loads, falls back, saves progress and `pd_play`, offers a smoother server, the redirect guard |
+| `src/features/parda/player/components/watch-page.tsx`, `components/watch-panel.tsx` | The page: the box, the click shield and Parda's controls, the bar (server, episodes, theater, report), Up next, the episodes sheet, *Report a problem*, the ad-blocker hint |
+| `src/features/parda/player/lib/blocker.ts` | `BLOCKER_STORES` and `blockerStore(userAgent)` |
+| `src/features/parda/library/lib/progress.ts` | Continue watching's rules, pure and isomorphic |
+| `src/features/parda/library/lib/local.ts` | The browser's own progress (`pd_progress`), the pick (`pd_server`), the hint (`pd_blocker_hint`), the `pd_local` cookie |
 | `src/server/parda/library/`, `profiles/` | The upsert and its throttle, marks, *Remove*, *Rewatch*, the rail; the default profile and the `pd_profile` cookie |
-| `src/functions/parda/watch.ts`, `library.ts` | The watch page, plays and reports (`withPardaCatalog`, rate limited); the library (`requirePardaViewer` → `withPardaServices`) |
+| `src/functions/parda/watch.ts`, `library.ts` | The watch page, plays and reports (`withPardaPublic`, rate limited); the library (`requirePardaUser` → `withPardaServices`) |
 
 - **Nothing loads before mount:** the server renders the picture in the player's box; the page reads the connection and the pick, then sets the iframe's `src`, so a slow connection never loads the wrong player and nothing shifts.
 - **Failing** is only the adapter's `failed` (0247). In Auto, on a row with `autoFallback`, the next source is in another CDN group if there is one ("Trying Server 3…"), then the rest, then "Not available right now" with the trailer and *Report*. A server the viewer picked stays picked: a toast offers the next one, and the pick is not cleared.
@@ -137,13 +137,13 @@ Decision 0240. `/app/parda/library/{list,favourites,continue,history}` and `/app
 | File | Holds |
 | --- | --- |
 | `src/server/db/schema/parda/saved.ts` | `pd_list_item` (My List is `watchlist`, ♥ is `favourite`), `pd_favourite_person`, `pd_rating` (`like`, `dislike`), `pd_account` (the email digest) |
-| `src/server/parda/library/saved.ts`, `saved-repository.ts` | Saving (a title is read through the catalogue, then its snapshot written to `pd_title`), the lists a page at a time, History, the personal rails, the guest claim's merge |
+| `src/server/parda/library/saved.ts`, `saved/repository.ts` | Saving (a title is read through the catalogue, then its snapshot written to `pd_title`), the lists a page at a time, History, the personal rails, the guest claim's merge |
 | `src/server/parda/profiles/` | Profiles: the rules between fields, PIN locks (scrypt, five tries per 15 minutes), the cookie's proof, the fallback profile, the digest |
-| `src/functions/parda/library.ts`, `profiles.ts` | `requirePardaViewer` → `withPardaServices`, each with its row in `tests/server/parda-access.test.ts` |
-| `src/features/parda/library/save-buttons.tsx` | + My List, ♥ and Like: on cards (`PosterCard`'s `action`), the hero, a person's page and the player's bar |
-| `src/features/parda/library/library-page.tsx`, `for-you-rails.tsx` | The library's tabs; "Because you liked …" and "New from people you love" on the home |
-| `src/features/parda/profiles/` | The picker and managing (`profiles-page.tsx`), the form and PIN (`profile-form.tsx`), pictures (`profile-avatar.tsx`), `options.ts` (pictures, TMDB's regions, the limit) |
-| `src/features/parda/kids.ts`, `src/server/parda/catalog/kids-requests.ts` | The cap's ladder and the capped TMDB requests, pure |
+| `src/functions/parda/library.ts`, `profiles.ts` | `requirePardaUser` → `withPardaServices`, each with its row in `tests/server/parda-access.test.ts` |
+| `src/features/parda/library/components/save-button.tsx` | + My List, ♥ and Like: on cards (`PosterCard`'s `action`), the hero, a person's page and the player's bar |
+| `src/features/parda/library/components/library-page.tsx`, `components/for-you-rail.tsx` | The library's tabs; "Because you liked …" and "New from people you love" on the home |
+| `src/features/parda/profiles/` | The picker and managing (`components/profiles-page.tsx`), the form and PIN (`components/profile-form.tsx`), pictures (`components/profile-avatar.tsx`), `lib/options.ts` (pictures, TMDB's regions, the limit) |
+| `src/features/parda/lib/kids.ts`, `src/server/parda/catalog/kids-requests.ts` | The cap's ladder and the capped TMDB requests, pure |
 
 - **What the buttons read:** the layout loads the profile's saved keys for a session (`getPardaSaved`, the latest 2,000 of each); a press changes them at once, then writes. Without a session the first press starts a Parda guest, as a mark does.
 - **Lists are named from `pd_title`:** saving reads the title (takedowns and the cap apply) and writes its snapshot, so My List sorts by title or year without TMDB. History names its titles through the catalogue, like Continue watching.
@@ -167,8 +167,8 @@ Decision 0241. `/app/parda/schedule` (noindex), the bell, the home's New episode
 | `src/server/parda/notify/digest.ts`, `src/server/email/templates/parda-emails.tsx` | The digest, after the check: one email per account that chose it |
 | `src/server/parda/notify/service.ts`, `repository.ts` | The bell, marking read, New episodes, the followed half of the schedule |
 | `src/server/parda/catalog/schedule.ts` | Anime airing this week (the half for everyone) |
-| `src/functions/parda/alerts.ts`, `schedule.ts` | `getPardaInbox`, `markPardaInboxRead`, `getPardaFollowing` (`requirePardaViewer` → `withPardaServices`); `getPardaAnimeWeek` (`withPardaCatalog`) |
-| `src/features/parda/schedule/` | `bell.tsx`, `schedule-page.tsx`, `days.ts` (the days, pure), `labels.ts` ("S2 · E1–8"), `queries.ts`, `load.ts` |
+| `src/functions/parda/alerts.ts`, `schedule.ts` | `getPardaInbox`, `setPardaInboxRead`, `getPardaFollowing` (`requirePardaUser` → `withPardaServices`); `getPardaAnimeWeek` (`withPardaPublic`) |
+| `src/features/parda/schedule/` | `components/bell-menu.tsx`, `components/schedule-page.tsx`, `lib/days.ts` (the days, pure), `labels.ts` ("S2 · E1–8"), `queries.ts`, `load.ts` |
 
 - **Following:** My List, ♥, or a play or mark in the last six months. There's no Follow button.
 - **The check** runs in `GET /api/cron/parda` after the ranking: each followed series once a day (an ended one weekly), at most 1,500 a run, under 35 requests a second; ten failures in a row stop it. The first check of a series only records where it is. A new range goes to every profile following it then, except one that already finished it and a kids' profile its cap doesn't allow. Specials and episodes over 14 days old aren't news. States nobody kept checked for 60 days, and alerts over 90 days old, are deleted.
@@ -184,20 +184,20 @@ Decision 0239. Both read TMDB through `catalog/service.ts` (`searchCatalog`, `li
 | File | Holds |
 | --- | --- |
 | `src/features/parda/search.ts` | The URL contracts: `searchPageSchema` (`q`, `tab`, `page` up to 500), `discoverSearchSchema` and `DISCOVER_DEFAULTS` |
-| `src/features/parda/discover/options.ts` | Genres per type, languages, networks and studios (TMDB ids), the score choices. Imports nothing |
+| `src/features/parda/discover/lib/options.ts` | Genres per type, languages, networks and studios (TMDB ids), the score choices. Imports nothing |
 | `src/server/parda/catalog/discover-requests.ts` | Pure: `applicableFilters`, `discoverRequest`, `discoverOfRail` (a rail's "See all"), the recorder's samples |
 | `src/server/parda/catalog/search.ts`, `discover.ts` | The pages' data, the overlay's hits, `noteSearch` (`pd_search_stat`) |
 | `src/server/parda/tmdb/search.ts` | TMDB's search answers mapped, people included, with the Nepali fill-in |
-| `src/functions/parda/search.ts` | `getPardaSearch`, `getPardaSuggest`, `notePardaSearch`, `getPardaDiscover` (`withPardaCatalog`) |
-| `src/features/parda/search/` | `search-button.tsx` (the top mask's Search and the shortcuts), `search-overlay.tsx` (lazy), `search-page.tsx`, `hit-grid.tsx`, `recent.ts`, `load.ts`, `queries.ts` |
-| `src/features/parda/discover/discover-page.tsx` | Discover: `FilterBar`, chips, the grid |
+| `src/functions/parda/search.ts` | `getPardaSearch`, `getPardaSuggest`, `recordPardaSearch`, `getPardaDiscover` (`withPardaPublic`) |
+| `src/features/parda/search/` | `components/search-button.tsx` (the top mask's Search and the shortcuts), `components/search-overlay.tsx` (lazy), `components/search-page.tsx`, `components/hit-grid.tsx`, `lib/recent.ts`, `load.ts`, `queries.ts` |
+| `src/features/parda/discover/components/discover-page.tsx` | Discover: `FilterBar`, chips, the grid |
 
 - **The overlay:** Search, Ctrl/⌘ K or `/`. Empty: recent searches, recently viewed (both this browser's only) and trending. Typed (two letters, a 250 ms pause): "See all results" first, so Enter opens the page, then titles and people.
 - **The search page** searches on submit (a GET form), in four tabs. Nothing found: tips, Discover and trending. Noindex.
 - **Statistics:** only the page counts a search, and only one really shown: page 1, all kinds, not a preload. Per UTC day and normalized query; no user or IP.
 - **Discover** is indexable, canonical without filters. The server drops filters that don't apply to the type. Sorting by score or date has a vote floor; newest stops at today.
 - **Limits:** a search without a session has its own per-IP limit (150 per 5 minutes, page loads included). Over it the page and the overlay say so; nothing fails.
-- **Adding a Discover filter:** the param in `discoverSearchSchema`, its TMDB parameter in `discoverRequest`, its control and chip in `discover-page.tsx`, a case in `tests/unit/parda-discover.test.ts`.
+- **Adding a Discover filter:** the param in `discoverSearchSchema`, its TMDB parameter in `discoverRequest`, its control and chip in `components/discover-page.tsx`, a case in `tests/unit/parda-discover.test.ts`.
 
 ## Catalogue
 
@@ -209,13 +209,13 @@ TMDB, read through `src/server/parda/catalog/service.ts` only: that module appli
 | `tmdb/cache.ts` | LRU, a TTL per class (configuration 7 d, details 24 h, lists 1 h, search 10 min), stale for one more TTL while refreshing, concurrent reads coalesced |
 | `tmdb/mappers.ts` | Zod to lean DTOs, only the fields pages use, plus the Nepali fill-in from English (`nepaliName`: a Nepali title counts only in Devanagari, 0244) |
 | `tmdb/store.ts` | The singletons: `pardaTmdb` (null without `TMDB_READ_TOKEN`), `pardaControls` and `pardaCache` |
-| `catalog/context.ts`, `src/middleware/parda.ts` | `withPardaCatalog`: the services, the region and the cap (a kids' profile's, decision 0240), null when not configured; anonymous calls over HTTP limited to 300 per 5 minutes per IP (SSR isn't counted) |
+| `catalog/context.ts`, `src/middleware/parda.ts` | `withPardaPublic`: the services, the region and the cap (a kids' profile's, decision 0240), null when not configured; anonymous calls over HTTP limited to 300 per 5 minutes per IP (SSR isn't counted) |
 | `controls.ts` | Takedowns, settings and sources from Postgres, at most every 30 s per process |
 | `catalog/requests.ts` | The title pages' TMDB requests (the details `append_to_response`, credits, season and person paths, the key jobs), shared with the recorder; no runtime imports |
 | `tmdb/pages.ts` | A season, the full credits, a person and a collection, each with its Nepali fill-in |
 | `catalog/refresh.ts`, `cron.ts` | The daily job: the `pd_title` refresh (the top 500 of each media type), their US certificates (400 a run), the sources' ranking, the new-episode check and the digest |
 
-Genre names are our own messages (`src/features/parda/genres.ts`), because TMDB's Nepali genre names are null.
+Genre names are our own messages (`src/features/parda/lib/genres.ts`), because TMDB's Nepali genre names are null.
 
 **Fixtures:** `pnpm tmdb:record` writes `tests/fixtures/tmdb/` from the real API (`TMDB_READ_TOKEN` in `.env`): every rail of every page, each billboard's details with its full credits and first season, the popular lists, a few actors and every recorded movie's collection. `pardaFixturePath` (`e2e/harness/tmdb.ts`) gives the review a page of each kind from them. Tests inject them as the fetcher, and `e2e/harness/tmdb.ts` serves them. CI never calls TMDB. A file's name (`fixtureName`) is the path plus the parameters that pick the answer, without date values. Details are trimmed (long lists cut) and every file is one line. Tests take their ids from the recorded lists, so recording again changes no test.
 
@@ -223,11 +223,11 @@ Genre names are our own messages (`src/features/parda/genres.ts`), because TMDB'
 
 A source is a row in `pd_source`, not code, so the admin can change one without a deploy.
 
-- **Templates** (`src/features/parda/player/templates.ts`): tokens `{id}`, `{imdb}`, `{season}`, `{episode}`, `{color}`, `{lang}`, `{start}`. A template is a path such as `/1/movie/{id}`, or an absolute https URL whose origin the row lists. A path goes after `PARDA_PLAYER_BASE`, which holds the whole prefix (`https://player.example.com/parda/api`). Without that variable it goes after this app's `/parda/api` (0246).
+- **Templates** (`src/features/parda/player/lib/templates.ts`): tokens `{id}`, `{imdb}`, `{season}`, `{episode}`, `{color}`, `{lang}`, `{start}`. A template is a path such as `/1/movie/{id}`, or an absolute https URL whose origin the row lists. A path goes after `PARDA_PLAYER_BASE`, which holds the whole prefix (`https://player.example.com/parda/api`). Without that variable it goes after this app's `/parda/api` (0246).
 - **Adapters** (`src/features/parda/player/adapters/`) are the only code per provider. Each turns messages into one event stream (`ready`, `position`, `play`, `pause`, `seeked`, `ended`, `failed`) and says what the player can do (`command`, `startPosition`, `infersStalls`). `parda` is our own protocol. `viduki` is the Viduki embed contract that Servers 1 to 4 follow (0248): `MEDIA_DATA` progress, picked out for the title on screen (`PlayerFrame`'s `target`), and `viduki:all-servers-failed`. It has no commands, resumes from its own memory and records no stalls. `none` reports nothing.
 - **A message counts** only when it comes from the source's own frame and origin and passes the adapter's parser.
-- **`stall.ts`** infers buffering: the position hasn't moved for 1.5 s while playing, ignoring the 3 s after a seek or a command. It runs only for an adapter with `infersStalls`, one that reports several times a second.
-- **The bar** has Parda's controls (play, seek, the click shield, *Player menu*) only for a player that obeys commands. Every player gets full screen, theater mode and picture-in-picture (`picture-in-picture.ts`). Picture-in-picture uses Document Picture-in-Picture: Chromium on a computer, elsewhere a disabled button. It moves the frame to a small window, which reloads the frame.
+- **`lib/stall.ts`** infers buffering: the position hasn't moved for 1.5 s while playing, ignoring the 3 s after a seek or a command. It runs only for an adapter with `infersStalls`, one that reports several times a second.
+- **The bar** has Parda's controls (play, seek, the click shield, *Player menu*) only for a player that obeys commands. Every player gets full screen, theater mode and picture-in-picture (`hooks/use-picture-in-picture.ts`). Picture-in-picture uses Document Picture-in-Picture: Chromium on a computer, elsewhere a disabled button. It moves the frame to a small window, which reloads the frame.
 - **`PlayerFrame`** is the iframe plus its messages. It has a `sandbox` attribute only when its row asks for one, never with `allow-top-navigation`.
 - **CSP:** `embedOrigins` reaches `frame-src` only, never `script-src` or `connect-src`. `src/server/parda/player/csp.ts` builds it from the enabled sources for Parda's pages, and from all rows for the lab. Other pages keep the strict policy.
 
@@ -307,7 +307,7 @@ Decision 0242. `/admin/parda`, `/billboard`, `/collections`, `/layout`. Reading 
 | `src/server/parda/admin/curation.ts`, `overview.ts` | The admin's services, the title picker's search, the overview's numbers |
 | `src/server/parda/player/daily.ts` | The daily rollup and the 90-day prune |
 | `src/server/parda/catalog/hubs.ts`, `people.ts` | Slots on the billboard, collections as rails, `curatedPage` |
-| `src/features/parda/admin/overview/`, `curation/` | The pages; `title-fields.tsx` is the picker and the ordered list of titles |
+| `src/features/parda/admin/overview/`, `curation/` | The pages; `components/title-list-field.tsx` is the picker and the ordered list of titles |
 
 - **Billboard slots** lead their page: those live today (Kathmandu's dates, both days included, either open), in the admin's order, then the page's rail fills up to five, each title once. An empty tagline keeps TMDB's. A slot's title that's blocked, over a kids' cap or without a backdrop is left out, and the rail takes its place.
 - **Collections** have a name and description in both languages, a slug, up to 50 ordered titles, and a published switch. Published (it needs a title), the page `/app/parda/c/{slug}` is indexable and in the sitemap, and it can be placed as a rail. Takedowns and caps apply through `titleDetails`, so a blocked title drops out by itself; a collection with nothing left to show is a 404.
@@ -326,18 +326,18 @@ Decision 0243. `/app/parda/party/{code}`, noindex and never listed; the code is 
 | `src/server/db/schema/parda/party.ts` | `pd_party` (the state saved for late joiners and reloads) and `pd_party_member` (who's in; the channel knows a member by this row's id, never a user id) |
 | `src/server/parda/party/service.ts`, `repository.ts` | What only the server can keep: creating (rate limited, refused with playback off), seats (10), the host, ending, the pulse |
 | `src/server/parda/party/token.ts` | `partyRealtime()` and the channel's token, an Ably JWT signed here, for this channel and member, 30 minutes |
-| `src/functions/parda/party.ts`, `getPardaParty` in `watch.ts` | `requirePardaViewer` → `withPardaServices`, each with its row in `tests/server/parda-access.test.ts`; the page itself is `withPardaCatalog`, so the link shows what's playing before a session exists |
-| `src/features/parda/party/sync.ts` | **The pure reducer.** Events in; commands, messages and reloads out. Every rule below is here, and unit-tested |
-| `src/features/parda/party/channel.ts` | `PartyChannel`, the only provider code: Ably, or the e2e relay when `relayUrl` is set. Imported on the party's page only, so the SDK reaches no other page |
-| `src/features/parda/party/use-party-room.ts` | Takes a seat, keeps the channel, carries out what the reducer returns, records progress and `pd_play` |
-| `src/features/parda/party/clock.ts` | The offset from server time, from the quickest recent round trip |
+| `src/functions/parda/party.ts`, `getPardaParty` in `watch.ts` | `requirePardaUser` → `withPardaServices`, each with its row in `tests/server/parda-access.test.ts`; the page itself is `withPardaPublic`, so the link shows what's playing before a session exists |
+| `src/features/parda/party/lib/sync.ts` | **The pure reducer.** Events in; commands, messages and reloads out. Every rule below is here, and unit-tested |
+| `src/features/parda/party/lib/channel.ts` | `PartyChannel`, the only provider code: Ably, or the e2e relay when `relayUrl` is set. Imported on the party's page only, so the SDK reaches no other page |
+| `src/features/parda/party/hooks/use-party-room.ts` | Takes a seat, keeps the channel, carries out what the reducer returns, records progress and `pd_play` |
+| `src/features/parda/party/lib/clock.ts` | The offset from server time, from the quickest recent round trip |
 | `e2e/harness/parda-relay.ts` | The stand-in: one channel per party with presence, checking the same tokens. CI never calls Ably |
 
 **The room:**
 - **One source for everyone,** because timecodes differ between sources: the highest-ranked with commands, else the top one. Only the host changes it; everyone reloads, 30 s earlier. A source that's gone hands the party to the best one left.
 - **The lobby:** *Ready* is the gesture autoplay needs. A viewer with a session takes a seat on arrival, so the room shows who's here; a visitor's *Ready* starts a Parda guest first. It starts once all are ready (two or more) or when the host presses *Start now*, after a 3 s countdown.
 - **Full sync** (the source obeys commands): anyone's play, pause and seek reach everyone, the later press winning. Drift over 2 s gets a hard seek, at most every 3 s. The click shield is on.
-- **Buffering, in full sync:** `stall.ts` fires, the others pause and see "Waiting for Sam". Once Sam has moved for a second, everyone seeks to Sam and plays. After 30 s the host can *Continue without Sam*, and Sam holds nobody again.
+- **Buffering, in full sync:** `lib/stall.ts` fires, the others pause and see "Waiting for Sam". Once Sam has moved for a second, everyone seeks to Sam and plays. After 30 s the host can *Continue without Sam*, and Sam holds nobody again.
 - **Start together** (any other source): a shared countdown, then each player runs on its own, with no shared pause and no pause on buffering. A chip shows how far behind, where the player reports. *Resync* reloads at the group's position where the source takes `{start}`. The host is offered a source that can sync.
 - **Late joiners and reloads:** the page reads `pd_party` (saved every 15 s by the host, and at once on a change), and the longest-present of the others tells the newcomer the live state.
 - **The host:** gone for 15 s, the longest-present member asks to take over. The server agrees only if the host left or hasn't pulsed for 90 s, and only for that member.
@@ -347,11 +347,11 @@ Decision 0243. `/app/parda/party/{code}`, noindex and never listed; the code is 
 
 **Testing:** a message to the placeholder rehearses a stall (`{ type: "parda.command", action: "rehearse-stall", on }`), which a `?cue=` can't let go of. A source without commands is a row with the adapter `none` and `{start}` in its template, and `?cue=silent`.
 
-**Connecting Ably:** create an app, copy its API key (the whole `appId.keyId:secret`) to `PARDA_REALTIME_KEY`. `connect-src` gains Ably's hosts on Parda's pages only then. Another service means another implementation in `channel.ts`, its hosts in `player/csp.ts`, and its token format in `token.ts` and the relay.
+**Connecting Ably:** create an app, copy its API key (the whole `appId.keyId:secret`) to `PARDA_REALTIME_KEY`. `connect-src` gains Ably's hosts on Parda's pages only then. Another service means another implementation in `lib/channel.ts`, its hosts in `player/csp.ts`, and its token format in `token.ts` and the relay.
 
 ## Pitfalls already solved
 
-- **The billboard from `lg` is one screen tall:** its picture is `flex-1` in a frame of `100svh - 3.75rem`, so a change to the top mask's height must change `FRAME` in `kit/billboard.tsx` too (0249).
+- **The billboard from `lg` is one screen tall:** its picture is `flex-1` in a frame of `100svh - 3.75rem`, so a change to the top mask's height must change `FRAME` in `kit/components/billboard-hero.tsx` too (0249).
 - **The shared account page is drawn as cards:** a product with its own look provides `AccountSectionFrameProvider` with its section component instead of copying the forms (0249).
 
 - **A timer in an effect without deps restarts on every render:** position reports render four times a second, so a 250 ms tick would never fire. The party's clock has `[]` and reads refs.

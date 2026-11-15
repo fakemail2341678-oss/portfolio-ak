@@ -4,7 +4,7 @@ import { useId } from "react";
 import { Button } from "@/components/ui/button";
 import { sessionQueryOptions } from "@/features/auth/queries";
 import { stopImpersonating } from "@/functions/auth";
-import { useSessionSkipped } from "@/lib/session-scope";
+import { useSessionSkipped } from "@/hooks/use-session-skipped";
 import { m } from "@/paraglide/messages";
 import { localizeHref } from "@/paraglide/runtime";
 

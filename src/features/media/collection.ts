@@ -1,5 +1,5 @@
 import { crudCollection } from "@/lib/crud/collection";
-import { mediaKeys } from "./queries";
+import { mediaKeys } from "./keys";
 import type { MediaItemDto } from "./schema";
 
 /**

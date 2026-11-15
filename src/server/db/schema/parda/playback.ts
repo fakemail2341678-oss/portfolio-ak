@@ -6,7 +6,7 @@ import type {
 	PardaReportKind,
 	PardaReportStatus,
 	PardaViewerKind,
-} from "../../../../features/parda/player/playback";
+} from "../../../../features/parda/player/lib/playback";
 import { user } from "../auth";
 import { localizedText } from "../columns";
 import type { PardaMedia } from "./catalog";
@@ -50,7 +50,7 @@ export const pdSource = pgTable(
 	{
 		id: uuid().primaryKey().defaultRandom(),
 		name: localizedText().notNull(),
-		/** Absolute https URLs, or paths under PARDA_PLAYER_BASE (else this app's placeholder routes). Tokens: src/features/parda/player/templates.ts. */
+		/** Absolute https URLs, or paths under PARDA_PLAYER_BASE (else this app's placeholder routes). Tokens: src/features/parda/player/lib/templates.ts. */
 		movieTemplate: text().notNull(),
 		tvTemplate: text().notNull(),
 		/** The origins an absolute template may use and messages may come from. Empty for a relative template. */

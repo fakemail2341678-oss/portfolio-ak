@@ -1,6 +1,6 @@
 import { m } from "@/paraglide/messages";
 import { cachedRelief, viewHeightOf } from "../../lib/terrain/relief";
-import { RELIEF_PRESETS, Relief } from "../art/relief";
+import { RELIEF_PRESETS, Relief } from "../art/relief-image";
 
 /**
  * The portfolio's pending page (decision 0201): while a page loads, a short panorama is

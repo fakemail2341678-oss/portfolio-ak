@@ -6,11 +6,11 @@ import { overwriteGetLocale } from "@/paraglide/runtime";
 
 /**
  * The layout routes' beforeLoad guards. The admin role check itself is a server
- * function (ensureAdminAccess -> requireAdminAccess, tested in auth-middleware.test.ts);
+ * function (getAdminAccess -> requireAdminAccess, tested in auth-middleware.test.ts);
  * here it's mocked to return or throw what the server would.
  */
-const ensureAdminAccess = vi.hoisted(() => vi.fn<() => Promise<Session>>());
-vi.mock("@/functions/auth", () => ({ ensureAdminAccess }));
+const getAdminAccess = vi.hoisted(() => vi.fn<() => Promise<Session>>());
+vi.mock("@/functions/auth", () => ({ getAdminAccess }));
 const setErrorStatus = vi.hoisted(() => vi.fn(async () => {}));
 vi.mock("@/lib/start/http-status", () => ({ setErrorStatus }));
 
@@ -39,7 +39,7 @@ const thrown = async (run: () => unknown) => {
 
 afterEach(() => {
 	overwriteGetLocale(() => "en");
-	ensureAdminAccess.mockReset();
+	getAdminAccess.mockReset();
 	setErrorStatus.mockClear();
 });
 
@@ -82,28 +82,28 @@ describe("_admin (admin area)", () => {
 		expect(await beforeLoad(adminRoute)({ location, cause: "stay", context: { session: admin } })).toEqual({
 			session: admin,
 		});
-		expect(ensureAdminAccess).not.toHaveBeenCalled();
+		expect(getAdminAccess).not.toHaveBeenCalled();
 	});
 
 	it("still asks the server inside the area when the loaded session has no admin permission", async () => {
-		ensureAdminAccess.mockRejectedValue(new AppError("FORBIDDEN"));
+		getAdminAccess.mockRejectedValue(new AppError("FORBIDDEN"));
 		const error = await thrown(() =>
 			beforeLoad(adminRoute)({ location, cause: "stay", context: { session: session("user") } }),
 		);
 		expect(error).toMatchObject({ code: "FORBIDDEN" });
-		expect(ensureAdminAccess).toHaveBeenCalledOnce();
+		expect(getAdminAccess).toHaveBeenCalledOnce();
 	});
 
 	it("asks the server when entering the area (and on every SSR request) and passes the session on", async () => {
-		ensureAdminAccess.mockResolvedValue(session("admin"));
+		getAdminAccess.mockResolvedValue(session("admin"));
 		expect(await beforeLoad(adminRoute)({ location, cause: "enter", context: { session: null } })).toEqual({
 			session: session("admin"),
 		});
-		expect(ensureAdminAccess).toHaveBeenCalledOnce();
+		expect(getAdminAccess).toHaveBeenCalledOnce();
 	});
 
 	it("redirects anonymous visitors (UNAUTHORIZED) to /login with a return URL", async () => {
-		ensureAdminAccess.mockRejectedValue(new AppError("UNAUTHORIZED"));
+		getAdminAccess.mockRejectedValue(new AppError("UNAUTHORIZED"));
 		const error = await thrown(() => beforeLoad(adminRoute)({ location, cause: "enter", context: { session: null } }));
 		expect(isRedirect(error)).toBe(true);
 		expect((error as { options: unknown }).options).toMatchObject({
@@ -114,7 +114,7 @@ describe("_admin (admin area)", () => {
 
 	it("rethrows FORBIDDEN for signed-in non-admins, with the 403 status recorded for SSR", async () => {
 		const forbidden = new AppError("FORBIDDEN");
-		ensureAdminAccess.mockRejectedValue(forbidden);
+		getAdminAccess.mockRejectedValue(forbidden);
 		expect(await thrown(() => beforeLoad(adminRoute)({ location, cause: "enter", context: { session: null } }))).toBe(
 			forbidden,
 		);

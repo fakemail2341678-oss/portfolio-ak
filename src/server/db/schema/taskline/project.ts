@@ -13,7 +13,7 @@ import {
 	uniqueIndex,
 	uuid,
 } from "drizzle-orm/pg-core";
-import type { StoredProjectSettings } from "../../../../features/taskline/settings";
+import type { StoredProjectSettings } from "../../../../features/taskline/lib/settings";
 import type {
 	ProjectHealth,
 	ProjectRole,

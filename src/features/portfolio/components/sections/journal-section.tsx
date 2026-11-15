@@ -1,8 +1,8 @@
 import { m } from "@/paraglide/messages";
 import type { PostSummary } from "../../types";
-import { PostLine } from "../journal/post-line";
-import { TextLink } from "../primitives/links";
-import { SectionHeading } from "../primitives/section-heading";
+import { PostLine } from "../journal/post-row";
+import { SectionHeading } from "../primitives/section-header";
+import { TextLink } from "../primitives/text-link";
 
 /** The latest writing, as a line-up. */
 export function JournalSection({ posts }: { posts: ReadonlyArray<PostSummary> }) {

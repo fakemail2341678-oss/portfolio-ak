@@ -15,7 +15,7 @@ import {
 	ticksOf,
 	timelineGroups,
 	timelineRange,
-} from "@/features/taskline/timeline/layout";
+} from "@/features/taskline/timeline/lib/layout";
 import type { Milestone, TasklineMember, TasklineStatus, TaskSummary } from "@/features/taskline/types";
 
 /**

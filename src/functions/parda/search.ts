@@ -3,7 +3,7 @@ import { z } from "zod";
 import { discoverSearchSchema, QUERY_MAX, searchPageSchema } from "@/features/parda/search";
 import type { DiscoverPageData, SearchPageData, SearchSuggestData } from "@/features/parda/search/types";
 import { zodInput } from "@/functions/_lib/validator";
-import { withPardaCatalog } from "@/middleware/parda";
+import { withPardaPublic } from "@/middleware/parda";
 import { locales } from "@/paraglide/runtime";
 import { db } from "@/server/db/client";
 import { catalogScope, limitAnonymousSearch, withinSearchLimit } from "@/server/parda/catalog/context";
@@ -12,7 +12,7 @@ import { limitedSearchPage, noteSearch, searchPage, searchSuggest } from "@/serv
 
 /**
  * Parda's search and Discover (Task 66, decision 0239): open to everyone, each starting
- * with `withPardaCatalog`, so takedowns apply in catalog/service.ts. A search without a
+ * with `withPardaPublic`, so takedowns apply in catalog/service.ts. A search without a
  * session also counts against its own per-IP limit (`limitAnonymousSearch`).
  */
 
@@ -28,7 +28,7 @@ const suggestInput = z.strictObject({ q: query, locale });
 const discoverInput = discoverSearchSchema.extend({ locale }).strict();
 
 export const getPardaSearch = createServerFn({ method: "GET" })
-	.middleware([withPardaCatalog])
+	.middleware([withPardaPublic])
 	.validator(zodInput(searchInput))
 	.handler(async ({ data, context }): Promise<SearchPageData> => {
 		if (!context.catalog) return { configured: false };
@@ -40,7 +40,7 @@ export const getPardaSearch = createServerFn({ method: "GET" })
 
 /** The overlay's hits for what's typed. Never counted in the statistics. */
 export const getPardaSuggest = createServerFn({ method: "GET" })
-	.middleware([withPardaCatalog])
+	.middleware([withPardaPublic])
 	.validator(zodInput(suggestInput))
 	.handler(async ({ data, context }): Promise<SearchSuggestData> => {
 		if (!context.catalog) return { imageBase: "", hits: [] };
@@ -53,8 +53,8 @@ export const getPardaSuggest = createServerFn({ method: "GET" })
  * It reads the answer the page just cached, so it doesn't count against the search limit
  * (an anonymous call over HTTP still does against the catalogue's).
  */
-export const notePardaSearch = createServerFn({ method: "POST" })
-	.middleware([withPardaCatalog])
+export const recordPardaSearch = createServerFn({ method: "POST" })
+	.middleware([withPardaPublic])
 	.validator(zodInput(suggestInput))
 	.handler(async ({ data, context }): Promise<void> => {
 		if (!context.catalog) return;
@@ -62,7 +62,7 @@ export const notePardaSearch = createServerFn({ method: "POST" })
 	});
 
 export const getPardaDiscover = createServerFn({ method: "GET" })
-	.middleware([withPardaCatalog])
+	.middleware([withPardaPublic])
 	.validator(zodInput(discoverInput))
 	.handler(
 		({ data: { locale: pageLocale, ...filters }, context }): Promise<DiscoverPageData> =>

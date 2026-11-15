@@ -12,12 +12,13 @@ import { ConsentBanner, ObservabilitySync } from "@/components/layout/observabil
 import { SkipLink } from "@/components/layout/skip-link";
 import { preferenceHtmlProps, SystemThemeScript, ThemeSync } from "@/components/layout/theme";
 import { sessionQueryOptions } from "@/features/auth/queries";
-import { sectionBrandOf, sectionTheme, useSectionBrand } from "@/lib/section-brand";
+import { useSectionBrand } from "@/hooks/use-section-brand";
+import { sectionBrandOf, sectionTheme } from "@/lib/section-brand";
 import { pageTitle } from "@/lib/seo";
 import type { Session } from "@/lib/session";
 import { skipsSession } from "@/lib/session-scope";
-import { useAppearance } from "@/lib/stores/hooks";
 import type { ThemePreference } from "@/lib/stores/preferences";
+import { useAppearance } from "@/lib/stores/use-stores";
 import { m } from "@/paraglide/messages";
 import { getLocale, getTextDirection, localizeHref } from "@/paraglide/runtime";
 import type { RouterContext } from "@/router";

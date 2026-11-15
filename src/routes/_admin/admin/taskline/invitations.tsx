@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { AdminInvitationList } from "@/features/taskline/admin/members/invitation-list";
+import { AdminInvitationList } from "@/features/taskline/admin/members/components/invitation-list";
 import { staticCrumb } from "@/lib/breadcrumbs";
 import { titleHead } from "@/lib/crud/route";
 import { ensureQuery } from "@/lib/query";

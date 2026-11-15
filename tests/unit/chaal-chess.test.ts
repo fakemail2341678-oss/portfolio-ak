@@ -7,9 +7,9 @@ import {
 	pressClock,
 	remaining,
 	speedOf,
-} from "@/features/chaal/chess/clock";
-import { formatScore, winChance } from "@/features/chaal/chess/eval";
-import { figurine, moveSuggestions, nagSymbol, readTypedMove, showSan } from "@/features/chaal/chess/notation";
+} from "@/features/chaal/chess/lib/clock";
+import { formatScore, winChance } from "@/features/chaal/chess/lib/eval";
+import { figurine, moveSuggestions, nagSymbol, readTypedMove, showSan } from "@/features/chaal/chess/lib/notation";
 import {
 	checkFen,
 	checkSquare,
@@ -23,8 +23,8 @@ import {
 	premoveDests,
 	START_FEN,
 	turnOf,
-} from "@/features/chaal/chess/rules";
-import { spokenMove, spokenTurn } from "@/features/chaal/chess/speech";
+} from "@/features/chaal/chess/lib/rules";
+import { spokenMove, spokenTurn } from "@/features/chaal/chess/lib/speech";
 import {
 	createTree,
 	deleteFrom,
@@ -37,7 +37,7 @@ import {
 	promoteLine,
 	sizeOf,
 	stepFrom,
-} from "@/features/chaal/chess/tree";
+} from "@/features/chaal/chess/lib/tree";
 import { overwriteGetLocale } from "@/paraglide/runtime";
 
 /**

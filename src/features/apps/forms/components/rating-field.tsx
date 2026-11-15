@@ -1,11 +1,12 @@
 import { StarIcon } from "lucide-react";
 import { useFieldContext } from "@/components/forms/contexts";
-import { type FieldBaseProps, FieldLabelText, FieldMessages, useFieldA11y } from "@/components/forms/field-shell";
+import { type FieldBaseProps, FieldLabelText, FieldMessages } from "@/components/forms/field-shell";
+import { useFieldA11y } from "@/components/forms/use-field-a11y";
 import { FieldLegend, FieldSet } from "@/components/ui/field";
 import { formatNumber } from "@/lib/i18n/intl";
 import { cn } from "@/lib/utils";
 import { m } from "@/paraglide/messages";
-import { RATING_MAX } from "../fields";
+import { RATING_MAX } from "../lib/fields";
 
 /**
  * A 1–5 rating (decision 0195): native radio buttons drawn as a row of numbered

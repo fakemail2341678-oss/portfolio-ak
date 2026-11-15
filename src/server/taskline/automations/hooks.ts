@@ -1,6 +1,6 @@
 import "@tanstack/react-start/server-only";
 import { and, eq, isNull } from "drizzle-orm";
-import type { AutomationEvent } from "@/features/taskline/automation-rules";
+import type { AutomationEvent } from "@/features/taskline/lib/automation-rules";
 import { isClosedCategory } from "@/features/taskline/types";
 import { type TlStatusRow, type TlTaskRow, tlTask } from "@/server/db/schema";
 import type { Tx } from "@/server/db/types";

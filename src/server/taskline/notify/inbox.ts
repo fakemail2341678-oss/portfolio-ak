@@ -1,7 +1,7 @@
 import "@tanstack/react-start/server-only";
 import { and, count, desc, eq, inArray, isNull, type SQL, sql } from "drizzle-orm";
+import { NOTIFY_DEFAULTS, workspaceSettings } from "@/features/taskline/lib/settings";
 import { INBOX_PAGE, type InboxInput, type MarkReadInput, type NotifySettingsInput } from "@/features/taskline/schema";
-import { NOTIFY_DEFAULTS, workspaceSettings } from "@/features/taskline/settings";
 import {
 	type InboxPage,
 	NOTIFY_KINDS,

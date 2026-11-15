@@ -1,6 +1,6 @@
 import "@tanstack/react-start/server-only";
-import { endOfWeek } from "@/features/taskline/calendar/grid";
-import { projectSettings } from "@/features/taskline/settings";
+import { endOfWeek } from "@/features/taskline/calendar/lib/grid";
+import { projectSettings } from "@/features/taskline/lib/settings";
 import type {
 	ActiveSprint,
 	MyTasks,

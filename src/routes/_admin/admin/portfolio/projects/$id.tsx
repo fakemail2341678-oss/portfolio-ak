@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { ProjectEditPage } from "@/features/portfolio/admin/components/project-pages";
-import { assertRoutePermission } from "@/features/rbac/route-guard";
+import { ProjectEditPage } from "@/features/portfolio/admin/components/project-page";
+import { assertRoutePermission } from "@/features/rbac/lib/route-guard";
 import { loaderTitleCrumb } from "@/lib/breadcrumbs";
 import { loadDetailOr404, titleHead } from "@/lib/crud/route";
 import { idSchema } from "@/lib/crud/schema";

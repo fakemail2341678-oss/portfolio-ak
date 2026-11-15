@@ -1,14 +1,14 @@
 import { createServerFn } from "@tanstack/react-start";
 import type { ImageAsset, UploadTicket } from "@/features/attachments/schema";
 import {
-	addCommentInput,
-	confirmFileInput,
-	deleteCommentInput,
-	fileIdInput,
-	taskFileInput,
-	taskFilesInput,
-	updateCommentInput,
-	watchTaskInput,
+	addCommentInputSchema,
+	confirmFileInputSchema,
+	deleteCommentInputSchema,
+	fileIdInputSchema,
+	taskFileInputSchema,
+	taskFilesInputSchema,
+	updateCommentInputSchema,
+	watchTaskInputSchema,
 } from "@/features/taskline/schema";
 import type { TaskDetail } from "@/features/taskline/types";
 import { zodInput } from "@/functions/_lib/validator";
@@ -19,32 +19,32 @@ import * as collab from "@/server/taskline/collab/service";
 
 export const addTasklineComment = createServerFn({ method: "POST" })
 	.middleware([requireTasklineUser, withTasklineServices])
-	.validator(zodInput(addCommentInput))
+	.validator(zodInput(addCommentInputSchema))
 	.handler(({ data, context }): Promise<TaskDetail> => collab.addComment(context, data));
 
 export const updateTasklineComment = createServerFn({ method: "POST" })
 	.middleware([requireTasklineUser, withTasklineServices])
-	.validator(zodInput(updateCommentInput))
+	.validator(zodInput(updateCommentInputSchema))
 	.handler(({ data, context }): Promise<TaskDetail> => collab.updateComment(context, data));
 
 export const deleteTasklineComment = createServerFn({ method: "POST" })
 	.middleware([requireTasklineUser, withTasklineServices])
-	.validator(zodInput(deleteCommentInput))
+	.validator(zodInput(deleteCommentInputSchema))
 	.handler(({ data, context }): Promise<TaskDetail> => collab.deleteComment(context, data));
 
-export const watchTasklineTask = createServerFn({ method: "POST" })
+export const followTasklineTask = createServerFn({ method: "POST" })
 	.middleware([requireTasklineUser, withTasklineServices])
-	.validator(zodInput(watchTaskInput))
+	.validator(zodInput(watchTaskInputSchema))
 	.handler(({ data, context }): Promise<TaskDetail> => collab.watchTask(context, data));
 
 export const addTasklineTaskFiles = createServerFn({ method: "POST" })
 	.middleware([requireTasklineUser, withTasklineServices])
-	.validator(zodInput(taskFilesInput))
+	.validator(zodInput(taskFilesInputSchema))
 	.handler(({ data, context }): Promise<TaskDetail> => collab.addTaskFiles(context, data));
 
 export const removeTasklineTaskFile = createServerFn({ method: "POST" })
 	.middleware([requireTasklineUser, withTasklineServices])
-	.validator(zodInput(taskFileInput))
+	.validator(zodInput(taskFileInputSchema))
 	.handler(({ data, context }): Promise<TaskDetail> => collab.removeTaskFile(context, data));
 
 /** Whether uploads are configured (the task shows a note instead of the picker when not). */
@@ -58,11 +58,11 @@ export const signTasklineUpload = createServerFn({ method: "POST" })
 
 export const confirmTasklineUpload = createServerFn({ method: "POST" })
 	.middleware([requireTasklineUser, withTasklineServices])
-	.validator(zodInput(confirmFileInput))
+	.validator(zodInput(confirmFileInputSchema))
 	.handler(({ data, context }): Promise<ImageAsset> => collab.confirmFileUpload(context, data.publicId));
 
 /** Removes the caller's own upload that was never added to a task or a comment. */
 export const discardTasklineUpload = createServerFn({ method: "POST" })
 	.middleware([requireTasklineUser, withTasklineServices])
-	.validator(zodInput(fileIdInput))
+	.validator(zodInput(fileIdInputSchema))
 	.handler(({ data, context }): Promise<void> => collab.discardFileUpload(context, data.id));

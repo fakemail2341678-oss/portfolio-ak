@@ -5,10 +5,10 @@ import { createRole, inviteUser, setUserRoles, updateRolePermissions } from "@/f
 import { m } from "@/paraglide/messages";
 import { getLocale } from "@/paraglide/runtime";
 import { sampleBannedUser, sampleRoles } from "../../../../.storybook/mocks/data";
-import { ALL_PERMISSIONS, type Permission } from "../permissions";
+import { ALL_PERMISSIONS, type Permission } from "../lib/permissions";
 import { rolesQueryOptions } from "../queries";
 import { InviteUserDialog } from "./invite-user-dialog";
-import { PermissionMatrix } from "./permission-matrix";
+import { PermissionMatrix } from "./permission-matrix-grid";
 import { RoleDialog } from "./role-dialog";
 import { UserRolesDialog } from "./user-roles-dialog";
 

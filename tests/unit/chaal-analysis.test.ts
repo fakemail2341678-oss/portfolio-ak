@@ -1,10 +1,10 @@
 import { describe, expect, it } from "vitest";
-import { lichessGameId, readImport } from "@/features/chaal/analysis/import";
-import { lineMoves } from "@/features/chaal/analysis/lines";
+import { lichessGameId, readImport } from "@/features/chaal/analysis/lib/import";
+import { lineMoves } from "@/features/chaal/analysis/lib/lines";
+import { searchFromTree, shareUrl, treeFromSearch } from "@/features/chaal/analysis/lib/url";
 import { gameTreeSchema } from "@/features/chaal/analysis/schema";
-import { searchFromTree, shareUrl, treeFromSearch } from "@/features/chaal/analysis/url";
-import { readPgn, writePgn } from "@/features/chaal/chess/pgn";
-import { START_FEN } from "@/features/chaal/chess/rules";
+import { readPgn, writePgn } from "@/features/chaal/chess/lib/pgn";
+import { START_FEN } from "@/features/chaal/chess/lib/rules";
 import {
 	createTree,
 	type GameTree,
@@ -17,8 +17,8 @@ import {
 	setShapes,
 	toggleNag,
 	verifyTree,
-} from "@/features/chaal/chess/tree";
-import { readEngineLimits } from "@/features/chaal/engine/limits";
+} from "@/features/chaal/chess/lib/tree";
+import { readEngineLimits } from "@/features/chaal/engine/lib/limits";
 import { analysisSearch } from "@/features/chaal/search";
 import { cloudEvalAnswer, explorerAnswer, gameExportAnswer, tablebaseAnswer } from "@/server/chaal/lichess/schemas";
 import { lichessFixtureName, readLichessFixture } from "../../e2e/harness/lichess";

@@ -1,5 +1,5 @@
 import "@tanstack/react-start/server-only";
-import type { AppSlug } from "@/features/apps/registry";
+import type { AppSlug } from "@/features/apps/lib/registry";
 import type { Db } from "@/server/db/types";
 import type { GuestData } from "@/server/guests/data";
 import { claimForms, formsUsage, seedForms } from "./forms/service";
@@ -12,7 +12,7 @@ export type AppUsage = { accounts: number; guests: number; rows: Record<string, 
 
 /**
  * The server half of the apps registry (decision 0187); the client half,
- * src/features/apps/registry.ts, holds what pages show. Each app gives its guest
+ * src/features/apps/lib/registry.ts, holds what pages show. Each app gives its guest
  * sample rows and claim (src/server/guests/data.ts) and its usage numbers.
  * Add an app here and there.
  */

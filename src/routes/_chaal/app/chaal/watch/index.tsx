@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { chaalPageHead } from "@/features/chaal/head";
 import { CHAAL_PATHS } from "@/features/chaal/links";
-import { ChaalWatchPage } from "@/features/chaal/watch/tv-page";
+import { ChaalWatchPage } from "@/features/chaal/watch/components/tv-page";
 import { m } from "@/paraglide/messages";
 
 /**
@@ -10,7 +10,7 @@ import { m } from "@/paraglide/messages";
  * and the streamers live. The loader reads the TV's games; a failed read is the page's to say.
  */
 export const Route = createFileRoute("/_chaal/app/chaal/watch/")({
-	loader: async ({ context }) => (await import("@/features/chaal/watch/queries")).loadWatchPage(context.queryClient),
-	head: () => chaalPageHead(CHAAL_PATHS.watch, m.ch_watch_title(), m.ch_watch_description()),
+	loader: async ({ context }) => (await import("@/features/chaal/watch/load")).loadWatchPage(context.queryClient),
+	head: () => chaalPageHead(CHAAL_PATHS.watch, m.chaal_watch_title(), m.chaal_watch_description()),
 	component: ChaalWatchPage,
 });

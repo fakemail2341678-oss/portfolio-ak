@@ -1,8 +1,8 @@
 import "@tanstack/react-start/server-only";
-import { featureOn } from "@/features/chaal/features";
-import type { ChaalChallengeLine, ChaalEvent, ChaalGameLine, ChaalSeekLine } from "@/features/chaal/live/events";
-import { ndjsonLines, parseLine } from "@/features/chaal/live/ndjson";
-import { challengePlayerInput, seekInput } from "@/features/chaal/play/schema";
+import { featureOn } from "@/features/chaal/lib/features";
+import type { ChaalChallengeLine, ChaalEvent, ChaalGameLine, ChaalSeekLine } from "@/features/chaal/live/lib/events";
+import { ndjsonLines, parseLine } from "@/features/chaal/live/lib/ndjson";
+import { challengePlayerInputSchema, seekInputSchema } from "@/features/chaal/play/schema";
 import { isAppError } from "@/lib/errors";
 import { errorFields, log } from "@/server/log";
 import { modeOfSource, recordActivity } from "./activity";
@@ -233,7 +233,7 @@ export async function challengeStream(
 ): Promise<Response> {
 	const refused = await gate(deps, user);
 	if (refused || !user) return refused ?? json(401, { error: "UNAUTHORIZED" });
-	const parsed = challengePlayerInput.safeParse(body);
+	const parsed = challengePlayerInputSchema.safeParse(body);
 	if (!parsed.success || parsed.data.pace.kind !== "clock") return json(400, { error: "BAD_REQUEST" });
 	const input = parsed.data;
 	const abort = new AbortController();
@@ -297,7 +297,7 @@ export async function seekStream(
 ): Promise<Response> {
 	const refused = await gate(deps, user);
 	if (refused || !user) return refused ?? json(401, { error: "UNAUTHORIZED" });
-	const parsed = seekInput.safeParse(body);
+	const parsed = seekInputSchema.safeParse(body);
 	if (!parsed.success || parsed.data.pace.kind !== "clock") return json(400, { error: "BAD_REQUEST" });
 	const input = parsed.data;
 	const abort = new AbortController();

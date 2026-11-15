@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { ProjectList } from "@/features/portfolio/admin/components/project-list";
-import { ProjectsPending } from "@/features/portfolio/admin/components/project-pages";
+import { ProjectsPending } from "@/features/portfolio/admin/components/project-page";
 import { PROJECTS_TABLE_ID } from "@/features/portfolio/constants";
 import { projectList } from "@/features/portfolio/search";
 import { listLoader, listSearch, titleHead } from "@/lib/crud/route";

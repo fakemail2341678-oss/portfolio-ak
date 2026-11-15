@@ -7,7 +7,8 @@ import { cn } from "@/lib/utils";
 import type { FileRules } from "@/lib/validation";
 import { m } from "@/paraglide/messages";
 import { useFieldContext } from "../contexts";
-import { type FieldBaseProps, FieldLabelText, FieldMessages, useFieldA11y } from "../field-shell";
+import { type FieldBaseProps, FieldLabelText, FieldMessages } from "../field-shell";
+import { useFieldA11y } from "../use-field-a11y";
 
 /** "image/png, image/jpeg" -> "PNG, JPEG"; wildcards -> "images" etc. are kept as-is. */
 const typesLabel = (accept: ReadonlyArray<string>) =>

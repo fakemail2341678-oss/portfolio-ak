@@ -2,7 +2,7 @@ import "@tanstack/react-start/server-only";
 import { and, eq, sql } from "drizzle-orm";
 import type { AuditValue } from "@/features/audit/schema";
 import type { KharchaAdminSettings, UpdateKharchaSettingsInput } from "@/features/kharcha/admin/schema";
-import { type KharchaSettings, kharchaSettings, QUOTA_DEFAULTS } from "@/features/kharcha/settings";
+import { type KharchaSettings, kharchaSettings, QUOTA_DEFAULTS } from "@/features/kharcha/lib/settings";
 import { staleError } from "@/lib/concurrency";
 import { changes } from "@/server/audit/record";
 import { notFound, withAudit } from "@/server/db/crud";

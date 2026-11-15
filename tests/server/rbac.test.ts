@@ -1,6 +1,6 @@
 import { eq, ne } from "drizzle-orm";
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from "vitest";
-import { ALL_PERMISSIONS, type Permission } from "@/features/rbac/permissions";
+import { ALL_PERMISSIONS, type Permission } from "@/features/rbac/lib/permissions";
 import type { Actor } from "@/features/rbac/types";
 import { AppError, FORM_ERROR_KEY } from "@/lib/errors";
 import type { AuditActor } from "@/server/audit/record";

@@ -1,8 +1,8 @@
 import "@tanstack/react-start/server-only";
 import { and, eq, inArray, isNull, ne, notInArray, sql } from "drizzle-orm";
 import { alias } from "drizzle-orm/pg-core";
-import { similarMerchant } from "@/features/kharcha/lists";
-import type { Paid, Share } from "@/features/kharcha/money/split";
+import { similarMerchant } from "@/features/kharcha/lib/lists";
+import type { Paid, Share } from "@/features/kharcha/money/lib/split";
 import type { DuplicateRef, ExpenseMine } from "@/features/kharcha/types";
 import {
 	type KhExpenseRow,

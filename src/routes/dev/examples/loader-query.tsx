@@ -2,7 +2,7 @@ import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { DescriptionList } from "@/components/data-display/description-list";
 import { Button } from "@/components/ui/button";
-import { Demo, ExamplePage } from "@/features/dev/examples/example-page";
+import { Demo, ExamplePage } from "@/features/dev/examples/components/example-page";
 import { exampleSnapshotQueryOptions } from "@/features/dev/examples/queries";
 import { staticCrumb } from "@/lib/breadcrumbs";
 import { formatDateTime, formatNumber } from "@/lib/i18n/intl";

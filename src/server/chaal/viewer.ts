@@ -1,5 +1,5 @@
 import "@tanstack/react-start/server-only";
-import { type ChaalFeature, featureOn, missingScopes } from "@/features/chaal/features";
+import { type ChaalFeature, featureOn, missingScopes } from "@/features/chaal/lib/features";
 import { isAppError } from "@/lib/errors";
 import type { Session } from "@/lib/session";
 import { type ChaalConnectionRow, connectionOf } from "./connect/repository";

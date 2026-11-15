@@ -1,5 +1,9 @@
 import "@tanstack/react-start/server-only";
-import { type TemplateDefinitionInput, type TemplateFile, templateFile } from "@/features/taskline/template-definition";
+import {
+	type TemplateDefinitionInput,
+	type TemplateFile,
+	templateFile,
+} from "@/features/taskline/lib/template-definition";
 import type { BuiltinTemplate, StatusCategory, TasklineColor, TaskType } from "@/features/taskline/types";
 import { m } from "@/paraglide/messages";
 import type { Locale } from "@/paraglide/runtime";

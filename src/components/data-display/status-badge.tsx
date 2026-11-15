@@ -13,7 +13,7 @@ const TONES: Record<StatusTone, string> = {
 
 /**
  * A state in a word ("Published", "Banned"), tinted by Graphite's status tokens
- * (each pair is 4.5:1 in every theme and accent, tests/unit/design-tokens.test.ts).
+ * (each pair is 4.5:1 in every theme and accent, tests/unit/styles-tokens.test.ts).
  * The dot repeats the colour; the word carries the meaning, so colour is never the
  * only signal.
  */

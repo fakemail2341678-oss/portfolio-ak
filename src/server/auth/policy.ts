@@ -1,5 +1,5 @@
 import "@tanstack/react-start/server-only";
-import { canEnterAdmin } from "@/features/rbac/permissions";
+import { canEnterAdmin } from "@/features/rbac/lib/permissions";
 
 /**
  * Auth rules that don't depend on Better Auth itself, kept apart so tests can

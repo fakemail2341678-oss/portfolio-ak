@@ -6,18 +6,19 @@ import { useCrudCollection } from "@/components/crud/use-crud-collection";
 import { crudFormKey } from "@/components/crud/use-crud-form";
 import { useCrudMutation } from "@/components/crud/use-crud-mutation";
 import type { RowAction } from "@/components/data-table";
-import { type ConfirmOptions, useConfirm } from "@/components/dialogs/confirm";
+import type { ConfirmOptions } from "@/components/dialogs/confirm";
+import { useConfirm } from "@/components/dialogs/use-confirm";
 import { Button } from "@/components/ui/button";
 import { useListPage } from "@/hooks/use-list-page";
 import { useListQuery } from "@/hooks/use-list-query";
 import { updateRows } from "@/lib/crud/collection";
 import { m } from "@/paraglide/messages";
 import { localizeHref } from "@/paraglide/runtime";
-import { Can, useActor } from "../can";
 import { userRows } from "../collection";
 import { userColumns } from "../columns";
 import { UserFilterControls, userFilters } from "../filters";
-import { RBAC_REFRESH } from "../keys";
+import { Can, useActor } from "../hooks/use-can";
+import { rbacRefreshKeys } from "../keys";
 import { roleOptionsQueryOptions, userMutations, usersListQueryOptions } from "../queries";
 import type { UserListItem } from "../schema";
 import { USERS_TABLE_ID } from "../search";
@@ -48,13 +49,13 @@ export function UsersList() {
 	const confirm = useConfirm();
 	const collection = useCrudCollection(userRows);
 	const ban = useCrudMutation(userMutations.ban(), {
-		invalidate: RBAC_REFRESH,
+		invalidate: rbacRefreshKeys,
 		optimistic: ({ userId, banned }) =>
 			updateRows(collection, [userId], (row) => {
 				row.banned = banned;
 			}),
 	});
-	const revoke = useCrudMutation(userMutations.revokeSessions(), { invalidate: RBAC_REFRESH });
+	const revoke = useCrudMutation(userMutations.revokeSessions(), { invalidate: rbacRefreshKeys });
 	// A new session (as the user): the app loads again from the server, on their account page
 	// (the home page is the portfolio, which doesn't read the session, so it shows no banner).
 	const impersonate = useCrudMutation(userMutations.impersonate(), { invalidate: [] });

@@ -1,11 +1,11 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { KitComponentsExample } from "@/features/dev/examples/kit-components";
+import { KitComponentsExample } from "@/features/dev/examples/components/kit-components-gallery";
 import { staticCrumb } from "@/lib/breadcrumbs";
 import { ensureQuery } from "@/lib/query";
 import { privateHead } from "@/lib/seo";
 import { m } from "@/paraglide/messages";
 
-/** The admin kit's components on one page (src/features/dev/examples/kit-components.tsx). */
+/** The admin kit's components on one page (src/features/dev/examples/components/kit-components-gallery.tsx). */
 export const Route = createFileRoute("/dev/examples/components")({
 	loader: async ({ context }) => {
 		// On demand: the queries and their server functions stay out of every page's JavaScript (0194).

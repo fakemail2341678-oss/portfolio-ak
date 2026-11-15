@@ -3,8 +3,8 @@ import { formatNumber } from "@/lib/i18n/intl";
 import { m } from "@/paraglide/messages";
 import { DISCIPLINE_LABELS } from "../../lib/labels";
 import type { Project } from "../../types";
-import { TextAnchor, TextLink } from "../primitives/links";
 import { PlainList } from "../primitives/plain-list";
+import { TextAnchor, TextLink } from "../primitives/text-link";
 
 function Fact({ term, children }: { term: string; children: ReactNode }) {
 	return (

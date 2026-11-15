@@ -176,7 +176,7 @@ return <CrudForm form={form} crud={crud}>…fields, StickyFormBar…</CrudForm>;
 
 ## Tests and the gates
 
-A PGlite service test per feature (create, list, a stale edit, delete, the audit rows), the function file in `tests/server/guarded-functions.test.ts`, every page in `e2e/support/pages.ts` and, if public, in `tests/unit/route-seo.test.ts`. The generator writes all of these.
+A PGlite service test per feature (create, list, a stale edit, delete, the audit rows), the function file in `tests/server/functions-guards.test.ts`, every page in `e2e/support/pages.ts` and, if public, in `tests/unit/route-seo.test.ts`. The generator writes all of these.
 
 ## Pitfalls already solved
 

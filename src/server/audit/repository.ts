@@ -1,7 +1,7 @@
 import "@tanstack/react-start/server-only";
 import { count, eq } from "drizzle-orm";
 import { alias } from "drizzle-orm/pg-core";
-import { type AuditEventItem, type AuditPage, auditEventItem } from "@/features/audit/schema";
+import { type AuditEventItem, type AuditPage, auditEventItemSchema } from "@/features/audit/schema";
 import type { AuditListInput } from "@/features/audit/search";
 import { allOf, dateRange, orderBySort, paginate, textSearch } from "@/server/db/list";
 import { auditEvent, user } from "@/server/db/schema";
@@ -52,7 +52,7 @@ export async function listAuditEvents(db: Db, input: AuditListInput): Promise<Au
 		},
 		({ event, actorName, actorEmail, impersonatorEmail }): AuditEventItem =>
 			// Actions and targets are written only by recordAudit, which takes catalogued values.
-			auditEventItem.parse({
+			auditEventItemSchema.parse({
 				...event,
 				actor: { id: event.actorId, name: actorName ?? "", email: actorEmail ?? event.actorLabel },
 				impersonator: event.impersonatorId ? (impersonatorEmail ?? event.impersonatorId) : null,

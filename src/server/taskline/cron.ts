@@ -1,6 +1,6 @@
 import "@tanstack/react-start/server-only";
 import { and, eq, gte, inArray, isNotNull, isNull, lt, lte, sql } from "drizzle-orm";
-import { workspaceSettings } from "@/features/taskline/settings";
+import { workspaceSettings } from "@/features/taskline/lib/settings";
 import { TIMER_MAX_MINUTES } from "@/features/taskline/types";
 import { addDays, todayInZone } from "@/lib/i18n/date-only";
 import { tlInvitation, tlMember, tlNotification, tlProject, tlTask, tlWorkspace } from "@/server/db/schema";

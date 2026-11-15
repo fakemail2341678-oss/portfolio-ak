@@ -7,7 +7,7 @@ import { NavigationProgress } from "@/components/layout/navigation-progress";
 import { ThemeToggle } from "@/components/layout/theme";
 import { Button } from "@/components/ui/button";
 import { sessionQueryOptions } from "@/features/auth/queries";
-import { canEnterAdmin } from "@/features/rbac/permissions";
+import { canEnterAdmin } from "@/features/rbac/lib/permissions";
 import { m } from "@/paraglide/messages";
 
 /**

@@ -1,11 +1,11 @@
 // @vitest-environment jsdom
 import { act, renderHook } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
-import { START_FEN } from "@/features/chaal/chess/rules";
-import type { ChaalEventGame } from "@/features/chaal/live/events";
-import type { KeepOptions } from "@/features/chaal/live/reader";
+import { START_FEN } from "@/features/chaal/chess/lib/rules";
+import type { ChaalEventGame } from "@/features/chaal/live/lib/events";
+import type { KeepOptions } from "@/features/chaal/live/lib/reader";
 import { createLiveStore, IDLE } from "@/features/chaal/live/store";
-import { SEEK_STREAM, useSeek } from "@/features/chaal/play/use-seek";
+import { SEEK_STREAM, useSeek } from "@/features/chaal/play/hooks/use-seek";
 
 /**
  * Quick pairing in the page (PLAN Task 78, decision 0267): a seek on a clock is held open

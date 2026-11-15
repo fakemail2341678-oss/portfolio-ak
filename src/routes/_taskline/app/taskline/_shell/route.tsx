@@ -1,6 +1,6 @@
 import { createFileRoute, redirect } from "@tanstack/react-router";
 import { tasklineLinks } from "@/features/taskline/links";
-import { TasklineShellLayout, TasklineShellNotFound } from "@/features/taskline/shell/shell-layout";
+import { TasklineShellLayout, TasklineShellNotFound } from "@/features/taskline/shell/components/shell-layout";
 import { ensureQuery } from "@/lib/query";
 
 /**

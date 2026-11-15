@@ -2,8 +2,8 @@ import { useMutation } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Demo, ExamplePage } from "@/features/dev/examples/example-page";
-import { runExampleJobFn } from "@/functions/examples";
+import { Demo, ExamplePage } from "@/features/dev/examples/components/example-page";
+import { startExampleJob } from "@/functions/examples";
 import { staticCrumb } from "@/lib/breadcrumbs";
 import { formatNumber } from "@/lib/i18n/intl";
 import { privateHead } from "@/lib/seo";
@@ -24,7 +24,7 @@ export const Route = createFileRoute("/dev/examples/background-jobs")({
 
 function BackgroundJobsExample() {
 	const [failures, setFailures] = useState(2);
-	const run = useMutation({ mutationFn: (count: number) => runExampleJobFn({ data: { failures: count } }) });
+	const run = useMutation({ mutationFn: (count: number) => startExampleJob({ data: { failures: count } }) });
 	return (
 		<ExamplePage slug="background-jobs">
 			<Demo title={m.examples_jobs_title()} note={m.examples_jobs_note()}>

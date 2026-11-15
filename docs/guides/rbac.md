@@ -6,7 +6,7 @@ Who may do what, how it's enforced, how to add a permission, and the audit log, 
 
 | Piece | Where | Notes |
 | --- | --- | --- |
-| Permission catalog | `src/features/rbac/permissions.ts` | `"<resource>:<action>"`, e.g. `test-crud:publish`. Code, not data. |
+| Permission catalog | `src/features/rbac/lib/permissions.ts` | `"<resource>:<action>"`, e.g. `test-crud:publish`. Code, not data. |
 | Labels | `src/features/rbac/labels.ts` | One message per resource and per permission (`Record<Permission, …>`: a missing label is a type error). |
 | Admin | Better Auth `user.role = "admin"` | Every permission, always. Created with `pnpm db:seed-admin`; made or unmade on the Users page by another admin. |
 | Baseline | system role `user` | Applies to every signed-in user. Empty by default. Edit it in the matrix. |
@@ -29,13 +29,13 @@ A user's permissions are: everything (admin), or the baseline plus their custom 
    	.handler(({ data, context }) => service.publish(db, data.id, context.user.id));
    ```
 
-   Add the function and its permission to `GUARDED_FUNCTIONS` in `tests/server/guarded-functions.test.ts`. The test fails if a function skips the middleware or checks a different permission, and if any file in `src/functions` is in neither `GUARDED_FUNCTIONS` nor `UNGUARDED_FILES` (deliberately public, per-user or dev-only, with a reason). The showcase apps’ files are in a third list, `APP_FUNCTIONS`: each function runs `requireAppUser` then `withAppServices` (no permission; every query is scoped to its owner, [apps.md](apps.md)).
+   Add the function and its permission to `GUARDED_FUNCTIONS` in `tests/server/functions-guards.test.ts`. The test fails if a function skips the middleware or checks a different permission, and if any file in `src/functions` is in neither `GUARDED_FUNCTIONS` nor `UNGUARDED_FILES` (deliberately public, per-user or dev-only, with a reason). The showcase apps’ files are in a third list, `APP_FUNCTIONS`: each function runs `requireAppsUser` then `withAppsServices` (no permission; every query is scoped to its owner, [apps.md](apps.md)).
 
 2. **Route:** so a direct visit gives the localized 403 page (a real 403 during SSR):
 
    ```ts
    // src/routes/_admin/admin/projects/route.tsx
-   beforeLoad: ({ context }) => assertRoutePermission(context.session, "projects:read"), // from @/features/rbac/route-guard
+   beforeLoad: ({ context }) => assertRoutePermission(context.session, "projects:read"), // from @/features/rbac/lib/route-guard
    ```
 
 3. **UI:** hide what the user can't use (a courtesy, never the protection):
@@ -45,7 +45,7 @@ A user's permissions are: everything (admin), or the baseline plus their custom 
    const canPublish = useCan("projects:publish");
    ```
 
-   Add the section to `src/features/admin/sections.ts` with its `permission`: the sidebar and the dashboard filter by it.
+   Add the section to `src/features/admin/lib/sections.ts` with its `permission`: the sidebar and the dashboard filter by it.
 
 ## Adding a permission or a resource
 

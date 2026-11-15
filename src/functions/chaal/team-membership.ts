@@ -1,5 +1,5 @@
 import { createServerFn } from "@tanstack/react-start";
-import { type TeamSummary, teamInput, teamJoinInput } from "@/features/chaal/teams/schema";
+import { type TeamSummary, teamInputSchema, teamJoinInputSchema } from "@/features/chaal/teams/schema";
 import { zodInput } from "@/functions/_lib/validator";
 import { requireChaalUser, withChaalServices } from "@/middleware/chaal";
 import * as teams from "@/server/chaal/teams/service";
@@ -17,10 +17,10 @@ export const getChaalMyTeams = createServerFn({ method: "GET" })
 
 export const joinChaalTeam = createServerFn({ method: "POST" })
 	.middleware([requireChaalUser, withChaalServices])
-	.validator(zodInput(teamJoinInput))
+	.validator(zodInput(teamJoinInputSchema))
 	.handler(({ context, data }): Promise<void> => teams.joinTeam(context, context.user.id, data));
 
 export const leaveChaalTeam = createServerFn({ method: "POST" })
 	.middleware([requireChaalUser, withChaalServices])
-	.validator(zodInput(teamInput))
+	.validator(zodInput(teamInputSchema))
 	.handler(({ context, data }): Promise<void> => teams.leaveTeam(context, context.user.id, data.id));

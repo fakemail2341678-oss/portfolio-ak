@@ -9,7 +9,7 @@ import {
 	type ProgressRow,
 	progressShare,
 	type SeriesShape,
-} from "@/features/parda/library/progress";
+} from "@/features/parda/library/lib/progress";
 import type {
 	ContinueItem,
 	ContinueRailData,
@@ -29,7 +29,7 @@ import * as repo from "./repository";
 
 /**
  * A profile's progress and Continue watching (PLAN 12.5, decision 0236). Every call acts
- * on the viewer's active profile only, which `requirePardaViewer` resolved from the session.
+ * on the viewer's active profile only, which `requirePardaUser` resolved from the session.
  */
 
 export type PardaServices = { db: Db; viewer: PardaViewer; catalog: PardaCatalog | null };

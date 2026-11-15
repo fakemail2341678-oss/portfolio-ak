@@ -1,6 +1,6 @@
 import { createFileRoute, redirect } from "@tanstack/react-router";
-import { KHARCHA_NAME } from "@/features/kharcha/brand";
-import { KharchaLanding } from "@/features/kharcha/landing/kharcha-landing";
+import { KharchaLanding } from "@/features/kharcha/landing/components/kharcha-landing-page";
+import { KHARCHA_NAME } from "@/features/kharcha/lib/brand";
 import { kharchaLinks } from "@/features/kharcha/links";
 import { absoluteUrl, seo } from "@/lib/seo";
 import { m } from "@/paraglide/messages";

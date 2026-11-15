@@ -12,7 +12,7 @@ import {
 } from "lucide-react";
 import { defineStatuses } from "@/components/data-display/status-badge";
 import { m } from "@/paraglide/messages";
-import type { FieldType } from "./fields";
+import type { FieldType } from "./lib/fields";
 import type { FormStatus } from "./types";
 
 /** Forms' statuses (decision 0195): a draft is visible to its owner only; a published form is at /f/<slug>. */

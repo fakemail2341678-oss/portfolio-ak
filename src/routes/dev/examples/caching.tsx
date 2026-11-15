@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { DescriptionList } from "@/components/data-display/description-list";
 import { Button } from "@/components/ui/button";
-import { Demo, ExamplePage } from "@/features/dev/examples/example-page";
+import { Demo, ExamplePage } from "@/features/dev/examples/components/example-page";
 import { staticCrumb } from "@/lib/breadcrumbs";
 import { publicCache } from "@/lib/http/cache-control";
 import { privateHead } from "@/lib/seo";

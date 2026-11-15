@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { authClient } from "@/lib/auth-client";
 import { m } from "@/paraglide/messages";
-import { authErrorMessage } from "../errors";
+import { authErrorMessage } from "../lib/errors";
 import { AccountSection, type Status } from "./account-section";
 import { FormMessage } from "./auth-field";
 

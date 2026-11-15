@@ -1,7 +1,7 @@
 import "@tanstack/react-start/server-only";
 import { and, asc, eq, isNotNull, lte, sql } from "drizzle-orm";
+import { titleSlug } from "@/features/parda/lib/slug";
 import { PARDA_PATHS } from "@/features/parda/links";
-import { titleSlug } from "@/features/parda/slug";
 import { pdBlockedTitle, pdCollection, pdCollectionItem, pdTitle } from "@/server/db/schema";
 import type { Db } from "@/server/db/types";
 import type { SitemapEntry } from "@/server/seo/sitemap";

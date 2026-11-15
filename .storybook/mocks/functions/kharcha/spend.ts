@@ -14,11 +14,11 @@ export const getKharchaSpendChart = fn(async (): Promise<SpendChart> => sampleKh
 	"getKharchaSpendChart",
 );
 export const exportKharchaSpend = fn(async (): Promise<SpendExportRow[]> => []).mockName("exportKharchaSpend");
-export const bulkKharchaExpenses = fn(async (): Promise<BulkResult> => ({ changed: 1, skipped: 0 })).mockName(
-	"bulkKharchaExpenses",
+export const updateKharchaExpenses = fn(async (): Promise<BulkResult> => ({ changed: 1, skipped: 0 })).mockName(
+	"updateKharchaExpenses",
 );
-export const saveKharchaSearch = fn(searches).mockName("saveKharchaSearch");
-export const renameKharchaSearch = fn(searches).mockName("renameKharchaSearch");
+export const createKharchaSearch = fn(searches).mockName("createKharchaSearch");
+export const setKharchaSearchName = fn(searches).mockName("setKharchaSearchName");
 export const reorderKharchaSearches = fn(searches).mockName("reorderKharchaSearches");
 export const deleteKharchaSearch = fn(searches).mockName("deleteKharchaSearch");
 export const importKharchaSpend = fn(

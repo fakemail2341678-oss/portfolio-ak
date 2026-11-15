@@ -1,7 +1,7 @@
 import { createFileRoute, redirect } from "@tanstack/react-router";
 import { authFeaturesQueryOptions } from "@/features/auth/queries";
-import { TasklineSignUp } from "@/features/taskline/auth/taskline-sign-up";
-import { tasklineHead } from "@/features/taskline/brand";
+import { TasklineSignUp } from "@/features/taskline/auth/components/taskline-sign-up-page";
+import { tasklineHead } from "@/features/taskline/lib/brand";
 import { TASKLINE_PATHS } from "@/features/taskline/links";
 import { redirectSearchSchema } from "@/lib/http/redirect";
 import { ensureQuery } from "@/lib/query";

@@ -1,5 +1,5 @@
 import { createServerFn } from "@tanstack/react-start";
-import { type AdminTakedown, type AdminTakedownPage, takedownInput } from "@/features/parda/admin/schema";
+import { type AdminTakedown, type AdminTakedownPage, takedownInputSchema } from "@/features/parda/admin/schema";
 import { pardaTakedownList } from "@/features/parda/admin/search";
 import { zodInput } from "@/functions/_lib/validator";
 import { bulkIdsSchema } from "@/lib/list/paging";
@@ -17,7 +17,7 @@ export const listPardaTakedowns = createServerFn({ method: "GET" })
 
 export const blockPardaTitle = createServerFn({ method: "POST" })
 	.middleware([requirePermission("parda:moderate"), withServices])
-	.validator(zodInput(takedownInput))
+	.validator(zodInput(takedownInputSchema))
 	.handler(({ data, context }): Promise<AdminTakedown> => takedowns.blockTitle(pardaAdmin(context), data));
 
 export const unblockPardaTitles = createServerFn({ method: "POST" })

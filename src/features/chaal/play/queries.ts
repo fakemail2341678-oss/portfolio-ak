@@ -4,10 +4,10 @@ import {
 	cancelChaalChallenge,
 	challengeChaalAi,
 	challengeChaalPlayer,
+	createChaalChallenge,
 	declineChaalChallenge,
 	getChaalChallenges,
 	getChaalPlaying,
-	openChaalChallenge,
 	seekChaalCorrespondence,
 } from "@/functions/chaal/challenges";
 import {
@@ -54,13 +54,13 @@ export const chatQueryOptions = (id: string) =>
 	});
 
 /** The calls a game's page and the hub make; a test or a story passes its own. */
-export const playCalls = {
+export const chaalPlayMutations = {
 	move: (id: string, uci: string) => playChaalMove({ data: { id, uci } }),
 	act: (id: string, action: GameAction) => actOnChaalGame({ data: { id, action } }),
 	chat: (id: string, text: string) => sendChaalChat({ data: { id, text } }),
 	challengeAi: (input: ChallengeAiInput) => challengeChaalAi({ data: input }),
 	challengePlayer: (input: ChallengePlayerInput) => challengeChaalPlayer({ data: input }),
-	open: (input: OpenChallengeInput) => openChaalChallenge({ data: input }),
+	open: (input: OpenChallengeInput) => createChaalChallenge({ data: input }),
 	accept: (id: string) => acceptChaalChallenge({ data: { id } }),
 	decline: (id: string, reason: DeclineReason) => declineChaalChallenge({ data: { id, reason } }),
 	cancel: (id: string) => cancelChaalChallenge({ data: { id } }),
@@ -68,4 +68,4 @@ export const playCalls = {
 	seekDays: (input: SeekInput) => seekChaalCorrespondence({ data: input }),
 	playing: () => getChaalPlaying(),
 };
-export type PlayCalls = typeof playCalls;
+export type PlayCalls = typeof chaalPlayMutations;

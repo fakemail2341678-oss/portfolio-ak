@@ -1,6 +1,6 @@
 import "@tanstack/react-start/server-only";
 import { and, asc, count, eq, gte, sql } from "drizzle-orm";
-import { isAppColor } from "@/features/apps/colors";
+import { isAppColor } from "@/features/apps/lib/colors";
 import type { IsoDate } from "@/lib/i18n/date-only";
 import { ownedBy } from "@/server/apps/ownership";
 import { type HabitRow, habit, habitCheckin, user } from "@/server/db/schema";

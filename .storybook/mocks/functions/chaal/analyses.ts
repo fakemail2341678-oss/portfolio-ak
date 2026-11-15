@@ -4,7 +4,7 @@ import type {
 	ChaalAnalysis,
 	ChaalAnalysisSummary,
 } from "../../../../src/features/chaal/analysis/schema";
-import { createTree } from "../../../../src/features/chaal/chess/tree";
+import { createTree } from "../../../../src/features/chaal/chess/lib/tree";
 
 // Stand-ins for src/functions/chaal/analyses.ts.
 const SAVED: ChaalAnalysisSummary = {
@@ -27,11 +27,11 @@ export const getChaalAnalysis = fn(
 		updatedAt: SAVED.updatedAt,
 	}),
 ).mockName("getChaalAnalysis");
-export const saveChaalAnalysis = fn(
+export const updateChaalAnalysis = fn(
 	async ({ data }: { data: AnalysisInput }): Promise<ChaalAnalysisSummary> => ({
 		...SAVED,
 		id: data.id ?? SAVED.id,
 		title: data.title,
 	}),
-).mockName("saveChaalAnalysis");
+).mockName("updateChaalAnalysis");
 export const deleteChaalAnalysis = fn(async (): Promise<void> => {}).mockName("deleteChaalAnalysis");

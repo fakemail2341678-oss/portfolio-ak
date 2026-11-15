@@ -1,7 +1,7 @@
 import { createFileRoute, redirect } from "@tanstack/react-router";
 import { accountSecurityQueryOptions, accountSessionsQueryOptions } from "@/features/auth/queries";
-import { TasklineAccount } from "@/features/taskline/auth/taskline-account";
-import { tasklineTitle } from "@/features/taskline/brand";
+import { TasklineAccount } from "@/features/taskline/auth/components/taskline-account-page";
+import { tasklineTitle } from "@/features/taskline/lib/brand";
 import { tasklineLinks } from "@/features/taskline/links";
 import { staticCrumb } from "@/lib/breadcrumbs";
 import { ensureQuery } from "@/lib/query";

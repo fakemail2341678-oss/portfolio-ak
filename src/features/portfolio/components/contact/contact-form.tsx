@@ -1,7 +1,8 @@
 import { useMutation } from "@tanstack/react-query";
 import { type FormEvent, useId, useState } from "react";
 import { errorMessage } from "@/components/errors/error-page";
-import { Honeypot, useTurnstile } from "@/features/auth/components/bot-check";
+import { Honeypot } from "@/features/auth/components/bot-check-field";
+import { useTurnstile } from "@/features/auth/hooks/use-turnstile";
 import { submitContactMessage } from "@/functions/portfolio-public";
 import { FORM_ERROR_KEY, isAppError } from "@/lib/errors";
 import { m } from "@/paraglide/messages";

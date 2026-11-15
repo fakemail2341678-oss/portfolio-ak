@@ -1,13 +1,13 @@
 import { createServerFn } from "@tanstack/react-start";
 import {
-	commentIdInput,
-	createCommentInput,
-	focusInput,
-	markNotificationsInput,
-	notifySettingsInput,
-	reactInput,
-	threadInput,
-	updateCommentInput,
+	commentIdInputSchema,
+	createCommentInputSchema,
+	focusInputSchema,
+	markNotificationsInputSchema,
+	notifySettingsInputSchema,
+	reactInputSchema,
+	threadInputSchema,
+	updateCommentInputSchema,
 } from "@/features/kharcha/schema";
 import type { CommentView } from "@/features/kharcha/types";
 import { zodInput } from "@/functions/_lib/validator";
@@ -24,43 +24,43 @@ import * as inbox from "@/server/kharcha/notify/inbox";
 
 export const createKharchaComment = createServerFn({ method: "POST" })
 	.middleware([requireKharchaUser, withKharchaServices])
-	.validator(zodInput(createCommentInput))
+	.validator(zodInput(createCommentInputSchema))
 	.handler(({ data, context }): Promise<CommentView> => talk.createComment(context, data));
 
 export const updateKharchaComment = createServerFn({ method: "POST" })
 	.middleware([requireKharchaUser, withKharchaServices])
-	.validator(zodInput(updateCommentInput))
+	.validator(zodInput(updateCommentInputSchema))
 	.handler(({ data, context }): Promise<CommentView> => talk.updateComment(context, data));
 
 export const deleteKharchaComment = createServerFn({ method: "POST" })
 	.middleware([requireKharchaUser, withKharchaServices])
-	.validator(zodInput(commentIdInput))
+	.validator(zodInput(commentIdInputSchema))
 	.handler(({ data, context }): Promise<void> => talk.deleteComment(context, data.commentId));
 
 export const reactKharchaComment = createServerFn({ method: "POST" })
 	.middleware([requireKharchaUser, withKharchaServices])
-	.validator(zodInput(reactInput))
+	.validator(zodInput(reactInputSchema))
 	.handler(({ data, context }): Promise<CommentView> => talk.react(context, data));
 
 /** The caller read a thread: its unread lines and their notifications about it clear. */
-export const markKharchaThreadRead = createServerFn({ method: "POST" })
+export const setKharchaThreadRead = createServerFn({ method: "POST" })
 	.middleware([requireKharchaUser, withKharchaServices])
-	.validator(zodInput(threadInput))
+	.validator(zodInput(threadInputSchema))
 	.handler(({ data, context }): Promise<void> => talk.markThreadRead(context, data.thread));
 
-export const markKharchaNotificationsRead = createServerFn({ method: "POST" })
+export const setKharchaNotificationsRead = createServerFn({ method: "POST" })
 	.middleware([requireKharchaUser, withKharchaServices])
-	.validator(zodInput(markNotificationsInput))
+	.validator(zodInput(markNotificationsInputSchema))
 	.handler(({ data, context }): Promise<void> => inbox.markRead(context, data.ids));
 
 /** Settings → Notifications: how each kind is emailed. */
 export const updateKharchaNotifySettings = createServerFn({ method: "POST" })
 	.middleware([requireKharchaUser, withKharchaServices])
-	.validator(zodInput(notifySettingsInput))
+	.validator(zodInput(notifySettingsInputSchema))
 	.handler(({ data, context }): Promise<void> => inbox.updateNotifySettings(context, data));
 
 /** Focus mode on People: only unread and unsettled conversations. */
 export const setKharchaFocus = createServerFn({ method: "POST" })
 	.middleware([requireKharchaUser, withKharchaServices])
-	.validator(zodInput(focusInput))
+	.validator(zodInput(focusInputSchema))
 	.handler(({ data, context }): Promise<void> => inbox.setFocus(context, data.focus));

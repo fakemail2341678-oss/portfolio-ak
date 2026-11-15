@@ -1,5 +1,5 @@
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from "vitest";
-import type { FormField } from "@/features/apps/forms/fields";
+import type { FormField } from "@/features/apps/forms/lib/fields";
 import { FORM_RESPONSE_LIMIT, FORMS_QUOTAS } from "@/features/apps/forms/types";
 import { isAppError } from "@/lib/errors";
 import * as forms from "@/server/apps/forms/service";

@@ -1,8 +1,8 @@
 import { createFileRoute, notFound, stripSearchParams } from "@tanstack/react-router";
 import { z } from "zod";
-import { kharchaHead } from "@/features/kharcha/brand";
+import { kharchaHead } from "@/features/kharcha/lib/brand";
 import { THREAD_SEARCH_DEFAULTS, threadSearch } from "@/features/kharcha/search";
-import { GroupThreadPage } from "@/features/kharcha/threads/group-thread";
+import { GroupThreadPage } from "@/features/kharcha/threads/components/group-thread";
 import { isAppError } from "@/lib/errors";
 import { parseParams } from "@/lib/list/params";
 import { ensureQuery } from "@/lib/query";

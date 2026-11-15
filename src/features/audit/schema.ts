@@ -186,7 +186,7 @@ export type AuditValue = string | number | boolean | null | string[];
 export type AuditValues = Record<string, AuditValue>;
 
 /** One row of the log as the list shows it (the list's URL contract is in ./search.ts). */
-export const auditEventItem = z.object({
+export const auditEventItemSchema = z.object({
 	id: z.string(),
 	action: z.custom<AuditAction>(),
 	/** The account that acted; `id` is null once it was deleted (name and email are then from the time). */
@@ -200,5 +200,5 @@ export const auditEventItem = z.object({
 	ip: z.string().nullable(),
 	createdAt: isoDateTime(),
 });
-export type AuditEventItem = z.output<typeof auditEventItem>;
+export type AuditEventItem = z.output<typeof auditEventItemSchema>;
 export type AuditPage = Paged<AuditEventItem>;

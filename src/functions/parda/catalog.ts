@@ -13,7 +13,7 @@ import type {
 } from "@/features/parda/title/types";
 import { zodInput } from "@/functions/_lib/validator";
 import type { Localized } from "@/lib/i18n/localized";
-import { withPardaCatalog } from "@/middleware/parda";
+import { withPardaPublic } from "@/middleware/parda";
 import { locales } from "@/paraglide/runtime";
 import { catalogScope, pardaBanner } from "@/server/parda/catalog/context";
 import { hubPage, hubRail } from "@/server/parda/catalog/hubs";
@@ -22,7 +22,7 @@ import { creditsPage, seasonPage, titlePage } from "@/server/parda/catalog/title
 
 /**
  * Parda's catalogue reads (PLAN 12.5, decision 0234): open to everyone, each starting
- * with `withPardaCatalog`. Takedowns and the cache epoch apply inside
+ * with `withPardaPublic`. Takedowns and the cache epoch apply inside
  * src/server/parda/catalog/service.ts, the only way in. The locale is an input, so a
  * client-side navigation reads the language of the page it goes to.
  */
@@ -47,7 +47,7 @@ const curatedInput = curatedParamSchema.extend({ locale }).strict();
 const surpriseInput = z.strictObject({ from: page, locale });
 
 export const getPardaHub = createServerFn({ method: "GET" })
-	.middleware([withPardaCatalog])
+	.middleware([withPardaPublic])
 	.validator(zodInput(hubInput))
 	.handler(
 		({ data, context }): Promise<HubPageData> =>
@@ -57,7 +57,7 @@ export const getPardaHub = createServerFn({ method: "GET" })
 	);
 
 export const getPardaRail = createServerFn({ method: "GET" })
-	.middleware([withPardaCatalog])
+	.middleware([withPardaPublic])
 	.validator(zodInput(railInput))
 	.handler(
 		({ data, context }): Promise<HubRailData> =>
@@ -67,7 +67,7 @@ export const getPardaRail = createServerFn({ method: "GET" })
 	);
 
 export const getPardaTitle = createServerFn({ method: "GET" })
-	.middleware([withPardaCatalog])
+	.middleware([withPardaPublic])
 	.validator(zodInput(titleInput))
 	.handler(
 		({ data, context }): Promise<TitlePageData> =>
@@ -82,7 +82,7 @@ export const getPardaTitle = createServerFn({ method: "GET" })
 	);
 
 export const getPardaSeason = createServerFn({ method: "GET" })
-	.middleware([withPardaCatalog])
+	.middleware([withPardaPublic])
 	.validator(zodInput(seasonInput))
 	.handler(
 		({ data, context }): Promise<SeasonData> =>
@@ -92,7 +92,7 @@ export const getPardaSeason = createServerFn({ method: "GET" })
 	);
 
 export const getPardaCredits = createServerFn({ method: "GET" })
-	.middleware([withPardaCatalog])
+	.middleware([withPardaPublic])
 	.validator(zodInput(titleInput))
 	.handler(
 		({ data, context }): Promise<CreditsPageData> =>
@@ -107,7 +107,7 @@ export const getPardaCredits = createServerFn({ method: "GET" })
 	);
 
 export const getPardaPerson = createServerFn({ method: "GET" })
-	.middleware([withPardaCatalog])
+	.middleware([withPardaPublic])
 	.validator(zodInput(idInput))
 	.handler(
 		({ data, context }): Promise<PersonPageData> =>
@@ -117,7 +117,7 @@ export const getPardaPerson = createServerFn({ method: "GET" })
 	);
 
 export const getPardaCollection = createServerFn({ method: "GET" })
-	.middleware([withPardaCatalog])
+	.middleware([withPardaPublic])
 	.validator(zodInput(idInput))
 	.handler(
 		({ data, context }): Promise<CollectionPageData> =>
@@ -128,7 +128,7 @@ export const getPardaCollection = createServerFn({ method: "GET" })
 
 /** A collection the admin put together, at /app/parda/c/{slug} (decision 0242). */
 export const getPardaCurated = createServerFn({ method: "GET" })
-	.middleware([withPardaCatalog])
+	.middleware([withPardaPublic])
 	.validator(zodInput(curatedInput))
 	.handler(
 		({ data, context }): Promise<CuratedPageData> =>
@@ -139,7 +139,7 @@ export const getPardaCurated = createServerFn({ method: "GET" })
 
 /** A random title for "Surprise me", from the page's good lists; null without a catalogue or a title. */
 export const getPardaSurprise = createServerFn({ method: "GET" })
-	.middleware([withPardaCatalog])
+	.middleware([withPardaPublic])
 	.validator(zodInput(surpriseInput))
 	.handler(
 		({ data, context }): Promise<SurpriseTarget> =>
@@ -153,5 +153,5 @@ export const getPardaSurprise = createServerFn({ method: "GET" })
  * the settings the controls cache, so it needs no catalogue: it shows without TMDB too.
  */
 export const getPardaBanner = createServerFn({ method: "GET" })
-	.middleware([withPardaCatalog])
+	.middleware([withPardaPublic])
 	.handler((): Promise<Localized | null> => pardaBanner());

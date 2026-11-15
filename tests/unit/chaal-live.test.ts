@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
-import { START_FEN } from "@/features/chaal/chess/rules";
+import { START_FEN } from "@/features/chaal/chess/lib/rules";
 import {
 	applyLine,
 	canAbort,
@@ -15,13 +15,13 @@ import {
 	rollback,
 	shownMoves,
 	withPending,
-} from "@/features/chaal/game/live-game";
-import type { ChaalEvent, ChaalEventGame, ChaalGameFull, ChaalGameState } from "@/features/chaal/live/events";
-import { type ChannelLike, type LockManagerLike, startLiveEvents } from "@/features/chaal/live/events-client";
-import { type KeepOptions, keepStreaming, readStream } from "@/features/chaal/live/reader";
+} from "@/features/chaal/game/lib/live-game";
+import type { ChaalEvent, ChaalEventGame, ChaalGameFull, ChaalGameState } from "@/features/chaal/live/lib/events";
+import { type ChannelLike, type LockManagerLike, startLiveEvents } from "@/features/chaal/live/lib/events-client";
+import { type KeepOptions, keepStreaming, readStream } from "@/features/chaal/live/lib/reader";
 import { applyEvent, createLiveStore, IDLE, markStale, realTimeGames, settle } from "@/features/chaal/live/store";
-import { boardLegal, clockAccepted, paceOfKey, readPlayLimits } from "@/features/chaal/play/controls";
-import { challengePlayerInput, lichessUsername } from "@/features/chaal/play/schema";
+import { boardLegal, clockAccepted, paceOfKey, readPlayLimits } from "@/features/chaal/play/lib/controls";
+import { challengePlayerInputSchema, lichessUsernameSchema } from "@/features/chaal/play/schema";
 import {
 	aiGameAnswer,
 	challengeListAnswer,
@@ -246,15 +246,15 @@ describe("Board-legal controls", () => {
 	});
 
 	it("inputs: a Lichess name, a Board-legal pace", () => {
-		expect(lichessUsername.safeParse("E2E_Rival").success).toBe(true);
-		expect(lichessUsername.safeParse("a").success).toBe(false);
-		expect(lichessUsername.safeParse("../../api").success).toBe(false);
+		expect(lichessUsernameSchema.safeParse("E2E_Rival").success).toBe(true);
+		expect(lichessUsernameSchema.safeParse("a").success).toBe(false);
+		expect(lichessUsernameSchema.safeParse("../../api").success).toBe(false);
 		const input = { username: "Them", color: "random", rated: false };
 		expect(
-			challengePlayerInput.safeParse({ ...input, pace: { kind: "clock", clock: { initial: 60, increment: 0 } } })
+			challengePlayerInputSchema.safeParse({ ...input, pace: { kind: "clock", clock: { initial: 60, increment: 0 } } })
 				.success,
 		).toBe(false);
-		expect(challengePlayerInput.safeParse({ ...input, pace: { kind: "days", days: 3 } }).success).toBe(true);
+		expect(challengePlayerInputSchema.safeParse({ ...input, pace: { kind: "days", days: 3 } }).success).toBe(true);
 	});
 });
 

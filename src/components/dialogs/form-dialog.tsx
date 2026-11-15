@@ -16,7 +16,7 @@ import {
 import { Sheet, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
 import { m } from "@/paraglide/messages";
-import { useConfirm } from "./confirm";
+import { useConfirm } from "./use-confirm";
 
 /**
  * A form in a dialog or a side sheet. Render it inside the caller's `<form.AppForm>`:

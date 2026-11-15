@@ -1,5 +1,5 @@
 import { boolean, integer, pgTable, text, timestamp } from "drizzle-orm/pg-core";
-import type { ChaalPreferences } from "@/features/chaal/settings/preferences";
+import type { ChaalPreferences } from "@/features/chaal/settings/lib/preferences";
 import { user } from "../auth";
 
 /**

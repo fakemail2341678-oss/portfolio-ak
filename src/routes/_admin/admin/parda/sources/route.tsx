@@ -4,5 +4,5 @@ import { m } from "@/paraglide/messages";
 
 /** /admin/parda/sources/*: the playback sources (parda:read from the section; writes need parda:configure). */
 export const Route = createFileRoute("/_admin/admin/parda/sources")({
-	staticData: { breadcrumb: staticCrumb(m.pd_admin_sources_title) },
+	staticData: { breadcrumb: staticCrumb(m.parda_admin_sources_title) },
 });

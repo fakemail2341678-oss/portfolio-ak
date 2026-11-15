@@ -1,11 +1,11 @@
 import { createServerFn } from "@tanstack/react-start";
 import {
 	type AdminAutomations,
-	adminCreateAutomationInput,
-	adminDeleteAutomationInput,
-	adminPreviewAutomationInput,
-	adminToggleAutomationInput,
-	adminUpdateAutomationInput,
+	adminCreateAutomationInputSchema,
+	adminDeleteAutomationInputSchema,
+	adminPreviewAutomationInputSchema,
+	adminToggleAutomationInputSchema,
+	adminUpdateAutomationInputSchema,
 } from "@/features/taskline/admin/schema";
 import type { AutomationPreview } from "@/features/taskline/types";
 import { zodInput } from "@/functions/_lib/validator";
@@ -21,25 +21,25 @@ export const listTasklineWorkspaceAutomations = createServerFn({ method: "GET" }
 
 export const createTasklineWorkspaceAutomation = createServerFn({ method: "POST" })
 	.middleware([requirePermission("taskline:configure"), withServices])
-	.validator(zodInput(adminCreateAutomationInput))
+	.validator(zodInput(adminCreateAutomationInputSchema))
 	.handler(({ data, context }): Promise<AdminAutomations> => automations.createAutomation(context, data));
 
 export const updateTasklineWorkspaceAutomation = createServerFn({ method: "POST" })
 	.middleware([requirePermission("taskline:configure"), withServices])
-	.validator(zodInput(adminUpdateAutomationInput))
+	.validator(zodInput(adminUpdateAutomationInputSchema))
 	.handler(({ data, context }): Promise<AdminAutomations> => automations.updateAutomation(context, data));
 
-export const toggleTasklineWorkspaceAutomation = createServerFn({ method: "POST" })
+export const setTasklineWorkspaceAutomationEnabled = createServerFn({ method: "POST" })
 	.middleware([requirePermission("taskline:configure"), withServices])
-	.validator(zodInput(adminToggleAutomationInput))
+	.validator(zodInput(adminToggleAutomationInputSchema))
 	.handler(({ data, context }): Promise<AdminAutomations> => automations.toggleAutomation(context, data));
 
 export const deleteTasklineWorkspaceAutomation = createServerFn({ method: "POST" })
 	.middleware([requirePermission("taskline:configure"), withServices])
-	.validator(zodInput(adminDeleteAutomationInput))
+	.validator(zodInput(adminDeleteAutomationInputSchema))
 	.handler(({ data, context }): Promise<AdminAutomations> => automations.deleteAutomation(context, data));
 
 export const previewTasklineWorkspaceAutomation = createServerFn({ method: "POST" })
 	.middleware([requirePermission("taskline:configure"), withServices])
-	.validator(zodInput(adminPreviewAutomationInput))
+	.validator(zodInput(adminPreviewAutomationInputSchema))
 	.handler(({ data, context }): Promise<AutomationPreview> => automations.previewAutomation(context, data));

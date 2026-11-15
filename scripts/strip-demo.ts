@@ -76,7 +76,7 @@ const SPECS: Record<Layer, LayerSpec> = {
 			"tests/components/portfolio",
 			"tests/unit/portfolio-data.test.ts",
 			"tests/unit/portfolio-lib.test.ts",
-			"tests/unit/himal-tokens.test.ts",
+			"tests/unit/portfolio-tokens.test.ts",
 			"tests/unit/terrain.test.ts",
 			"tests/server/portfolio-admin.test.ts",
 			"tests/server/portfolio-public.test.ts",
@@ -106,7 +106,7 @@ const SPECS: Record<Layer, LayerSpec> = {
 			"src/middleware/short-links.ts",
 			"src/middleware/robots.ts",
 			"tests/unit/notes-list.test.ts",
-			"tests/unit/habit-streaks.test.ts",
+			"tests/unit/habits-streaks.test.ts",
 			"tests/unit/forms-fields.test.ts",
 			"tests/unit/links-target.test.ts",
 			"tests/server/apps-notes.test.ts",
@@ -575,7 +575,7 @@ if (present.includes("portfolio")) {
 // 5. The script itself, once nothing is left to strip
 if (allGone) for (const file of SELF) rmSync(at(file), { recursive: true, force: true });
 
-// 6. Messages nothing uses any more (the rule of tests/i18n/message-usage.test.ts)
+// 6. Messages nothing uses any more (the rule of tests/unit/i18n-message-usage.test.ts)
 const sourceText = () => {
 	let text = "";
 	const walk = (dir: string) => {

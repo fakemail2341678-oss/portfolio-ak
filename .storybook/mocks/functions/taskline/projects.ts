@@ -41,9 +41,9 @@ const people = (): ProjectMemberView[] =>
 export const listTasklineProjectUpdates = fn(async (): Promise<ProjectUpdate[]> => sampleProjectUpdates).mockName(
 	"listTasklineProjectUpdates",
 );
-export const postTasklineProjectUpdate = fn(
+export const createTasklineProjectUpdate = fn(
 	async (): Promise<ProjectUpdate> => sampleProjectUpdates[0] as ProjectUpdate,
-).mockName("postTasklineProjectUpdate");
+).mockName("createTasklineProjectUpdate");
 export const deleteTasklineProjectUpdate = fn(async (): Promise<void> => undefined).mockName(
 	"deleteTasklineProjectUpdate",
 );
@@ -56,6 +56,6 @@ export const setTasklineProjectMember = fn(
 export const removeTasklineProjectMember = fn(
 	async (_options: { data: unknown }): Promise<ProjectMemberView[]> => people(),
 ).mockName("removeTasklineProjectMember");
-export const locateTasklineProject = fn(
+export const getTasklineProjectLocation = fn(
 	async (): Promise<ProjectLocation> => ({ ws: "team", key: sampleProjectTasks.project.key }),
-).mockName("locateTasklineProject");
+).mockName("getTasklineProjectLocation");

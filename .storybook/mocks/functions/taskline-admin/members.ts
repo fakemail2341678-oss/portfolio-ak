@@ -49,11 +49,11 @@ export const addTasklineMembers = fn(
 export const updateTasklineMember = fn(
 	async (_options: { data: unknown }): Promise<AdminMemberItem> => sampleMember,
 ).mockName("updateTasklineMember");
-export const deactivateTasklineMember = fn(
+export const setTasklineMemberInactive = fn(
 	async (_options: { data: unknown }): Promise<{ reassigned: number }> => ({ reassigned: 0 }),
-).mockName("deactivateTasklineMember");
-export const reactivateTasklineMember = fn(async (_options: { data: unknown }): Promise<void> => undefined).mockName(
-	"reactivateTasklineMember",
+).mockName("setTasklineMemberInactive");
+export const setTasklineMemberActive = fn(async (_options: { data: unknown }): Promise<void> => undefined).mockName(
+	"setTasklineMemberActive",
 );
 const sampleInvitation: AdminInvitation = {
 	id: "77777777-7777-4777-8777-777777777777",

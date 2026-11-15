@@ -7,7 +7,7 @@ import {
 	type WeeklyTask,
 	weeklySeries,
 	workloadRows,
-} from "@/features/taskline/reports/metrics";
+} from "@/features/taskline/reports/lib/metrics";
 import type { StatusCategory } from "@/features/taskline/types";
 
 /** The reports' arithmetic (Task 57, decision 0225): cycle and lead time from the activity's status changes, and the rest. */

@@ -1,4 +1,4 @@
-import { createContext, type ReactNode, useContext, useRef, useState } from "react";
+import { type ReactNode, useRef, useState } from "react";
 import {
 	AlertDialog,
 	AlertDialogAction,
@@ -10,6 +10,7 @@ import {
 	AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { m } from "@/paraglide/messages";
+import { type Confirm, ConfirmContext } from "./use-confirm";
 
 export type ConfirmOptions = {
 	title: ReactNode;
@@ -20,21 +21,6 @@ export type ConfirmOptions = {
 	/** Destructive actions get the red button. Focus always starts on Cancel. */
 	destructive?: boolean;
 };
-
-type Confirm = (options: ConfirmOptions) => Promise<boolean>;
-
-const ConfirmContext = createContext<Confirm | null>(null);
-
-/**
- * "Are you sure?" as a promise: `if (await confirm({ title, description })) remove()`.
- * The page keeps no dialog state of its own. Needs a <ConfirmProvider> above it;
- * the shells mount one (AdminShell, the account and /dev layouts).
- */
-export function useConfirm(): Confirm {
-	const confirm = useContext(ConfirmContext);
-	if (!confirm) throw new Error("useConfirm needs a <ConfirmProvider> (the section's shell renders one).");
-	return confirm;
-}
 
 type Pending = ConfirmOptions & { resolve: (confirmed: boolean) => void };
 

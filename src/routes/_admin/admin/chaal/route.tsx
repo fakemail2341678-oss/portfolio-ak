@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { CHAAL_NAME } from "@/features/chaal/brand";
-import { assertRoutePermission } from "@/features/rbac/route-guard";
+import { CHAAL_NAME } from "@/features/chaal/lib/brand";
+import { assertRoutePermission } from "@/features/rbac/lib/route-guard";
 import { staticCrumb } from "@/lib/breadcrumbs";
 
 /** /admin/chaal/*: Chaal, run from the admin (PLAN 13.5). Every page needs chaal:read; each may ask for more. */

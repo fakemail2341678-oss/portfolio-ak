@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { Demo, ExamplePage } from "@/features/dev/examples/example-page";
+import { Demo, ExamplePage } from "@/features/dev/examples/components/example-page";
 import { staticCrumb } from "@/lib/breadcrumbs";
 import { seo } from "@/lib/seo";
 import { m } from "@/paraglide/messages";

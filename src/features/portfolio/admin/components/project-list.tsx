@@ -8,7 +8,7 @@ import { useCrudCollection } from "@/components/crud/use-crud-collection";
 import { useCrudMutation } from "@/components/crud/use-crud-mutation";
 import type { RowAction } from "@/components/data-table";
 import { Button } from "@/components/ui/button";
-import { useCan } from "@/features/rbac/can";
+import { useCan } from "@/features/rbac/hooks/use-can";
 import { useListPage } from "@/hooks/use-list-page";
 import { deleteRows, updateRows } from "@/lib/crud/collection";
 import { m } from "@/paraglide/messages";
@@ -18,7 +18,7 @@ import { projectColumns } from "../columns";
 import { ProjectFilterControls, projectFilters } from "../filters";
 import { projectKeys } from "../keys";
 import { projectListQueryOptions, projectMutations } from "../queries";
-import { PreviewLink } from "./shared";
+import { PreviewLink } from "./preview-link";
 
 // Opens on click: its dnd-kit list loads with it, not with the page (0168).
 const ReorderProjectsDialog = lazy(() =>

@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { tasklineTitle } from "@/features/taskline/brand";
-import { ProjectDirectory } from "@/features/taskline/projects/project-directory";
+import { tasklineTitle } from "@/features/taskline/lib/brand";
+import { ProjectDirectory } from "@/features/taskline/projects/components/project-directory-list";
 import { projectsSearch } from "@/features/taskline/search";
 import { staticCrumb } from "@/lib/breadcrumbs";
 import { ensureQuery } from "@/lib/query";

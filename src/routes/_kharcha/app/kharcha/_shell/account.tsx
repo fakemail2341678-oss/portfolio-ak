@@ -1,7 +1,7 @@
 import { createFileRoute, redirect } from "@tanstack/react-router";
 import { accountSecurityQueryOptions, accountSessionsQueryOptions } from "@/features/auth/queries";
-import { KharchaAccount } from "@/features/kharcha/auth/kharcha-account";
-import { kharchaHead } from "@/features/kharcha/brand";
+import { KharchaAccount } from "@/features/kharcha/auth/components/kharcha-account-page";
+import { kharchaHead } from "@/features/kharcha/lib/brand";
 import { kharchaLinks } from "@/features/kharcha/links";
 import { ensureQuery } from "@/lib/query";
 import { m } from "@/paraglide/messages";

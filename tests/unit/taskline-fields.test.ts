@@ -8,8 +8,8 @@ import {
 	parseFieldCell,
 	parseFieldFilters,
 	toTaskFieldsSchema,
-} from "@/features/taskline/fields";
-import { createFieldInput, updateFieldInput } from "@/features/taskline/schema";
+} from "@/features/taskline/lib/fields";
+import { createFieldInputSchema, updateFieldInputSchema } from "@/features/taskline/schema";
 import { taskFilterParams } from "@/features/taskline/search";
 import type { FieldType, TaskField } from "@/features/taskline/types";
 
@@ -68,12 +68,15 @@ describe("definitions", () => {
 		).toBe(false);
 		expect(fieldDefinition.safeParse({ type: "date", name: "Review by", required: true }).success).toBe(true);
 		expect(
-			createFieldInput.safeParse({ ws: "team", key: "WEB", field: { type: "url", name: "Spec", required: false } })
-				.success,
+			createFieldInputSchema.safeParse({
+				ws: "team",
+				key: "WEB",
+				field: { type: "url", name: "Spec", required: false },
+			}).success,
 		).toBe(true);
 		// A field's type is never an update.
-		expect(updateFieldInput.safeParse({ ws: "team", key: "WEB", id: id(1), type: "number" }).success).toBe(false);
-		expect(updateFieldInput.safeParse({ ws: "team", key: "WEB", id: id(3), options: [] }).success).toBe(false);
+		expect(updateFieldInputSchema.safeParse({ ws: "team", key: "WEB", id: id(1), type: "number" }).success).toBe(false);
+		expect(updateFieldInputSchema.safeParse({ ws: "team", key: "WEB", id: id(3), options: [] }).success).toBe(false);
 	});
 });
 

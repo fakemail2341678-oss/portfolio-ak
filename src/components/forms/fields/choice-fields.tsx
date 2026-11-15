@@ -13,7 +13,8 @@ import { formatNumber } from "@/lib/i18n/intl";
 import { cn } from "@/lib/utils";
 import { m } from "@/paraglide/messages";
 import { useFieldContext } from "../contexts";
-import { type FieldBaseProps, FieldLabelText, FieldMessages, FieldShell, useFieldA11y } from "../field-shell";
+import { type FieldBaseProps, FieldLabelText, FieldMessages, FieldShell } from "../field-shell";
+import { useFieldA11y } from "../use-field-a11y";
 
 export type FieldOption = {
 	value: string;

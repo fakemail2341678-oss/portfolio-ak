@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { tasklineTitle } from "@/features/taskline/brand";
+import { tasklineTitle } from "@/features/taskline/lib/brand";
 import { timesheetSearch } from "@/features/taskline/search";
-import { TimesheetPage } from "@/features/taskline/time/timesheet-page";
+import { TimesheetPage } from "@/features/taskline/time/components/timesheet-page";
 import { staticCrumb } from "@/lib/breadcrumbs";
 import { ensureQuery } from "@/lib/query";
 import { m } from "@/paraglide/messages";

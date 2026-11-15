@@ -1,10 +1,10 @@
 import { sql } from "drizzle-orm";
 import { check, date, integer, jsonb, pgTable, timestamp } from "drizzle-orm/pg-core";
-import type { StoredKharchaSettings } from "@/features/kharcha/settings";
+import type { StoredKharchaSettings } from "@/features/kharcha/lib/settings";
 
 /**
  * Kharcha's controls (docs/guides/kharcha.md): one row. `settings` holds only what the
- * admin changed; the defaults are in code (src/features/kharcha/settings.ts), so a missing
+ * admin changed; the defaults are in code (src/features/kharcha/lib/settings.ts), so a missing
  * row and `{}` both mean the defaults, and a new setting needs no migration. The admin
  * edits it on /admin/kharcha/settings (Task 96), saved with `version`.
  */

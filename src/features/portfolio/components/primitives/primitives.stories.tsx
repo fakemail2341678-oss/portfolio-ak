@@ -1,13 +1,13 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { expect } from "storybook/test";
 import { m } from "@/paraglide/messages";
-import { demo, withPortfolioCanvas } from "../story-helpers";
-import { ArchivalFigure } from "./archival-picture";
-import { FigureLines } from "./figure-lines";
-import { FittedEmail } from "./fitted-email";
-import { FittedName } from "./fitted-name";
-import { ButtonLink, TextLink } from "./links";
-import { SectionHeading } from "./section-heading";
+import { demo, withPortfolioCanvas } from "../story-frame";
+import { ArchivalFigure } from "./archival-image";
+import { FigureLines } from "./figure-lines-icon";
+import { FittedEmail } from "./fitted-email-link";
+import { FittedName } from "./fitted-name-mark";
+import { SectionHeading } from "./section-header";
+import { ButtonLink, TextLink } from "./text-link";
 
 /** The portfolio's building blocks in the Himal system. */
 const meta = {

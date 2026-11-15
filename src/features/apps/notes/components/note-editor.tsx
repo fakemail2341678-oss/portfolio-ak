@@ -6,7 +6,7 @@ import { useRef } from "react";
 import { toast } from "sonner";
 import { CrudForm, crudFormKey, useCrudForm } from "@/components/crud/use-crud-form";
 import { CopyButton } from "@/components/data-display/copy-button";
-import { useConfirm } from "@/components/dialogs/confirm";
+import { useConfirm } from "@/components/dialogs/use-confirm";
 import { errorMessage } from "@/components/errors/error-page";
 import { formValidators, useAppForm } from "@/components/forms";
 import { FormSection, StickyFormBar } from "@/components/page/form-layout";
@@ -17,10 +17,11 @@ import { ImageGalleryField } from "@/features/attachments/components/image-galle
 import { deleteNote } from "@/functions/apps/notes";
 import { absoluteUrl } from "@/lib/seo";
 import { m } from "@/paraglide/messages";
-import { noteMutations, noteQueryOptions, notesKeys } from "../queries";
+import { notesKeys } from "../keys";
+import { NOTE_UPLOADS } from "../lib/uploads";
+import { noteMutations, noteQueryOptions } from "../queries";
 import { NOTE_TAG_LENGTH, NOTE_TAGS_MAX, NOTE_TITLE_MAX, type NoteFormValues, noteFormSchema } from "../schema";
 import { NOTES_QUOTAS, type Note } from "../types";
-import { NOTE_UPLOADS } from "../uploads";
 
 const route = getRouteApi("/_apps/apps/notes/$noteId");
 

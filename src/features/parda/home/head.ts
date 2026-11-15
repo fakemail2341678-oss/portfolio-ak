@@ -1,7 +1,7 @@
 import { localizedUrl, seo } from "@/lib/seo";
 import { m } from "@/paraglide/messages";
 import { getLocale } from "@/paraglide/runtime";
-import { PARDA_NAME } from "../brand";
+import { PARDA_NAME } from "../lib/brand";
 import { PARDA_PATHS } from "../links";
 import type { PardaHub, PardaPage } from "../search";
 
@@ -12,16 +12,16 @@ import type { PardaHub, PardaPage } from "../search";
  */
 
 const HUB_TITLES: Readonly<Record<PardaHub, () => string>> = {
-	movies: m.pd_hub_movies,
-	series: m.pd_hub_series,
-	anime: m.pd_hub_anime,
+	movies: m.parda_hub_movies,
+	series: m.parda_hub_series,
+	anime: m.parda_hub_anime,
 };
 
 const DESCRIPTIONS: Readonly<Record<PardaPage, () => string>> = {
-	home: m.pd_description,
-	movies: m.pd_hub_movies_description,
-	series: m.pd_hub_series_description,
-	anime: m.pd_hub_anime_description,
+	home: m.parda_description,
+	movies: m.parda_hub_movies_description,
+	series: m.parda_hub_series_description,
+	anime: m.parda_hub_anime_description,
 };
 
 export const hubTitle = (hub: PardaHub) => HUB_TITLES[hub]();
@@ -31,7 +31,7 @@ const pathOf = (page: PardaPage) => (page === "home" ? PARDA_PATHS.home : PARDA_
 export function pardaPageHead(page: PardaPage) {
 	const path = pathOf(page);
 	const description = DESCRIPTIONS[page]();
-	const title = page === "home" ? m.pd_home_title() : hubTitle(page);
+	const title = page === "home" ? m.parda_home_title() : hubTitle(page);
 	const home = localizedUrl(PARDA_PATHS.home, getLocale());
 	const head = seo({
 		title,
@@ -63,8 +63,8 @@ export function pardaPageHead(page: PardaPage) {
 /** Discover's head (Task 66): indexable; every filtered address names the bare page as canonical. */
 export function pardaDiscoverHead() {
 	const home = localizedUrl(PARDA_PATHS.home, getLocale());
-	const title = m.pd_discover_title();
-	const description = m.pd_discover_description();
+	const title = m.parda_discover_title();
+	const description = m.parda_discover_description();
 	return seo({
 		title,
 		siteName: PARDA_NAME,

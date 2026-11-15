@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { PardaBillboardEditPage } from "@/features/parda/admin/curation/billboard-form";
-import { assertRoutePermission } from "@/features/rbac/route-guard";
+import { PardaBillboardEditPage } from "@/features/parda/admin/curation/components/billboard-form";
+import { assertRoutePermission } from "@/features/rbac/lib/route-guard";
 import { staticCrumb } from "@/lib/breadcrumbs";
 import { loadDetailOr404, titleHead } from "@/lib/crud/route";
 import { idSchema } from "@/lib/crud/schema";
@@ -16,7 +16,7 @@ export const Route = createFileRoute("/_admin/admin/parda/billboard/$id")({
 		const { pardaBillboardQueryOptions } = await import("@/features/parda/admin/queries");
 		await loadDetailOr404(context.queryClient, pardaBillboardQueryOptions(params.id));
 	},
-	staticData: { breadcrumb: staticCrumb(m.pd_admin_billboard_edit_title) },
-	head: titleHead(m.pd_admin_billboard_edit_title),
+	staticData: { breadcrumb: staticCrumb(m.parda_admin_billboard_edit_title) },
+	head: titleHead(m.parda_admin_billboard_edit_title),
 	component: PardaBillboardEditPage,
 });

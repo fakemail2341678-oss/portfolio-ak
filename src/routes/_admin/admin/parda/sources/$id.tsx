@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { PardaSourceEditPage } from "@/features/parda/admin/sources/source-form";
-import { assertRoutePermission } from "@/features/rbac/route-guard";
+import { PardaSourceEditPage } from "@/features/parda/admin/sources/components/source-form";
+import { assertRoutePermission } from "@/features/rbac/lib/route-guard";
 import { loaderTitleCrumb } from "@/lib/breadcrumbs";
 import { loadDetailOr404, titleHead } from "@/lib/crud/route";
 import { idSchema } from "@/lib/crud/schema";
@@ -19,6 +19,6 @@ export const Route = createFileRoute("/_admin/admin/parda/sources/$id")({
 		return { title: localizedValue(source.name) };
 	},
 	staticData: { breadcrumb: loaderTitleCrumb },
-	head: titleHead(m.pd_admin_source_edit_title),
+	head: titleHead(m.parda_admin_source_edit_title),
 	component: PardaSourceEditPage,
 });

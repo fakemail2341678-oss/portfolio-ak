@@ -1,11 +1,10 @@
 import { describe, expect, it } from "vitest";
-import { readPgn } from "@/features/chaal/chess/pgn";
-import { mainline } from "@/features/chaal/chess/tree";
-import { readStream } from "@/features/chaal/live/reader";
+import { readPgn } from "@/features/chaal/chess/lib/pgn";
+import { mainline } from "@/features/chaal/chess/lib/tree";
+import { readStream } from "@/features/chaal/live/lib/reader";
 import { broadcastPageSearch, broadcastsSearch } from "@/features/chaal/search";
-import { readWatchLimits, TV_CHANNELS } from "@/features/chaal/watch/limits";
-import { applyTvLine, squaresOfMove, tvStateOf } from "@/features/chaal/watch/live";
-import { roundShown } from "@/features/chaal/watch/queries";
+import { readWatchLimits, TV_CHANNELS } from "@/features/chaal/watch/lib/limits";
+import { applyTvLine, squaresOfMove, tvStateOf } from "@/features/chaal/watch/lib/live";
 import {
 	asText,
 	boardFromPgn,
@@ -16,9 +15,10 @@ import {
 	readBoard,
 	takeGames,
 	updatedBoard,
-} from "@/features/chaal/watch/round-live";
-import { broadcastSearchInput } from "@/features/chaal/watch/schema";
-import { applySpectateLine, spectatedFen, spectatedFrom } from "@/features/chaal/watch/spectate";
+} from "@/features/chaal/watch/lib/round-live";
+import { applySpectateLine, spectatedFen, spectatedFrom } from "@/features/chaal/watch/lib/spectate";
+import { roundShown } from "@/features/chaal/watch/load";
+import { broadcastSearchInputSchema } from "@/features/chaal/watch/schema";
 import {
 	broadcastRoundAnswer,
 	broadcastSearchAnswer,
@@ -320,6 +320,6 @@ describe("watch's controls and URLs", () => {
 		expect(broadcastsSearch.parse({ view: "official", q: "x", page: "1" })).toEqual({ view: "official" });
 		expect(broadcastsSearch.parse({ q: "spice", page: "3" })).toEqual({ q: "spice", page: 3 });
 		expect(broadcastPageSearch.parse({ round: "9gsZmGXg", board: "bad id!" })).toEqual({ round: "9gsZmGXg" });
-		expect(broadcastSearchInput.safeParse({ q: " s ", page: 1 }).success).toBe(false);
+		expect(broadcastSearchInputSchema.safeParse({ q: " s ", page: 1 }).success).toBe(false);
 	});
 });

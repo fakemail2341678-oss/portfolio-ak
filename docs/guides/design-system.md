@@ -42,7 +42,7 @@ Three preferences, each an attribute on `<html>`, rendered by the server from a 
 | Radius | `data-radius` | `sharp` (4 px), `default` (8 px), `round` (14 px) | `--radius`; `rounded-sm…xl` scale from it |
 | Density | `data-density` | `comfortable` (default), `compact` | `--control-height` (36 / 32 px), `--row-padding` (8 / 5 px) |
 
-- **Where they're set:** `/admin/settings/appearance`, per browser, like the theme. The store (`useAppearance()` in `src/lib/stores/hooks.ts`) re-renders `<html>`'s attributes at once, and the cookie makes the next request render them.
+- **Where they're set:** `/admin/settings/appearance`, per browser, like the theme. The store (`useAppearance()` in `src/lib/stores/use-stores.ts`) re-renders `<html>`'s attributes at once, and the cookie makes the next request render them.
 - **Controls follow density:** `Button` (default, `sm`, `icon`, `icon-sm`), `Input`, `InputGroup`, `NativeSelect`, `Select` and the filter bar use `h-(--control-height)`; table cells use `py-(--row-padding)`. Use the same variables in a new control.
 - **A section's own accent:** a route's `staticData.brand` (`src/lib/section-brand.ts`) puts its accent on `<html>` for every page below it, whatever the visitor picked, and swaps the icons and manifest (Taskline, 0208). On `<html>`, menus and dialogs that portal to `<body>` and the tokens derived from `--primary` follow too.
 - **A section's own default theme:** a brand's `defaultScheme: "dark"` makes "system" resolve to dark in that section, on the server, while an explicit Light or Dark still wins; `id` becomes `<html data-section>` for a stylesheet scoped to the whole document, and `themeColors` sets the browser UI's colour (Parda, 0232).
@@ -50,7 +50,7 @@ Three preferences, each an attribute on `<html>`, rendered by the server from a 
 
 ## Contrast is tested
 
-`tests/unit/design-tokens.test.ts` reads `app.css`, applies the rules the way `<html class="dark" data-accent="…">` matches them, resolves `var()`, converts oklch to sRGB and checks every text pair at 4.5:1 in every accent × theme: foreground on every surface, muted text, primary text and fills, sidebar pairs, and each status (foreground on fill, colour on subtle and on surfaces). The browser review sees only the default preset; this test covers the other nine.
+`tests/unit/styles-tokens.test.ts` reads `app.css`, applies the rules the way `<html class="dark" data-accent="…">` matches them, resolves `var()`, converts oklch to sRGB and checks every text pair at 4.5:1 in every accent × theme: foreground on every surface, muted text, primary text and fills, sidebar pairs, and each status (foreground on fill, colour on subtle and on surfaces). The browser review sees only the default preset; this test covers the other nine.
 
 ## Shells
 
@@ -66,7 +66,7 @@ Each layout renders its own frame (one header per section, 0161):
 
 **Admin shell:**
 - **Sidebar:** shadcn's `Sidebar` (`components/ui/sidebar.tsx`), collapsing to icons on desktop (labels move into tooltips) and a sheet on phones, chosen by CSS, not by JavaScript (see the pitfalls). Its open state is the `sidebar` preference cookie, not shadcn's own cookie, and its container is sticky rather than fixed, so a banner above it (impersonation) pushes it down. `SidebarInset` is a `<div>`: each page renders its own `<main>`.
-- **Sections** come from `ADMIN_SECTIONS` (`features/admin/sections.ts`): `group` (`overview`, `portfolio`, `apps`, `access`, `system`), `keywords` for the palette, and `permission` (`null` for personal pages any admin-area user may open, like Appearance). Ctrl/⌘ B toggles the sidebar.
+- **Sections** come from `ADMIN_SECTIONS` (`features/admin/lib/sections.ts`): `group` (`overview`, `portfolio`, `apps`, `access`, `system`), `keywords` for the palette, and `permission` (`null` for personal pages any admin-area user may open, like Appearance). Ctrl/⌘ B toggles the sidebar.
 - **Topbar:** the trigger, the breadcrumbs (taken out of `PageHeader`), the palette button with its `Kbd` hint, language, theme, and the user menu on phones (the sidebar's footer has it on desktop).
 - **Command palette:** see [conventions.md](conventions.md), "The command palette and view transitions".
 
@@ -115,7 +115,7 @@ The admin kit (Task 37, decision 0168): everything an admin page needs, so a fea
 
 1. **Presets first:** change the defaults in `DEFAULT_PREFERENCES` (`src/lib/stores/preferences.ts`) and the matching `:root` values (the default accent, `--radius`, `--control-height`, `--row-padding`). Remove presets you don't offer from `ACCENTS` and their blocks in `app.css`.
 2. **A new accent:** add it to `ACCENTS`, add a light block and a `.dark` block like the others (keep dark accents light, with dark text on them), a label message, and run the contrast test.
-3. **Your own neutrals:** change `:root` and `.dark`, then run `pnpm exec vitest run tests/unit/design-tokens.test.ts` and update `THEME_COLORS` in `src/routes/__root.tsx` to the new `--background` values (hex).
+3. **Your own neutrals:** change `:root` and `.dark`, then run `pnpm exec vitest run tests/unit/styles-tokens.test.ts` and update `THEME_COLORS` in `src/routes/__root.tsx` to the new `--background` values (hex).
 4. **Fonts:** Inter and Noto Sans Devanagari have metric-matched fallbacks in `app.css`. A new face needs its own fallback ([i18n.md](i18n.md), "Fonts are never inlined").
 
 ## Pitfalls already solved

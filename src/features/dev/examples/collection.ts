@@ -2,7 +2,9 @@ import { queryCollectionOptions } from "@tanstack/query-db-collection";
 import { collectionOptions } from "@tanstack/react-db";
 import { listExampleTasks, setExampleTasksDone } from "@/functions/examples";
 import { queryClientOf } from "@/lib/tanstack-db";
-import { exampleKeys, exampleTasksQueryOptions, OPTIMISTIC_SEARCH } from "./queries";
+import { OPTIMISTIC_SEARCH } from "./constants";
+import { exampleKeys } from "./keys";
+import { exampleTasksQueryOptions } from "./queries";
 import type { ExampleTask } from "./schema";
 
 /** Pass as `collection.update(id, { metadata }, …)` to make the server refuse (shows the rollback). */
@@ -15,7 +17,7 @@ export type ExampleUpdateMetadata = { fail: boolean };
  * - `collection.update` shows at once; `onUpdate` calls the server and, if it
  *   throws, TanStack DB rolls the change back and `isPersisted.promise` rejects.
  */
-export const exampleTasksCollection = collectionOptions("examples:tasks", (client) => {
+export const exampleTasksRows = collectionOptions("examples:tasks", (client) => {
 	const queryClient = queryClientOf(client);
 	return queryCollectionOptions({
 		id: "examples:tasks",

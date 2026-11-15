@@ -1,6 +1,6 @@
 import "@tanstack/react-start/server-only";
+import { projectSettings } from "@/features/taskline/lib/settings";
 import type { CreateProjectInput, SetProjectStateInput, UpdateProjectInput } from "@/features/taskline/schema";
-import { projectSettings } from "@/features/taskline/settings";
 import {
 	type ProjectDetail,
 	type ProjectLocation,

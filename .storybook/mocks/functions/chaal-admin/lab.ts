@@ -18,6 +18,6 @@ export const getChaalLab = fn(
 		counters: [{ endpoint: "puzzle-daily", calls: 1, errors: 0, rateLimited: 0, avgMs: 210, lastStatus: 200 }],
 	}),
 ).mockName("getChaalLab");
-export const checkChaalPublicLane = fn(
+export const pingChaalPublicLane = fn(
 	async (): Promise<ChaalLaneCheck> => ({ puzzleId: "PE1hIV9v", rating: 1902, ms: 212 }),
-).mockName("checkChaalPublicLane");
+).mockName("pingChaalPublicLane");

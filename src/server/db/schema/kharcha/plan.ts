@@ -13,8 +13,8 @@ import {
 	uniqueIndex,
 	uuid,
 } from "drizzle-orm/pg-core";
-import type { BudgetPeriod } from "@/features/kharcha/budgets/period";
-import type { RecurringUnit } from "@/features/kharcha/recurring/cadence";
+import type { BudgetPeriod } from "@/features/kharcha/budgets/lib/period";
+import type { RecurringUnit } from "@/features/kharcha/recurring/lib/cadence";
 import type { RecurringProblem, RecurringTemplate } from "@/features/kharcha/types";
 import { khGroup } from "./group";
 import { khCategory } from "./lists";

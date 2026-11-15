@@ -1,6 +1,6 @@
 import "@tanstack/react-start/server-only";
 import { and, eq, inArray, isNull } from "drizzle-orm";
-import type { WorkspaceSettings } from "@/features/taskline/settings";
+import type { WorkspaceSettings } from "@/features/taskline/lib/settings";
 import type { NotificationData, NotificationEmail, NotificationKind, ProjectRole } from "@/features/taskline/types";
 import { tlMember, tlNotification, tlProjectMember, user } from "@/server/db/schema";
 import type { Db, Tx } from "@/server/db/types";

@@ -1,7 +1,7 @@
 import "@tanstack/react-start/server-only";
 import { eq, sql } from "drizzle-orm";
+import { offeredCurrencies } from "@/features/kharcha/lib/settings";
 import type { OnboardingInput, ProfileInput } from "@/features/kharcha/schema";
-import { offeredCurrencies } from "@/features/kharcha/settings";
 import type { Amount, KharchaBalances, KharchaMe, KharchaPulse } from "@/features/kharcha/types";
 import { todayInZone } from "@/lib/i18n/date-only";
 import { getLocale } from "@/paraglide/runtime";

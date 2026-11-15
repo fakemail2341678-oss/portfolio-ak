@@ -1,6 +1,6 @@
 import { eq } from "drizzle-orm";
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
-import { billboardInput, collectionInput } from "@/features/parda/admin/schema";
+import { billboardInputSchema, collectionInputSchema } from "@/features/parda/admin/schema";
 import { AppError } from "@/lib/errors";
 import * as schema from "@/server/db/schema";
 import type { PardaCurator } from "@/server/parda/admin/context";
@@ -212,7 +212,7 @@ describe("billboard slots", () => {
 	});
 
 	it("check their dates in the schema", () => {
-		const parsed = billboardInput.safeParse({
+		const parsed = billboardInputSchema.safeParse({
 			...SLOT,
 			title: "movie:550",
 			startsOn: "2026-11-05",
@@ -220,7 +220,7 @@ describe("billboard slots", () => {
 		});
 		expect(parsed.success).toBe(false);
 		expect(parsed.error?.issues[0]?.path).toEqual(["endsOn"]);
-		expect(billboardInput.safeParse({ ...SLOT, title: "person:1" }).success).toBe(false);
+		expect(billboardInputSchema.safeParse({ ...SLOT, title: "person:1" }).success).toBe(false);
 	});
 });
 
@@ -287,12 +287,12 @@ describe("collections", () => {
 	});
 
 	it("can't be published without a title (the schema), or hold more than the maximum", () => {
-		const parsed = collectionInput.safeParse({ ...COLLECTION, items: [] });
+		const parsed = collectionInputSchema.safeParse({ ...COLLECTION, items: [] });
 		expect(parsed.success).toBe(false);
 		expect(parsed.error?.issues[0]?.path).toEqual(["items"]);
-		expect(collectionInput.safeParse({ ...COLLECTION, published: false, items: [] }).success).toBe(true);
+		expect(collectionInputSchema.safeParse({ ...COLLECTION, published: false, items: [] }).success).toBe(true);
 		expect(
-			collectionInput.safeParse({ ...COLLECTION, items: Array.from({ length: 51 }, (_, n) => `movie:${n + 1}`) })
+			collectionInputSchema.safeParse({ ...COLLECTION, items: Array.from({ length: 51 }, (_, n) => `movie:${n + 1}`) })
 				.success,
 		).toBe(false);
 	});

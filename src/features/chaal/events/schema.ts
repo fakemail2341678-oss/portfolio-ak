@@ -1,5 +1,5 @@
 import { z } from "zod";
-import type { ChaalColor } from "../live/events";
+import type { ChaalColor } from "../live/lib/events";
 
 /**
  * Tournaments (PLAN Task 83, decision 0273): what the functions take and give. Lichess's
@@ -10,10 +10,10 @@ import type { ChaalColor } from "../live/events";
  */
 
 /** An arena's or a Swiss tournament's id. */
-export const tournamentId = z.string().regex(/^[A-Za-z0-9]{8}$/);
+export const tournamentIdSchema = z.string().regex(/^[A-Za-z0-9]{8}$/);
 
 /** A team's id: its name as a slug. */
-export const teamSlug = z.string().regex(/^[a-z0-9][a-z0-9-]{0,79}$/);
+export const teamSlugSchema = z.string().regex(/^[a-z0-9][a-z0-9-]{0,79}$/);
 
 export const TOURNAMENT_KINDS = ["arena", "swiss"] as const;
 export type TournamentKind = (typeof TOURNAMENT_KINDS)[number];
@@ -25,20 +25,23 @@ export const STANDING_PAGES = 200;
 /** How many of a Swiss tournament's players are read (its results, best first). */
 export const SWISS_STANDINGS = 100;
 
-export const arenaInput = z.strictObject({ id: tournamentId, page: z.number().int().min(1).max(STANDING_PAGES) });
-export const swissInput = z.strictObject({ id: tournamentId });
+export const arenaInputSchema = z.strictObject({
+	id: tournamentIdSchema,
+	page: z.number().int().min(1).max(STANDING_PAGES),
+});
+export const swissInputSchema = z.strictObject({ id: tournamentIdSchema });
 
 /** Joining: a password when the tournament has one; for a team battle, the team to play for; "pair me ASAP" (arenas). */
-export const tournamentJoinInput = z.strictObject({
+export const tournamentJoinInputSchema = z.strictObject({
 	kind: z.enum(TOURNAMENT_KINDS),
-	id: tournamentId,
+	id: tournamentIdSchema,
 	password: z.string().trim().max(100).optional(),
-	team: teamSlug.optional(),
+	team: teamSlugSchema.optional(),
 	pairMeAsap: z.boolean().optional(),
 });
-export type TournamentJoinInput = z.output<typeof tournamentJoinInput>;
+export type TournamentJoinInput = z.output<typeof tournamentJoinInputSchema>;
 
-export const tournamentWithdrawInput = z.strictObject({ kind: z.enum(TOURNAMENT_KINDS), id: tournamentId });
+export const tournamentWithdrawInputSchema = z.strictObject({ kind: z.enum(TOURNAMENT_KINDS), id: tournamentIdSchema });
 
 export type TournamentStatus = "created" | "started" | "finished";
 

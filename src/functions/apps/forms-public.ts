@@ -1,6 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
 import { getRequest } from "@tanstack/react-start/server";
-import { formSlugInput, submitResponseInput } from "@/features/apps/forms/schema";
+import { formSlugInputSchema, submitResponseInputSchema } from "@/features/apps/forms/schema";
 import type { PublicForm } from "@/features/apps/forms/types";
 import { zodInput } from "@/functions/_lib/validator";
 import { withPublic } from "@/middleware/services";
@@ -18,12 +18,12 @@ import { verifyTurnstile } from "@/server/http/turnstile";
  */
 export const getPublicForm = createServerFn({ method: "GET" })
 	.middleware([withPublic])
-	.validator(zodInput(formSlugInput))
+	.validator(zodInput(formSlugInputSchema))
 	.handler(({ data, context }): Promise<PublicForm> => forms.getPublicForm(context, data.slug));
 
 export const submitFormResponse = createServerFn({ method: "POST" })
 	.middleware([withPublic])
-	.validator(zodInput(submitResponseInput))
+	.validator(zodInput(submitResponseInputSchema))
 	.handler(({ data, context }): Promise<{ sent: true }> => {
 		const ip = trustedClientIp(getRequest());
 		const secret = serverEnv.TURNSTILE_SECRET_KEY;

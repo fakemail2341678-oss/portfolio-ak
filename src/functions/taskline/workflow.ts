@@ -1,11 +1,11 @@
 import { createServerFn } from "@tanstack/react-start";
 import {
-	createLabelInput,
-	createStatusInput,
-	deleteLabelInput,
-	deleteStatusInput,
-	updateLabelInput,
-	updateStatusInput,
+	createLabelInputSchema,
+	createStatusInputSchema,
+	deleteLabelInputSchema,
+	deleteStatusInputSchema,
+	updateLabelInputSchema,
+	updateStatusInputSchema,
 } from "@/features/taskline/schema";
 import type { TasklineLabel, TasklineStatus } from "@/features/taskline/types";
 import { zodInput } from "@/functions/_lib/validator";
@@ -16,30 +16,30 @@ import * as workflow from "@/server/taskline/workflow/service";
 
 export const createTasklineStatus = createServerFn({ method: "POST" })
 	.middleware([requireTasklineUser, withTasklineServices])
-	.validator(zodInput(createStatusInput))
+	.validator(zodInput(createStatusInputSchema))
 	.handler(({ data, context }): Promise<TasklineStatus> => workflow.createStatus(context, data));
 
 export const updateTasklineStatus = createServerFn({ method: "POST" })
 	.middleware([requireTasklineUser, withTasklineServices])
-	.validator(zodInput(updateStatusInput))
+	.validator(zodInput(updateStatusInputSchema))
 	.handler(({ data, context }): Promise<TasklineStatus> => workflow.updateStatus(context, data));
 
 export const deleteTasklineStatus = createServerFn({ method: "POST" })
 	.middleware([requireTasklineUser, withTasklineServices])
-	.validator(zodInput(deleteStatusInput))
+	.validator(zodInput(deleteStatusInputSchema))
 	.handler(({ data, context }): Promise<void> => workflow.deleteStatus(context, data));
 
 export const createTasklineLabel = createServerFn({ method: "POST" })
 	.middleware([requireTasklineUser, withTasklineServices])
-	.validator(zodInput(createLabelInput))
+	.validator(zodInput(createLabelInputSchema))
 	.handler(({ data, context }): Promise<TasklineLabel> => workflow.createLabel(context, data));
 
 export const updateTasklineLabel = createServerFn({ method: "POST" })
 	.middleware([requireTasklineUser, withTasklineServices])
-	.validator(zodInput(updateLabelInput))
+	.validator(zodInput(updateLabelInputSchema))
 	.handler(({ data, context }): Promise<TasklineLabel> => workflow.updateLabel(context, data));
 
 export const deleteTasklineLabel = createServerFn({ method: "POST" })
 	.middleware([requireTasklineUser, withTasklineServices])
-	.validator(zodInput(deleteLabelInput))
+	.validator(zodInput(deleteLabelInputSchema))
 	.handler(({ data, context }): Promise<void> => workflow.deleteLabel(context, data));

@@ -5,9 +5,9 @@ import { formatDate, formatNumber } from "@/lib/i18n/intl";
 import { m } from "@/paraglide/messages";
 import { cssVars } from "../../lib/css-vars";
 import { postQueryOptions } from "../../queries";
-import { DraftNotice } from "../chrome/draft-notice";
-import { ArticleBody } from "../journal/article-body";
-import { TextLink } from "../primitives/links";
+import { DraftNotice } from "../chrome/draft-banner";
+import { ArticleBody } from "../journal/article-body-section";
+import { TextLink } from "../primitives/text-link";
 
 const route = getRouteApi("/_site/journal/$slug");
 

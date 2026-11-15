@@ -52,7 +52,7 @@ scripts/lib/portfolio-data/       the demo content, written by scripts/lib/portf
 - **Experience, skills, process, testimonials:** short lists in display order, reordered by drag and edited in a sheet. Testimonials have a "Show on the site" switch.
 - **Publishing:** needs `portfolio:publish` (from the list, or the status in the form); without it a save keeps the status and a new record is a draft. Previews need `portfolio:read`.
 - **Messages:** the contact form's inbox: open (marks read), reply (your mail app), mark read/unread, archive, delete (`messages:manage`).
-- **A new block type:** add it to `caseStudyBlockSchema` in `schema.ts` and to `CaseStudyBlocks` in `admin/components/case-study-blocks.tsx`; typecheck then fails in `case-study-body.tsx` until it has a renderer.
+- **A new block type:** add it to `caseStudyBlockSchema` in `schema.ts` and to `CaseStudyBlocks` in `admin/components/case-study-blocks-editor.tsx`; typecheck then fails in `case-study-body-section.tsx` until it has a renderer.
 - New slugs reach the sitemap once published (`listSitemap` in `server/portfolio/public.ts`).
 
 ## Media library
@@ -92,7 +92,7 @@ The Himalaya seen from Kathmandu is the site's one picture: a range of generated
   - the sky's three bands per phase (`--hm-sky-<phase>-1…3`), alpenglow, moonlight, sun, stars;
   - the duotone inks `--hm-duo-light` and `--hm-duo-dark` (a field may set its own: the map prints red on the rhododendron field);
   - text on the art: `--hm-on-high` and `--hm-on-deep` for the strata, `--hm-on-sky` for labels on the daytime sky.
-- **Contrast:** `tests/unit/himal-tokens.test.ts` checks every text pair at 4.5:1 on every field, in both themes, plus the text set on the art. Add a pair there when you set text on a new colour.
+- **Contrast:** `tests/unit/portfolio-tokens.test.ts` checks every text pair at 4.5:1 on every field, in both themes, plus the text set on the art. Add a pair there when you set text on a new colour.
 - **Never:** gradients (the sky is flat bands), shadows at rest, hairline rules, cards, eyebrows, index numbers, uppercase labels.
 
 ### Type
@@ -189,7 +189,7 @@ Content is visible and at rest by default. Animations run on screens where suppo
 - **Server (PGlite):** `portfolio-admin` (projects, posts, sections, profile, the contact form and inbox, the media library: versions, publish rule, reorder, usage, audit) and `portfolio-public` (published only, previews, fallback marking).
 - **e2e:** `e2e/flows/portfolio.spec.ts`: create, publish and reorder a project (it appears on `/`), a draft only in a preview, the contact form reaching the inbox and the owner's email.
 - **Components:** `tests/components/portfolio` (menu, copy email, the work index's active project, the time line on the server and in the browser) and `tests/components/layout/section-headers.test.tsx` (each section's header; the layout skips the session).
-- **Stories:** `Portfolio/*`: the art (every sky phase, every motif, the panorama), primitives, every home section, chrome, case study and lists. They render the demo content (scripts/lib/portfolio-data) shaped like the public reads, through `components/story-helpers.tsx`.
+- **Stories:** `Portfolio/*`: the art (every sky phase, every motif, the panorama), primitives, every home section, chrome, case study and lists. They render the demo content (scripts/lib/portfolio-data) shaped like the public reads, through `components/story-frame.tsx`.
 - **Browser review:** the standard one (testing guide) on a production build: all seven pages plus a filtered index and the 404, and every admin page of the section, en/ne × light/dark × 390/768/1280.
 
 ## Pitfalls already solved

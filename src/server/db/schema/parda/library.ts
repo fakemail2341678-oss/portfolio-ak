@@ -40,7 +40,7 @@ export const pdProfile = pgTable(
 		audioLanguage: text(),
 		/** Up next plays the next episode on its own (a 10 s countdown). */
 		autoplay: boolean().notNull().default(true),
-		/** The profile `requirePardaViewer` creates: one per owner. */
+		/** The profile `requirePardaUser` creates: one per owner. */
 		isDefault: boolean().notNull().default(false),
 		createdAt: timestamp({ withTimezone: true }).defaultNow().notNull(),
 		updatedAt: timestamp({ withTimezone: true })

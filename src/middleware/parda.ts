@@ -7,16 +7,16 @@ import { withSession } from "./auth";
  * not. Adds `context.catalog`: TMDB, its cache and the controls (takedowns, settings),
  * with the region and the kids' cap, or null when the catalogue isn't configured.
  * Anonymous calls over HTTP are limited per IP. Every function in src/functions/parda
- * that reads the catalogue starts with it (tests/server/guarded-functions.test.ts):
+ * that reads the catalogue starts with it (tests/server/functions-guards.test.ts):
  *
  *   createServerFn({ method: "GET" })
- *     .middleware([withPardaCatalog])
+ *     .middleware([withPardaPublic])
  *     .validator(zodInput(hubInput))
  *     .handler(({ data, context }) => …);
  *
  * The server module is imported inside `.server()`, which the client build strips.
  */
-export const withPardaCatalog = createMiddleware({ type: "function" })
+export const withPardaPublic = createMiddleware({ type: "function" })
 	.middleware([withSession])
 	.server(async ({ next, context }) => {
 		const { pardaCatalog } = await import("@/server/parda/catalog/context");
@@ -29,7 +29,7 @@ export const withPardaCatalog = createMiddleware({ type: "function" })
  * the user and the active profile (the `pd_profile` cookie's, when it names one of
  * theirs, else the default profile, made on the first call `on conflict do nothing`).
  */
-export const requirePardaViewer = createMiddleware({ type: "function" })
+export const requirePardaUser = createMiddleware({ type: "function" })
 	.middleware([withSession])
 	.server(async ({ next, context }) => {
 		if (!context.session) throw new AppError("UNAUTHORIZED", "Authentication required");
@@ -44,16 +44,16 @@ export const requirePardaViewer = createMiddleware({ type: "function" })
 	});
 
 /**
- * The library's services: `context.db`, `context.viewer` (from `requirePardaViewer`) and
+ * The library's services: `context.db`, `context.viewer` (from `requirePardaUser`) and
  * `context.catalog` (for a series' seasons, through the catalogue service, so takedowns apply):
  *
  *   createServerFn({ method: "POST" })
- *     .middleware([requirePardaViewer, withPardaServices])
+ *     .middleware([requirePardaUser, withPardaServices])
  *     .validator(zodInput(progressInput))
  *     .handler(({ data, context }) => library.saveProgress(context, data));
  */
 export const withPardaServices = createMiddleware({ type: "function" })
-	.middleware([requirePardaViewer])
+	.middleware([requirePardaUser])
 	.server(async ({ next, context }) => {
 		const [{ db }, { pardaCatalog }] = await Promise.all([
 			import("@/server/db/client"),

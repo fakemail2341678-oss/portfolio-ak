@@ -1,6 +1,6 @@
 import "@tanstack/react-start/server-only";
 import { and, eq, isNotNull, isNull, type SQL, sql } from "drizzle-orm";
-import { type Debt, expenseDebts, paymentDebt } from "@/features/kharcha/money/ledger";
+import { type Debt, expenseDebts, paymentDebt } from "@/features/kharcha/money/lib/ledger";
 import type { Amount } from "@/features/kharcha/types";
 import { type KhExpenseRow, type KhPaymentRow, khExpensePayer, khExpenseShare, khLedger } from "@/server/db/schema";
 import type { Db, Tx } from "@/server/db/types";
@@ -9,7 +9,7 @@ import type { Db, Tx } from "@/server/db/types";
  * Kharcha's ledger on the server (docs/guides/kharcha.md "The ledger", decision 0278).
  * `writeLedger` is the only writer of `kh_ledger`: every write path of an expense or a
  * payment calls it in its own transaction, so the rows always are what the money core
- * (src/features/kharcha/money/ledger.ts) says the source's debts are. Balances are sums
+ * (src/features/kharcha/money/lib/ledger.ts) says the source's debts are. Balances are sums
  * over the rows, per currency, never converted.
  */
 

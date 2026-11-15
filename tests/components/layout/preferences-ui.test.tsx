@@ -15,12 +15,12 @@ import type { ReactNode } from "react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { AdminShell } from "@/components/admin-shell/admin-shell";
 import { preferenceHtmlProps, ThemeSync, ThemeToggle } from "@/components/layout/theme";
-import { AppearanceSettings } from "@/features/admin/components/appearance-settings";
+import { AppearanceSettings } from "@/features/admin/components/appearance-settings-section";
 import { sessionQueryOptions } from "@/features/auth/queries";
-import { ALL_PERMISSIONS } from "@/features/rbac/permissions";
+import { ALL_PERMISSIONS } from "@/features/rbac/lib/permissions";
 import type { Session } from "@/lib/session";
-import { useTablePreferences, useTheme } from "@/lib/stores/hooks";
 import { createPreferencesStore, DEFAULT_PREFERENCES, type Preferences } from "@/lib/stores/preferences";
+import { useTablePreferences, useTheme } from "@/lib/stores/use-stores";
 import type { RouterContext } from "@/router";
 
 /** Renders `ui` inside a memory router whose context carries a preferences store. */

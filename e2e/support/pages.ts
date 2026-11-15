@@ -1,7 +1,7 @@
 /**
  * The pages the browser review visits (e2e/review.spec.ts). Every route in
  * src/routeTree.gen.ts must be either reviewed or excluded here with a reason;
- * tests/unit/e2e-pages.test.ts fails otherwise, so a new route can't skip the review.
+ * tests/unit/pages-review.test.ts fails otherwise, so a new route can't skip the review.
  *
  * Plain data without Playwright imports, so the unit test can read it.
  */

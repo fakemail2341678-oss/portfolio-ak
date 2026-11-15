@@ -2,10 +2,17 @@ import { type FormEvent, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { authClient } from "@/lib/auth-client";
 import { m } from "@/paraglide/messages";
-import { authErrorMessage } from "../errors";
-import { collectErrors, type FieldErrors, field, validateEmail, validateOtp, validateRequired } from "../validation";
+import { authErrorMessage } from "../lib/errors";
+import {
+	collectErrors,
+	type FieldErrors,
+	field,
+	validateEmail,
+	validateOtp,
+	validateRequired,
+} from "../lib/validation";
 import { AuthField, FormMessage } from "./auth-field";
-import { Honeypot, isBot } from "./bot-check";
+import { Honeypot, isBot } from "./bot-check-field";
 
 /**
  * Email + password sign-in. Validates locally, then calls Better Auth; failures

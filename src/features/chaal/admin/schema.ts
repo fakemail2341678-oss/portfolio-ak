@@ -3,9 +3,8 @@ import type { Localized } from "@/lib/i18n/localized";
 import type { Paged } from "@/lib/list/paging";
 import { email, localizedText, required } from "@/lib/validation";
 import { m } from "@/paraglide/messages";
-import { type CommunityLimits, LICHESS_USERNAME } from "../community/limits";
-import { ENGINE_BOUNDS, type EngineLimits } from "../engine/limits";
-import { CHAAL_FEATURES, type ChaalFeature, LICHESS_SCOPES } from "../features";
+import { type CommunityLimits, LICHESS_USERNAME } from "../community/lib/limits";
+import { ENGINE_BOUNDS, type EngineLimits } from "../engine/lib/limits";
 import {
 	CHAAL_FEATURED_KINDS,
 	CHAAL_FEATURED_SECTIONS,
@@ -14,13 +13,14 @@ import {
 	type ChaalHomeSectionKey,
 	type FeaturedState,
 	parseFeaturedRef,
-} from "../home/curation";
-import { CHAAL_BOARD_THEMES } from "../look/board-themes";
-import { AI_LEVELS, type PlayLimits, QUICK_PAIR_MODES } from "../play/controls";
-import { isPuzzleAngle } from "../puzzles/angles";
-import { PUZZLE_AHEAD_BOUNDS, type PuzzleLimits } from "../puzzles/limits";
-import { CHAAL_PIECE_SETS, type ChaalDefaults } from "../settings/preferences";
-import { TV_CHANNELS, type WatchLimits } from "../watch/limits";
+} from "../home/lib/curation";
+import { CHAAL_FEATURES, type ChaalFeature, LICHESS_SCOPES } from "../lib/features";
+import { CHAAL_BOARD_THEMES } from "../look/lib/board-themes";
+import { AI_LEVELS, type PlayLimits, QUICK_PAIR_MODES } from "../play/lib/controls";
+import { isPuzzleAngle } from "../puzzles/lib/angles";
+import { PUZZLE_AHEAD_BOUNDS, type PuzzleLimits } from "../puzzles/lib/limits";
+import { CHAAL_PIECE_SETS, type ChaalDefaults } from "../settings/lib/preferences";
+import { TV_CHANNELS, type WatchLimits } from "../watch/lib/limits";
 
 /**
  * Chaal's admin (PLAN Task 79, decision 0268): the shapes its functions return and the
@@ -55,7 +55,7 @@ export type ChaalAdminSettings = {
 const between = ({ min, max }: { min: number; max: number }) => z.number().int().min(min).max(max);
 
 /** The settings form: everything but maintenance, the purge and the epoch, which are their own writes. */
-export const chaalSettingsInput = z.strictObject({
+export const chaalSettingsInputSchema = z.strictObject({
 	features: z.strictObject(
 		Object.fromEntries(CHAAL_FEATURES.map((feature) => [feature, z.boolean()])) as Record<ChaalFeature, z.ZodBoolean>,
 	),
@@ -75,7 +75,7 @@ export const chaalSettingsInput = z.strictObject({
 	watch: z.strictObject({
 		channels: z
 			.array(z.enum(TV_CHANNELS))
-			.min(1, { error: () => m.ch_admin_settings_watch_channels_min() })
+			.min(1, { error: () => m.chaal_admin_settings_watch_channels_min() })
 			.max(TV_CHANNELS.length),
 		streamers: z.boolean(),
 	}),
@@ -87,7 +87,7 @@ export const chaalSettingsInput = z.strictObject({
 		studiesBy: z
 			.string()
 			.trim()
-			.regex(LICHESS_USERNAME, { error: () => m.ch_admin_settings_studies_by_invalid() }),
+			.regex(LICHESS_USERNAME, { error: () => m.chaal_admin_settings_studies_by_invalid() }),
 	}),
 	defaults: z.strictObject({
 		board: z.enum(CHAAL_BOARD_THEMES),
@@ -105,10 +105,10 @@ export const chaalSettingsInput = z.strictObject({
 	maintenanceMessage: localizedText({ max: 200, optional: true }),
 	updatedAt: version(),
 });
-export type ChaalSettingsInput = z.output<typeof chaalSettingsInput>;
-export type ChaalSettingsFormValues = z.input<typeof chaalSettingsInput>;
+export type ChaalSettingsInput = z.output<typeof chaalSettingsInputSchema>;
+export type ChaalSettingsFormValues = z.input<typeof chaalSettingsInputSchema>;
 
-export const chaalMaintenanceInput = z.strictObject({ on: z.boolean() });
+export const chaalMaintenanceInputSchema = z.strictObject({ on: z.boolean() });
 
 // ---- Connections --------------------------------------------------------------------------------
 
@@ -138,7 +138,7 @@ export type ChaalAdminConnection = {
 export type ChaalAdminConnectionPage = Paged<ChaalAdminConnection>;
 
 /** Site users' ids: a connection is keyed by its user (Better Auth's ids aren't uuids). */
-export const connectionIdsInput = z.strictObject({
+export const connectionIdsInputSchema = z.strictObject({
 	ids: z.array(z.string().min(1).max(64)).min(1).max(100),
 });
 
@@ -161,13 +161,13 @@ export type ChaalAdminBlock = {
 export type ChaalAdminBlockPage = Paged<ChaalAdminBlock>;
 
 /** Block a Lichess account by its username, or a site user by their email. */
-export const chaalBlockInput = z.discriminatedUnion("kind", [
+export const chaalBlockInputSchema = z.discriminatedUnion("kind", [
 	z.strictObject({
 		kind: z.literal("lichess"),
 		target: z
 			.string()
 			.trim()
-			.regex(LICHESS_USERNAME, { error: () => m.ch_admin_block_username_invalid() }),
+			.regex(LICHESS_USERNAME, { error: () => m.chaal_admin_block_username_invalid() }),
 		reason: required({ max: 500 }),
 	}),
 	z.strictObject({
@@ -176,7 +176,7 @@ export const chaalBlockInput = z.discriminatedUnion("kind", [
 		reason: required({ max: 500 }),
 	}),
 ]);
-export type ChaalBlockInput = z.output<typeof chaalBlockInput>;
+export type ChaalBlockInput = z.output<typeof chaalBlockInputSchema>;
 export type ChaalBlockFormValues = { kind: BlockKind; target: string; reason: string };
 
 // ---- Health -------------------------------------------------------------------------------------
@@ -278,28 +278,28 @@ const featuredFields = z.strictObject({
 const checkFeatured = (value: z.output<typeof featuredFields>, context: z.RefinementCtx) => {
 	const ref = parseFeaturedRef(value.kind, value.ref);
 	if (ref === null || (value.kind === "theme" && (ref === "mix" || !isPuzzleAngle(ref)))) {
-		context.addIssue({ code: "custom", path: ["ref"], message: m.ch_admin_featured_ref_invalid() });
+		context.addIssue({ code: "custom", path: ["ref"], message: m.chaal_admin_featured_ref_invalid() });
 	}
 	if (value.startsOn && value.endsOn && value.endsOn < value.startsOn) {
-		context.addIssue({ code: "custom", path: ["endsOn"], message: m.ch_admin_featured_dates_order() });
+		context.addIssue({ code: "custom", path: ["endsOn"], message: m.chaal_admin_featured_dates_order() });
 	}
 };
 
-export const chaalFeaturedInput = featuredFields.superRefine(checkFeatured);
-export type ChaalFeaturedInput = z.output<typeof chaalFeaturedInput>;
-export type ChaalFeaturedFormValues = z.input<typeof chaalFeaturedInput>;
-export const chaalFeaturedUpdateInput = featuredFields
+export const chaalFeaturedInputSchema = featuredFields.superRefine(checkFeatured);
+export type ChaalFeaturedInput = z.output<typeof chaalFeaturedInputSchema>;
+export type ChaalFeaturedFormValues = z.input<typeof chaalFeaturedInputSchema>;
+export const chaalFeaturedUpdateInputSchema = featuredFields
 	.extend({ id: z.uuid(), updatedAt: version() })
 	.superRefine(checkFeatured);
 
 /** A section's whole order at once. */
-export const chaalFeaturedOrderInput = z.strictObject({
+export const chaalFeaturedOrderInputSchema = z.strictObject({
 	section: z.enum(CHAAL_FEATURED_SECTIONS),
 	ids: z.array(z.uuid()).max(200),
 });
 
 /** Every home section once, in the new order. */
-export const chaalHomeSectionsInput = z.strictObject({
+export const chaalHomeSectionsInputSchema = z.strictObject({
 	sections: z
 		.array(z.strictObject({ key: z.enum(CHAAL_HOME_SECTIONS), visible: z.boolean() }))
 		.length(CHAAL_HOME_SECTIONS.length)
@@ -307,4 +307,6 @@ export const chaalHomeSectionsInput = z.strictObject({
 });
 
 /** The home's announcement; empty English hides it. */
-export const chaalAnnouncementInput = z.strictObject({ announcement: localizedText({ max: 280, optional: true }) });
+export const chaalAnnouncementInputSchema = z.strictObject({
+	announcement: localizedText({ max: 280, optional: true }),
+});

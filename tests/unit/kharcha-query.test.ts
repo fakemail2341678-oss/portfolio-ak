@@ -9,7 +9,7 @@ import {
 	parseImportCurrency,
 	previewImport,
 	tableProblem,
-} from "@/features/kharcha/spend/csv";
+} from "@/features/kharcha/spend/lib/csv";
 import {
 	DATE_WORDS,
 	type FieldTerm,
@@ -18,14 +18,14 @@ import {
 	QUERY_FIELDS,
 	QUERY_OPS,
 	type QueryTerm,
-} from "@/features/kharcha/spend/query/ast";
+} from "@/features/kharcha/spend/lib/query/ast";
 import {
 	dateRange,
 	parseQueryAmount,
 	parseQueryCurrency,
 	termProblem,
 	usableTerms,
-} from "@/features/kharcha/spend/query/check";
+} from "@/features/kharcha/spend/lib/query/check";
 import {
 	COMPLEX,
 	controlValue,
@@ -34,10 +34,10 @@ import {
 	setField,
 	stepMonth,
 	withoutTerm,
-} from "@/features/kharcha/spend/query/edit";
-import { parseQuery } from "@/features/kharcha/spend/query/parse";
-import { printQuery, printTerm, valueNeedsQuotes, wordNeedsQuotes } from "@/features/kharcha/spend/query/print";
-import { applySuggestion, suggest, type Vocabulary } from "@/features/kharcha/spend/query/suggest";
+} from "@/features/kharcha/spend/lib/query/edit";
+import { parseQuery } from "@/features/kharcha/spend/lib/query/parse";
+import { printQuery, printTerm, valueNeedsQuotes, wordNeedsQuotes } from "@/features/kharcha/spend/lib/query/print";
+import { applySuggestion, suggest, type Vocabulary } from "@/features/kharcha/spend/lib/query/suggest";
 
 /** Spend's search language and CSV (Task 93): the parser, printer, checks, edits, suggestions and import preview. */
 

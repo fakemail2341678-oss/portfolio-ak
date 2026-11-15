@@ -1,6 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
 import { getRequest } from "@tanstack/react-start/server";
-import { joinTokenInput } from "@/features/kharcha/schema";
+import { joinTokenInputSchema } from "@/features/kharcha/schema";
 import type { JoinInvite } from "@/features/kharcha/types";
 import { zodInput } from "@/functions/_lib/validator";
 import { withPublic } from "@/middleware/services";
@@ -14,7 +14,7 @@ import * as invites from "@/server/kharcha/invites/service";
  */
 export const getKharchaInvite = createServerFn({ method: "GET" })
 	.middleware([withPublic])
-	.validator(zodInput(joinTokenInput))
+	.validator(zodInput(joinTokenInputSchema))
 	.handler(
 		({ data, context }): Promise<JoinInvite> =>
 			invites.lookupInvite(context, data.token, clientIpHash(trustedClientIp(getRequest()))),

@@ -1,5 +1,10 @@
 import { createServerFn } from "@tanstack/react-start";
-import { budgetIdInput, budgetMonthInput, createBudgetInput, updateBudgetInput } from "@/features/kharcha/schema";
+import {
+	budgetIdInputSchema,
+	budgetMonthInputSchema,
+	createBudgetInputSchema,
+	updateBudgetInputSchema,
+} from "@/features/kharcha/schema";
 import type { BudgetView } from "@/features/kharcha/types";
 import { zodInput } from "@/functions/_lib/validator";
 import { requireKharchaUser, withKharchaServices } from "@/middleware/kharcha";
@@ -23,21 +28,21 @@ export const listKharchaBudgets = createServerFn({ method: "GET" })
 
 export const createKharchaBudget = createServerFn({ method: "POST" })
 	.middleware([requireKharchaUser, withKharchaServices])
-	.validator(zodInput(createBudgetInput))
+	.validator(zodInput(createBudgetInputSchema))
 	.handler(({ data, context }): Promise<BudgetView[]> => createBudget(context, data));
 
 export const updateKharchaBudget = createServerFn({ method: "POST" })
 	.middleware([requireKharchaUser, withKharchaServices])
-	.validator(zodInput(updateBudgetInput))
+	.validator(zodInput(updateBudgetInputSchema))
 	.handler(({ data, context }): Promise<BudgetView[]> => updateBudget(context, data));
 
 /** A monthly budget's own amount for one month (null: the budget's amount again). */
 export const setKharchaBudgetMonth = createServerFn({ method: "POST" })
 	.middleware([requireKharchaUser, withKharchaServices])
-	.validator(zodInput(budgetMonthInput))
+	.validator(zodInput(budgetMonthInputSchema))
 	.handler(({ data, context }): Promise<BudgetView[]> => setBudgetMonth(context, data));
 
 export const deleteKharchaBudget = createServerFn({ method: "POST" })
 	.middleware([requireKharchaUser, withKharchaServices])
-	.validator(zodInput(budgetIdInput))
+	.validator(zodInput(budgetIdInputSchema))
 	.handler(({ data, context }): Promise<BudgetView[]> => deleteBudget(context, data.budgetId));

@@ -8,7 +8,7 @@
  * list of both media types, upcoming, on the air) comes back as null: the catalogue
  * filters it through the certificates `pd_title` knows instead, and an unknown one stays out.
  */
-import { allowedRatings } from "../../../features/parda/kids.ts";
+import { allowedRatings } from "../../../features/parda/lib/kids.ts";
 import type { RailRequest } from "./rails";
 
 /** Enough votes that a kids' "top rated" isn't led by a title three people rated (as the rails' own). */

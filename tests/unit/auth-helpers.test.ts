@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { authErrorMessage } from "@/features/auth/errors";
-import { describeUserAgent } from "@/features/auth/user-agent";
+import { authErrorMessage } from "@/features/auth/lib/errors";
+import { describeUserAgent } from "@/features/auth/lib/user-agent";
 import {
 	collectErrors,
 	validateConfirm,
@@ -8,7 +8,7 @@ import {
 	validateOtp,
 	validatePassword,
 	validateRequired,
-} from "@/features/auth/validation";
+} from "@/features/auth/lib/validation";
 
 describe("authErrorMessage", () => {
 	it("maps Better Auth codes to localized text", () => {

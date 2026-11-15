@@ -1,5 +1,5 @@
 import { beforeAll, describe, expect, it, vi } from "vitest";
-import { createClientEnv } from "@/lib/env/client.schema";
+import { createClientEnv } from "@/lib/env/client-schema";
 import { EnvValidationError } from "@/lib/env/shared";
 
 const validServer = {

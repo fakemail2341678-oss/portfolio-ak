@@ -228,6 +228,7 @@ export const SHARED_MESSAGE_WORDS: ReadonlySet<string> = new Set([
 	"intl",
 	"key",
 	"kit",
+	"landing",
 	"language",
 	"list",
 	"localized",

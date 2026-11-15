@@ -1,8 +1,8 @@
 import "@tanstack/react-start/server-only";
 import { and, eq, inArray, isNull, ne, sql } from "drizzle-orm";
-import { newOptionId } from "@/features/taskline/fields";
-import { storedRecurrence } from "@/features/taskline/recurrence";
-import { workspaceSettings } from "@/features/taskline/settings";
+import { newOptionId } from "@/features/taskline/lib/fields";
+import { storedRecurrence } from "@/features/taskline/lib/recurrence";
+import { workspaceSettings } from "@/features/taskline/lib/settings";
 import type { TaskFieldValues, TasklineColor, TaskPriority, TaskType } from "@/features/taskline/types";
 import { generateKeysBetween } from "@/lib/fractional-index";
 import { addDays, todayInZone, weekdayOf } from "@/lib/i18n/date-only";

@@ -5,11 +5,11 @@ import { Button } from "@/components/ui/button";
 import { setMyPassword } from "@/functions/auth";
 import { authClient } from "@/lib/auth-client";
 import { m } from "@/paraglide/messages";
-import { authErrorMessage } from "../errors";
+import { localizedPath } from "../hooks/use-auth-actions";
 import { authKeys } from "../keys";
+import { authErrorMessage } from "../lib/errors";
+import { collectErrors, type FieldErrors, field, validateConfirm, validatePassword } from "../lib/validation";
 import type { AccountSecurity } from "../schema";
-import { localizedPath } from "../use-auth-actions";
-import { collectErrors, type FieldErrors, field, validateConfirm, validatePassword } from "../validation";
 import { AccountSection, type Status } from "./account-section";
 import { AuthField, FormMessage } from "./auth-field";
 

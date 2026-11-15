@@ -1,6 +1,6 @@
 import { createFileRoute, stripSearchParams } from "@tanstack/react-router";
-import { tasklineTitle } from "@/features/taskline/brand";
-import { InboxPage } from "@/features/taskline/inbox/inbox-page";
+import { InboxPage } from "@/features/taskline/inbox/components/inbox-page";
+import { tasklineTitle } from "@/features/taskline/lib/brand";
 import { inboxSearch } from "@/features/taskline/search";
 import { staticCrumb } from "@/lib/breadcrumbs";
 import { ensureQuery } from "@/lib/query";

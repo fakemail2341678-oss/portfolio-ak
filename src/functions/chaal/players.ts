@@ -6,14 +6,14 @@ import {
 	type ChaalPlayerGames,
 	type ChaalPlayerPage,
 	type ChaalReplay,
-	gameIdInput,
-	leaderboardInput,
+	gameIdInputSchema,
+	leaderboardInputSchema,
 	type PlayerSuggestion,
-	perfStatsInput,
-	playerGamesInput,
-	playerSearchInput,
+	perfStatsInputSchema,
+	playerGamesInputSchema,
+	playerSearchInputSchema,
 	type RatingSeries,
-	usernameInput,
+	usernameInputSchema,
 } from "@/features/chaal/players/schema";
 import { zodInput } from "@/functions/_lib/validator";
 import { withChaalPublic } from "@/middleware/chaal";
@@ -28,44 +28,44 @@ import * as players from "@/server/chaal/players/service";
 
 export const getChaalLeaderboard = createServerFn({ method: "GET" })
 	.middleware([withChaalPublic])
-	.validator(zodInput(leaderboardInput))
+	.validator(zodInput(leaderboardInputSchema))
 	.handler(({ context, data }): Promise<ChaalLeaderboard> => players.leaderboard(context.chaal, data.perf));
 
 export const getChaalPlayer = createServerFn({ method: "GET" })
 	.middleware([withChaalPublic])
-	.validator(zodInput(usernameInput))
+	.validator(zodInput(usernameInputSchema))
 	.handler(
 		({ context, data }): Promise<ChaalPlayerPage> => players.playerPage(context.chaal, context.session, data.username),
 	);
 
 export const getChaalRatingHistory = createServerFn({ method: "GET" })
 	.middleware([withChaalPublic])
-	.validator(zodInput(usernameInput))
+	.validator(zodInput(usernameInputSchema))
 	.handler(({ context, data }): Promise<RatingSeries[]> => players.ratingHistory(context.chaal, data.username));
 
 export const getChaalPerfStats = createServerFn({ method: "GET" })
 	.middleware([withChaalPublic])
-	.validator(zodInput(perfStatsInput))
+	.validator(zodInput(perfStatsInputSchema))
 	.handler(
 		({ context, data }): Promise<ChaalPerfStats | null> => players.perfStats(context.chaal, data.username, data.perf),
 	);
 
 export const getChaalActivity = createServerFn({ method: "GET" })
 	.middleware([withChaalPublic])
-	.validator(zodInput(usernameInput))
+	.validator(zodInput(usernameInputSchema))
 	.handler(({ context, data }): Promise<ActivityDay[]> => players.activity(context.chaal, data.username));
 
 export const getChaalPlayerGames = createServerFn({ method: "GET" })
 	.middleware([withChaalPublic])
-	.validator(zodInput(playerGamesInput))
+	.validator(zodInput(playerGamesInputSchema))
 	.handler(({ context, data }): Promise<ChaalPlayerGames> => players.playerGames(context.chaal, data));
 
 export const searchChaalPlayers = createServerFn({ method: "GET" })
 	.middleware([withChaalPublic])
-	.validator(zodInput(playerSearchInput))
+	.validator(zodInput(playerSearchInputSchema))
 	.handler(({ context, data }): Promise<PlayerSuggestion[]> => players.searchPlayers(context.chaal, data.term));
 
 export const getChaalReplay = createServerFn({ method: "GET" })
 	.middleware([withChaalPublic])
-	.validator(zodInput(gameIdInput))
+	.validator(zodInput(gameIdInputSchema))
 	.handler(({ context, data }): Promise<ChaalReplay | null> => players.replay(context.chaal, data.id));

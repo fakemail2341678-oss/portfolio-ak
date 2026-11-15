@@ -19,41 +19,10 @@ import {
 	updateProject,
 } from "@/functions/portfolio";
 import { deleteContactMessages, listContactMessages, setContactMessageState } from "@/functions/portfolio-messages";
-import {
-	createExperience,
-	createProcessStep,
-	createSkill,
-	createTestimonial,
-	deleteExperience,
-	deleteProcessSteps,
-	deleteSkills,
-	deleteTestimonials,
-	listExperience,
-	listProcessSteps,
-	listSkills,
-	listTestimonials,
-	reorderExperience,
-	reorderProcessSteps,
-	reorderSkills,
-	reorderTestimonials,
-	updateExperience,
-	updateProcessStep,
-	updateSkill,
-	updateTestimonial,
-} from "@/functions/portfolio-sections";
-import type {
-	ExperienceInput,
-	MessageStateInput,
-	PortfolioStatus,
-	PostInput,
-	ProcessStepInput,
-	ProfileInput,
-	ProjectInput,
-	SkillInput,
-	TestimonialInput,
-} from "../schema";
+import type { MessageStateInput, PortfolioStatus, PostInput, ProfileInput, ProjectInput } from "../schema";
 import type { MessageListInput, PostListInput, ProjectListInput } from "../search";
-import { messageKeys, postKeys, profileKeys, projectKeys, sectionKeys } from "./keys";
+import { messageKeys, postKeys, profileKeys, projectKeys } from "./keys";
+import { keyed } from "./lib/mutation-key";
 
 /** Reads: loaders `ensureQuery` these; components read them with useSuspenseQuery or useListPage. */
 
@@ -80,10 +49,6 @@ export const postDetailQueryOptions = (id: string) =>
 
 export const messageListQueryOptions = (input: MessageListInput) =>
 	queryOptions({ queryKey: messageKeys.list(input), queryFn: () => listContactMessages({ data: input }) });
-
-/** Writes, keyed (useMutationState can find them). useCrudMutation and useCrudForm add the rest. */
-
-const keyed = (base: ReadonlyArray<string>, name: string) => [...base, name];
 
 export const profileMutations = {
 	update: () =>
@@ -156,88 +121,3 @@ export const messageMutations = {
 			mutationFn: (ids: string[]) => deleteContactMessages({ data: { ids } }),
 		}),
 };
-
-/**
- * One ordered section's reads and writes. Each section has its own server
- * functions (literal createServerFn per function); this puts them behind one
- * shape, so one page component serves all four (components/ordered-section.tsx).
- */
-function section<TInput, TItem>(
-	name: Parameters<typeof sectionKeys>[0],
-	fns: {
-		list: () => Promise<TItem[]>;
-		create: (options: { data: TInput }) => Promise<TItem>;
-		update: (options: { data: TInput & Versioned }) => Promise<TItem>;
-		remove: (options: { data: { ids: string[] } }) => Promise<{ deleted: number }>;
-		reorder: (options: { data: { ids: string[] } }) => Promise<{ moved: number }>;
-	},
-) {
-	const keys = sectionKeys(name);
-	return {
-		keys,
-		list: () => queryOptions({ queryKey: keys.all, queryFn: () => fns.list() }),
-		create: () =>
-			mutationOptions({
-				mutationKey: keyed(keys.all, "create"),
-				mutationFn: (input: TInput) => fns.create({ data: input }),
-			}),
-		update: () =>
-			mutationOptions({
-				mutationKey: keyed(keys.all, "update"),
-				mutationFn: (input: TInput & Versioned) => fns.update({ data: input }),
-			}),
-		delete: () =>
-			mutationOptions({
-				mutationKey: keyed(keys.all, "delete"),
-				mutationFn: (ids: string[]) => fns.remove({ data: { ids } }),
-			}),
-		reorder: () =>
-			mutationOptions({
-				mutationKey: keyed(keys.all, "reorder"),
-				mutationFn: (ids: string[]) => fns.reorder({ data: { ids } }),
-			}),
-	};
-}
-
-export const experienceSection = section<ExperienceInput, Awaited<ReturnType<typeof listExperience>>[number]>(
-	"experience",
-	{
-		list: () => listExperience(),
-		create: createExperience,
-		update: updateExperience,
-		remove: deleteExperience,
-		reorder: reorderExperience,
-	},
-);
-
-export const skillSection = section<SkillInput, Awaited<ReturnType<typeof listSkills>>[number]>("skills", {
-	list: () => listSkills(),
-	create: createSkill,
-	update: updateSkill,
-	remove: deleteSkills,
-	reorder: reorderSkills,
-});
-
-export const processSection = section<ProcessStepInput, Awaited<ReturnType<typeof listProcessSteps>>[number]>(
-	"process",
-	{
-		list: () => listProcessSteps(),
-		create: createProcessStep,
-		update: updateProcessStep,
-		remove: deleteProcessSteps,
-		reorder: reorderProcessSteps,
-	},
-);
-
-export const testimonialSection = section<TestimonialInput, Awaited<ReturnType<typeof listTestimonials>>[number]>(
-	"testimonials",
-	{
-		list: () => listTestimonials(),
-		create: createTestimonial,
-		update: updateTestimonial,
-		remove: deleteTestimonials,
-		reorder: reorderTestimonials,
-	},
-);
-
-export type SectionQueries<TInput, TItem> = ReturnType<typeof section<TInput, TItem>>;

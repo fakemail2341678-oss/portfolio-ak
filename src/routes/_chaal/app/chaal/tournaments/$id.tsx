@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { chaalHead } from "@/features/chaal/brand";
-import { ChaalTournamentPage } from "@/features/chaal/events/tournament-page";
+import { ChaalTournamentPage } from "@/features/chaal/events/components/tournament-page";
+import { chaalHead } from "@/features/chaal/lib/brand";
 import { tournamentPageSearch } from "@/features/chaal/search";
 import { m } from "@/paraglide/messages";
 
@@ -13,7 +13,7 @@ export const Route = createFileRoute("/_chaal/app/chaal/tournaments/$id")({
 	validateSearch: tournamentPageSearch,
 	loaderDeps: ({ search }) => search,
 	loader: async ({ context, params, deps }) =>
-		(await import("@/features/chaal/events/queries")).loadTournamentPage(context.queryClient, params.id, deps),
-	head: ({ loaderData }) => chaalHead(loaderData?.name ?? m.ch_tournaments_title()),
+		(await import("@/features/chaal/events/load")).loadTournamentPage(context.queryClient, params.id, deps),
+	head: ({ loaderData }) => chaalHead(loaderData?.name ?? m.chaal_tournaments_title()),
 	component: ChaalTournamentPage,
 });

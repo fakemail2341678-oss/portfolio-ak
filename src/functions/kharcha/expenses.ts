@@ -1,5 +1,10 @@
 import { createServerFn } from "@tanstack/react-start";
-import { createExpenseInput, expenseIdInput, markDuplicateInput, updateExpenseInput } from "@/features/kharcha/schema";
+import {
+	createExpenseInputSchema,
+	expenseIdInputSchema,
+	markDuplicateInputSchema,
+	updateExpenseInputSchema,
+} from "@/features/kharcha/schema";
 import { spendListInput } from "@/features/kharcha/search";
 import type { ExpenseDetail, ExpenseView, MerchantSuggestion, SpendPage } from "@/features/kharcha/types";
 import { zodInput } from "@/functions/_lib/validator";
@@ -16,34 +21,34 @@ import { listSpend } from "@/server/kharcha/spend/service";
 
 export const getKharchaExpense = createServerFn({ method: "GET" })
 	.middleware([requireKharchaUser, withKharchaServices])
-	.validator(zodInput(expenseIdInput))
+	.validator(zodInput(expenseIdInputSchema))
 	.handler(({ data, context }): Promise<ExpenseDetail> => expenses.getExpense(context, data.expenseId));
 
 export const createKharchaExpense = createServerFn({ method: "POST" })
 	.middleware([requireKharchaUser, withKharchaServices])
-	.validator(zodInput(createExpenseInput))
+	.validator(zodInput(createExpenseInputSchema))
 	.handler(({ data, context }): Promise<ExpenseView> => expenses.createExpense(context, data));
 
 export const updateKharchaExpense = createServerFn({ method: "POST" })
 	.middleware([requireKharchaUser, withKharchaServices])
-	.validator(zodInput(updateExpenseInput))
+	.validator(zodInput(updateExpenseInputSchema))
 	.handler(({ data, context }): Promise<ExpenseView> => expenses.updateExpense(context, data));
 
 /** To the trash: restorable for 30 days. */
 export const deleteKharchaExpense = createServerFn({ method: "POST" })
 	.middleware([requireKharchaUser, withKharchaServices])
-	.validator(zodInput(expenseIdInput))
+	.validator(zodInput(expenseIdInputSchema))
 	.handler(({ data, context }): Promise<ExpenseView> => expenses.deleteExpense(context, data.expenseId));
 
 export const restoreKharchaExpense = createServerFn({ method: "POST" })
 	.middleware([requireKharchaUser, withKharchaServices])
-	.validator(zodInput(expenseIdInput))
+	.validator(zodInput(expenseIdInputSchema))
 	.handler(({ data, context }): Promise<ExpenseView> => expenses.restoreExpense(context, data.expenseId));
 
 /** "Not a duplicate" (`ok`), or "it may be one" again: the caller's own flag. */
-export const markKharchaDuplicate = createServerFn({ method: "POST" })
+export const setKharchaNotDuplicate = createServerFn({ method: "POST" })
 	.middleware([requireKharchaUser, withKharchaServices])
-	.validator(zodInput(markDuplicateInput))
+	.validator(zodInput(markDuplicateInputSchema))
 	.handler(({ data, context }): Promise<ExpenseView> => expenses.setNotDuplicate(context, data.expenseId, data.ok));
 
 /** A page of Spend (Tasks 89 and 93): the caller's expenses matching a query in the search language. */

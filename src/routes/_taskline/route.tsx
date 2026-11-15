@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { TASKLINE_BRAND, tasklineTitle } from "@/features/taskline/brand";
-import { TasklinePublicNotFound, TasklineSection } from "@/features/taskline/shell/section";
+import { TASKLINE_BRAND, tasklineTitle } from "@/features/taskline/lib/brand";
+import { TasklinePublicNotFound, TasklineSection } from "@/features/taskline/shell/components/section";
 import { fontPreloads } from "@/lib/fonts";
 import { NOINDEX } from "@/lib/seo";
 import { getLocale } from "@/paraglide/runtime";

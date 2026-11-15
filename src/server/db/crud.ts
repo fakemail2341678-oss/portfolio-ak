@@ -42,7 +42,7 @@ export async function findOrThrow<T extends WithId>(db: Db, table: T, id: string
  *   return listPage(db, projects, {
  *     input, where: allOf(textSearch(input.q, [projects.title])),
  *     sort: { columns: { title: projects.title, updated: projects.updatedAt }, fallback: "updated" },
- *     map: (rows) => rows.map((row) => projectListItem.parse(row)),
+ *     map: (rows) => rows.map((row) => projectListItemSchema.parse(row)),
  *   });
  */
 export async function listPage<T extends WithId, Field extends string, Item>(

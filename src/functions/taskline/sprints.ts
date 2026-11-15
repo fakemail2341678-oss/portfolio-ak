@@ -1,10 +1,10 @@
 import { createServerFn } from "@tanstack/react-start";
 import {
-	completeSprintInput,
-	createSprintInput,
-	rankTaskInput,
-	sprintInput,
-	updateSprintInput,
+	completeSprintInputSchema,
+	createSprintInputSchema,
+	rankTaskInputSchema,
+	sprintInputSchema,
+	updateSprintInputSchema,
 } from "@/features/taskline/schema";
 import type { SprintReport, SprintSummary, TaskSummary } from "@/features/taskline/types";
 import { zodInput } from "@/functions/_lib/validator";
@@ -15,35 +15,35 @@ import * as sprints from "@/server/taskline/sprints/service";
 
 export const createTasklineSprint = createServerFn({ method: "POST" })
 	.middleware([requireTasklineUser, withTasklineServices])
-	.validator(zodInput(createSprintInput))
+	.validator(zodInput(createSprintInputSchema))
 	.handler(({ data, context }): Promise<SprintSummary> => sprints.createSprint(context, data));
 
 export const updateTasklineSprint = createServerFn({ method: "POST" })
 	.middleware([requireTasklineUser, withTasklineServices])
-	.validator(zodInput(updateSprintInput))
+	.validator(zodInput(updateSprintInputSchema))
 	.handler(({ data, context }): Promise<SprintSummary> => sprints.updateSprint(context, data));
 
 export const deleteTasklineSprint = createServerFn({ method: "POST" })
 	.middleware([requireTasklineUser, withTasklineServices])
-	.validator(zodInput(sprintInput))
+	.validator(zodInput(sprintInputSchema))
 	.handler(({ data, context }): Promise<void> => sprints.deleteSprint(context, data.ws, data.key, data.id));
 
 export const startTasklineSprint = createServerFn({ method: "POST" })
 	.middleware([requireTasklineUser, withTasklineServices])
-	.validator(zodInput(sprintInput))
+	.validator(zodInput(sprintInputSchema))
 	.handler(({ data, context }): Promise<SprintSummary> => sprints.startSprint(context, data.ws, data.key, data.id));
 
 export const completeTasklineSprint = createServerFn({ method: "POST" })
 	.middleware([requireTasklineUser, withTasklineServices])
-	.validator(zodInput(completeSprintInput))
+	.validator(zodInput(completeSprintInputSchema))
 	.handler(({ data, context }): Promise<SprintSummary> => sprints.completeSprint(context, data));
 
-export const rankTasklineTask = createServerFn({ method: "POST" })
+export const reorderTasklineTask = createServerFn({ method: "POST" })
 	.middleware([requireTasklineUser, withTasklineServices])
-	.validator(zodInput(rankTaskInput))
+	.validator(zodInput(rankTaskInputSchema))
 	.handler(({ data, context }): Promise<TaskSummary> => sprints.rankTask(context, data));
 
 export const getTasklineSprintReport = createServerFn({ method: "GET" })
 	.middleware([requireTasklineUser, withTasklineServices])
-	.validator(zodInput(sprintInput))
+	.validator(zodInput(sprintInputSchema))
 	.handler(({ data, context }): Promise<SprintReport> => sprints.getSprintReport(context, data.ws, data.key, data.id));

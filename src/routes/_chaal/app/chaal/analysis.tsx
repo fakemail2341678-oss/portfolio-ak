@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { ChaalAnalysisPage } from "@/features/chaal/analysis/analysis-page";
+import { ChaalAnalysisPage } from "@/features/chaal/analysis/components/analysis-page";
 import { chaalPageHead } from "@/features/chaal/head";
 import { CHAAL_PATHS } from "@/features/chaal/links";
 import { analysisSearch } from "@/features/chaal/search";
@@ -22,6 +22,6 @@ export const Route = createFileRoute("/_chaal/app/chaal/analysis")({
 		// Another player's id, or one deleted since: the page says so and opens an empty board.
 		await ensureQuery(context.queryClient, analysisQueryOptions(deps.id)).catch(() => undefined);
 	},
-	head: () => chaalPageHead(CHAAL_PATHS.analysis, m.ch_analysis_title(), m.ch_analysis_description()),
+	head: () => chaalPageHead(CHAAL_PATHS.analysis, m.chaal_analysis_title(), m.chaal_analysis_description()),
 	component: ChaalAnalysisPage,
 });

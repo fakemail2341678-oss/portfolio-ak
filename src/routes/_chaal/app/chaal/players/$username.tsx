@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { chaalHead } from "@/features/chaal/brand";
-import { ChaalPlayerPage } from "@/features/chaal/players/player-page";
+import { chaalHead } from "@/features/chaal/lib/brand";
+import { ChaalPlayerPage } from "@/features/chaal/players/components/player-page";
 import { playerSearch } from "@/features/chaal/search";
 
 /**
@@ -13,7 +13,7 @@ export const Route = createFileRoute("/_chaal/app/chaal/players/$username")({
 	validateSearch: playerSearch,
 	loaderDeps: ({ search }) => search,
 	loader: async ({ context, params, deps }) =>
-		(await import("@/features/chaal/players/queries")).loadPlayerPage(context.queryClient, params.username, deps),
+		(await import("@/features/chaal/players/load")).loadPlayerPage(context.queryClient, params.username, deps),
 	head: ({ params }) => chaalHead(params.username),
 	component: ChaalPlayerPage,
 });

@@ -1,6 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
 import type { ImageAsset, UploadTicket } from "@/features/attachments/schema";
-import { createDraftInput, receiptIdInput, receiptUploadInput } from "@/features/kharcha/schema";
+import { createDraftInputSchema, receiptIdInputSchema, receiptUploadInputSchema } from "@/features/kharcha/schema";
 import type { ReceiptDraftView } from "@/features/kharcha/types";
 import { zodInput } from "@/functions/_lib/validator";
 import { requireKharchaUser, withKharchaServices } from "@/middleware/kharcha";
@@ -22,22 +22,22 @@ export const signKharchaUpload = createServerFn({ method: "POST" })
 
 export const confirmKharchaUpload = createServerFn({ method: "POST" })
 	.middleware([requireKharchaUser, withKharchaServices])
-	.validator(zodInput(receiptUploadInput))
+	.validator(zodInput(receiptUploadInputSchema))
 	.handler(({ data, context }): Promise<ImageAsset> => receipts.confirmReceiptUpload(context, data.publicId));
 
 /** Removes the caller's own upload that no expense or draft took. */
 export const discardKharchaUpload = createServerFn({ method: "POST" })
 	.middleware([requireKharchaUser, withKharchaServices])
-	.validator(zodInput(receiptIdInput))
+	.validator(zodInput(receiptIdInputSchema))
 	.handler(({ data, context }): Promise<void> => receipts.discardReceiptUpload(context, data.id));
 
 /** "Add a receipt": uploaded now, its details later (Home lists it). */
 export const createKharchaDraft = createServerFn({ method: "POST" })
 	.middleware([requireKharchaUser, withKharchaServices])
-	.validator(zodInput(createDraftInput))
+	.validator(zodInput(createDraftInputSchema))
 	.handler(({ data, context }): Promise<ReceiptDraftView> => receipts.createDraft(context, data.receiptIds));
 
 export const deleteKharchaDraft = createServerFn({ method: "POST" })
 	.middleware([requireKharchaUser, withKharchaServices])
-	.validator(zodInput(receiptIdInput))
+	.validator(zodInput(receiptIdInputSchema))
 	.handler(({ data, context }): Promise<void> => receipts.deleteDraft(context, data.id));

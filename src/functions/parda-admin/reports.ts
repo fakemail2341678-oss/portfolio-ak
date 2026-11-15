@@ -1,5 +1,5 @@
 import { createServerFn } from "@tanstack/react-start";
-import { type AdminReportPage, reportStatusInput } from "@/features/parda/admin/schema";
+import { type AdminReportPage, reportStatusInputSchema } from "@/features/parda/admin/schema";
 import { pardaReportList } from "@/features/parda/admin/search";
 import { zodInput } from "@/functions/_lib/validator";
 import { requirePermission } from "@/middleware/auth";
@@ -15,5 +15,5 @@ export const listPardaReports = createServerFn({ method: "GET" })
 
 export const setPardaReportStatus = createServerFn({ method: "POST" })
 	.middleware([requirePermission("parda:moderate"), withServices])
-	.validator(zodInput(reportStatusInput))
+	.validator(zodInput(reportStatusInputSchema))
 	.handler(({ data, context }): Promise<{ changed: number }> => reports.setReportStatus(context, data));

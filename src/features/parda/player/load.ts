@@ -4,7 +4,7 @@ import { m } from "@/paraglide/messages";
 import type { Locale } from "@/paraglide/runtime";
 import { pardaWatchQueryOptions } from "../library/queries";
 import type { PardaType } from "../search";
-import { episodeCode } from "../title/title-hero";
+import { episodeCode } from "../title/components/title-hero";
 
 /**
  * The watch page's loader (the route imports it with `await import()`, 0194): the page's
@@ -23,7 +23,7 @@ export async function loadWatchPage(
 	if (!data.configured) return undefined;
 	const { title, episode } = data;
 	return {
-		title: m.pd_watch_title({
+		title: m.parda_watch_title({
 			title: episode ? `${title.title} ${episodeCode(episode.season, episode.episode)}` : title.title,
 		}),
 	};

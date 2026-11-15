@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { assertRoutePermission } from "@/features/rbac/route-guard";
+import { assertRoutePermission } from "@/features/rbac/lib/route-guard";
 import { TestCrudNewPage } from "@/features/test-crud/components/test-crud-detail";
 import { staticCrumb } from "@/lib/breadcrumbs";
 import { titleHead } from "@/lib/crud/route";

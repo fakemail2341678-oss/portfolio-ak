@@ -1,4 +1,4 @@
-import type { Answers, FormField } from "./fields";
+import type { Answers, FormField } from "./lib/fields";
 
 /** Forms' limits (decision 0195): per user, per form, and per sender of responses. */
 export const FORMS_QUOTAS = { forms: 20, responsesPerForm: 1000 } as const;

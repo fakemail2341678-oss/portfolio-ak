@@ -1,12 +1,18 @@
 import { describe, expect, it } from "vitest";
 import {
+	newAction,
+	newCondition,
+	previewConditions,
+	toDefinition,
+	toForm,
+} from "@/features/taskline/automations/lib/form";
+import {
 	type AutomationTask,
 	automationDefinition,
 	matchesConditions,
 	triggerMatches,
-} from "@/features/taskline/automation-rules";
-import { newAction, newCondition, previewConditions, toDefinition, toForm } from "@/features/taskline/automations/form";
-import { dueByNow, nextDue, nextOccurrence, shiftedStart, storedRecurrence } from "@/features/taskline/recurrence";
+} from "@/features/taskline/lib/automation-rules";
+import { dueByNow, nextDue, nextOccurrence, shiftedStart, storedRecurrence } from "@/features/taskline/lib/recurrence";
 import type { Automation, TaskField } from "@/features/taskline/types";
 import { todayInZone } from "@/lib/i18n/date-only";
 import { APP_TIME_ZONE } from "@/lib/i18n/intl";

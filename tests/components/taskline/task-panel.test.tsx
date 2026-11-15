@@ -13,7 +13,7 @@ import { act, render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { ConfirmProvider } from "@/components/dialogs/confirm";
-import { TaskPanel } from "@/features/taskline/task/task-panel";
+import { TaskPanel } from "@/features/taskline/task/components/task-panel";
 import type { TaskDetail } from "@/features/taskline/types";
 import { createPreferencesStore, DEFAULT_PREFERENCES } from "@/lib/stores/preferences";
 import type { RouterContext } from "@/router";
@@ -27,7 +27,7 @@ import { sampleProjectTasks, sampleTaskDetail } from "../../../.storybook/mocks/
  */
 const calls = vi.hoisted(() => ({ patch: vi.fn(), move: vi.fn(), checklist: vi.fn(), watch: vi.fn() }));
 vi.mock("@/functions/taskline/tasks", () => ({
-	patchTasklineTask: async (options: unknown) => calls.patch(options),
+	setTasklineTaskField: async (options: unknown) => calls.patch(options),
 	moveTasklineTask: async (options: unknown) => calls.move(options),
 	setTasklineChecklist: async (options: unknown) => calls.checklist(options),
 }));
@@ -36,7 +36,7 @@ vi.mock("@/functions/taskline/workflow", () => ({}));
 vi.mock("@/functions/taskline/workspaces", () => ({}));
 vi.mock("@/functions/taskline/home", () => ({}));
 vi.mock("@/functions/taskline/collab", () => ({
-	watchTasklineTask: async (options: unknown) => calls.watch(options),
+	followTasklineTask: async (options: unknown) => calls.watch(options),
 	getTasklineUploadSettings: async () => ({ enabled: false }),
 }));
 vi.mock("@/functions/taskline/inbox", () => ({}));

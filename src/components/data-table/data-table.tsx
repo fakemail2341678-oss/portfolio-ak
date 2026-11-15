@@ -26,11 +26,12 @@ import {
 import { TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { type CsvColumn, downloadCsv, toCsv } from "@/lib/csv";
 import { formatNumber } from "@/lib/i18n/intl";
-import { useTablePreferences } from "@/lib/stores/hooks";
+import { useTablePreferences } from "@/lib/stores/use-stores";
 import { cn } from "@/lib/utils";
 import { m } from "@/paraglide/messages";
-import { type RowAction, RowActionItems, RowActionsMenu, usePermittedActions } from "./row-actions";
+import { type RowAction, RowActionItems, RowActionsMenu } from "./row-actions";
 import { SavedViewsMenu, type SavedViewsStore } from "./saved-views";
+import { usePermittedActions } from "./use-permitted-actions";
 
 /** One column of a DataTable. Define a feature's columns once, next to its schema. */
 export type DataTableColumn<Row> = {

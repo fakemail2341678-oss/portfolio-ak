@@ -1,12 +1,12 @@
 import { sql } from "drizzle-orm";
 import { boolean, check, integer, jsonb, pgTable, text, timestamp, uniqueIndex, uuid } from "drizzle-orm/pg-core";
-import type { CommunityLimits } from "@/features/chaal/community/limits";
-import type { EngineLimits } from "@/features/chaal/engine/limits";
-import type { ChaalFeatureSwitches } from "@/features/chaal/features";
-import type { PlayLimits } from "@/features/chaal/play/controls";
-import type { PuzzleLimits } from "@/features/chaal/puzzles/limits";
-import type { ChaalDefaults } from "@/features/chaal/settings/preferences";
-import type { WatchLimits } from "@/features/chaal/watch/limits";
+import type { CommunityLimits } from "@/features/chaal/community/lib/limits";
+import type { EngineLimits } from "@/features/chaal/engine/lib/limits";
+import type { ChaalFeatureSwitches } from "@/features/chaal/lib/features";
+import type { PlayLimits } from "@/features/chaal/play/lib/controls";
+import type { PuzzleLimits } from "@/features/chaal/puzzles/lib/limits";
+import type { ChaalDefaults } from "@/features/chaal/settings/lib/preferences";
+import type { WatchLimits } from "@/features/chaal/watch/lib/limits";
 import { user } from "../auth";
 import { localizedText } from "../columns";
 
@@ -23,7 +23,7 @@ export const chSettings = pgTable(
 	"ch_settings",
 	{
 		id: integer().primaryKey().default(1),
-		/** Feature switches: a feature is on unless it's here as false (src/features/chaal/features.ts). */
+		/** Feature switches: a feature is on unless it's here as false (src/features/chaal/lib/features.ts). */
 		features: jsonb().$type<ChaalFeatureSwitches>().notNull().default({}),
 		/** Whether a guest session may connect Lichess (a guest's connection moves to the account it signs up as). */
 		guestsMayConnect: boolean().notNull().default(true),

@@ -1,6 +1,6 @@
 import { eq } from "drizzle-orm";
 import { expect } from "vitest";
-import { expenseDebts, paymentDebt } from "@/features/kharcha/money/ledger";
+import { expenseDebts, paymentDebt } from "@/features/kharcha/money/lib/ledger";
 import { isAppError } from "@/lib/errors";
 import type { ImageStore } from "@/server/attachments/cloudinary";
 import * as schema from "@/server/db/schema";

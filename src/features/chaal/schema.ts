@@ -1,11 +1,11 @@
 import type { Localized } from "@/lib/i18n/localized";
-import type { CommunityLimits } from "./community/limits";
-import type { EngineLimits } from "./engine/limits";
-import type { ChaalFeature } from "./features";
-import type { PlayLimits } from "./play/controls";
-import type { PuzzleLimits } from "./puzzles/limits";
-import type { ChaalDefaults } from "./settings/preferences";
-import type { WatchLimits } from "./watch/limits";
+import type { CommunityLimits } from "./community/lib/limits";
+import type { EngineLimits } from "./engine/lib/limits";
+import type { ChaalFeature } from "./lib/features";
+import type { PlayLimits } from "./play/lib/controls";
+import type { PuzzleLimits } from "./puzzles/lib/limits";
+import type { ChaalDefaults } from "./settings/lib/preferences";
+import type { WatchLimits } from "./watch/lib/limits";
 
 /** Shapes Chaal's server functions return (Task 71). */
 

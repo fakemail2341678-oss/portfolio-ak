@@ -1,8 +1,8 @@
 import { createHmac } from "node:crypto";
 import { eq } from "drizzle-orm";
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
-import { withinCap } from "@/features/parda/kids";
-import { PARTY_MAX_MEMBERS } from "@/features/parda/party/source";
+import { withinCap } from "@/features/parda/lib/kids";
+import { PARTY_MAX_MEMBERS } from "@/features/parda/party/lib/source";
 import type { Session } from "@/lib/session";
 import * as schema from "@/server/db/schema";
 import type { PardaCatalog } from "@/server/parda/catalog/context";

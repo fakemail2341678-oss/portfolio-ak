@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { SharedNotePage } from "@/features/apps/notes/components/shared-note";
+import { SharedNotePage } from "@/features/apps/notes/components/shared-note-page";
 import { sharedNoteParamsSchema } from "@/features/apps/notes/search";
 import { loadDetailOr404 } from "@/lib/crud/route";
 import { parseParams } from "@/lib/list/params";

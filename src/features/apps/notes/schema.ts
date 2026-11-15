@@ -20,11 +20,11 @@ export const NOTE_TAG_LENGTH = 32;
 
 export const noteTitle = () => required({ max: NOTE_TITLE_MAX });
 
-export const noteIdInput = z.strictObject({ id });
-export const createNoteInput = z.strictObject({ id, title: noteTitle() });
+export const noteIdInputSchema = z.strictObject({ id });
+export const createNoteInputSchema = z.strictObject({ id, title: noteTitle() });
 
 /** The editor's save: every editable field, against the version it started from. */
-export const updateNoteInput = z.strictObject({
+export const updateNoteInputSchema = z.strictObject({
 	id,
 	updatedAt: versionSchema(),
 	title: noteTitle(),
@@ -35,21 +35,21 @@ export const updateNoteInput = z.strictObject({
 });
 
 /** The list's quick changes (pin, archive): no version, they touch one flag. */
-export const setNoteFlagsInput = z.strictObject({
+export const setNoteFlagsInputSchema = z.strictObject({
 	id,
 	pinned: z.boolean().optional(),
 	archived: z.boolean().optional(),
 });
 
-export const searchNotesInput = z.strictObject({ q: z.string().trim().min(1).max(NOTE_QUERY_MAX) });
-export const sharedNoteInput = z.strictObject({ token: z.string().regex(/^[A-Za-z0-9_-]{20,64}$/) });
+export const searchNotesInputSchema = z.strictObject({ q: z.string().trim().min(1).max(NOTE_QUERY_MAX) });
+export const sharedNoteInputSchema = z.strictObject({ token: z.string().regex(/^[A-Za-z0-9_-]{20,64}$/) });
 
-export type CreateNoteInput = z.infer<typeof createNoteInput>;
-export type UpdateNoteInput = z.infer<typeof updateNoteInput>;
-export type SetNoteFlagsInput = z.infer<typeof setNoteFlagsInput>;
+export type CreateNoteInput = z.infer<typeof createNoteInputSchema>;
+export type UpdateNoteInput = z.infer<typeof updateNoteInputSchema>;
+export type SetNoteFlagsInput = z.infer<typeof setNoteFlagsInputSchema>;
 
 /** The editor's form: the save's fields, with image previews (not sent). */
-export const noteFormSchema = updateNoteInput.omit({ id: true, updatedAt: true }).extend({
+export const noteFormSchema = updateNoteInputSchema.omit({ id: true, updatedAt: true }).extend({
 	images: z
 		.array(z.object({ id, alt: localizedText({ max: ALT_MAX, optional: true }), preview: z.custom<ImageAsset>() }))
 		.max(NOTES_QUOTAS.imagesPerNote),

@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { allowedRatings, isKidsCap, withinCap } from "@/features/parda/kids";
-import { isTmdbRegion, TMDB_REGIONS } from "@/features/parda/profiles/options";
+import { allowedRatings, isKidsCap, withinCap } from "@/features/parda/lib/kids";
+import { isTmdbRegion, TMDB_REGIONS } from "@/features/parda/profiles/lib/options";
 import { cappedRequest } from "@/server/parda/catalog/kids-requests";
 import { PAGE_LAYOUTS, railContext } from "@/server/parda/catalog/rails";
 import { playerLanguage } from "@/server/parda/player/sources";

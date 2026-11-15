@@ -35,7 +35,7 @@ export const adminActivityKeys = createCrudKeys<AdminActivityListInput>("tasklin
 export const adminTimeKeys = createCrudKeys<AdminTimeListInput>("taskline-admin-time");
 
 /** What a change to the team can move: every list and read of the section. */
-export const ALL_TASKLINE_ADMIN = [
+export const tasklineAdminAllKeys = [
 	tasklineAdminKeys.all,
 	adminProjectKeys.all,
 	adminMemberKeys.all,

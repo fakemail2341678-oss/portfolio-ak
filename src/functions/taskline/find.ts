@@ -1,11 +1,11 @@
 import { createServerFn } from "@tanstack/react-start";
 import {
-	deleteViewInput,
-	findTasksInput,
-	importTasksInput,
-	savedViewsInput,
-	saveViewInput,
-	searchTasksInput,
+	deleteViewInputSchema,
+	findTasksInputSchema,
+	importTasksInputSchema,
+	savedViewsInputSchema,
+	saveViewInputSchema,
+	searchTasksInputSchema,
 } from "@/features/taskline/schema";
 import type { FoundTask, SavedViewDto, SavedViews, TaskImportResult, TaskSearchPage } from "@/features/taskline/types";
 import { zodInput } from "@/functions/_lib/validator";
@@ -18,32 +18,32 @@ import * as views from "@/server/taskline/views/service";
 
 export const searchTasklineTasks = createServerFn({ method: "GET" })
 	.middleware([requireTasklineUser, withTasklineServices])
-	.validator(zodInput(searchTasksInput))
+	.validator(zodInput(searchTasksInputSchema))
 	.handler(({ data, context }): Promise<TaskSearchPage> => search.searchTasks(context, data));
 
-export const findTasklineTasks = createServerFn({ method: "GET" })
+export const listTasklineFindResults = createServerFn({ method: "GET" })
 	.middleware([requireTasklineUser, withTasklineServices])
-	.validator(zodInput(findTasksInput))
+	.validator(zodInput(findTasksInputSchema))
 	.handler(({ data, context }): Promise<FoundTask[]> => search.findTasks(context, data));
 
 export const listTasklineSavedViews = createServerFn({ method: "GET" })
 	.middleware([requireTasklineUser, withTasklineServices])
-	.validator(zodInput(savedViewsInput))
+	.validator(zodInput(savedViewsInputSchema))
 	.handler(({ data, context }): Promise<SavedViews> => views.listViews(context, data));
 
-export const saveTasklineSavedView = createServerFn({ method: "POST" })
+export const createTasklineSavedView = createServerFn({ method: "POST" })
 	.middleware([requireTasklineUser, withTasklineServices])
-	.validator(zodInput(saveViewInput))
+	.validator(zodInput(saveViewInputSchema))
 	.handler(({ data, context }): Promise<SavedViewDto> => views.saveView(context, data));
 
 export const deleteTasklineSavedView = createServerFn({ method: "POST" })
 	.middleware([requireTasklineUser, withTasklineServices])
-	.validator(zodInput(deleteViewInput))
+	.validator(zodInput(deleteViewInputSchema))
 	.handler(({ data, context }): Promise<void> => views.deleteView(context, data));
 
 export const importTasklineTasks = createServerFn({ method: "POST" })
 	.middleware([requireTasklineUser, withTasklineServices])
-	.validator(zodInput(importTasksInput))
+	.validator(zodInput(importTasksInputSchema))
 	.handler(
 		({ data, context }): Promise<TaskImportResult & { replayed: boolean }> => imports.importTasks(context, data),
 	);

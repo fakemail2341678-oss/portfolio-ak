@@ -1,10 +1,6 @@
 import { queryOptions } from "@tanstack/react-query";
 import { getDashboard } from "@/functions/admin";
-
-export const adminKeys = {
-	all: ["admin"] as const,
-	dashboard: () => [...adminKeys.all, "dashboard"] as const,
-};
+import { adminKeys } from "./keys";
 
 export const dashboardQueryOptions = () =>
 	queryOptions({

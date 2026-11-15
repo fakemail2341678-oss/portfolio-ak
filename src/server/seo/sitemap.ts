@@ -1,5 +1,5 @@
 import "@tanstack/react-start/server-only";
-import { APPS, appPath } from "@/features/apps/registry"; // @apps
+import { APPS, appPath } from "@/features/apps/lib/registry"; // @apps
 import { CHAAL_SITEMAP } from "@/features/chaal/links"; // @chaal
 import { KHARCHA_SITEMAP } from "@/features/kharcha/links"; // @kharcha
 import { PARDA_SITEMAP } from "@/features/parda/links"; // @parda

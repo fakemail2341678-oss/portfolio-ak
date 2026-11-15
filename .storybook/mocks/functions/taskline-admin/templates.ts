@@ -72,9 +72,9 @@ export const updateTasklineAdminTemplate = fn(async (): Promise<AdminTemplates> 
 export const deleteTasklineAdminTemplate = fn(async (): Promise<AdminTemplates> => sampleAdminTemplates).mockName(
 	"deleteTasklineAdminTemplate",
 );
-export const saveTasklineProjectAsTemplate = fn(
+export const createTasklineProjectTemplate = fn(
 	async (): Promise<SavedProjectTemplate> => ({ id: "t", name: "Website", leftOut: 0 }),
-).mockName("saveTasklineProjectAsTemplate");
+).mockName("createTasklineProjectTemplate");
 export const listTasklineAdminTemplateChoices = fn(
 	async (): Promise<TemplateChoice[]> => sampleTemplateChoices,
 ).mockName("listTasklineAdminTemplateChoices");

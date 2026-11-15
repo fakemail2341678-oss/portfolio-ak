@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { adminTimeList, TL_ADMIN_TIME_TABLE_ID } from "@/features/taskline/admin/search";
-import { AdminTimeList } from "@/features/taskline/admin/time/time-list";
+import { AdminTimeList } from "@/features/taskline/admin/time/components/time-list";
 import { listLoader, listSearch, titleHead } from "@/lib/crud/route";
 import { ensureQuery } from "@/lib/query";
 import { m } from "@/paraglide/messages";

@@ -1,11 +1,11 @@
 import { createServerFn } from "@tanstack/react-start";
-import type { ChaalChatLine } from "@/features/chaal/live/events";
+import type { ChaalChatLine } from "@/features/chaal/live/lib/events";
 import {
 	type ChaalLiveGame,
-	challengeIdInput,
-	chatInput,
-	gameActionInput,
-	moveInput,
+	challengeIdInputSchema,
+	chatInputSchema,
+	gameActionInputSchema,
+	moveInputSchema,
 } from "@/features/chaal/play/schema";
 import { zodInput } from "@/functions/_lib/validator";
 import { requireChaalUser, withChaalServices } from "@/middleware/chaal";
@@ -20,12 +20,12 @@ import * as play from "@/server/chaal/play/service";
 
 export const getChaalLiveGame = createServerFn({ method: "GET" })
 	.middleware([requireChaalUser, withChaalServices])
-	.validator(zodInput(challengeIdInput))
+	.validator(zodInput(challengeIdInputSchema))
 	.handler(({ context, data }): Promise<ChaalLiveGame> => play.liveGame(context, context.user.id, data.id));
 
 export const playChaalMove = createServerFn({ method: "POST" })
 	.middleware([requireChaalUser, withChaalServices])
-	.validator(zodInput(moveInput))
+	.validator(zodInput(moveInputSchema))
 	.handler(
 		({ context, data }): Promise<void> =>
 			play.playMove(context, context.user.id, data.id, data.uci, data.offeringDraw ?? false),
@@ -33,15 +33,15 @@ export const playChaalMove = createServerFn({ method: "POST" })
 
 export const actOnChaalGame = createServerFn({ method: "POST" })
 	.middleware([requireChaalUser, withChaalServices])
-	.validator(zodInput(gameActionInput))
+	.validator(zodInput(gameActionInputSchema))
 	.handler(({ context, data }): Promise<void> => play.gameAction(context, context.user.id, data.id, data.action));
 
 export const getChaalChat = createServerFn({ method: "GET" })
 	.middleware([requireChaalUser, withChaalServices])
-	.validator(zodInput(challengeIdInput))
+	.validator(zodInput(challengeIdInputSchema))
 	.handler(({ context, data }): Promise<ChaalChatLine[]> => play.chatHistory(context, context.user.id, data.id));
 
 export const sendChaalChat = createServerFn({ method: "POST" })
 	.middleware([requireChaalUser, withChaalServices])
-	.validator(zodInput(chatInput))
+	.validator(zodInput(chatInputSchema))
 	.handler(({ context, data }): Promise<void> => play.sendChat(context, context.user.id, data.id, data.text));

@@ -1,5 +1,5 @@
 import { fn } from "storybook/test";
-import type { ChaalChatLine } from "../../../../src/features/chaal/live/events";
+import type { ChaalChatLine } from "../../../../src/features/chaal/live/lib/events";
 import type { ChaalLiveGame } from "../../../../src/features/chaal/play/schema";
 
 // Stand-ins for src/functions/chaal/live-game.ts.

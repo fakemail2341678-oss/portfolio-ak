@@ -1,7 +1,7 @@
 import { createFileRoute, redirect } from "@tanstack/react-router";
 import { authFeaturesQueryOptions } from "@/features/auth/queries";
-import { PardaSignUp } from "@/features/parda/auth/parda-sign-up";
-import { pardaHead } from "@/features/parda/brand";
+import { PardaSignUp } from "@/features/parda/auth/components/parda-sign-up-page";
+import { pardaHead } from "@/features/parda/lib/brand";
 import { PARDA_PATHS } from "@/features/parda/links";
 import { redirectSearchSchema } from "@/lib/http/redirect";
 import { ensureQuery } from "@/lib/query";
@@ -18,6 +18,6 @@ export const Route = createFileRoute("/_parda/app/parda/sign-up")({
 	},
 	// The Turnstile site key, when a captcha is configured.
 	loader: ({ context }) => ensureQuery(context.queryClient, authFeaturesQueryOptions()),
-	head: () => pardaHead(m.pd_sign_up()),
+	head: () => pardaHead(m.parda_sign_up()),
 	component: PardaSignUp,
 });

@@ -4,7 +4,7 @@ import { ConfirmProvider } from "@/components/dialogs/confirm";
 import { NavigationProgress } from "@/components/layout/navigation-progress";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { useHotkeys } from "@/hooks/use-hotkeys";
-import { useSidebar } from "@/lib/stores/hooks";
+import { useSidebar } from "@/lib/stores/use-stores";
 import { AppSidebar } from "./app-sidebar";
 import { CommandMenu } from "./command-menu";
 import { Topbar } from "./topbar";

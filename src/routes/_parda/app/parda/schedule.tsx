@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { pardaHead } from "@/features/parda/brand";
-import { PardaSchedulePage } from "@/features/parda/schedule/schedule-page";
+import { pardaHead } from "@/features/parda/lib/brand";
+import { PardaSchedulePage } from "@/features/parda/schedule/components/schedule-page";
 import { m } from "@/paraglide/messages";
 import { getLocale } from "@/paraglide/runtime";
 
@@ -13,6 +13,6 @@ export const Route = createFileRoute("/_parda/app/parda/schedule")({
 		const { loadSchedulePage } = await import("@/features/parda/schedule/load");
 		await loadSchedulePage(context.queryClient, getLocale(), Boolean(context.session));
 	},
-	head: () => pardaHead(m.pd_schedule_title()),
+	head: () => pardaHead(m.parda_schedule_title()),
 	component: PardaSchedulePage,
 });

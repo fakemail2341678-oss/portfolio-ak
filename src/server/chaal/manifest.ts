@@ -1,5 +1,5 @@
 import "@tanstack/react-start/server-only";
-import { CHAAL_NAME } from "@/features/chaal/brand";
+import { CHAAL_NAME } from "@/features/chaal/lib/brand";
 import { CHAAL_BASE } from "@/features/chaal/links";
 import { m } from "@/paraglide/messages";
 import { getTextDirection, type Locale, localizeHref } from "@/paraglide/runtime";
@@ -15,7 +15,7 @@ export function chaalManifest(locale: Locale) {
 		id: CHAAL_BASE,
 		name: CHAAL_NAME,
 		short_name: CHAAL_NAME,
-		description: m.ch_description({}, { locale }),
+		description: m.chaal_description({}, { locale }),
 		lang: locale,
 		dir: getTextDirection(locale),
 		start_url: localizeHref(CHAAL_BASE, { locale }),

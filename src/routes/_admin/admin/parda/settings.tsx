@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { PardaSettingsPage } from "@/features/parda/admin/settings/settings-page";
+import { PardaSettingsPage } from "@/features/parda/admin/settings/components/settings-page";
 import { staticCrumb } from "@/lib/breadcrumbs";
 import { titleHead } from "@/lib/crud/route";
 import { ensureQuery } from "@/lib/query";
@@ -12,7 +12,7 @@ export const Route = createFileRoute("/_admin/admin/parda/settings")({
 		const { pardaSettingsQueryOptions } = await import("@/features/parda/admin/queries");
 		await ensureQuery(context.queryClient, pardaSettingsQueryOptions());
 	},
-	staticData: { breadcrumb: staticCrumb(m.pd_admin_settings_title) },
-	head: titleHead(m.pd_admin_settings_title),
+	staticData: { breadcrumb: staticCrumb(m.parda_admin_settings_title) },
+	head: titleHead(m.parda_admin_settings_title),
 	component: PardaSettingsPage,
 });

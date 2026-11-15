@@ -5,19 +5,19 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { NativeSelect } from "@/components/ui/native-select";
 import { Switch } from "@/components/ui/switch";
-import { Demo, ExamplePage } from "@/features/dev/examples/example-page";
+import { Demo, ExamplePage } from "@/features/dev/examples/components/example-page";
 import { staticCrumb } from "@/lib/breadcrumbs";
 import { formatNumber } from "@/lib/i18n/intl";
 import { privateHead } from "@/lib/seo";
-import { useSidebar, useTablePreferences, useTheme } from "@/lib/stores/hooks";
 import { PAGE_SIZES, THEMES, type ThemePreference } from "@/lib/stores/preferences";
+import { useSidebar, useTablePreferences, useTheme } from "@/lib/stores/use-stores";
 import { m } from "@/paraglide/messages";
 
 /**
  * Store preferences: one TanStack Store per router, seeded from cookies. The
  * server reads the cookies on every request, so the page renders with the
  * visitor's real choices (no flash after hydration). Components subscribe to a
- * slice with the hooks in src/lib/stores/hooks.ts; actions update the store and
+ * slice with the hooks in src/lib/stores/use-stores.ts; actions update the store and
  * the cookie together.
  */
 export const Route = createFileRoute("/dev/examples/preferences")({

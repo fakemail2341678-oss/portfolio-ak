@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { expect } from "storybook/test";
 import { m } from "@/paraglide/messages";
-import { demo, withPortfolioCanvas } from "../story-helpers";
+import { demo, withPortfolioCanvas } from "../story-frame";
 import { ContactSection } from "./contact-section";
 import { HeroSection } from "./hero-section";
 import { ImpactSection } from "./impact-section";

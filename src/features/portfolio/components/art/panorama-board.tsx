@@ -3,7 +3,7 @@ import { formatNumber } from "@/lib/i18n/intl";
 import { cn } from "../../lib/cn";
 import { panorama } from "../../lib/terrain/panorama";
 import type { ProjectSummary } from "../../types";
-import { Relief } from "./relief";
+import { Relief } from "./relief-image";
 
 /** A viewpoint board's leader line, from a summit's name down to the summit: part of the picture. */
 const LEADER_LINE = "mt-1 w-0.5 flex-1 bg-(--hm-on-sky)"; // taste-skill-ignore: a leader line in the drawing, not a divider

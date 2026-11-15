@@ -1,5 +1,5 @@
 import "@tanstack/react-start/server-only";
-import { activeFields, isEmptyFieldValue, missingRequired, toTaskFieldsSchema } from "@/features/taskline/fields";
+import { activeFields, isEmptyFieldValue, missingRequired, toTaskFieldsSchema } from "@/features/taskline/lib/fields";
 import type { ActivityValue, FieldValue, StatusCategory, TaskField, TaskFieldValues } from "@/features/taskline/types";
 import { ruleError } from "@/lib/errors";
 import { m } from "@/paraglide/messages";

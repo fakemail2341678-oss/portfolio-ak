@@ -10,6 +10,6 @@ export type LinkModerationPage = Paged<LinkModerationItem>;
 
 /** Block or unblock, or delete, up to 100 links at once. */
 const ids = z.array(z.uuid()).min(1).max(100);
-export const blockLinksInput = z.strictObject({ ids, blocked: z.boolean() });
-export const deleteLinksInput = z.strictObject({ ids });
-export type BlockLinksInput = z.infer<typeof blockLinksInput>;
+export const blockLinksInputSchema = z.strictObject({ ids, blocked: z.boolean() });
+export const deleteLinksInputSchema = z.strictObject({ ids });
+export type BlockLinksInput = z.infer<typeof blockLinksInputSchema>;

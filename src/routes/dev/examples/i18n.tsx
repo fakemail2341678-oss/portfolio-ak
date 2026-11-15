@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { DescriptionList } from "@/components/data-display/description-list";
-import { Demo, ExamplePage } from "@/features/dev/examples/example-page";
+import { Demo, ExamplePage } from "@/features/dev/examples/components/example-page";
 import { staticCrumb } from "@/lib/breadcrumbs";
 import {
 	formatBytes,

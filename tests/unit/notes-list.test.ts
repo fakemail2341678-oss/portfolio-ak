@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { visibleNotes } from "@/features/apps/notes/list";
+import { visibleNotes } from "@/features/apps/notes/lib/list";
 import type { NoteSummary } from "@/features/apps/notes/types";
 
 /** Which notes /apps/notes shows, in which order (decision 0190). */

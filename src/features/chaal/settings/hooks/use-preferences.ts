@@ -1,0 +1,85 @@
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useEffect, useRef, useSyncExternalStore } from "react";
+import { toast } from "sonner";
+import { errorMessage } from "@/components/errors/error-page";
+import { sessionQueryOptions } from "@/features/auth/queries";
+import { m } from "@/paraglide/messages";
+import { chaalKeys } from "../../keys";
+import { chaalStatusQueryOptions } from "../../queries";
+import { clearLocalPreferences, readLocalPreferences, subscribeLocal, writeLocalPreferences } from "../lib/local";
+import { type ChaalPreferences, startingPreferences } from "../lib/preferences";
+import { chaalPreferencesQueryOptions } from "../queries";
+
+/** The server has no browser storage: it renders the session's preferences, else the defaults. */
+const noLocal = () => null;
+
+/** This browser's preferences (null on the server and during hydration, then the stored ones). */
+const useLocalPreferences = () => useSyncExternalStore(subscribeLocal, readLocalPreferences, noLocal);
+
+/**
+ * The player's preferences and a way to change them (decision 0259). A session's are on
+ * the server (the layout's loader read them, so the first paint is right); without a
+ * session they're this browser's, read after hydration. `where` says which, for the
+ * settings page. A player who hasn't chosen gets the admin's defaults (Task 79).
+ */
+export function useChaalPreferences() {
+	const queryClient = useQueryClient();
+	const { data: session } = useQuery(sessionQueryOptions());
+	const signedIn = Boolean(session);
+	const { data: saved } = useQuery({ ...chaalPreferencesQueryOptions(), enabled: signedIn });
+	const local = useLocalPreferences();
+	const { data: status } = useQuery(chaalStatusQueryOptions());
+	const preferences = (signedIn ? (saved ?? local) : local) ?? startingPreferences(status?.defaults);
+
+	const save = async (change: Partial<ChaalPreferences>): Promise<boolean> => {
+		const next = { ...preferences, ...change };
+		if (!signedIn) {
+			writeLocalPreferences(next);
+			return true;
+		}
+		const key = chaalKeys.preferences();
+		const before = queryClient.getQueryData<ChaalPreferences | null>(key);
+		// Shown at once; put back if the server refuses.
+		queryClient.setQueryData(key, next);
+		try {
+			const { setChaalPreferences } = await import("@/functions/chaal/preferences");
+			queryClient.setQueryData(key, await setChaalPreferences({ data: { preferences: next } }));
+			return true;
+		} catch (error) {
+			queryClient.setQueryData(key, before ?? null);
+			toast.error(m.chaal_settings_save_failed({ reason: errorMessage(error) }));
+			return false;
+		}
+	};
+
+	return { preferences, save, where: signedIn ? ("account" as const) : ("device" as const) };
+}
+
+/**
+ * In the frame: when a session appears (sign-in, sign-up, a guest started to connect), this
+ * browser's preferences go to it once, unless it already has its own, and the browser's copy
+ * is forgotten.
+ */
+export function useImportLocalPreferences() {
+	const queryClient = useQueryClient();
+	const { data: session } = useQuery(sessionQueryOptions());
+	const signedIn = Boolean(session);
+	const { isSuccess } = useQuery({ ...chaalPreferencesQueryOptions(), enabled: signedIn });
+	const local = useLocalPreferences();
+	const running = useRef(false);
+	useEffect(() => {
+		if (!signedIn || !isSuccess || !local || running.current) return;
+		running.current = true;
+		import("@/functions/chaal/preferences")
+			.then(({ importChaalPreferences }) => importChaalPreferences({ data: { preferences: local } }))
+			.then((kept) => {
+				queryClient.setQueryData(chaalKeys.preferences(), kept);
+				clearLocalPreferences();
+			})
+			// Kept for the next page: nothing is lost by trying again.
+			.catch(() => {})
+			.finally(() => {
+				running.current = false;
+			});
+	}, [signedIn, isSuccess, local, queryClient]);
+}

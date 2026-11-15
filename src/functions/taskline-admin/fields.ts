@@ -1,9 +1,9 @@
 import { createServerFn } from "@tanstack/react-start";
 import {
 	type AdminFields,
-	adminCreateFieldInput,
-	adminDeleteFieldInput,
-	adminUpdateFieldInput,
+	adminCreateFieldInputSchema,
+	adminDeleteFieldInputSchema,
+	adminUpdateFieldInputSchema,
 } from "@/features/taskline/admin/schema";
 import { zodInput } from "@/functions/_lib/validator";
 import { requirePermission } from "@/middleware/auth";
@@ -18,15 +18,15 @@ export const listTasklineWorkspaceFields = createServerFn({ method: "GET" })
 
 export const createTasklineWorkspaceField = createServerFn({ method: "POST" })
 	.middleware([requirePermission("taskline:configure"), withServices])
-	.validator(zodInput(adminCreateFieldInput))
+	.validator(zodInput(adminCreateFieldInputSchema))
 	.handler(({ data, context }): Promise<AdminFields> => fields.createField(context, data));
 
 export const updateTasklineWorkspaceField = createServerFn({ method: "POST" })
 	.middleware([requirePermission("taskline:configure"), withServices])
-	.validator(zodInput(adminUpdateFieldInput))
+	.validator(zodInput(adminUpdateFieldInputSchema))
 	.handler(({ data, context }): Promise<AdminFields> => fields.updateField(context, data));
 
 export const deleteTasklineWorkspaceField = createServerFn({ method: "POST" })
 	.middleware([requirePermission("taskline:configure"), withServices])
-	.validator(zodInput(adminDeleteFieldInput))
+	.validator(zodInput(adminDeleteFieldInputSchema))
 	.handler(({ data, context }): Promise<AdminFields> => fields.deleteField(context, data));

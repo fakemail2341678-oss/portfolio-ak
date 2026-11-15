@@ -1,5 +1,5 @@
 import "@tanstack/react-start/server-only";
-import { type AutomationEvent, matchesConditions, triggerMatches } from "@/features/taskline/automation-rules";
+import { type AutomationEvent, matchesConditions, triggerMatches } from "@/features/taskline/lib/automation-rules";
 import {
 	type AutomationAction,
 	type AutomationRunDetail,

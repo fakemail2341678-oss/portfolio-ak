@@ -1,6 +1,6 @@
 import { and, eq } from "drizzle-orm";
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from "vitest";
-import { createProjectInput } from "@/features/taskline/schema";
+import { createProjectInputSchema } from "@/features/taskline/schema";
 import { isStaleError } from "@/lib/concurrency";
 import { isAppError } from "@/lib/errors";
 import * as schema from "@/server/db/schema";
@@ -100,8 +100,8 @@ describe("projects", () => {
 		expect(isAppError(error) && error.code).toBe("CONFLICT");
 		expect(isAppError(error) && error.fieldErrors?.key).toHaveLength(1);
 		// The schema refuses bad keys; the table refuses them too.
-		expect(createProjectInput.safeParse({ ws, key: "1ab", name: "Digit first" }).success).toBe(false);
-		expect(createProjectInput.parse({ ws, key: "web2", name: "Lowercase" }).key).toBe("WEB2");
+		expect(createProjectInputSchema.safeParse({ ws, key: "1ab", name: "Digit first" }).success).toBe(false);
+		expect(createProjectInputSchema.parse({ ws, key: "web2", name: "Lowercase" }).key).toBe("WEB2");
 		await expect(projects.createProject(lead(), { ws, key: "1AB", name: "Digit first" })).rejects.toThrow();
 	});
 

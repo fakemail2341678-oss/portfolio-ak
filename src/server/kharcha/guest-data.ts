@@ -1,8 +1,8 @@
 import "@tanstack/react-start/server-only";
 import { eq } from "drizzle-orm";
-import { expenseDebts, paymentDebt } from "@/features/kharcha/money/ledger";
-import { computeShares, itemizedExtras, type Paid, type Split } from "@/features/kharcha/money/split";
-import { occurrenceOn } from "@/features/kharcha/recurring/cadence";
+import { expenseDebts, paymentDebt } from "@/features/kharcha/money/lib/ledger";
+import { computeShares, itemizedExtras, type Paid, type Split } from "@/features/kharcha/money/lib/split";
+import { occurrenceOn } from "@/features/kharcha/recurring/lib/cadence";
 import { type ExpenseKind, GROUP_KIND_ICON } from "@/features/kharcha/types";
 import { addDays, todayInZone } from "@/lib/i18n/date-only";
 import { APP_TIME_ZONE } from "@/lib/i18n/intl";

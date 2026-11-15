@@ -1,5 +1,5 @@
 import { createServerFn } from "@tanstack/react-start";
-import { inviteInput, joinTokenInput } from "@/features/kharcha/schema";
+import { inviteInputSchema, joinTokenInputSchema } from "@/features/kharcha/schema";
 import type { InviteResult, JoinedInvite } from "@/features/kharcha/types";
 import { zodInput } from "@/functions/_lib/validator";
 import { requireKharchaUser, withKharchaServices } from "@/middleware/kharcha";
@@ -14,10 +14,10 @@ import * as invites from "@/server/kharcha/invites/service";
 
 export const inviteKharchaFriend = createServerFn({ method: "POST" })
 	.middleware([requireKharchaUser, withKharchaServices])
-	.validator(zodInput(inviteInput))
+	.validator(zodInput(inviteInputSchema))
 	.handler(({ data, context }): Promise<InviteResult> => invites.inviteFriend(context, data));
 
 export const acceptKharchaInvite = createServerFn({ method: "POST" })
 	.middleware([requireKharchaUser, withKharchaServices])
-	.validator(zodInput(joinTokenInput))
+	.validator(zodInput(joinTokenInputSchema))
 	.handler(({ data, context }): Promise<JoinedInvite> => invites.acceptInvite(context, data.token));

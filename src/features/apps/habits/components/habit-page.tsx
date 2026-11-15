@@ -15,7 +15,7 @@ import {
 import { lazy, Suspense, useState } from "react";
 import { toast } from "sonner";
 import { StatCard } from "@/components/data-display/stat-card";
-import { useConfirm } from "@/components/dialogs/confirm";
+import { useConfirm } from "@/components/dialogs/use-confirm";
 import { errorMessage } from "@/components/errors/error-page";
 import { Page, PageHeader } from "@/components/page/page";
 import { Alert, AlertDescription } from "@/components/ui/alert";
@@ -29,10 +29,11 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { formatNumber } from "@/lib/i18n/intl";
 import { m } from "@/paraglide/messages";
-import { rateLabel, scheduleLabel, targetLabel } from "../format";
-import { habitMutations, habitQueryOptions, habitsKeys } from "../queries";
+import { habitsKeys } from "../keys";
+import { rateLabel, scheduleLabel, targetLabel } from "../lib/format";
+import { habitMutations, habitQueryOptions } from "../queries";
 import { RATE_DAYS } from "../types";
-import { HabitHeatmap } from "./habit-heatmap";
+import { HabitHeatmap } from "./habit-heatmap-chart";
 
 const HabitDialog = lazy(() => import("./habit-dialog"));
 

@@ -1,5 +1,5 @@
 import "@tanstack/react-start/server-only";
-import { fillTemplate, isRelativeTemplate, type TemplateValues } from "@/features/parda/player/templates";
+import { fillTemplate, isRelativeTemplate, type TemplateValues } from "@/features/parda/player/lib/templates";
 import { originOf } from "@/lib/http/csp";
 import type { PardaMedia } from "@/server/db/schema";
 import type { PardaSourceRow } from "../controls";

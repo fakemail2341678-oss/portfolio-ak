@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowRightIcon } from "lucide-react";
 import { Breadcrumbs } from "@/components/page/breadcrumbs";
 import { Page, PageHeader } from "@/components/page/page";
-import { EXAMPLES } from "@/features/dev/examples/registry";
+import { EXAMPLES } from "@/features/dev/examples/lib/registry";
 import { privateHead } from "@/lib/seo";
 import { m } from "@/paraglide/messages";
 

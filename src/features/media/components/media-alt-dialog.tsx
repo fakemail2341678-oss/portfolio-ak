@@ -5,7 +5,8 @@ import { FormDialog } from "@/components/dialogs/form-dialog";
 import { formValidators, handleSaveError, useAppForm } from "@/components/forms";
 import { LocalizedField } from "@/components/forms/fields/localized-fields";
 import { m } from "@/paraglide/messages";
-import { mediaKeys, mediaMutations } from "../queries";
+import { mediaKeys } from "../keys";
+import { mediaMutations } from "../queries";
 import { type MediaItemDto, mediaAltSchema } from "../schema";
 import { MediaThumb } from "./media-tile";
 

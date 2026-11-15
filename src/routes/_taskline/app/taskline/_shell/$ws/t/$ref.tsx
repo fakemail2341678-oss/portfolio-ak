@@ -1,7 +1,7 @@
 import { createFileRoute, notFound } from "@tanstack/react-router";
-import { tasklineTitle } from "@/features/taskline/brand";
+import { tasklineTitle } from "@/features/taskline/lib/brand";
 import { keyOfRef } from "@/features/taskline/search";
-import { TaskPage } from "@/features/taskline/task/task-page";
+import { TaskPage } from "@/features/taskline/task/components/task-page";
 import { loaderTitleCrumb } from "@/lib/breadcrumbs";
 import { loadDetailOr404 } from "@/lib/crud/route";
 

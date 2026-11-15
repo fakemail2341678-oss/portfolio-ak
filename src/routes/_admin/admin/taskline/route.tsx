@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { assertRoutePermission } from "@/features/rbac/route-guard";
-import { TASKLINE_NAME } from "@/features/taskline/brand";
+import { assertRoutePermission } from "@/features/rbac/lib/route-guard";
+import { TASKLINE_NAME } from "@/features/taskline/lib/brand";
 import { staticCrumb } from "@/lib/breadcrumbs";
 
 /** /admin/taskline/*: Taskline's team, run from the admin (PLAN 11.5). Every page needs taskline:read; writes check more. */

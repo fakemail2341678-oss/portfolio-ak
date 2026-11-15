@@ -1,5 +1,5 @@
 import "@tanstack/react-start/server-only";
-import { workspaceSettings } from "@/features/taskline/settings";
+import { workspaceSettings } from "@/features/taskline/lib/settings";
 import type { TlProjectRow, TlWorkspaceRow } from "@/server/db/schema";
 import type { ProjectAccess } from "../access";
 

@@ -157,7 +157,7 @@
  * --hm-accent, --hm-action, --hm-on-action, --hm-focus); a field class
  * (`hm-field-ridge` …) reassigns them for its section. Every text pair is at
  * least 4.5:1 on its ground and its ground-2, in both themes
- * (tests/unit/himal-tokens.test.ts).
+ * (tests/unit/portfolio-tokens.test.ts).
  */
 .himal {
 	color-scheme: light;

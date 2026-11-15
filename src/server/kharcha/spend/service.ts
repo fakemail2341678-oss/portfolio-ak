@@ -3,7 +3,7 @@ import { and, asc, desc, eq, inArray, type SQL, sql } from "drizzle-orm";
 import { unionAll } from "drizzle-orm/pg-core";
 import type { SpendExportInput } from "@/features/kharcha/schema";
 import type { SpendChartInput, SpendGroupBy, SpendListInput } from "@/features/kharcha/search";
-import { parseQuery } from "@/features/kharcha/spend/query/parse";
+import { parseQuery } from "@/features/kharcha/spend/lib/query/parse";
 import type {
 	Amount,
 	SpendBucket,

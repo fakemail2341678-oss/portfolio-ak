@@ -3,8 +3,8 @@ import { Suspense } from "react";
 import { expect } from "storybook/test";
 import { m } from "@/paraglide/messages";
 import { sampleAdmin, sampleEditor } from "../../../../.storybook/mocks/data";
-import { AppearanceSettings } from "./appearance-settings";
-import { Dashboard } from "./dashboard";
+import { AppearanceSettings } from "./appearance-settings-section";
+import { Dashboard } from "./dashboard-page";
 
 /** The admin home with the mocked getDashboard (.storybook/mocks/functions/admin.ts). */
 function DashboardPage() {

@@ -4,7 +4,7 @@ import { useCrudForm } from "@/components/crud/use-crud-form";
 import { FormDialog } from "@/components/dialogs/form-dialog";
 import { formValidators, useAppForm } from "@/components/forms";
 import { m } from "@/paraglide/messages";
-import { RBAC_REFRESH, userKeys } from "../keys";
+import { rbacRefreshKeys, userKeys } from "../keys";
 import { roleDescription, roleLabel } from "../labels";
 import { userMutations } from "../queries";
 import type { RoleSummary, UserListItem } from "../schema";
@@ -40,7 +40,7 @@ export function UserRolesDialog({
 		item: user,
 		toInput: (values: UserRolesValues) => formSchema.parse(values),
 		update: userMutations.roles(),
-		invalidate: RBAC_REFRESH,
+		invalidate: rbacRefreshKeys,
 		reload: userKeys.lists(),
 		onSaved: onClose,
 		messages: { saved: () => m.users_toast_roles_saved() },

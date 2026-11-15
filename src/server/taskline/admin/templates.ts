@@ -8,7 +8,7 @@ import type {
 	SavedProjectTemplate,
 	SaveProjectAsTemplateInput,
 } from "@/features/taskline/admin/schema";
-import { projectSettings } from "@/features/taskline/settings";
+import { projectSettings } from "@/features/taskline/lib/settings";
 import {
 	ruleFitsTemplate,
 	TEMPLATE_TASK_DESCRIPTION_MAX,
@@ -16,7 +16,7 @@ import {
 	TEMPLATES_MAX,
 	templateCounts,
 	templateDefinition,
-} from "@/features/taskline/template-definition";
+} from "@/features/taskline/lib/template-definition";
 import { BUILTIN_TEMPLATES, type TemplateChoice } from "@/features/taskline/types";
 import { ruleError } from "@/lib/errors";
 import { todayInZone } from "@/lib/i18n/date-only";

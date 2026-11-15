@@ -1,6 +1,6 @@
 import "@tanstack/react-start/server-only";
 import type { MediaAltInput, MediaItemDto, MediaPage } from "@/features/media/schema";
-import { mediaItem } from "@/features/media/schema";
+import { mediaItemSchema } from "@/features/media/schema";
 import type { MediaListInput } from "@/features/media/search";
 import { ruleError } from "@/lib/errors";
 import { localizedValue } from "@/lib/i18n/localized";
@@ -42,7 +42,7 @@ export async function setAlt({ db, actor, imageStore }: Services, input: MediaAl
 		]);
 		if (changed) audit({ action: "media.update", target: target(row), ...changed });
 		const usage = await repo.usageOf(tx, [row.id]);
-		return mediaItem.parse({
+		return mediaItemSchema.parse({
 			...row,
 			image: toImageAsset(store, row),
 			name: target(row).label,

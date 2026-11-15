@@ -18,7 +18,7 @@ import { zodInput } from "@/functions/_lib/validator";
 import { bulkIdsSchema } from "@/lib/list/paging";
 import { requirePermission } from "@/middleware/auth";
 import { withServices } from "@/middleware/services";
-import * as sections from "@/server/portfolio/sections-service";
+import * as sections from "@/server/portfolio/sections/service";
 
 /**
  * The portfolio's ordered sections (experience, skills, process steps,

@@ -1,5 +1,3 @@
-import { useMatches } from "@tanstack/react-router";
-
 /**
  * Sections that never read the session (the portfolio) skip looking it up:
  *
@@ -22,6 +20,3 @@ declare module "@tanstack/react-router" {
 /** True when a matched route skips the session. */
 export const skipsSession = (matches: ReadonlyArray<{ staticData: { session?: SessionScope | undefined } }>): boolean =>
 	matches.some((match) => match.staticData.session === "skip");
-
-/** For components that read the session with useQuery: pass `enabled: !useSessionSkipped()`. */
-export const useSessionSkipped = () => useMatches({ select: skipsSession });

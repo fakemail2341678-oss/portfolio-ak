@@ -1,10 +1,10 @@
 import { createServerFn } from "@tanstack/react-start";
 import {
-	arenaInput,
+	arenaInputSchema,
 	type ChaalArenaPage,
 	type ChaalSwissPage,
 	type ChaalTournaments,
-	swissInput,
+	swissInputSchema,
 } from "@/features/chaal/events/schema";
 import { zodInput } from "@/functions/_lib/validator";
 import { withChaalPublic } from "@/middleware/chaal";
@@ -23,7 +23,7 @@ export const getChaalTournaments = createServerFn({ method: "GET" })
 
 export const getChaalArena = createServerFn({ method: "GET" })
 	.middleware([withChaalPublic])
-	.validator(zodInput(arenaInput))
+	.validator(zodInput(arenaInputSchema))
 	.handler(
 		({ context, data }): Promise<ChaalArenaPage> =>
 			events.arenaPage(context.chaal, context.session, data.id, data.page),
@@ -31,5 +31,5 @@ export const getChaalArena = createServerFn({ method: "GET" })
 
 export const getChaalSwiss = createServerFn({ method: "GET" })
 	.middleware([withChaalPublic])
-	.validator(zodInput(swissInput))
+	.validator(zodInput(swissInputSchema))
 	.handler(({ context, data }): Promise<ChaalSwissPage> => events.swissPage(context.chaal, context.session, data.id));

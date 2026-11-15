@@ -1,7 +1,8 @@
 import "@tanstack/react-start/server-only";
-import type { AutomationEvent } from "@/features/taskline/automation-rules";
-import { activeFields, parseFieldFilters } from "@/features/taskline/fields";
-import { storedRecurrence } from "@/features/taskline/recurrence";
+import type { AutomationEvent } from "@/features/taskline/lib/automation-rules";
+import { activeFields, parseFieldFilters } from "@/features/taskline/lib/fields";
+import { storedRecurrence } from "@/features/taskline/lib/recurrence";
+import { projectSettings } from "@/features/taskline/lib/settings";
 import {
 	type BulkTasksInput,
 	type CreateTaskInput,
@@ -10,7 +11,6 @@ import {
 	type TaskListInput,
 	type UpdateTaskInput,
 } from "@/features/taskline/schema";
-import { projectSettings } from "@/features/taskline/settings";
 import {
 	type BulkResult,
 	type ChecklistItem,

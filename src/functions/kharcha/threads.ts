@@ -1,5 +1,5 @@
 import { createServerFn } from "@tanstack/react-start";
-import { groupIdInput, peopleInput, personIdInput } from "@/features/kharcha/schema";
+import { groupIdInputSchema, peopleInputSchema, personIdInputSchema } from "@/features/kharcha/schema";
 import type { FriendThread, GroupThread, PeoplePage } from "@/features/kharcha/types";
 import { zodInput } from "@/functions/_lib/validator";
 import { requireKharchaUser, withKharchaServices } from "@/middleware/kharcha";
@@ -13,15 +13,15 @@ import * as threads from "@/server/kharcha/threads/service";
 
 export const listKharchaPeople = createServerFn({ method: "GET" })
 	.middleware([requireKharchaUser, withKharchaServices])
-	.validator(zodInput(peopleInput))
+	.validator(zodInput(peopleInputSchema))
 	.handler(({ data, context }): Promise<PeoplePage> => threads.listPeople(context, data));
 
 export const getKharchaGroupThread = createServerFn({ method: "GET" })
 	.middleware([requireKharchaUser, withKharchaServices])
-	.validator(zodInput(groupIdInput))
+	.validator(zodInput(groupIdInputSchema))
 	.handler(({ data, context }): Promise<GroupThread> => threads.getGroupThread(context, data.groupId));
 
 export const getKharchaFriendThread = createServerFn({ method: "GET" })
 	.middleware([requireKharchaUser, withKharchaServices])
-	.validator(zodInput(personIdInput))
+	.validator(zodInput(personIdInputSchema))
 	.handler(({ data, context }): Promise<FriendThread> => threads.getFriendThread(context, data.personId));

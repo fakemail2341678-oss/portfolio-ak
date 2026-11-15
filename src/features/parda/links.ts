@@ -1,4 +1,5 @@
 import { linkOptions } from "@tanstack/react-router";
+import { titleParam } from "./lib/slug";
 import {
 	type DiscoverSearch,
 	type LibraryQuery,
@@ -9,7 +10,6 @@ import {
 	type SearchTab,
 	typeOfMedia,
 } from "./search";
-import { titleParam } from "./slug";
 
 /**
  * Every link into Parda (PLAN 12.5, "Paths"): pages link through these, so moving the

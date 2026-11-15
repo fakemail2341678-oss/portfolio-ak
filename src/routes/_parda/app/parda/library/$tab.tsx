@@ -1,6 +1,6 @@
 import { createFileRoute, stripSearchParams } from "@tanstack/react-router";
-import { pardaHead } from "@/features/parda/brand";
-import { PardaLibraryPage } from "@/features/parda/library/library-page";
+import { pardaHead } from "@/features/parda/lib/brand";
+import { PardaLibraryPage } from "@/features/parda/library/components/library-page";
 import { LIBRARY_DEFAULTS, librarySearchSchema } from "@/features/parda/search";
 import { m } from "@/paraglide/messages";
 import { getLocale } from "@/paraglide/runtime";
@@ -20,12 +20,12 @@ export const Route = createFileRoute("/_parda/app/parda/library/$tab")({
 	head: ({ params }) =>
 		pardaHead(
 			params.tab === "favourites"
-				? m.pd_library_favourites()
+				? m.parda_library_favourites()
 				: params.tab === "continue"
-					? m.pd_continue_watching()
+					? m.parda_continue_watching()
 					: params.tab === "history"
-						? m.pd_library_history()
-						: m.pd_my_list(),
+						? m.parda_library_history()
+						: m.parda_my_list(),
 		),
 	component: PardaLibraryPage,
 });

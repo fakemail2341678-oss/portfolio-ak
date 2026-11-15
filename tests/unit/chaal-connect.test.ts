@@ -1,6 +1,6 @@
 import { createHash } from "node:crypto";
 import { describe, expect, it } from "vitest";
-import { featureOn, missingScopes, scopesFor } from "@/features/chaal/features";
+import { featureOn, missingScopes, scopesFor } from "@/features/chaal/lib/features";
 import { connectHref, safeReturnPath } from "@/features/chaal/links";
 import {
 	authorizeUrl,

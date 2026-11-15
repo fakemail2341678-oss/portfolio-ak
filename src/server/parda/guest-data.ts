@@ -4,7 +4,7 @@ import { pdProfile, pdReport } from "@/server/db/schema";
 import type { Tx } from "@/server/db/types";
 import type { GuestData } from "@/server/guests/data";
 import { mergeProfiles } from "./library/repository";
-import { mergeSaved } from "./library/saved-repository";
+import { mergeSaved } from "./library/saved/repository";
 import { claimParties } from "./party/repository";
 import { defaultProfile, profilesOf } from "./profiles/repository";
 

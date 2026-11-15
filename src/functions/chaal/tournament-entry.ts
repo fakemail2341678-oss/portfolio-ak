@@ -1,5 +1,5 @@
 import { createServerFn } from "@tanstack/react-start";
-import { tournamentJoinInput, tournamentWithdrawInput } from "@/features/chaal/events/schema";
+import { tournamentJoinInputSchema, tournamentWithdrawInputSchema } from "@/features/chaal/events/schema";
 import { zodInput } from "@/functions/_lib/validator";
 import { requireChaalUser, withChaalServices } from "@/middleware/chaal";
 import * as events from "@/server/chaal/events/service";
@@ -13,10 +13,10 @@ import * as events from "@/server/chaal/events/service";
 
 export const joinChaalTournament = createServerFn({ method: "POST" })
 	.middleware([requireChaalUser, withChaalServices])
-	.validator(zodInput(tournamentJoinInput))
+	.validator(zodInput(tournamentJoinInputSchema))
 	.handler(({ context, data }): Promise<void> => events.join(context, context.user.id, data));
 
-export const withdrawChaalTournament = createServerFn({ method: "POST" })
+export const leaveChaalTournament = createServerFn({ method: "POST" })
 	.middleware([requireChaalUser, withChaalServices])
-	.validator(zodInput(tournamentWithdrawInput))
+	.validator(zodInput(tournamentWithdrawInputSchema))
 	.handler(({ context, data }): Promise<void> => events.withdraw(context, context.user.id, data.kind, data.id));

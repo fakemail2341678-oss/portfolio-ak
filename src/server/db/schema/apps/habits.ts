@@ -17,7 +17,7 @@ export const habit = pgTable(
 		id: uuid().primaryKey().defaultRandom(),
 		ownerId: owner(),
 		name: text().notNull(),
-		/** A palette name (src/features/apps/colors.ts). */
+		/** A palette name (src/features/apps/lib/colors.ts). */
 		color: text().notNull(),
 		/** The days it is meant for: bit 0 is Sunday … bit 6 Saturday (127 is every day). */
 		days: smallint().notNull().default(127),

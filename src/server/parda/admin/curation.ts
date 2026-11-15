@@ -19,7 +19,7 @@ import { type PardaMedia, pdBillboard, pdCollection, pdCollectionItem, pdRail, p
 import type { Db, Tx } from "@/server/db/types";
 import { searchCatalog, titleDetails, usCertificate } from "../catalog/service";
 import { collectionRailKey, loadCuration, mergedRails, slotState } from "../curation";
-import { rememberTitle } from "../library/saved-repository";
+import { rememberTitle } from "../library/saved/repository";
 import { type PardaCurator, saveVersioned } from "./context";
 import { titleNames } from "./takedowns";
 
@@ -69,7 +69,7 @@ async function rememberTitles(
 	if (missing.length === 0) return;
 	const refuse = () =>
 		new AppError("BAD_REQUEST", "Parda: a chosen title can't be read", {
-			fieldErrors: { [field]: [m.pd_admin_title_unavailable()] },
+			fieldErrors: { [field]: [m.parda_admin_title_unavailable()] },
 		});
 	if (!catalog) throw refuse();
 	const { region } = await catalog.controls.settings();

@@ -3,8 +3,8 @@ import { useNavigate } from "@tanstack/react-router";
 import type { PaginationProps } from "@/components/navigation/pagination";
 import type { SearchPatch } from "@/components/navigation/search-link";
 import type { Paged } from "../lib/list/paging";
-import { usePreferences, usePreferencesStore } from "../lib/stores/hooks";
 import { PAGE_SIZES, type Preferences } from "../lib/stores/preferences";
+import { usePreferences, usePreferencesStore } from "../lib/stores/use-stores";
 import { useListQuery } from "./use-list-query";
 
 /**

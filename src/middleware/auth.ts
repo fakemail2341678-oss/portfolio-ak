@@ -1,5 +1,5 @@
 import { createMiddleware } from "@tanstack/react-start";
-import { canEnterAdmin, hasAll, type Permission } from "@/features/rbac/permissions";
+import { canEnterAdmin, hasAll, type Permission } from "@/features/rbac/lib/permissions";
 import { AppError, ruleError } from "@/lib/errors";
 import type { Session } from "@/lib/session";
 import { m } from "@/paraglide/messages";
@@ -25,7 +25,7 @@ export const withSession = createMiddleware({ type: "function" }).server(async (
  * 2FA is on, 0126) and `context.impersonatedBy` (the admin behind an impersonated
  * session, or null; 0134). Everything about an account (its sessions, data export,
  * password, two-factor) and every admin function goes through it, so a guest reaches
- * none of them; the apps use `requireAppUser`.
+ * none of them; the apps use `requireAppsUser`.
  */
 export const requireUser = createMiddleware({ type: "function" })
 	.middleware([withSession])

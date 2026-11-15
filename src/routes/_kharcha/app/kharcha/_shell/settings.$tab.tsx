@@ -1,8 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { z } from "zod";
-import { kharchaHead } from "@/features/kharcha/brand";
+import { kharchaHead } from "@/features/kharcha/lib/brand";
 import { SETTINGS_TABS } from "@/features/kharcha/search";
-import { SettingsPage } from "@/features/kharcha/settings/settings-page";
+import { SettingsPage } from "@/features/kharcha/settings/components/settings-page";
 import { parseParams } from "@/lib/list/params";
 import { ensureQuery } from "@/lib/query";
 import { m } from "@/paraglide/messages";

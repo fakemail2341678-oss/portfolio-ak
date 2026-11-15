@@ -1,4 +1,4 @@
-import { createContext, useContext } from "react";
+import { createContext } from "react";
 import { m } from "@/paraglide/messages";
 
 /**
@@ -13,7 +13,6 @@ export const MAIN_CONTENT = { id: "main-content", tabIndex: -1 } as const;
  * page as a section instead of a second <main>.
  */
 export const InsideMain = createContext(false);
-export const useInsideMain = () => useContext(InsideMain);
 
 /**
  * The first tab stop of every page, rendered by the root: jumps past the

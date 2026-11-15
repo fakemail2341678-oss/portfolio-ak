@@ -1,18 +1,18 @@
-import { keepPreviousData, type QueryKey, useQuery } from "@tanstack/react-query";
+import type { QueryKey } from "@tanstack/react-query";
 import { CheckIcon, ChevronsUpDownIcon, XIcon } from "lucide-react";
-import { useRef, useState } from "react";
+import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Spinner } from "@/components/ui/spinner";
-import { useDebouncedValue } from "@/hooks/use-debounced-value";
 import { formatNumber } from "@/lib/i18n/intl";
 import { cn } from "@/lib/utils";
 import { m } from "@/paraglide/messages";
 import { useFieldContext } from "../contexts";
 import { type FieldBaseProps, FieldShell } from "../field-shell";
 import type { FieldOption } from "./choice-fields";
+import { useAsyncOptions } from "./use-async-options";
 
 /**
  * Search on the server as you type: options come from `search(query)` (a server
@@ -38,32 +38,6 @@ type AsyncProps = FieldBaseProps &
 		placeholder?: string;
 		searchPlaceholder?: string;
 	};
-
-/** The search results for what's typed, and a memory of every option's label seen so far. */
-export function useAsyncOptions(
-	{ queryKey, search, debounceMs = 250, selected = [] }: AsyncSearch & { selected?: ReadonlyArray<FieldOption> },
-	open: boolean,
-) {
-	const [query, setQuery] = useState("");
-	const debounced = useDebouncedValue(query.trim(), debounceMs);
-	const results = useQuery({
-		queryKey: [...queryKey, "search", debounced],
-		queryFn: () => search(debounced),
-		enabled: open,
-		placeholderData: keepPreviousData,
-		staleTime: 30_000,
-	});
-	const known = useRef(new Map<string, FieldOption>());
-	for (const option of [...selected, ...(results.data ?? [])]) known.current.set(option.value, option);
-	return {
-		query,
-		setQuery,
-		options: results.data ?? [],
-		// Typing ahead of the debounce counts as loading too, so "no results" never flashes.
-		loading: results.isFetching || query.trim() !== debounced,
-		labelOf: (value: string) => known.current.get(value)?.label ?? value,
-	};
-}
 
 export function AsyncOptionList({
 	listId,

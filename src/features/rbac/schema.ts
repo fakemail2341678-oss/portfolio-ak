@@ -4,7 +4,7 @@ import { isoDateTime } from "@/lib/crud/schema";
 import type { Paged } from "@/lib/list/paging";
 import { email, optionalText, required } from "@/lib/validation";
 import { locales } from "@/paraglide/runtime";
-import { isPermission, type Permission } from "./permissions";
+import { isPermission, type Permission } from "./lib/permissions";
 
 /** One permission from the catalog; anything else is rejected. */
 export const permissionSchema = z.custom<Permission>((value) => typeof value === "string" && isPermission(value));
@@ -34,7 +34,7 @@ export const rolePermissionsUpdateSchema = z.strictObject({
 });
 export type RolePermissionsUpdate = z.output<typeof rolePermissionsUpdateSchema>;
 
-export const roleSummary = z.object({
+export const roleSummarySchema = z.object({
 	id: z.string(),
 	key: z.string(),
 	/** Custom roles' own name; system roles are labelled with messages (see roleLabel). */
@@ -47,13 +47,13 @@ export const roleSummary = z.object({
 	/** Changes on rename only (the version the role dialog sends back); permission edits are deltas. */
 	updatedAt: isoDateTime(),
 });
-export type RoleSummary = z.output<typeof roleSummary>;
+export type RoleSummary = z.output<typeof roleSummarySchema>;
 
 // ---------------------------------------------------------------------------
 // Users (the list's URL contract is in ./search.ts)
 // ---------------------------------------------------------------------------
 
-export const userListItem = z.object({
+export const userListItemSchema = z.object({
 	id: z.string(),
 	name: z.string(),
 	email: z.string(),
@@ -64,7 +64,7 @@ export const userListItem = z.object({
 	/** The version the roles dialog sends back. */
 	updatedAt: isoDateTime(),
 });
-export type UserListItem = z.output<typeof userListItem>;
+export type UserListItem = z.output<typeof userListItemSchema>;
 export type UserPage = Paged<UserListItem>;
 
 /** The roles a user holds: the admin flag plus custom roles (the `user` baseline is implicit), from the version opened. */

@@ -8,7 +8,7 @@ export const getPardaSearch = fn(async (): Promise<SearchPageData> => ({ configu
 export const getPardaSuggest = fn(async (): Promise<SearchSuggestData> => ({ imageBase: "", hits: [] })).mockName(
 	"getPardaSuggest",
 );
-export const notePardaSearch = fn(async (): Promise<void> => undefined).mockName("notePardaSearch");
+export const recordPardaSearch = fn(async (): Promise<void> => undefined).mockName("recordPardaSearch");
 export const getPardaDiscover = fn(async (): Promise<DiscoverPageData> => ({ configured: false })).mockName(
 	"getPardaDiscover",
 );

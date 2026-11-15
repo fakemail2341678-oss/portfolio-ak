@@ -5,8 +5,9 @@ import { Spinner } from "@/components/ui/spinner";
 import { cn } from "@/lib/utils";
 import { m } from "@/paraglide/messages";
 import { useFormContext } from "./contexts";
-import { errorMessages } from "./field-shell";
-import { FormMetaProvider, useFormMeta } from "./form-meta";
+import { FormMetaProvider } from "./form-meta";
+import { errorMessages } from "./use-field-a11y";
+import { useFormMeta } from "./use-form-meta";
 
 /**
  * <form> wired to TanStack Form: prevents the native submit, runs handleSubmit,

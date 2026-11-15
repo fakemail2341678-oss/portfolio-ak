@@ -1,7 +1,7 @@
 import "@tanstack/react-start/server-only";
 import { and, asc, desc, eq, inArray, isNull, sql } from "drizzle-orm";
-import { simplify } from "@/features/kharcha/money/simplify";
-import { threadKey } from "@/features/kharcha/notifications";
+import { threadKey } from "@/features/kharcha/lib/notifications";
+import { simplify } from "@/features/kharcha/money/lib/simplify";
 import type { CreateGroupInput, UpdateGroupInput } from "@/features/kharcha/schema";
 import {
 	GROUP_KIND_ICON,

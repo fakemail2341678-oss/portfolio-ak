@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { chaalHead } from "@/features/chaal/brand";
-import { ChaalGamePage } from "@/features/chaal/game/game-page";
+import { ChaalGamePage } from "@/features/chaal/game/components/game-page";
+import { chaalHead } from "@/features/chaal/lib/brand";
 import { m } from "@/paraglide/messages";
 
 /**
@@ -12,6 +12,6 @@ import { m } from "@/paraglide/messages";
 export const Route = createFileRoute("/_chaal/app/chaal/game/$id")({
 	loader: async ({ context, params }) =>
 		(await import("@/features/chaal/game/load")).loadGamePage(context.queryClient, Boolean(context.session), params.id),
-	head: () => chaalHead(m.ch_game_title()),
+	head: () => chaalHead(m.chaal_game_title()),
 	component: ChaalGamePage,
 });

@@ -1,5 +1,5 @@
 import { createServerFn } from "@tanstack/react-start";
-import { wsInput } from "@/features/taskline/schema";
+import { wsInputSchema } from "@/features/taskline/schema";
 import type { TasklineMember, WorkspaceSummary, WorkspaceView } from "@/features/taskline/types";
 import { zodInput } from "@/functions/_lib/validator";
 import { requireTasklineUser, withTasklineServices } from "@/middleware/taskline";
@@ -12,7 +12,7 @@ import * as workspaces from "@/server/taskline/workspace/service";
 
 export const getTasklineWorkspace = createServerFn({ method: "GET" })
 	.middleware([requireTasklineUser, withTasklineServices])
-	.validator(zodInput(wsInput))
+	.validator(zodInput(wsInputSchema))
 	.handler(({ data, context }): Promise<WorkspaceView> => workspaces.getWorkspace(context, data.ws));
 
 export const startTasklineSandbox = createServerFn({ method: "POST" })
@@ -21,5 +21,5 @@ export const startTasklineSandbox = createServerFn({ method: "POST" })
 
 export const listTasklineMembers = createServerFn({ method: "GET" })
 	.middleware([requireTasklineUser, withTasklineServices])
-	.validator(zodInput(wsInput))
+	.validator(zodInput(wsInputSchema))
 	.handler(({ data, context }): Promise<TasklineMember[]> => workspaces.listMembers(context, data.ws));

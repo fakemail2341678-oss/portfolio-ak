@@ -1,10 +1,9 @@
 import { describe, expect, it } from "vitest";
-import { play } from "@/features/chaal/chess/rules";
-import { isPuzzleAngle, PUZZLE_ANGLES } from "@/features/chaal/puzzles/angles";
-import { readPuzzleLimits } from "@/features/chaal/puzzles/limits";
-import { progressOf, weakestThemes } from "@/features/chaal/puzzles/progress";
-import type { ChaalPuzzle } from "@/features/chaal/puzzles/schema";
-import { THEME_NAMES } from "@/features/chaal/puzzles/themes";
+import { play } from "@/features/chaal/chess/lib/rules";
+import { isPuzzleAngle, PUZZLE_ANGLES } from "@/features/chaal/puzzles/lib/angles";
+import { readPuzzleLimits } from "@/features/chaal/puzzles/lib/limits";
+import { progressOf, weakestThemes } from "@/features/chaal/puzzles/lib/progress";
+import { THEME_NAMES } from "@/features/chaal/puzzles/lib/themes";
 import {
 	giveHint,
 	isDone,
@@ -18,7 +17,8 @@ import {
 	streakDifficulty,
 	type Trainer,
 	tryMove,
-} from "@/features/chaal/puzzles/trainer";
+} from "@/features/chaal/puzzles/lib/trainer";
+import type { ChaalPuzzle } from "@/features/chaal/puzzles/schema";
 import {
 	puzzleAnswer,
 	puzzleBatchAnswer,

@@ -12,9 +12,9 @@ import {
 	DropdownMenuSeparator,
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useAuthNavigation } from "@/features/auth/hooks/use-auth-actions";
 import { sessionQueryOptions } from "@/features/auth/queries";
-import { useAuthNavigation } from "@/features/auth/use-auth-actions";
-import { canEnterAdmin } from "@/features/rbac/permissions";
+import { canEnterAdmin } from "@/features/rbac/lib/permissions";
 import { m } from "@/paraglide/messages";
 
 /**

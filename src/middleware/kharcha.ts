@@ -31,7 +31,7 @@ export const requireKharchaUser = createMiddleware({ type: "function" })
  *
  *   createServerFn({ method: "POST" })
  *     .middleware([requireKharchaUser, withKharchaServices])
- *     .validator(zodInput(createExpenseInput))
+ *     .validator(zodInput(createExpenseInputSchema))
  *     .handler(({ data, context }) => expenses.createExpense(context, data));
  */
 export const withKharchaServices = createMiddleware({ type: "function" })

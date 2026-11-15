@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { ChaalLabPage } from "@/features/chaal/admin/lab/lab-page";
+import { ChaalLabPage } from "@/features/chaal/admin/lab/components/lab-page";
 import { chaalLabSearch } from "@/features/chaal/admin/search";
-import { assertRoutePermission } from "@/features/rbac/route-guard";
+import { assertRoutePermission } from "@/features/rbac/lib/route-guard";
 import { staticCrumb } from "@/lib/breadcrumbs";
 import { titleHead } from "@/lib/crud/route";
 import { ensureQuery } from "@/lib/query";
@@ -23,7 +23,7 @@ export const Route = createFileRoute("/_admin/admin/chaal/lab")({
 			ensureQuery(context.queryClient, chaalStatusQueryOptions()),
 		]);
 	},
-	staticData: { breadcrumb: staticCrumb(m.ch_lab_title) },
-	head: titleHead(m.ch_lab_title),
+	staticData: { breadcrumb: staticCrumb(m.chaal_lab_title) },
+	head: titleHead(m.chaal_lab_title),
 	component: ChaalLabPage,
 });

@@ -3,12 +3,12 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { act, renderHook } from "@testing-library/react";
 import type { ReactNode } from "react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { type PlayedMove, play } from "@/features/chaal/chess/rules";
-import type { Engine, SearchResult } from "@/features/chaal/engine/engine";
-import { readBrowserGame } from "@/features/chaal/local/browser";
-import { addLocalMove, fenOf, newLocalGame } from "@/features/chaal/local/game";
+import { type PlayedMove, play } from "@/features/chaal/chess/lib/rules";
+import type { Engine, SearchResult } from "@/features/chaal/engine/lib/engine";
+import { useLocalGame } from "@/features/chaal/local/hooks/use-local-game";
+import { readBrowserGame } from "@/features/chaal/local/lib/browser";
+import { addLocalMove, fenOf, newLocalGame } from "@/features/chaal/local/lib/game";
 import type { LocalGame } from "@/features/chaal/local/types";
-import { useLocalGame } from "@/features/chaal/local/use-local-game";
 import { overwriteGetLocale } from "@/paraglide/runtime";
 
 /**

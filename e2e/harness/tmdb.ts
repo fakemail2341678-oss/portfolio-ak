@@ -5,7 +5,7 @@
 import { existsSync, readdirSync, readFileSync } from "node:fs";
 import type { ServerResponse } from "node:http";
 import path from "node:path";
-import { titleSlug } from "../../src/features/parda/slug.ts";
+import { titleSlug } from "../../src/features/parda/lib/slug.ts";
 
 const FIXTURES = path.resolve(import.meta.dirname, "../../tests/fixtures/tmdb");
 const PLACEHOLDER =

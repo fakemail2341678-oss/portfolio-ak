@@ -2,7 +2,7 @@ import "@tanstack/react-start/server-only";
 import { createHash, randomBytes } from "node:crypto";
 import { waitUntil } from "@vercel/functions";
 import { and, desc, eq, gt, inArray, isNull } from "drizzle-orm";
-import { KHARCHA_NAME } from "@/features/kharcha/brand";
+import { KHARCHA_NAME } from "@/features/kharcha/lib/brand";
 import type { InviteResult, JoinedInvite, JoinInvite } from "@/features/kharcha/types";
 import { ruleError } from "@/lib/errors";
 import { localizedUrl } from "@/lib/seo";

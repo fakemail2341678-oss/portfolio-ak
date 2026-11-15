@@ -1,10 +1,10 @@
 import { createServerFn } from "@tanstack/react-start";
 import {
 	type AdminSource,
-	sourceInput,
-	sourceOrderInput,
-	sourceStateInput,
-	sourceUpdateInput,
+	sourceInputSchema,
+	sourceOrderInputSchema,
+	sourceStateInputSchema,
+	sourceUpdateInputSchema,
 } from "@/features/parda/admin/schema";
 import { zodInput } from "@/functions/_lib/validator";
 import { idSchema } from "@/lib/crud/schema";
@@ -27,22 +27,22 @@ export const getPardaSource = createServerFn({ method: "GET" })
 
 export const createPardaSource = createServerFn({ method: "POST" })
 	.middleware([requirePermission("parda:configure"), withServices])
-	.validator(zodInput(sourceInput))
+	.validator(zodInput(sourceInputSchema))
 	.handler(({ data, context }): Promise<AdminSource> => sources.createSource(pardaAdmin(context), data));
 
 export const updatePardaSource = createServerFn({ method: "POST" })
 	.middleware([requirePermission("parda:configure"), withServices])
-	.validator(zodInput(sourceUpdateInput))
+	.validator(zodInput(sourceUpdateInputSchema))
 	.handler(({ data, context }): Promise<AdminSource> => sources.updateSource(pardaAdmin(context), data));
 
 export const setPardaSourceState = createServerFn({ method: "POST" })
 	.middleware([requirePermission("parda:configure"), withServices])
-	.validator(zodInput(sourceStateInput))
+	.validator(zodInput(sourceStateInputSchema))
 	.handler(({ data, context }): Promise<AdminSource> => sources.setSourceState(pardaAdmin(context), data));
 
 export const reorderPardaSources = createServerFn({ method: "POST" })
 	.middleware([requirePermission("parda:configure"), withServices])
-	.validator(zodInput(sourceOrderInput))
+	.validator(zodInput(sourceOrderInputSchema))
 	.handler(({ data, context }): Promise<{ moved: number }> => sources.reorderSources(pardaAdmin(context), data.ids));
 
 export const deletePardaSources = createServerFn({ method: "POST" })

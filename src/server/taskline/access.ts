@@ -1,6 +1,6 @@
 import "@tanstack/react-start/server-only";
 import { and, eq, isNull } from "drizzle-orm";
-import { type WorkspaceSettings, workspaceSettings } from "@/features/taskline/settings";
+import { type WorkspaceSettings, workspaceSettings } from "@/features/taskline/lib/settings";
 import { type ProjectCan, type ProjectRole, SANDBOX_SEGMENT } from "@/features/taskline/types";
 import { ruleError } from "@/lib/errors";
 import { m } from "@/paraglide/messages";

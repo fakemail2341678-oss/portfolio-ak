@@ -3,6 +3,7 @@ import { useRouter } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { sessionQueryOptions } from "@/features/auth/queries";
+import { useSessionSkipped } from "@/hooks/use-session-skipped";
 import {
 	analyticsKey,
 	analyticsRunning,
@@ -13,8 +14,7 @@ import {
 	track,
 } from "@/lib/observability/analytics";
 import { setSentryUser } from "@/lib/observability/sentry-client";
-import { useSessionSkipped } from "@/lib/session-scope";
-import { usePreferences, usePreferencesStore } from "@/lib/stores/hooks";
+import { usePreferences, usePreferencesStore } from "@/lib/stores/use-stores";
 import { m } from "@/paraglide/messages";
 
 /**

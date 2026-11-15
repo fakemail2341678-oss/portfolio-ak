@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { HabitsHome } from "@/features/apps/habits/components/habits-home";
+import { HabitsHome } from "@/features/apps/habits/components/habits-home-page";
 import { habitsSearchSchema } from "@/features/apps/habits/search";
 import { listSearch } from "@/lib/crud/route";
 import { ensureQuery } from "@/lib/query";

@@ -1,6 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
-import { type ChaalPreferences, chaalPreferencesSchema } from "@/features/chaal/settings/preferences";
+import { type ChaalPreferences, chaalPreferencesSchema } from "@/features/chaal/settings/lib/preferences";
 import { zodInput } from "@/functions/_lib/validator";
 import { requireChaalUser, withChaalServices } from "@/middleware/chaal";
 import * as preferences from "@/server/chaal/preferences";
@@ -16,7 +16,7 @@ export const getChaalPreferences = createServerFn({ method: "GET" })
 	.middleware([requireChaalUser, withChaalServices])
 	.handler(({ context }): Promise<ChaalPreferences | null> => preferences.preferencesOf(context.db, context.user.id));
 
-export const saveChaalPreferences = createServerFn({ method: "POST" })
+export const setChaalPreferences = createServerFn({ method: "POST" })
 	.middleware([requireChaalUser, withChaalServices])
 	.validator(zodInput(z.strictObject({ preferences: chaalPreferencesSchema })))
 	.handler(

@@ -3,10 +3,10 @@ import { listKharchaBudgets } from "@/functions/kharcha/budgets";
 import {
 	createKharchaComment,
 	deleteKharchaComment,
-	markKharchaNotificationsRead,
-	markKharchaThreadRead,
 	reactKharchaComment,
 	setKharchaFocus,
+	setKharchaNotificationsRead,
+	setKharchaThreadRead,
 	updateKharchaComment,
 	updateKharchaNotifySettings,
 } from "@/functions/kharcha/conversations";
@@ -16,8 +16,8 @@ import {
 	getKharchaExpense,
 	getKharchaMerchants,
 	listKharchaSpend,
-	markKharchaDuplicate,
 	restoreKharchaExpense,
+	setKharchaNotDuplicate,
 	updateKharchaExpense,
 } from "@/functions/kharcha/expenses";
 import {
@@ -29,13 +29,13 @@ import {
 import {
 	addKharchaGroupMember,
 	addKharchaNewGroupMember,
-	archiveKharchaGroup,
 	createKharchaGroup,
 	getKharchaGroup,
 	getKharchaGroupTotals,
 	leaveKharchaGroup,
 	listKharchaGroups,
 	removeKharchaGroupMember,
+	setKharchaGroupArchived,
 	updateKharchaGroup,
 } from "@/functions/kharcha/groups";
 import {
@@ -64,16 +64,17 @@ import { createKharchaDraft, deleteKharchaDraft, getKharchaUploadSettings } from
 import { listKharchaRecurring } from "@/functions/kharcha/recurring";
 import { getKharchaSettleUp, remindKharchaFriend } from "@/functions/kharcha/settle";
 import {
-	bulkKharchaExpenses,
+	createKharchaSearch,
 	deleteKharchaSearch,
-	exportKharchaSpend,
 	getKharchaSpendChart,
 	importKharchaSpend,
-	renameKharchaSearch,
 	reorderKharchaSearches,
-	saveKharchaSearch,
+	setKharchaSearchName,
+	updateKharchaExpenses,
 } from "@/functions/kharcha/spend";
 import { getKharchaFriendThread, getKharchaGroupThread, listKharchaPeople } from "@/functions/kharcha/threads";
+import { kharchaKeys } from "./keys";
+import { refreshKharcha } from "./lib/refresh";
 import type {
 	AddFriendInput,
 	BulkInput,
@@ -91,7 +92,6 @@ import type {
 	ProfileInput,
 	ReactInput,
 	SettleUpInput,
-	SpendExportInput,
 	UpdateCommentInput,
 	UpdateExpenseInput,
 	UpdateFriendInput,
@@ -100,40 +100,6 @@ import type {
 } from "./schema";
 import type { InsightsInput, SpendChartInput, SpendListInput, StatementInput } from "./search";
 import type { BudgetView, KharchaMe, RecurringView, SavedSearch } from "./types";
-
-/**
- * Kharcha's queries (TanStack Query only, PLAN 14.5 "Client state"). Every key starts with
- * the caller's id, so a change of session never shows another's data, and `kharchaKeys.user`
- * is what a moved `rev` refetches.
- */
-export const kharchaKeys = {
-	all: ["kharcha"] as const,
-	user: (userId: string) => [...kharchaKeys.all, userId] as const,
-	me: (userId: string) => [...kharchaKeys.user(userId), "me"] as const,
-	home: (userId: string) => [...kharchaKeys.user(userId), "home"] as const,
-	spend: (userId: string, input: SpendListInput) => [...kharchaKeys.user(userId), "spend", input] as const,
-	spendChart: (userId: string, input: SpendChartInput) => [...kharchaKeys.user(userId), "spend-chart", input] as const,
-	expense: (userId: string, expenseId: string) => [...kharchaKeys.user(userId), "expense", expenseId] as const,
-	lists: (userId: string) => [...kharchaKeys.user(userId), "lists"] as const,
-	merchants: (userId: string) => [...kharchaKeys.user(userId), "merchants"] as const,
-	people: (userId: string, input: PeopleInput) => [...kharchaKeys.user(userId), "people", input] as const,
-	friends: (userId: string) => [...kharchaKeys.user(userId), "friends"] as const,
-	groups: (userId: string) => [...kharchaKeys.user(userId), "groups"] as const,
-	groupThread: (userId: string, groupId: string) => [...kharchaKeys.user(userId), "group", groupId] as const,
-	friendThread: (userId: string, personId: string) => [...kharchaKeys.user(userId), "friend", personId] as const,
-	groupTotals: (userId: string, groupId: string) => [...kharchaKeys.user(userId), "group-totals", groupId] as const,
-	settleUp: (userId: string, input: SettleUpInput) => [...kharchaKeys.user(userId), "settle-up", input] as const,
-	payment: (userId: string, paymentId: string) => [...kharchaKeys.user(userId), "payment", paymentId] as const,
-	/** Task 94: budgets, recurring expenses and insights. */
-	budgets: (userId: string) => [...kharchaKeys.user(userId), "budgets"] as const,
-	recurring: (userId: string) => [...kharchaKeys.user(userId), "recurring"] as const,
-	insights: (userId: string, tab: "overview" | "trends" | "statement", input: InsightsInput | StatementInput) =>
-		[...kharchaKeys.user(userId), "insights", tab, input] as const,
-	/** Outside `user`: a visitor without a session reads it too. */
-	join: (token: string) => [...kharchaKeys.all, "join", token] as const,
-	/** Outside `user`: polling it mustn't refetch itself. */
-	rev: (userId: string) => [...kharchaKeys.all, "rev", userId] as const,
-};
 
 export const kharchaMeQueryOptions = (userId: string) =>
 	queryOptions({ queryKey: kharchaKeys.me(userId), queryFn: () => getKharchaMe() });
@@ -150,9 +116,6 @@ export const kharchaSpendChartQueryOptions = (userId: string, input: SpendChartI
 		queryKey: kharchaKeys.spendChart(userId, input),
 		queryFn: () => getKharchaSpendChart({ data: input }),
 	});
-
-/** The search, or the rows chosen, as CSV lines (Task 93): the page makes the file. */
-export const exportKharcha = (data: SpendExportInput) => exportKharchaSpend({ data });
 
 export const kharchaExpenseQueryOptions = (userId: string, expenseId: string) =>
 	queryOptions({
@@ -237,10 +200,6 @@ export const kharchaRevQueryOptions = (userId: string) =>
 		staleTime: 0,
 	});
 
-/** Everything the caller's pages read: after one of their own changes, or a moved `rev`. */
-export const refreshKharcha = (queryClient: QueryClient, userId: string) =>
-	queryClient.invalidateQueries({ queryKey: kharchaKeys.user(userId) });
-
 /** A saved search's change answers with all of them: the caller's `me` (the rail's list) takes it. */
 const searchesChanged = (queryClient: QueryClient, userId: string) => (searches: SavedSearch[]) => {
 	queryClient.setQueryData<KharchaMe>(kharchaKeys.me(userId), (me) => (me ? { ...me, searches } : me));
@@ -293,17 +252,17 @@ export const kharchaMutations = {
 		}),
 	bulk: (queryClient: QueryClient, userId: string) =>
 		mutationOptions({
-			mutationFn: (data: BulkInput) => bulkKharchaExpenses({ data }),
+			mutationFn: (data: BulkInput) => updateKharchaExpenses({ data }),
 			onSuccess: () => refreshKharcha(queryClient, userId),
 		}),
 	saveSearch: (queryClient: QueryClient, userId: string) =>
 		mutationOptions({
-			mutationFn: (data: { name: string; query: string }) => saveKharchaSearch({ data }),
+			mutationFn: (data: { name: string; query: string }) => createKharchaSearch({ data }),
 			onSuccess: searchesChanged(queryClient, userId),
 		}),
 	renameSearch: (queryClient: QueryClient, userId: string) =>
 		mutationOptions({
-			mutationFn: (data: { id: string; name: string }) => renameKharchaSearch({ data }),
+			mutationFn: (data: { id: string; name: string }) => setKharchaSearchName({ data }),
 			onSuccess: searchesChanged(queryClient, userId),
 		}),
 	reorderSearches: (queryClient: QueryClient, userId: string) =>
@@ -354,7 +313,7 @@ export const kharchaMutations = {
 		}),
 	markDuplicate: (queryClient: QueryClient, userId: string) =>
 		mutationOptions({
-			mutationFn: (data: { expenseId: string; ok: boolean }) => markKharchaDuplicate({ data }),
+			mutationFn: (data: { expenseId: string; ok: boolean }) => setKharchaNotDuplicate({ data }),
 			onSuccess: () => refreshKharcha(queryClient, userId),
 		}),
 	createDraft: (queryClient: QueryClient, userId: string) =>
@@ -394,7 +353,7 @@ export const kharchaMutations = {
 		}),
 	archiveGroup: (queryClient: QueryClient, userId: string) =>
 		mutationOptions({
-			mutationFn: (data: { groupId: string; archived: boolean }) => archiveKharchaGroup({ data }),
+			mutationFn: (data: { groupId: string; archived: boolean }) => setKharchaGroupArchived({ data }),
 			onSuccess: () => refreshKharcha(queryClient, userId),
 		}),
 	addMember: (queryClient: QueryClient, userId: string) =>
@@ -461,7 +420,7 @@ export const kharchaMutations = {
 	/** Reading a thread clears its badge on People and its notifications: those two refetch, nothing else. */
 	readThread: (queryClient: QueryClient, userId: string) =>
 		mutationOptions({
-			mutationFn: (thread: string) => markKharchaThreadRead({ data: { thread } }),
+			mutationFn: (thread: string) => setKharchaThreadRead({ data: { thread } }),
 			onSuccess: () =>
 				Promise.all([
 					queryClient.invalidateQueries({ queryKey: [...kharchaKeys.user(userId), "people"] }),
@@ -471,7 +430,7 @@ export const kharchaMutations = {
 		}),
 	readNotifications: (queryClient: QueryClient, userId: string) =>
 		mutationOptions({
-			mutationFn: (ids?: string[]) => markKharchaNotificationsRead({ data: ids ? { ids } : {} }),
+			mutationFn: (ids?: string[]) => setKharchaNotificationsRead({ data: ids ? { ids } : {} }),
 			onSuccess: () => refreshKharcha(queryClient, userId),
 		}),
 	notifySettings: (queryClient: QueryClient, userId: string) =>

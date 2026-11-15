@@ -10,9 +10,9 @@ import { tasklineLinks } from "@/features/taskline/links";
 export const Route = createFileRoute("/_taskline/apps/kanban/$boardId")({
 	beforeLoad: async ({ context, params }) => {
 		if (context.session) {
-			const { locateTasklineProject } = await import("@/functions/taskline/projects");
+			const { getTasklineProjectLocation } = await import("@/functions/taskline/projects");
 			try {
-				const { ws, key } = await locateTasklineProject({ data: { id: params.boardId } });
+				const { ws, key } = await getTasklineProjectLocation({ data: { id: params.boardId } });
 				throw redirect({ ...tasklineLinks.board(ws, key), statusCode: 301 });
 			} catch (error) {
 				if (isRedirect(error)) throw error;

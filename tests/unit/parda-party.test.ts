@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { addSample, clockOffset } from "@/features/parda/party/clock";
-import { partyMode, partySource, takesStart } from "@/features/parda/party/source";
+import { addSample, clockOffset } from "@/features/parda/party/lib/clock";
+import { partyMode, partySource, takesStart } from "@/features/parda/party/lib/source";
 import {
 	CONTINUE_AFTER_MS,
 	COUNTDOWN_MS,
@@ -17,7 +17,7 @@ import {
 	type SyncResult,
 	type SyncState,
 	TAKE_OVER_AFTER_MS,
-} from "@/features/parda/party/sync";
+} from "@/features/parda/party/lib/sync";
 
 /** The sync reducer, rule by rule (PLAN 12.5, "Watch party"; decision 0243), and the clock offset. */
 

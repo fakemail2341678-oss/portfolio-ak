@@ -22,7 +22,7 @@ Guides: `docs/guides/routing-data.md`, `docs/guides/crud.md` ("Server"), `docs/g
    ```
 
    `require…` first, then `with…`. A product uses its own pair (`require<Product>User`, `with<Product>Services`); a public read uses `withPublic` (or `with<Product>Public`).
-5. **Add the test rows:** the function in `tests/server/guarded-functions.test.ts`; in a product, its operation in the product's access test (`tests/server/<product>-access.test.ts`). A new permission goes in the catalog (`src/features/rbac/permissions.ts`) with its labels in both languages.
+5. **Add the test rows:** the function in `tests/server/functions-guards.test.ts`; in a product, its operation in the product's access test (`tests/server/<product>-access.test.ts`). A new permission goes in the catalog (`src/features/rbac/lib/permissions.ts`) with its labels in both languages.
 6. **Call it from the client** through `queries.ts`: a read as `<thing>QueryOptions`, a write as an entry of `<feature>Mutations`, used with `useCrudMutation` or `useCrudForm`.
 7. **Test the service** on PGlite (`tests/server/<feature>-….test.ts`): the happy path, a refusal, and for an edit a stale version.
 8. **Check:** `pnpm standard`, then `pnpm gates`.

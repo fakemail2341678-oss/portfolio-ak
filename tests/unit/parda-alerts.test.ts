@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { scheduleDays } from "@/features/parda/schedule/days";
 import { episodeRangeLabel } from "@/features/parda/schedule/labels";
+import { scheduleDays } from "@/features/parda/schedule/lib/days";
 import type { ScheduleEntry } from "@/features/parda/schedule/types";
 import { CHECK_EVERY_MS, ENDED_CHECK_EVERY_MS, isDue, isEnded, newEpisodes, paced } from "@/server/parda/notify/rules";
 

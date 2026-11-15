@@ -1,8 +1,8 @@
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { m } from "@/paraglide/messages";
 import { journalQueryOptions } from "../../queries";
-import { PostLine } from "../journal/post-line";
-import { SectionHeading } from "../primitives/section-heading";
+import { PostLine } from "../journal/post-row";
+import { SectionHeading } from "../primitives/section-header";
 
 /** /journal: every published article, newest first, as a line-up with excerpts. */
 export function JournalPage() {

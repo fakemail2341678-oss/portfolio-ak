@@ -12,7 +12,7 @@ import type {
 	TournamentPageSearch,
 	TournamentsSearch,
 } from "./search";
-import type { TvChannel } from "./watch/limits";
+import type { TvChannel } from "./watch/lib/limits";
 
 /**
  * Where Chaal lives (PLAN 13.2): its base path is here and nowhere else, so a rename is

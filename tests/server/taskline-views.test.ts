@@ -1,6 +1,6 @@
 import { eq } from "drizzle-orm";
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from "vitest";
-import { bulkTasksInput, type TaskListInput } from "@/features/taskline/schema";
+import { bulkTasksInputSchema, type TaskListInput } from "@/features/taskline/schema";
 import { taskList } from "@/features/taskline/search";
 import { isAppError } from "@/lib/errors";
 import * as schema from "@/server/db/schema";
@@ -230,9 +230,9 @@ describe("bulk changes", () => {
 
 	it("takes exactly one change at a time", () => {
 		const base = { ws, key: "WEB", ids: [crypto.randomUUID()] };
-		expect(bulkTasksInput.safeParse(base).success).toBe(false);
-		expect(bulkTasksInput.safeParse({ ...base, priority: 1, trash: true }).success).toBe(false);
-		expect(bulkTasksInput.safeParse({ ...base, assigneeId: null }).success).toBe(true);
+		expect(bulkTasksInputSchema.safeParse(base).success).toBe(false);
+		expect(bulkTasksInputSchema.safeParse({ ...base, priority: 1, trash: true }).success).toBe(false);
+		expect(bulkTasksInputSchema.safeParse({ ...base, assigneeId: null }).success).toBe(true);
 	});
 });
 

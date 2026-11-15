@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { ProjectSettingsLayout } from "@/features/taskline/settings/settings-layout";
+import { ProjectSettingsLayout } from "@/features/taskline/settings/components/settings-layout";
 import { staticCrumb } from "@/lib/breadcrumbs";
 import { loadDetailOr404 } from "@/lib/crud/route";
 import { AppError } from "@/lib/errors";

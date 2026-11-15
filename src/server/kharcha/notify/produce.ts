@@ -6,7 +6,7 @@ import {
 	type NotifyKind,
 	type NotifyTarget,
 	notifyMode,
-} from "@/features/kharcha/notifications";
+} from "@/features/kharcha/lib/notifications";
 import { khNotification, khPerson, khProfile, user } from "@/server/db/schema";
 import type { Tx } from "@/server/db/types";
 

@@ -1,5 +1,5 @@
 import { createFileRoute, stripSearchParams } from "@tanstack/react-router";
-import { PardaDiscoverPage } from "@/features/parda/discover/discover-page";
+import { PardaDiscoverPage } from "@/features/parda/discover/components/discover-page";
 import { pardaDiscoverHead } from "@/features/parda/home/head";
 import { DISCOVER_DEFAULTS, discoverSearchSchema } from "@/features/parda/search";
 import { getLocale } from "@/paraglide/runtime";

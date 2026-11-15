@@ -1,10 +1,10 @@
 import type { ImageAsset } from "@/features/attachments/schema";
 import type { IsoDate, IsoMonth } from "@/lib/i18n/date-only";
-import type { BudgetPeriod, BudgetState } from "./budgets/period";
-import type { Transfer } from "./money/simplify";
-import type { Paid, Split, SplitMethod } from "./money/split";
-import type { NotificationData, NotifyEmail, NotifyKind, NotifyTarget, Reaction, ThreadKey } from "./notifications";
-import type { RecurringUnit } from "./recurring/cadence";
+import type { BudgetPeriod, BudgetState } from "./budgets/lib/period";
+import type { NotificationData, NotifyEmail, NotifyKind, NotifyTarget, Reaction, ThreadKey } from "./lib/notifications";
+import type { Transfer } from "./money/lib/simplify";
+import type { Paid, Split, SplitMethod } from "./money/lib/split";
+import type { RecurringUnit } from "./recurring/lib/cadence";
 
 /**
  * Kharcha's shared types (docs/guides/kharcha.md, PLAN 14.5): what the server returns and

@@ -5,7 +5,7 @@ import type { DiscoverSearch, SearchPageSearch } from "../search";
 
 /**
  * The search page's and Discover's loaders (routes import this with `await import()`,
- * 0194). The search page counts a search (`notePardaSearch`) when it's really shown:
+ * 0194). The search page counts a search (`recordPardaSearch`) when it's really shown:
  * its first page of every kind, never a preload on hover.
  */
 export async function loadSearchPage(
@@ -26,9 +26,9 @@ export async function loadSearchPage(
 		data.limited
 	)
 		return;
-	const { notePardaSearch } = await import("@/functions/parda/search");
+	const { recordPardaSearch } = await import("@/functions/parda/search");
 	// Statistics never hold the page up, and their failure (the per-IP limit) is nobody's concern.
-	void notePardaSearch({ data: { q: search.q, locale } }).catch(() => undefined);
+	void recordPardaSearch({ data: { q: search.q, locale } }).catch(() => undefined);
 }
 
 export async function loadDiscoverPage(queryClient: QueryClient, locale: Locale, filters: DiscoverSearch) {

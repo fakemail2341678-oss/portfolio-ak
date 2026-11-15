@@ -2,11 +2,11 @@ import { useMinuteClock } from "@/hooks/use-minute-clock";
 import { m } from "@/paraglide/messages";
 import { skyAt } from "../../lib/daylight";
 import type { Profile } from "../../types";
-import { HeroRange } from "../art/hero-range";
-import { AvailabilityNote } from "../chrome/availability";
-import { HomeTime } from "../chrome/home-time";
-import { FittedName } from "../primitives/fitted-name";
-import { ButtonLink, TextAnchor, TextLink } from "../primitives/links";
+import { HeroRange } from "../art/hero-range-image";
+import { AvailabilityNote } from "../chrome/availability-badge";
+import { HomeTime } from "../chrome/home-time-badge";
+import { FittedName } from "../primitives/fitted-name-mark";
+import { ButtonLink, TextAnchor, TextLink } from "../primitives/text-link";
 
 type HeroProfile = Pick<
 	Profile,

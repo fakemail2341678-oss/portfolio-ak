@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { tasklineTitle } from "@/features/taskline/brand";
+import { tasklineTitle } from "@/features/taskline/lib/brand";
 import { backlogSearch } from "@/features/taskline/search";
-import { BacklogPage } from "@/features/taskline/sprints/backlog-page";
+import { BacklogPage } from "@/features/taskline/sprints/components/backlog-page";
 import { staticCrumb } from "@/lib/breadcrumbs";
 import { m } from "@/paraglide/messages";
 

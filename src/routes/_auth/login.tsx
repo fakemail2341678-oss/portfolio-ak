@@ -1,8 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { GoogleButton } from "@/features/auth/components/google-button";
 import { LoginForm } from "@/features/auth/components/login-form";
+import { useAuthNavigation } from "@/features/auth/hooks/use-auth-actions";
 import { authFeaturesQueryOptions } from "@/features/auth/queries";
-import { useAuthNavigation } from "@/features/auth/use-auth-actions";
 import { ensureQuery } from "@/lib/query";
 import { pageTitle } from "@/lib/seo";
 import { m } from "@/paraglide/messages";

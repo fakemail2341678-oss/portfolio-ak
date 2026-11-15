@@ -1,12 +1,12 @@
 import "@tanstack/react-start/server-only";
-import { readCommunityLimits } from "@/features/chaal/community/limits";
-import { readEngineLimits } from "@/features/chaal/engine/limits";
-import { CHAAL_FEATURES, type ChaalFeature, featureOn } from "@/features/chaal/features";
-import { readPlayLimits } from "@/features/chaal/play/controls";
-import { readPuzzleLimits } from "@/features/chaal/puzzles/limits";
+import { readCommunityLimits } from "@/features/chaal/community/lib/limits";
+import { readEngineLimits } from "@/features/chaal/engine/lib/limits";
+import { CHAAL_FEATURES, type ChaalFeature, featureOn } from "@/features/chaal/lib/features";
+import { readPlayLimits } from "@/features/chaal/play/lib/controls";
+import { readPuzzleLimits } from "@/features/chaal/puzzles/lib/limits";
 import type { ChaalStatus } from "@/features/chaal/schema";
-import { readDefaults } from "@/features/chaal/settings/preferences";
-import { readWatchLimits } from "@/features/chaal/watch/limits";
+import { readDefaults } from "@/features/chaal/settings/lib/preferences";
+import { readWatchLimits } from "@/features/chaal/watch/lib/limits";
 import type { Session } from "@/lib/session";
 import type { ChaalPublic } from "./context";
 

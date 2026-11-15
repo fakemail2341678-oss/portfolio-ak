@@ -1,7 +1,7 @@
 import { createFileRoute, notFound } from "@tanstack/react-router";
 import { idParamSchema } from "@/features/parda/search";
+import { PardaCollectionPage } from "@/features/parda/title/components/parda-collection-page";
 import { pardaContentHead } from "@/features/parda/title/head";
-import { PardaCollectionPage } from "@/features/parda/title/parda-collection-page";
 import { getLocale } from "@/paraglide/runtime";
 
 /** /app/parda/collection/263: a franchise's titles, in release order (PLAN Task 63). Indexable. */

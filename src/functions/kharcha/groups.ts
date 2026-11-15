@@ -1,11 +1,11 @@
 import { createServerFn } from "@tanstack/react-start";
 import {
-	archiveGroupInput,
-	createGroupInput,
-	groupIdInput,
-	groupMemberInput,
-	newGroupMemberInput,
-	updateGroupInput,
+	archiveGroupInputSchema,
+	createGroupInputSchema,
+	groupIdInputSchema,
+	groupMemberInputSchema,
+	newGroupMemberInputSchema,
+	updateGroupInputSchema,
 } from "@/features/kharcha/schema";
 import type { GroupSummary, GroupTotals, GroupView } from "@/features/kharcha/types";
 import { zodInput } from "@/functions/_lib/validator";
@@ -25,46 +25,46 @@ export const listKharchaGroups = createServerFn({ method: "GET" })
 
 export const getKharchaGroup = createServerFn({ method: "GET" })
 	.middleware([requireKharchaUser, withKharchaServices])
-	.validator(zodInput(groupIdInput))
+	.validator(zodInput(groupIdInputSchema))
 	.handler(({ data, context }): Promise<GroupView> => groups.getGroup(context, data.groupId));
 
 export const createKharchaGroup = createServerFn({ method: "POST" })
 	.middleware([requireKharchaUser, withKharchaServices])
-	.validator(zodInput(createGroupInput))
+	.validator(zodInput(createGroupInputSchema))
 	.handler(({ data, context }): Promise<GroupView> => groups.createGroup(context, data));
 
 export const updateKharchaGroup = createServerFn({ method: "POST" })
 	.middleware([requireKharchaUser, withKharchaServices])
-	.validator(zodInput(updateGroupInput))
+	.validator(zodInput(updateGroupInputSchema))
 	.handler(({ data, context }): Promise<GroupView> => groups.updateGroup(context, data));
 
-export const archiveKharchaGroup = createServerFn({ method: "POST" })
+export const setKharchaGroupArchived = createServerFn({ method: "POST" })
 	.middleware([requireKharchaUser, withKharchaServices])
-	.validator(zodInput(archiveGroupInput))
+	.validator(zodInput(archiveGroupInputSchema))
 	.handler(({ data, context }): Promise<GroupView> => groups.archiveGroup(context, data.groupId, data.archived));
 
 export const addKharchaGroupMember = createServerFn({ method: "POST" })
 	.middleware([requireKharchaUser, withKharchaServices])
-	.validator(zodInput(groupMemberInput))
+	.validator(zodInput(groupMemberInputSchema))
 	.handler(({ data, context }): Promise<GroupView> => groups.addMember(context, data.groupId, data.personId));
 
 export const addKharchaNewGroupMember = createServerFn({ method: "POST" })
 	.middleware([requireKharchaUser, withKharchaServices])
-	.validator(zodInput(newGroupMemberInput))
+	.validator(zodInput(newGroupMemberInputSchema))
 	.handler(({ data, context }): Promise<GroupView> => groups.addNewMember(context, data));
 
 export const removeKharchaGroupMember = createServerFn({ method: "POST" })
 	.middleware([requireKharchaUser, withKharchaServices])
-	.validator(zodInput(groupMemberInput))
+	.validator(zodInput(groupMemberInputSchema))
 	.handler(({ data, context }): Promise<GroupView> => groups.removeMember(context, data.groupId, data.personId));
 
 export const leaveKharchaGroup = createServerFn({ method: "POST" })
 	.middleware([requireKharchaUser, withKharchaServices])
-	.validator(zodInput(groupIdInput))
+	.validator(zodInput(groupIdInputSchema))
 	.handler(({ data, context }): Promise<void> => groups.leaveGroup(context, data.groupId));
 
 /** A group's Totals tab (Task 91): spent per member and the caller's share per category, per currency. */
 export const getKharchaGroupTotals = createServerFn({ method: "GET" })
 	.middleware([requireKharchaUser, withKharchaServices])
-	.validator(zodInput(groupIdInput))
+	.validator(zodInput(groupIdInputSchema))
 	.handler(({ data, context }): Promise<GroupTotals> => totals.getGroupTotals(context, data.groupId));

@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { burnSeries } from "@/features/taskline/sprints/burndown";
-import { BACKLOG_SECTION, backlogLayout, rowDrop, rowStep, sectionPoints } from "@/features/taskline/sprints/moves";
+import { burnSeries } from "@/features/taskline/sprints/lib/burndown";
+import { BACKLOG_SECTION, backlogLayout, rowDrop, rowStep, sectionPoints } from "@/features/taskline/sprints/lib/moves";
 import type { SprintReport, SprintSummary, TaskSummary } from "@/features/taskline/types";
 import { isOrderKey } from "@/lib/fractional-index";
 

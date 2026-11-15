@@ -2,11 +2,11 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import { expect } from "storybook/test";
 import { COVER_MOTIFS } from "../../constants";
 import { skyAt } from "../../lib/daylight";
-import { demo, withPortfolioCanvas } from "../story-helpers";
-import { HeroRange } from "./hero-range";
+import { demo, withPortfolioCanvas } from "../story-frame";
+import { HeroRange } from "./hero-range-image";
 import { MountainFrame } from "./mountain-frame";
 import { PanoramaBoard } from "./panorama-board";
-import { ProjectMountain } from "./project-mountain";
+import { ProjectMountain } from "./project-mountain-image";
 
 /**
  * The generated art (lib/terrain): the hero's range under the sky of each

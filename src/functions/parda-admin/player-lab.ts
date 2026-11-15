@@ -1,5 +1,5 @@
 import { createServerFn } from "@tanstack/react-start";
-import { type LabPlayer, type LabSource, labPlayerInput } from "@/features/parda/admin/schema";
+import { type LabPlayer, type LabSource, labPlayerInputSchema } from "@/features/parda/admin/schema";
 import { zodInput } from "@/functions/_lib/validator";
 import { requirePermission } from "@/middleware/auth";
 import { withServices } from "@/middleware/services";
@@ -11,7 +11,7 @@ export const listPardaLabSources = createServerFn({ method: "GET" })
 	.middleware([requirePermission("parda:configure"), withServices])
 	.handler(({ context }): Promise<LabSource[]> => lab.listLabSources(context));
 
-export const openPardaLabPlayer = createServerFn({ method: "GET" })
+export const previewPardaLabPlayer = createServerFn({ method: "GET" })
 	.middleware([requirePermission("parda:configure"), withServices])
-	.validator(zodInput(labPlayerInput))
+	.validator(zodInput(labPlayerInputSchema))
 	.handler(({ data, context }): Promise<LabPlayer> => lab.openLabPlayer(context, data));

@@ -1,7 +1,7 @@
 import "@tanstack/react-start/server-only";
 import { type SQL, sql } from "drizzle-orm";
 import type { PgTable } from "drizzle-orm/pg-core";
-import { type KharchaQuotas, type KharchaSettings, kharchaSettings } from "@/features/kharcha/settings";
+import { type KharchaQuotas, type KharchaSettings, kharchaSettings } from "@/features/kharcha/lib/settings";
 import { ruleError } from "@/lib/errors";
 import { formatNumber } from "@/lib/i18n/intl";
 import { m } from "@/paraglide/messages";

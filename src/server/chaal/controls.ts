@@ -1,11 +1,11 @@
 import "@tanstack/react-start/server-only";
 import { asc } from "drizzle-orm";
-import { DEFAULT_COMMUNITY_LIMITS } from "@/features/chaal/community/limits";
-import { DEFAULT_ENGINE_LIMITS } from "@/features/chaal/engine/limits";
-import { DEFAULT_PLAY_LIMITS } from "@/features/chaal/play/controls";
-import { DEFAULT_PUZZLE_LIMITS } from "@/features/chaal/puzzles/limits";
-import { DEFAULT_CHAAL_DEFAULTS } from "@/features/chaal/settings/preferences";
-import { DEFAULT_WATCH_LIMITS } from "@/features/chaal/watch/limits";
+import { DEFAULT_COMMUNITY_LIMITS } from "@/features/chaal/community/lib/limits";
+import { DEFAULT_ENGINE_LIMITS } from "@/features/chaal/engine/lib/limits";
+import { DEFAULT_PLAY_LIMITS } from "@/features/chaal/play/lib/controls";
+import { DEFAULT_PUZZLE_LIMITS } from "@/features/chaal/puzzles/lib/limits";
+import { DEFAULT_CHAAL_DEFAULTS } from "@/features/chaal/settings/lib/preferences";
+import { DEFAULT_WATCH_LIMITS } from "@/features/chaal/watch/lib/limits";
 import { chBlock, chFeatured, chHomeSection, chSettings } from "@/server/db/schema";
 import type { Db } from "@/server/db/types";
 

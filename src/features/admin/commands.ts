@@ -1,10 +1,10 @@
 import type { LucideIcon } from "lucide-react";
 import { pardaCommands } from "@/features/parda/admin/commands"; // @parda
 import { portfolioCommands } from "@/features/portfolio/admin/commands"; // @portfolio
-import type { Permission } from "@/features/rbac/permissions";
+import type { Permission } from "@/features/rbac/lib/permissions";
 import { tasklineCommands } from "@/features/taskline/admin/commands"; // @taskline
 import { testCrudCommands } from "@/features/test-crud/commands";
-import type { AdminPath } from "./sections";
+import type { AdminPath } from "./lib/sections";
 
 /**
  * An action a feature offers in the command palette and the dashboard's quick

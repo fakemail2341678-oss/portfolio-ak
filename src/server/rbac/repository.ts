@@ -1,13 +1,13 @@
 import "@tanstack/react-start/server-only";
 import { and, asc, count, desc, eq, exists, inArray, isNull, ne, notExists, or, type SQL, sql } from "drizzle-orm";
-import { ALL_PERMISSIONS, isPermission, type Permission, SYSTEM_ROLE_KEYS } from "@/features/rbac/permissions";
+import { ALL_PERMISSIONS, isPermission, type Permission, SYSTEM_ROLE_KEYS } from "@/features/rbac/lib/permissions";
 import {
 	type RoleInput,
 	type RoleSummary,
-	roleSummary,
+	roleSummarySchema,
 	type UserListItem,
 	type UserPage,
-	userListItem,
+	userListItemSchema,
 } from "@/features/rbac/schema";
 import type { UserListInput } from "@/features/rbac/search";
 import { slugify } from "@/lib/slug";
@@ -103,7 +103,7 @@ export async function listRoles(db: Db): Promise<RoleSummary[]> {
 			.filter((permission) => permission.roleId === row.id)
 			.map((permission) => permission.permission)
 			.filter(isPermission);
-		return roleSummary.parse({
+		return roleSummarySchema.parse({
 			...row,
 			permissions: row.key === "admin" ? [...ALL_PERMISSIONS] : ALL_PERMISSIONS.filter((p) => stored.includes(p)),
 			userCount:
@@ -296,7 +296,7 @@ export function listUsers(db: Db, input: UserListInput): Promise<UserPage> {
 							)
 							.orderBy(asc(role.name));
 			return rows.map((row) =>
-				userListItem.parse({
+				userListItemSchema.parse({
 					...row,
 					isAdmin: row.role === "admin",
 					roles: assigned.filter((entry) => entry.userId === row.id),

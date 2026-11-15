@@ -1,6 +1,6 @@
 import { createFileRoute, redirect } from "@tanstack/react-router";
-import { TASKLINE_NAME } from "@/features/taskline/brand";
-import { TasklineLanding } from "@/features/taskline/landing/taskline-landing";
+import { TasklineLanding } from "@/features/taskline/landing/components/taskline-landing-page";
+import { TASKLINE_NAME } from "@/features/taskline/lib/brand";
 import { tasklineLinks } from "@/features/taskline/links";
 import { absoluteUrl, seo } from "@/lib/seo";
 import { m } from "@/paraglide/messages";

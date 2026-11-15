@@ -1,16 +1,16 @@
 import { createServerFn } from "@tanstack/react-start";
-import type { ChaalEventChallenge } from "@/features/chaal/live/events";
+import type { ChaalEventChallenge } from "@/features/chaal/live/lib/events";
 import {
 	type ChaalChallenges,
 	type ChaalOpenChallenge,
 	type ChaalPlaying,
 	type ChaalSeek,
-	challengeAiInput,
-	challengeIdInput,
-	challengePlayerInput,
-	declineInput,
-	openChallengeInput,
-	seekInput,
+	challengeAiInputSchema,
+	challengeIdInputSchema,
+	challengePlayerInputSchema,
+	declineInputSchema,
+	openChallengeInputSchema,
+	seekInputSchema,
 } from "@/features/chaal/play/schema";
 import { zodInput } from "@/functions/_lib/validator";
 import { requireChaalUser, withChaalServices } from "@/middleware/chaal";
@@ -31,38 +31,38 @@ export const getChaalChallenges = createServerFn({ method: "GET" })
 
 export const challengeChaalPlayer = createServerFn({ method: "POST" })
 	.middleware([requireChaalUser, withChaalServices])
-	.validator(zodInput(challengePlayerInput))
+	.validator(zodInput(challengePlayerInputSchema))
 	.handler(({ context, data }): Promise<ChaalEventChallenge> => play.challengePlayer(context, context.user.id, data));
 
-export const openChaalChallenge = createServerFn({ method: "POST" })
+export const createChaalChallenge = createServerFn({ method: "POST" })
 	.middleware([requireChaalUser, withChaalServices])
-	.validator(zodInput(openChallengeInput))
+	.validator(zodInput(openChallengeInputSchema))
 	.handler(({ context, data }): Promise<ChaalOpenChallenge> => play.openChallenge(context, context.user.id, data));
 
 export const acceptChaalChallenge = createServerFn({ method: "POST" })
 	.middleware([requireChaalUser, withChaalServices])
-	.validator(zodInput(challengeIdInput))
+	.validator(zodInput(challengeIdInputSchema))
 	.handler(({ context, data }): Promise<{ id: string }> => play.acceptChallenge(context, context.user.id, data.id));
 
 export const declineChaalChallenge = createServerFn({ method: "POST" })
 	.middleware([requireChaalUser, withChaalServices])
-	.validator(zodInput(declineInput))
+	.validator(zodInput(declineInputSchema))
 	.handler(({ context, data }): Promise<void> => play.declineChallenge(context, context.user.id, data.id, data.reason));
 
 export const cancelChaalChallenge = createServerFn({ method: "POST" })
 	.middleware([requireChaalUser, withChaalServices])
-	.validator(zodInput(challengeIdInput))
+	.validator(zodInput(challengeIdInputSchema))
 	.handler(({ context, data }): Promise<void> => play.cancelChallenge(context, context.user.id, data.id));
 
 export const challengeChaalAi = createServerFn({ method: "POST" })
 	.middleware([requireChaalUser, withChaalServices])
-	.validator(zodInput(challengeAiInput))
+	.validator(zodInput(challengeAiInputSchema))
 	.handler(({ context, data }): Promise<{ id: string }> => play.challengeAi(context, context.user.id, data));
 
 /** Quick pairing by days (Task 78): a correspondence seek in the lobby. A clock's seek is kept open by the stream route. */
 export const seekChaalCorrespondence = createServerFn({ method: "POST" })
 	.middleware([requireChaalUser, withChaalServices])
-	.validator(zodInput(seekInput))
+	.validator(zodInput(seekInputSchema))
 	.handler(({ context, data }): Promise<ChaalSeek> => play.seekCorrespondence(context, context.user.id, data));
 
 /** The caller's games in progress on Lichess, with whose turn it is (Task 78): the tab leader reads it for correspondence. */

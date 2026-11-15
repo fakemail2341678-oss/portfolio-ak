@@ -17,4 +17,4 @@ export const userKeys = {
  * What a change to roles, permissions or someone's roles refreshes: both lists,
  * and the signed-in user's own session (their permissions may have changed too).
  */
-export const RBAC_REFRESH = [roleKeys.all, userKeys.all, authKeys.session] as const;
+export const rbacRefreshKeys = [roleKeys.all, userKeys.all, authKeys.session] as const;

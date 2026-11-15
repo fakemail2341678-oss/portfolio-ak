@@ -59,7 +59,7 @@ if (!existsSync(".env")) {
 } else {
 	process.loadEnvFile(".env");
 	try {
-		const { createClientEnv } = await import("../src/lib/env/client.schema.ts");
+		const { createClientEnv } = await import("../src/lib/env/client-schema.ts");
 		createClientEnv({ ...process.env });
 		const { createServerEnv } = await import("../src/server/env.ts");
 		createServerEnv({ ...process.env });

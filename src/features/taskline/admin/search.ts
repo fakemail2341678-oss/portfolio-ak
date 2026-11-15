@@ -2,7 +2,7 @@ import { z } from "zod";
 import { listSchema } from "@/lib/crud/schema";
 import { addDays } from "@/lib/i18n/date-only";
 import { dateParam, enumParam, searchParam } from "@/lib/list/params";
-import { endOfWeek, startOfWeek } from "../calendar/grid";
+import { endOfWeek, startOfWeek } from "../calendar/lib/grid";
 import { ACTIVITY_KINDS, PROJECT_STATUSES, PROJECT_VISIBILITIES, REPORT_RANGES, TEAM_ROLES } from "../types";
 
 /**

@@ -1,7 +1,7 @@
 import "@tanstack/react-start/server-only";
 import { eq } from "drizzle-orm";
+import { projectSettings } from "@/features/taskline/lib/settings";
 import { TASK_TIME_ENTRIES } from "@/features/taskline/schema";
-import { projectSettings } from "@/features/taskline/settings";
 import type { RunningTimer, TaskTime } from "@/features/taskline/types";
 import { ruleError } from "@/lib/errors";
 import { isoDateInstant, todayInZone } from "@/lib/i18n/date-only";

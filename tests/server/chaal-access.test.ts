@@ -1,7 +1,7 @@
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
-import { createTree } from "@/features/chaal/chess/tree";
-import { newLocalGame, toRecord } from "@/features/chaal/local/game";
-import { DEFAULT_CHAAL_PREFERENCES } from "@/features/chaal/settings/preferences";
+import { createTree } from "@/features/chaal/chess/lib/tree";
+import { newLocalGame, toRecord } from "@/features/chaal/local/lib/game";
+import { DEFAULT_CHAAL_PREFERENCES } from "@/features/chaal/settings/lib/preferences";
 import type { Session } from "@/lib/session";
 import * as analyses from "@/server/chaal/analysis/service";
 import * as connect from "@/server/chaal/connect/service";
@@ -27,7 +27,7 @@ import { createTestDb } from "../utils/test-db";
  * Chaal's access matrix (PLAN 13.5, "Guard test"; decision 0254): who may call each
  * function, and on whose data. The functions' middleware (withChaalPublic;
  * requireChaalUser then withChaalServices) is checked by
- * tests/server/guarded-functions.test.ts; here are the rules behind it: no session, a
+ * tests/server/functions-guards.test.ts; here are the rules behind it: no session, a
  * guest, a member, a blocked user, a feature that's off, a missing scope, a revoked token,
  * another user's connection, another user's analysis (Task 75), another user's local
  * game (Task 76), online play's calls (Task 77), each with the caller's own token,
@@ -84,7 +84,7 @@ const OPERATIONS: Record<string, (userId: string) => Promise<unknown>> = {
 /** Every preferences function's service call (src/functions/chaal/preferences.ts, Task 73). */
 const PREFERENCE_OPERATIONS: Record<string, (userId: string) => Promise<unknown>> = {
 	getChaalPreferences: (userId) => preferences.preferencesOf(env.db, userId),
-	saveChaalPreferences: (userId) =>
+	setChaalPreferences: (userId) =>
 		preferences.savePreferences(env.db, userId, { ...DEFAULT_CHAAL_PREFERENCES, board: "stone" }),
 	importChaalPreferences: (userId) =>
 		preferences.importPreferences(env.db, userId, { ...DEFAULT_CHAAL_PREFERENCES, board: "stone" }),
@@ -94,7 +94,7 @@ const PREFERENCE_OPERATIONS: Record<string, (userId: string) => Promise<unknown>
 const ANALYSIS_OPERATIONS: Record<string, (userId: string, id: string) => Promise<unknown>> = {
 	listChaalAnalyses: (userId) => analyses.listAnalyses(env.db, userId),
 	getChaalAnalysis: (userId, id) => analyses.getAnalysis(env.db, userId, id),
-	saveChaalAnalysis: (userId, id) =>
+	updateChaalAnalysis: (userId, id) =>
 		analyses.saveAnalysis(env.db, userId, { id, title: "Taken", tree: createTree(), tags: {}, orientation: "white" }),
 	deleteChaalAnalysis: (userId, id) => analyses.deleteAnalysis(env.db, userId, id),
 };
@@ -107,7 +107,7 @@ const localRecord = (id: string) =>
 const LOCAL_OPERATIONS: Record<string, (userId: string, id: string) => Promise<unknown>> = {
 	listChaalLocalGames: (userId) => local.listLocalGames(env.db, userId),
 	getChaalLocalGame: (userId, id) => local.getLocalGame(env.db, userId, id),
-	saveChaalLocalGame: (userId, id) =>
+	createChaalLocalGame: (userId, id) =>
 		local.saveLocalGame({ db: env.db, controls: createChaalControls(env.db, () => 0) }, userId, localRecord(id)),
 	deleteChaalLocalGame: (userId, id) => local.deleteLocalGame(env.db, userId, id),
 	importChaalLocalGames: (userId, id) =>
@@ -121,7 +121,7 @@ const PLAY_OPERATIONS: Record<string, (userId: string) => Promise<unknown>> = {
 	getChaalChallenges: (userId) => play.listChallenges(deps(), userId),
 	challengeChaalPlayer: (userId) =>
 		play.challengePlayer(deps(), userId, { username: "someone", pace: DAYS, color: "white", rated: false }),
-	openChaalChallenge: (userId) => play.openChallenge(deps(), userId, { pace: DAYS, color: "white", rated: false }),
+	createChaalChallenge: (userId) => play.openChallenge(deps(), userId, { pace: DAYS, color: "white", rated: false }),
 	acceptChaalChallenge: (userId) => play.acceptChallenge(deps(), userId, "chal1234"),
 	declineChaalChallenge: (userId) => play.declineChallenge(deps(), userId, "chal1234", "later"),
 	cancelChaalChallenge: (userId) => play.cancelChallenge(deps(), userId, "chal1234"),
@@ -220,7 +220,7 @@ const COMMUNITY_OPERATIONS: Record<
 		control: "joinTournaments",
 		call: (userId) => events.join(deps(), userId, { kind: "arena", id: "abcdEFGH" }),
 	},
-	withdrawChaalTournament: {
+	leaveChaalTournament: {
 		feature: "tournaments",
 		control: "joinTournaments",
 		call: (userId) => events.withdraw(deps(), userId, "swiss", "abcdEFGH"),
@@ -237,7 +237,7 @@ const COMMUNITY_OPERATIONS: Record<
 		call: (userId) => teams.leaveTeam(deps(), userId, "some-team"),
 	},
 	getChaalMyStudies: { feature: "studies", control: null, call: (userId) => studies.myStudies(deps(), userId) },
-	saveChaalToStudy: {
+	copyChaalToStudy: {
 		feature: "studies",
 		control: "saveToStudy",
 		call: (userId) =>

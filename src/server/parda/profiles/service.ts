@@ -2,8 +2,8 @@ import "@tanstack/react-start/server-only";
 import { createHmac, randomBytes, scrypt, timingSafeEqual } from "node:crypto";
 import { promisify } from "node:util";
 import { eq } from "drizzle-orm";
-import { isKidsCap } from "@/features/parda/kids";
-import { isProfileAvatar, isTmdbRegion, MAX_PROFILES, PIN_PATTERN } from "@/features/parda/profiles/options";
+import { isKidsCap } from "@/features/parda/lib/kids";
+import { isProfileAvatar, isTmdbRegion, MAX_PROFILES, PIN_PATTERN } from "@/features/parda/profiles/lib/options";
 import { AppError, ruleError } from "@/lib/errors";
 import { GUEST_LIFETIME_DAYS } from "@/lib/guests";
 import type { Session } from "@/lib/session";
@@ -108,7 +108,7 @@ export async function resolveViewer(
 	const userId = session.user.id;
 	const chosen = await cookieProfile(db, userId, cookie);
 	const profile =
-		chosen ?? (await fallbackProfile(db, userId, session.user.name.trim() || m.pd_profile_default({}, { locale })));
+		chosen ?? (await fallbackProfile(db, userId, session.user.name.trim() || m.parda_profile_default({}, { locale })));
 	return {
 		userId,
 		isGuest: session.isAnonymous === true,
@@ -188,7 +188,7 @@ async function keepOneOpen(ctx: Services, change: { lock?: string; remove?: stri
 	const rows = await repo.profilesOf(ctx.db, ctx.viewer.userId);
 	const open = rows.some((row) => row.id !== change.remove && row.id !== change.lock && row.pinHash === null);
 	if (!open) {
-		throw ruleError("CONFLICT", "One profile stays without a PIN", m.pd_profile_pin_last_open());
+		throw ruleError("CONFLICT", "One profile stays without a PIN", m.parda_profile_pin_last_open());
 	}
 }
 
@@ -226,7 +226,7 @@ function cleanFields(fields: ProfileFields, isDefault: boolean): repo.ProfileWri
 export async function createProfile(ctx: Services, fields: ProfileFields): Promise<PardaProfileRow> {
 	mayManage(ctx);
 	if ((await repo.countProfiles(ctx.db, ctx.viewer.userId)) >= MAX_PROFILES) {
-		throw ruleError("CONFLICT", `At most ${MAX_PROFILES} profiles`, m.pd_profiles_full({ count: MAX_PROFILES }));
+		throw ruleError("CONFLICT", `At most ${MAX_PROFILES} profiles`, m.parda_profiles_full({ count: MAX_PROFILES }));
 	}
 	return repo.insertProfile(ctx.db, ctx.viewer.userId, cleanFields(fields, false));
 }
@@ -270,7 +270,7 @@ export async function switchProfile(ctx: Services, id: string, pin: string | und
 	if (target.pinHash !== null && !inside(ctx, target)) {
 		await enforceRateLimit(ctx.db, `parda-pin:${target.id}`, PIN_LIMIT);
 		if (!pin || !(await pinMatches(pin, target.pinHash))) {
-			throw new AppError("BAD_REQUEST", "Wrong PIN", { fieldErrors: { pin: [m.pd_profile_pin_wrong()] } });
+			throw new AppError("BAD_REQUEST", "Wrong PIN", { fieldErrors: { pin: [m.parda_profile_pin_wrong()] } });
 		}
 	}
 	return profileCookieValue(target);

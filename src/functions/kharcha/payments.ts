@@ -1,5 +1,5 @@
 import { createServerFn } from "@tanstack/react-start";
-import { createPaymentInput, paymentIdInput, updatePaymentInput } from "@/features/kharcha/schema";
+import { createPaymentInputSchema, paymentIdInputSchema, updatePaymentInputSchema } from "@/features/kharcha/schema";
 import type { PaymentView } from "@/features/kharcha/types";
 import { zodInput } from "@/functions/_lib/validator";
 import { requireKharchaUser, withKharchaServices } from "@/middleware/kharcha";
@@ -13,26 +13,26 @@ import * as payments from "@/server/kharcha/payments/service";
 
 export const getKharchaPayment = createServerFn({ method: "GET" })
 	.middleware([requireKharchaUser, withKharchaServices])
-	.validator(zodInput(paymentIdInput))
+	.validator(zodInput(paymentIdInputSchema))
 	.handler(({ data, context }): Promise<PaymentView> => payments.getPayment(context, data.paymentId));
 
 export const createKharchaPayment = createServerFn({ method: "POST" })
 	.middleware([requireKharchaUser, withKharchaServices])
-	.validator(zodInput(createPaymentInput))
+	.validator(zodInput(createPaymentInputSchema))
 	.handler(({ data, context }): Promise<PaymentView> => payments.createPayment(context, data));
 
 export const updateKharchaPayment = createServerFn({ method: "POST" })
 	.middleware([requireKharchaUser, withKharchaServices])
-	.validator(zodInput(updatePaymentInput))
+	.validator(zodInput(updatePaymentInputSchema))
 	.handler(({ data, context }): Promise<PaymentView> => payments.updatePayment(context, data));
 
 /** To the trash: restorable for 30 days. */
 export const deleteKharchaPayment = createServerFn({ method: "POST" })
 	.middleware([requireKharchaUser, withKharchaServices])
-	.validator(zodInput(paymentIdInput))
+	.validator(zodInput(paymentIdInputSchema))
 	.handler(({ data, context }): Promise<PaymentView> => payments.deletePayment(context, data.paymentId));
 
 export const restoreKharchaPayment = createServerFn({ method: "POST" })
 	.middleware([requireKharchaUser, withKharchaServices])
-	.validator(zodInput(paymentIdInput))
+	.validator(zodInput(paymentIdInputSchema))
 	.handler(({ data, context }): Promise<PaymentView> => payments.restorePayment(context, data.paymentId));

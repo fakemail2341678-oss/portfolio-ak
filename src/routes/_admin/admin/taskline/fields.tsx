@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { assertRoutePermission } from "@/features/rbac/route-guard";
-import { TasklineFieldsPage } from "@/features/taskline/admin/fields/fields-page";
+import { assertRoutePermission } from "@/features/rbac/lib/route-guard";
+import { TasklineFieldsPage } from "@/features/taskline/admin/fields/components/fields-page";
 import { staticCrumb } from "@/lib/breadcrumbs";
 import { titleHead } from "@/lib/crud/route";
 import { ensureQuery } from "@/lib/query";

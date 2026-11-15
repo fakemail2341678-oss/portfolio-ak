@@ -8,14 +8,14 @@ import { assertDev } from "@/middleware/dev";
  * functions test checks this file too), then the dev-only check.
  */
 
-export const exampleReadItems = createServerFn({ method: "POST" })
+export const pingExampleReadItems = createServerFn({ method: "POST" })
 	.middleware([requirePermission("test-crud:read")])
 	.handler(() => {
 		assertDev();
 		return { ok: true, at: new Date().toISOString() };
 	});
 
-export const exampleManageRoles = createServerFn({ method: "POST" })
+export const pingExampleManageRoles = createServerFn({ method: "POST" })
 	.middleware([requirePermission("roles:manage")])
 	.handler(() => {
 		assertDev();

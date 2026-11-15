@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { tasklineTitle } from "@/features/taskline/brand";
-import { ProjectReportsPage } from "@/features/taskline/reports/reports-page";
+import { tasklineTitle } from "@/features/taskline/lib/brand";
+import { ProjectReportsPage } from "@/features/taskline/reports/components/reports-page";
 import { projectReportsSearch } from "@/features/taskline/search";
 import { staticCrumb } from "@/lib/breadcrumbs";
 import { ensureQuery } from "@/lib/query";
