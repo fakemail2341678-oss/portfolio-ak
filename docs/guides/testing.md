@@ -178,6 +178,22 @@ Ports: the app on `E2E_PORT` (3100), the harness on `E2E_HARNESS_PORT` (3101); P
 - Use roles and labels from `messages/en.json`; give an exact name when one label contains another ("Edit" vs "Quick edit").
 - A new page needs nothing beyond its `REVIEWED_PAGES` entry.
 
+## The standard's tests (`tests/unit/standard`)
+
+The standard ([conventions.md](conventions.md), "The standard"; decision 0297) is checked by tests that read the source as files, so `pnpm gates` runs them on every change.
+
+| File | Checks |
+| --- | --- |
+| `standard.test.ts` | Each of the 27 rules (`scripts/standard/rules/`) on the whole tree, against `known-deviations.json`. A deviation that is not listed fails; a listed one that is gone fails too |
+| `rules.test.ts` | The rules themselves, on a tree in memory (`fixture.ts`): one of each deviation, and a feature in the standard's shape that nothing may flag. The ratchet's arithmetic |
+| `generator.test.ts` | What `pnpm new:feature`'s templates make has no deviation; `biome.json`'s import boundaries forbid only what the standard forbids |
+
+- **`pnpm standard`** is the same check without Vitest, in two seconds: `pnpm standard <file>` for one file, `--list <rule>` for a rule's deviations with their lines, `--summary` for the counts.
+- **A test fails with "new":** the code deviates. Fix the code. The message says what to do.
+- **A test fails with "fixed":** a listed deviation is gone. Run `pnpm standard --prune` and commit the shorter list with the fix.
+- **After moving files** the list's keys (paths) are stale: `pnpm standard --rewrite` writes it from the tree. Read the diff: it must only rename keys.
+- **A new rule** is a function from a tree to deviations in `scripts/standard/rules/`, with its deviation and its clean case in `fixture.ts`.
+
 ## Measuring the gates and auditing the source (`scripts/audit`)
 
 Part 9's baseline (0295, `docs/history/part9-audit.md`) was taken with these, and every later "faster" or "fewer" is measured the same way.

@@ -14,7 +14,7 @@ import type {
 } from "@/features/portfolio/types";
 import { hasAll } from "@/features/rbac/permissions";
 import { zodInput } from "@/functions/_lib/validator";
-import { withPublicServices } from "@/middleware/services";
+import { withPublic } from "@/middleware/services";
 import { locales } from "@/paraglide/runtime";
 import { clientIpHash, trustedClientIp } from "@/server/auth/client-ip";
 import { getServerSession } from "@/server/auth/session";
@@ -45,22 +45,22 @@ const canPreview = async (preview: boolean | undefined) => {
 };
 
 export const getPublicProfile = createServerFn({ method: "GET" })
-	.middleware([withPublicServices])
+	.middleware([withPublic])
 	.validator(zodInput(pageInput))
 	.handler(({ data, context }): Promise<Profile> => portfolio.getProfile(context, data));
 
 export const getHome = createServerFn({ method: "GET" })
-	.middleware([withPublicServices])
+	.middleware([withPublic])
 	.validator(zodInput(pageInput))
 	.handler(({ data, context }): Promise<HomeContent> => portfolio.getHome(context, data));
 
 export const getWork = createServerFn({ method: "GET" })
-	.middleware([withPublicServices])
+	.middleware([withPublic])
 	.validator(zodInput(pageInput))
 	.handler(({ data, context }): Promise<ProjectSummary[]> => portfolio.listProjects(context, data));
 
 export const getCaseStudy = createServerFn({ method: "GET" })
-	.middleware([withPublicServices])
+	.middleware([withPublic])
 	.validator(zodInput(detailInput))
 	.handler(
 		async ({ data, context }): Promise<ProjectDetail | null> =>
@@ -68,17 +68,17 @@ export const getCaseStudy = createServerFn({ method: "GET" })
 	);
 
 export const getAbout = createServerFn({ method: "GET" })
-	.middleware([withPublicServices])
+	.middleware([withPublic])
 	.validator(zodInput(pageInput))
 	.handler(({ data, context }): Promise<AboutContent> => portfolio.getAbout(context, data));
 
 export const getJournal = createServerFn({ method: "GET" })
-	.middleware([withPublicServices])
+	.middleware([withPublic])
 	.validator(zodInput(pageInput))
 	.handler(({ data, context }): Promise<PostSummary[]> => portfolio.listPosts(context, data));
 
 export const getArticle = createServerFn({ method: "GET" })
-	.middleware([withPublicServices])
+	.middleware([withPublic])
 	.validator(zodInput(detailInput))
 	.handler(
 		async ({ data, context }): Promise<PostDetail | null> =>
@@ -88,7 +88,7 @@ export const getArticle = createServerFn({ method: "GET" })
 // apps:start
 /** Published case studies of the showcase apps (the apps' header links to them). */
 export const getAppCaseStudies = createServerFn({ method: "GET" })
-	.middleware([withPublicServices])
+	.middleware([withPublic])
 	.handler(({ context }): Promise<Array<{ app: string; slug: string }>> => portfolio.listAppCaseStudies(context.db));
 // apps:end
 
@@ -97,7 +97,7 @@ export const getAppCaseStudies = createServerFn({ method: "GET" })
  * sender, then the message is saved for the inbox and emailed to the owner.
  */
 export const submitContactMessage = createServerFn({ method: "POST" })
-	.middleware([withPublicServices])
+	.middleware([withPublic])
 	.validator(zodInput(contactInputSchema))
 	.handler(({ data, context }): Promise<{ sent: true }> => {
 		const ip = trustedClientIp(getRequest());

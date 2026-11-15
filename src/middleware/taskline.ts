@@ -1,6 +1,6 @@
 import { createMiddleware } from "@tanstack/react-start";
 import { AppError } from "@/lib/errors";
-import { sessionMiddleware } from "./auth";
+import { withSession } from "./auth";
 
 /**
  * Taskline's gate (docs/guides/taskline.md, decision 0204): anyone signed in, guests
@@ -11,7 +11,7 @@ import { sessionMiddleware } from "./auth";
  * one resolver (src/server/taskline/access.ts) before anything else.
  */
 export const requireTasklineUser = createMiddleware({ type: "function" })
-	.middleware([sessionMiddleware])
+	.middleware([withSession])
 	.server(({ next, context }) => {
 		if (!context.session) throw new AppError("UNAUTHORIZED", "Authentication required");
 		return next({

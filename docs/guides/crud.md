@@ -12,7 +12,9 @@ pnpm new:feature pages --public --localized                              # + pub
 - **`--localized`:** the title and notes are `{ en, ne }` (`LocalizedField`), searched in both languages and shown in the reader's.
 - **Its rules:** it refuses to run with uncommitted changes to tracked files, and puts the tree back if anything fails (decision 0175).
 
-The result passes every gate as generated. Then add your columns: the table, the input schema, the DTOs, the form, the columns, the messages.
+The result passes every gate as generated, and follows the standard exactly (`tests/unit/standard/generator.test.ts` checks the templates). Then add your columns: the table, the input schema, the DTOs, the form, the columns, the messages.
+
+**The standard** ([conventions.md](conventions.md), "The standard"; decision 0297) names every file, export, verb and guard below, and says the one way for each thing. `pnpm standard` checks it in two seconds.
 
 ## The shape
 
@@ -24,8 +26,10 @@ src/features/<name>/             search.ts      the URL contract (route files im
                                  collection.ts  the list's rows as a TanStack DB collection (crudCollection)
                                  columns.tsx    DataTable columns     filters.tsx  controls + chip specs
                                  labels.ts      enum labels           commands.ts  palette actions
-                                 components/    <name>-list, <name>-form, <name>-detail, <name>-pending
+                                 components/    <name>-list, <name>-form, <name>-detail, <name>-pending (<thing>-<role>.tsx)
+                                 hooks/  lib/   use-<thing>.ts hooks; everything else, with no React
 src/functions/<name>.ts          createServerFn → requirePermission, withServices → validator → one service call
+                                 names: list, get, create, update, delete, set<Field> (the standard's verbs)
 src/server/<name>/               repository.ts (Drizzle over an injected Db) + service.ts (rules, audit, versions)
 src/routes/_admin/admin/<name>/  route.tsx, index.tsx, new.tsx, $id.tsx: literal createFileRoute objects
 ```
@@ -48,7 +52,7 @@ export type ProjectListInput = z.output<typeof projectList.input>;
 ## Schemas and DTOs (`schema.ts`)
 
 - **Inputs are `z.strictObject`:** an unknown key is a BAD_REQUEST. One schema for the form and the server function; the update schema extends it with `id` and `updatedAt: versionSchema()` (0122).
-- **DTOs are schemas too:** the repository parses its rows with them. `isoDateTime()` (a `z.codec`) turns a row's Date into the ISO string on the wire, and fields the DTO doesn't name are left out, so there are no hand-written mappers and no `toISOString()`. The type is `z.output<typeof projectListItem>`.
+- **DTOs are schemas too:** the repository parses its rows with them. `isoDateTime()` (a `z.codec`) turns a row's Date into the ISO string on the wire, and fields the DTO doesn't name are left out, so there are no hand-written mappers and no `toISOString()`. A schema is named `<thing>Schema` and its type is the same name without `Schema`: `projectListItemSchema` and `type ProjectListItem = z.output<typeof projectListItemSchema>`.
 - **Shared pieces:** `idSchema` (`{ id }`: a function's input and a `$id` route's params), `bulkIdsSchema()`, `slug()`, `localizedText()` and `required()`/`optionalText()` from `src/lib/validation.ts`.
 
 ## Server
@@ -61,7 +65,7 @@ export const updateProject = createServerFn({ method: "POST" })
 	.handler(({ data, context }): Promise<ProjectDetail> => projects.update(context, data));
 ```
 
-- **Order:** `requirePermission` first (the guard test checks it), then `withServices`, which adds `context.db`, `context.actor` (the one `Actor` type, `features/rbac/types.ts`) and `context.imageStore`. Public reads use `withPublicServices` (no actor).
+- **Order:** `requirePermission` first (the guard test checks it), then `withServices`, which adds `context.db`, `context.actor` (the one `Actor` type, `features/rbac/types.ts`) and `context.imageStore`. Public reads use `withPublic` (no actor).
 - **Names:** `listX`, `getX`, `createX`, `updateX`, `deleteX`, `setXStatus`, with explicit return types. Services are called through their module (`projects.update`) and take the call's services first: `update({ db, actor }: Services, input)`. Tests pass their own (`{ db, actor: { id, isAdmin, permissions }, imageStore: null }`).
 - **Repository helpers** (`src/server/db/crud.ts`), one rule each:
 
@@ -83,15 +87,23 @@ export const updateProject = createServerFn({ method: "POST" })
 export const Route = createFileRoute("/_admin/admin/projects/")({
 	...listSearch(projectList.search, projectList.defaults),
 	loaderDeps: ({ search }) => search,
-	loader: (route) => listLoader(route, { tableId: PROJECTS_TABLE_ID, query: projectListQueryOptions }),
+	loader: async (route) => {
+		// On demand: the queries and their server functions stay out of every page's JavaScript (0194).
+		const { projectListQueryOptions } = await import("@/features/projects/queries");
+		return listLoader(route, { tableId: PROJECTS_TABLE_ID, query: projectListQueryOptions });
+	},
 	head: titleHead(m.projects_title),
 	pendingComponent: ProjectsPending,
 	component: ProjectList,
 });
 // $id.tsx
-loader: async ({ context, params }) => ({ title: (await loadDetailOr404(context.queryClient, projectDetailQueryOptions(params.id))).title }),
+loader: async ({ context, params }) => {
+	const { projectDetailQueryOptions } = await import("@/features/projects/queries");
+	return { title: (await loadDetailOr404(context.queryClient, projectDetailQueryOptions(params.id))).title };
+},
 ```
 
+- **A route imports `search.ts` statically and `queries.ts` inside its loader** (0194, 0197): one static import of `queries.ts` puts every server-function stub of the feature in every page. The standard's `route-import` rule checks it.
 - **Literal route objects:** helpers fill `search`, `loader` and `head` only; `component` and `pendingComponent` are written in the object so the router splits them out (0151).
 - **Components read the URL with `getRouteApi("/_admin/admin/projects/")`,** never by importing the route file.
 - **Section layout** (`route.tsx`): `assertRoutePermission` for the read permission and the breadcrumb.
@@ -172,7 +184,7 @@ A PGlite service test per feature (create, list, a stale edit, delete, the audit
 - **`requirePermission` first:** `withServices` goes after it, so a refused call builds nothing; the guard test's regex allows exactly that.
 - **The collection is built over `keys.lists()`,** the prefix of every page: built over one page's key, another page shows a deleted row. A list whose answer is neither a page nor an array gives `crudCollection` a third argument that reads its rows (Taskline's templates).
 - **`optimistic` changes drafts, it doesn't return rows:** `updateRows(collection, ids, (row) => { row.status = status; })`. A row that isn't on any cached page is skipped, and the server is called all the same.
-- **A route `loader` is a function of the route context** (`(route) => listLoader(route, …)`): passing the helper's result directly loses the loader deps' inferred type.
+- **A route `loader` is a function of the route context** (`async (route) => { …; return listLoader(route, …); }`): passing the helper's result directly loses the loader deps' inferred type.
 - **Uniqueness is the constraint's job:** a unique index (`role_name_lower_unique`, a slug's `…_slug_unique`) and `uniqueViolation`; the typing-time check is a courtesy.
 - **Better Auth's `timestamp` columns have no time zone:** `sameVersion` compares them in UTC, which is how Drizzle writes and reads them.
 - **Admin lists write through TanStack DB, read through Query** (0294, which supersedes 0174): don't patch the Query cache by hand (`setQueryData`) for an optimistic change, and don't build a collection per page. The showcase apps and Taskline's board keep their own query collections (`queryCollectionOptions`, state.md).

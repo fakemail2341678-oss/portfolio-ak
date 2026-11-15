@@ -7,10 +7,10 @@ import {
 {{#public}}
 	type __Pascal__PublicItem,
 	type __Pascal__PublicPage,
-	__camel__PublicItem,
+	__camel__PublicItemSchema,
 {{/public}}
-	__camel__Detail,
-	__camel__ListItem,
+	__camel__DetailSchema,
+	__camel__ListItemSchema,
 	type __Pascal__Input,
 } from "@/features/__name__/schema";
 import type { __Pascal__ListInput } from "@/features/__name__/search";
@@ -56,12 +56,12 @@ export function list__Pascal__(db: Db, input: __Pascal__ListInput): Promise<__Pa
 		input,
 		where: allOf(textSearch(input.q, SEARCHED)),
 		sort: { columns: SORT_COLUMNS, fallback: "updated" },
-		map: (rows) => rows.map((row): __Pascal__ListItem => __camel__ListItem.parse(row)),
+		map: (rows) => rows.map((row): __Pascal__ListItem => __camel__ListItemSchema.parse(row)),
 	});
 }
 
 export async function get__Pascal__(db: Db, id: string): Promise<__Pascal__Detail> {
-	return __camel__Detail.parse(await findOrThrow(db, __camel__, id, WHAT));
+	return __camel__DetailSchema.parse(await findOrThrow(db, __camel__, id, WHAT));
 }
 {{#public}}
 
@@ -80,7 +80,7 @@ export async function create__Pascal__(tx: Tx, input: __Pascal__Input, userId: s
 			.values({ ...input, createdBy: userId })
 			.returning();
 		if (!row) throw notFound(WHAT);
-		return __camel__Detail.parse(row);
+		return __camel__DetailSchema.parse(row);
 	} catch (error) {
 		throw saveError(error);
 	}
@@ -94,9 +94,9 @@ export async function update__Pascal__(
 	version: string,
 ): Promise<{ row: __Pascal__Detail; before: __Pascal__Detail }> {
 	try {
-		const before = __camel__Detail.parse(await findOrThrow(tx, __camel__, id, WHAT));
+		const before = __camel__DetailSchema.parse(await findOrThrow(tx, __camel__, id, WHAT));
 		const row = await updateVersioned(tx, __camel__, { id, version, set: input, what: WHAT });
-		return { row: __camel__Detail.parse(row), before };
+		return { row: __camel__DetailSchema.parse(row), before };
 	} catch (error) {
 		throw saveError(error);
 	}
@@ -110,7 +110,7 @@ export async function create__Pascal__(tx: Tx, input: __Pascal__Input, userId: s
 		.values({ ...input, createdBy: userId })
 		.returning();
 	if (!row) throw notFound(WHAT);
-	return __camel__Detail.parse(row);
+	return __camel__DetailSchema.parse(row);
 }
 
 /** Saves the row if it still has `version` (its `updatedAt` when the edit started); else NOT_FOUND or a stale CONFLICT. */
@@ -120,9 +120,9 @@ export async function update__Pascal__(
 	input: __Pascal__Input,
 	version: string,
 ): Promise<{ row: __Pascal__Detail; before: __Pascal__Detail }> {
-	const before = __camel__Detail.parse(await findOrThrow(tx, __camel__, id, WHAT));
+	const before = __camel__DetailSchema.parse(await findOrThrow(tx, __camel__, id, WHAT));
 	const row = await updateVersioned(tx, __camel__, { id, version, set: input, what: WHAT });
-	return { row: __camel__Detail.parse(row), before };
+	return { row: __camel__DetailSchema.parse(row), before };
 }
 {{/public}}
 
@@ -132,7 +132,7 @@ export function delete__Pascal__(tx: Tx, ids: ReadonlyArray<string>): Promise<__
 		.delete(__camel__)
 		.where(inArray(__camel__.id, [...ids]))
 		.returning()
-		.then((rows) => rows.map((row) => __camel__Detail.parse(row)));
+		.then((rows) => rows.map((row) => __camel__DetailSchema.parse(row)));
 }
 {{#public}}
 
@@ -161,7 +161,7 @@ export async function listPublished__Pascal__(
 					.limit(limit)
 					.offset(offset),
 		},
-		(row): __Pascal__PublicItem => __camel__PublicItem.parse(row),
+		(row): __Pascal__PublicItem => __camel__PublicItemSchema.parse(row),
 	);
 }
 
@@ -171,7 +171,7 @@ export async function getPublished__Pascal__(db: Db, slug: string): Promise<__Pa
 		.select()
 		.from(__camel__)
 		.where(and(eq(__camel__.slug, slug), isPublished));
-	return row ? __camel__PublicItem.parse(row) : null;
+	return row ? __camel__PublicItemSchema.parse(row) : null;
 }
 
 /** Every published page's slug and last change (the sitemap). */

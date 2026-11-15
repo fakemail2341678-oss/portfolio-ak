@@ -36,8 +36,7 @@ import type {
 const route = getRouteApi("/_chaal/app/chaal/tournaments/$id");
 
 /** A chess figure beside the standings (games, moves, a rating): Latin digits in both languages, as the notation and clocks are (Task 85). */
-const FIGURES = new Intl.NumberFormat("en");
-const figure = (value: number) => FIGURES.format(value);
+const figure = (value: number) => formatNumber(value, {}, "en");
 
 /**
  * /app/chaal/tournaments/$id (Task 83, decision 0273; noindex: people's names): an arena,

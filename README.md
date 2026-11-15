@@ -247,7 +247,7 @@ pnpm db:seed-admin --email you@example.com --password "at-least-12-chars" --name
 ```
 
 - **Seeding an admin:** `db:seed-admin` also reads `ADMIN_EMAIL`, `ADMIN_PASSWORD` and `ADMIN_NAME` from `.env`. Add `--force` if other users already exist.
-- **Protecting data:** Use `.middleware([requireUserMiddleware])` or `.middleware([requirePermission("…")])` on server functions. The `_authed` and `_admin` layouts guard navigation (`_admin` asks the server when entering the area; any permission opens it), and each admin section route checks its own permission with `assertRoutePermission`.
+- **Protecting data:** Use `.middleware([requireUser])` or `.middleware([requirePermission("…")])` on server functions. The `_authed` and `_admin` layouts guard navigation (`_admin` asks the server when entering the area; any permission opens it), and each admin section route checks its own permission with `assertRoutePermission`.
 - **Rate limits:** They are stored in the database and keyed by a trusted client IP (`src/server/auth/client-ip.ts`). Behind a reverse proxy other than Vercel, set that proxy's trusted header there.
 - **Schema changes:** After changing auth plugins, regenerate the schema with `pnpm auth:schema`, then run `pnpm db:generate` and `pnpm db:migrate`.
 

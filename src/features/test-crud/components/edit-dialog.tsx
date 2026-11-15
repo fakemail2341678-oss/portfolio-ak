@@ -9,7 +9,7 @@ import { TestCrudForm } from "./test-crud-form";
 
 const CLOSE = { edit: undefined };
 
-/** The dialog for `?edit=<id>` (opened by EditItemLink, a masked route; see masked-links.tsx). */
+/** The dialog for `?edit=<id>` (opened by EditItemLink, a masked route; see masked-link.tsx). */
 export function TestCrudEditDialog({ id }: { id: string }) {
 	const close = useCloseOverlay(CLOSE);
 	return (

@@ -12,7 +12,7 @@ import userEvent from "@testing-library/user-event";
 import { describe, expect, it } from "vitest";
 import { z } from "zod";
 import { useCloseOverlay } from "@/components/navigation/use-close-overlay";
-import { EditItemLink } from "@/features/test-crud/components/masked-links";
+import { EditItemLink } from "@/features/test-crud/components/masked-link";
 import { parseParams } from "@/lib/list/params";
 
 const ID = "6f1c0a52-0b6c-4c43-9a55-1f4a6f0d0001";

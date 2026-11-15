@@ -1,7 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { type StackPage, type StackStats, stackSearchSchema } from "@/features/stack/schema";
 import { zodInput } from "@/functions/_lib/validator";
-import { devOnlyMiddleware } from "@/middleware/dev";
+import { requireDev } from "@/middleware/dev";
 import { getLocale } from "@/paraglide/runtime";
 import { STACK } from "@/server/stack/data";
 import { queryStack } from "@/server/stack/query";
@@ -11,7 +11,7 @@ import { queryStack } from "@/server/stack/query";
  * so the server re-validates whatever the client sends. Dev-only, like the page.
  */
 export const listStack = createServerFn({ method: "GET" })
-	.middleware([devOnlyMiddleware])
+	.middleware([requireDev])
 	.validator(zodInput(stackSearchSchema))
 	.handler(({ data }): StackPage => {
 		if (data.simulate === "error") {
@@ -23,7 +23,7 @@ export const listStack = createServerFn({ method: "GET" })
 
 /** Deliberately slow, to demonstrate a deferred loader promise streamed via Suspense. */
 export const getStackStats = createServerFn({ method: "GET" })
-	.middleware([devOnlyMiddleware])
+	.middleware([requireDev])
 	.handler(async (): Promise<StackStats> => {
 		await new Promise((resolve) => setTimeout(resolve, 800));
 		return { tools: STACK.length, categories: new Set(STACK.map((entry) => entry.category)).size };

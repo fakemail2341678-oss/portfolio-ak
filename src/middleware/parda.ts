@@ -1,6 +1,6 @@
 import { createMiddleware } from "@tanstack/react-start";
 import { AppError } from "@/lib/errors";
-import { sessionMiddleware } from "./auth";
+import { withSession } from "./auth";
 
 /**
  * Parda's catalogue gate (PLAN 12.5, decision 0234): open to everyone, signed in or
@@ -17,7 +17,7 @@ import { sessionMiddleware } from "./auth";
  * The server module is imported inside `.server()`, which the client build strips.
  */
 export const withPardaCatalog = createMiddleware({ type: "function" })
-	.middleware([sessionMiddleware])
+	.middleware([withSession])
 	.server(async ({ next, context }) => {
 		const { pardaCatalog } = await import("@/server/parda/catalog/context");
 		return next({ context: { catalog: await pardaCatalog(context.session) } });
@@ -30,7 +30,7 @@ export const withPardaCatalog = createMiddleware({ type: "function" })
  * theirs, else the default profile, made on the first call `on conflict do nothing`).
  */
 export const requirePardaViewer = createMiddleware({ type: "function" })
-	.middleware([sessionMiddleware])
+	.middleware([withSession])
 	.server(async ({ next, context }) => {
 		if (!context.session) throw new AppError("UNAUTHORIZED", "Authentication required");
 		const [{ db }, { resolveViewer, PROFILE_COOKIE }, { getCookie }, { getLocale }] = await Promise.all([

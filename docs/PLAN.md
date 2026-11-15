@@ -4442,7 +4442,7 @@ As 10.1 (with 14.1's differences), and:
 - **Effort:** before starting, ask the owner to confirm the session's effort against 15.3's column, and wait.
 - **Plugins:** 15.3 names what each task needs. Turn them on at the start and off at the end (`enabledPlugins` in the user settings file; a restart applies it), and say so in the report. Turn context-mode off for a phase that uses agents. Use subagents only when the owner's prompt for the task allows them.
 - **Gates:** by the changed-files rule (0280) until Task 127, which runs every suite in full. Since Task 99 the configs take their worker counts from the free memory (0296), so no flag is needed: use `pnpm gates`.
-- **Ratchets (from Task 100):** the standard's tests carry lists of known deviations. A task that fixes one removes it from the list in the same commit. Nothing is added to a list without a decision.
+- **Ratchets (from Task 100):** the standard's tests carry lists of known deviations (`tests/unit/standard/known-deviations.json`, 0297). A task that fixes one removes it from the list in the same commit (`pnpm standard --prune`). Nothing is added to a list without a decision. `pnpm standard --list <rule>` prints a rule's deviations with their lines.
 - **Refactors keep behaviour.** Before moving or rewriting code that has no test, write the test.
 - **Too big for one session?** Split the task in 15.3 (as 65a and 69a were) before starting it. Never drop a part silently.
 - **Commit:** `feat: Part 9 Task N, <name>`, one commit on `main`, not pushed.
@@ -4475,7 +4475,7 @@ As 10.1 (with 14.1's differences), and:
 | --- | --- | --- | --- | --- |
 | 98 | Baseline and audit: every gate timed, coverage, every deviation counted, package verdicts, the old plan's gaps | xhigh | context7, playwright | Done (decision 0295) |
 | 99 | Fast gates: find why the suites are slow, fix it, `pnpm gates` | high | context7 | Done (decision 0296) |
-| 100 | The standard: rules written, enforced by tests, AI rules, the generator | xhigh | context7, claude-code-setup | Planned |
+| 100 | The standard: rules written, enforced by tests, AI rules, the generator | xhigh | context7, claude-code-setup | Done (decision 0297) |
 | 101 | Structure and names everywhere: one codemod, no behaviour change | high | typescript-lsp, serena | Planned |
 | 102 | Packages: upgrades, Pacer, Hotkeys, replacements | high | context7 | Planned |
 | 103 | Server core: requests, errors, auth, logs | xhigh | context7 | Planned |
@@ -4484,6 +4484,7 @@ As 10.1 (with 14.1's differences), and:
 | 106 | Reads: loaders, SSR, lists, generic pages | xhigh | context7, playwright | Planned |
 | 107 | The kit: full-width layout, page anatomy, keyboard | high | ui-ux-pro-max, impeccable, playwright | Planned |
 | 108 | Shared patterns of the products move to the core | xhigh | typescript-lsp, serena | Planned |
+| 108a | The generator's module for a product: `pnpm new:feature --in <product>` (split from 100, 0297) | high | none | Planned |
 | 109 | The Learn page and the examples | high | ui-ux-pro-max, context7 | Planned |
 | 110 | Core features and the admin to the standard | xhigh | typescript-lsp | Planned |
 | 111 | The showcase apps and the apps gallery | high | ui-ux-pro-max, impeccable, playwright | Planned |
@@ -4534,11 +4535,11 @@ Task 98 measured these again and corrected the lines below where its counts diff
 - **The apps gallery** (`src/features/apps/registry.ts`) lists Notes, Links, Habits and Forms only; `/apps/kanban` and `/apps/expenses` are redirect routes in the taskline and kharcha layers.
 - **Redesigns the finish reviews left for the owner:** Chaal's desktop game page, home, play hub and puzzle page (0275); Kharcha's desktop thread, expense panel, split editor and phone thread header (0291); Parda's watch page chrome (0244).
 - **Security:** an earlier whole-app review's open findings are in `security-review.local/` (gitignored). Task 125 starts there. Their details never go into a commit, a doc or this plan before the fix ships.
-- **AI rules:** CLAUDE.md and the guides are in the repo. The working rules (confirm the effort, targeted gates, worker caps, commit on `main`, plugin toggling) live only in Claude's memory on the owner's machine.
+- **AI rules:** CLAUDE.md and the guides are in the repo. The working rules (confirm the effort, targeted gates, worker caps, commit on `main`, plugin toggling) lived only in Claude's memory on the owner's machine. **Since Task 100 (0297)** they are in the repo: `.claude/rules/`, `.claude/skills/` (`plan-task`, `gates`), a hook, and `AGENTS.md`.
 
 ### 15.5 The standard (what "uniform" means)
 
-Task 98 checks these lines against its counts and Task 100 records the final text as a decision. Until then this is the target.
+Task 100 settled this text (decision 0297). The full statement, with Test CRUD's example for each rule and the test that checks it, is `docs/guides/conventions.md`, "The standard". The lists of words are in `scripts/standard/vocabulary.ts`. This section is the summary the later tasks work from.
 
 **A feature folder** has one shape, at any depth. A core feature is one; a product is a folder of them.
 
@@ -4547,25 +4548,27 @@ src/features/<feature>/            a core feature; a product's module is src/fea
   schema.ts                        Zod schemas and the DTO types (forms, function inputs)
   search.ts                        the URL contract (the only file a route imports statically)
   keys.ts                          query keys
-  queries.ts                       queryOptions and mutationOptions
+  queries.ts                       queryOptions for reads, one object of mutationOptions for writes
   collection.ts                    TanStack DB collections (always singular)
   columns.tsx  filters.tsx         a list's columns and filters
   labels.ts  constants.ts  types.ts  links.ts  commands.ts
-  lib/                             pure helpers, no React
+  load.ts  head.ts  store.ts       the routes' loaders and head builders; a TanStack Store
   components/                      every component, its stories beside it
+  hooks/                           use-<thing>.ts
+  lib/                             everything else, with no React
 src/server/<feature>/              repository.ts (SQL only), service.ts (rules, transactions, audit)
 src/server/<product>/<module>/     the same pair, plus the product's access.ts, settings.ts, cron.ts
 src/functions/<feature>.ts         or src/functions/<product>/<module>.ts and <product>-admin/<module>.ts
-tests/{unit,server,components}/    <feature>[-<topic>].test.ts, mirroring the feature's name
+tests/{unit,server,components}/    <subject>[-<topic>].test.ts, the subject a feature, a module or a file of the source
 ```
 
 A product adds `shell/`, `kit/` and `admin/`, each a feature folder.
 
 **Names.**
-- Files are kebab-case. A component file is `<thing>-<role>.tsx`, with a role from one list: `page`, `list`, `detail`, `form`, `dialog`, `sheet`, `panel`, `card`, `field`, `menu`. Hooks are `use-<thing>.ts`.
-- Exports: `<feature>Keys`, `<feature>Queries`, `<feature>Mutations`, `<feature>Rows` (a collection); `<thing>InputSchema`, `<thing>UpdateSchema`; `<Thing>ListItem`, `<Thing>Detail`, `<Thing>Input`, `<Thing>Page`.
-- Guards: `require<Who>` refuses, `with<What>` provides, in that order, with the same words in every layer (`require<Product>User`, `with<Product>Services`, `with<Product>Public`).
-- Tables carry their layer's prefix, columns are snake_case, a migration is `NNNN_<layer>_<what>.sql`. Messages are `<feature>_<part>_<name>`. Permissions are `<resource>:<action>`.
+- Files are kebab-case. A feature's component file is `<thing>-<role>.tsx`, with a role from one list of 49 (`COMPONENT_ROLES`: screens, regions, collections, items, controls, overlays). An exported hook lives in a `use-<thing>` file.
+- Exports: `<feature>Keys`; `<thing>QueryOptions` functions and one `<feature>Mutations` object; `<feature>Rows` (a collection); `<thing>Schema` for every schema, with the type `<Thing>` (`testCrudInputSchema` and `TestCrudInput`).
+- Guards: `require<Who>` refuses, `with<What>` provides, in that order, with the same words in every layer: `requirePermission`, `requireUser`, `requireAccountOwner`, `requireAdminAccess`, `requireDev`, `withServices`, `withPublic`, `withSession`, and `require<Layer>User`, `with<Layer>Services`, `with<Layer>Public`.
+- Tables carry their layer's prefix (`tl_`, `pd_`, `ch_`, `kh_`, `portfolio_`, an app's name; the core's have none), columns are snake_case, a migration is `NNNN_<layer>_<what>.sql` from 0059 on. Messages are `<feature>_<part>_<name>`, the feature's name spelled out (`chaal_`, not `ch_`). Permissions are `<resource>:<action>`.
 
 **Server function verbs.** One word per meaning:
 
@@ -4579,38 +4582,42 @@ A product adds `shell/`, `kit/` and `admin/`, each a feature folder.
 | `add`, `remove` | a link between two rows that exist (a member, a tag) |
 | `trash`, `restore`, `purge` | soft delete, its undo, and the final delete |
 | `reorder`, `is<Check>`, `import`, `export` | as named |
-| a domain verb | allowed when none of the above says it (`join`, `invite`, `accept`, `settle`); the audit lists them |
+| a domain verb | allowed when none of the above says it; the 42 in use are `DOMAIN_VERBS` |
 
-`save`, `find`, `locate`, `fetch` and `patch` are folded into the verbs above.
+`save`, `find`, `locate`, `fetch`, `patch` and 26 more words (`FOLDED_VERBS`) are folded into the verbs above. A layer task may move a word to the domain list with a line in its decision.
 
 **One way for each thing.**
 
 | Need | The one way |
 | --- | --- |
-| Data on a page | the loader awaits `ensureQuery`, the component calls `useSuspenseQuery`. `useQuery` only for data asked for after an interaction, or live data over a server-rendered first paint |
-| A list | the list contract (`listSchema`, `listLoader`, `useListPage`, `CrudListPage`), or the cursor contract for feeds |
-| A write | the one write hook over a collection (Task 105), optimistic per 15.6. A form uses `useCrudForm` |
-| A server function | literal `createServerFn`, `.middleware([require…, with…])`, `.validator(zodInput(schema))`, one call into a service |
+| Data on a page | the loader awaits `ensureQuery`, the component calls `useSuspenseQuery`. `useQuery` only with `enabled` (asked for after an interaction) or a `// useQuery: <reason>` comment (live data over a server-rendered first paint) |
+| A list | the list contract (`listSchema`, `listLoader`, `useListPage`, `CrudListPage`), or the cursor contract for feeds (Task 106 adds its rule) |
+| A write | the one write hook over a collection (Task 105; `useCrudMutation` until then), optimistic per 15.6. A form uses `useCrudForm` |
+| A server function | literal `createServerFn`, `.middleware([require…, with…])`, `.validator(zodInput(schema))` when it takes data, one call into a service |
+| A route | search, loader, head and a component that renders one feature component; `queries.ts` imported inside the loader. The `/dev` examples are one file each on purpose |
 | A server route | `defineApiRoute` or `defineCron` (Task 103) |
 | A refusal | throw an `AppError` (`ruleError`, `notFound`, …), never a bare `Error`. The UI shows it through the write hook, the form's fields or `ErrorPage` |
-| A shortcut | TanStack Hotkeys, registered with a name so the shortcuts dialog lists it |
-| Debounce, throttle, rate limit, queue, batch | TanStack Pacer |
+| A shortcut | TanStack Hotkeys, registered with a name so the shortcuts dialog lists it. A widget's own key handler says so in `// keys: <reason>` |
+| Debounce, throttle, rate limit, queue, batch | TanStack Pacer. Another timer says why in `// timer: <reason>` |
 | A log line | `log()` |
 | Dates, numbers, money | `src/lib/i18n` |
+| Shared code | `src/lib`, `src/hooks` and `src/components` import no feature, function, route or server code, and every export there has a comment |
 
-**Checked against the code (Task 98, `docs/history/part9-audit.md`).** Where the lines above and the counts disagree, Task 100 decides which one moves and records it:
+**The ratchet** (0297). `tests/unit/standard/standard.test.ts` runs 27 rules against `tests/unit/standard/known-deviations.json`; `pnpm standard` is the same check (`--list <rule>`, `--summary`, `--prune`). What was listed when the rules were written, and the task that empties each list:
 
-- **The folder shape:** 9 of 129 feature folders have it. The four products hold 355 components beside their data files and have no `components/` folder at all, and 161 `.ts` files there have names outside the list (`load.ts` 8, `brand.ts` 4, `limits.ts` 4, `head.ts` 3, `uploads.ts` 3, …). The list needs those kinds named, or `lib/` takes them.
-- **Component roles:** 176 of 467 feature components end in a role from the list (page 86, dialog 32, list 21, form 15). The commonest other endings: section 18, settings 12, filters 9, dialogs 8, columns 7, home 7, frame 6, layout 6, banner 5, board 5, button 5, editor 4. As written the rule renames 291 files, so the list is widened or the files are renamed, by decision.
-- **Hooks:** 45 of 84 exported hooks live in a `use-<thing>` file.
-- **Exports:** `keys.ts` already follows the rule (21 of 23). `queries.ts` exports 218 `…Options` functions and 19 `…Mutations` objects, and almost no `<feature>Queries`. Schemas are named `<thing>Input` (258) far more often than `<thing>InputSchema` (65 end in `Schema`). Collections: 24 `…Rows`, 5 `…Collection`.
-- **Guards:** 559 of 582 functions run `require…` then `with…`. Outside the words: `requirePardaViewer` (35), `requireAppUser` and `withAppServices` (32), `withPardaCatalog` (19), `withPublicServices` (15), `devOnlyMiddleware` (19), four `…Middleware` names (9 uses). Three functions have no guard (`getAuthFeatures`, `getHomeFlags`, `getDbHealth`), and 103 have no validator, 17 of them `POST`.
-- **Verbs:** 454 standard, 24 folded (`save` 13, `mark` 6, `toggle` 2, `find`, `locate`, `patch`), 104 domain verbs in 66 words (the audit's `functions.json` lists them). 49 handlers do more than one call.
-- **Tables and migrations:** the products' tables carry their prefix (`tl_`, `pd_`, `ch_`, `kh_`) and the portfolio's `portfolio_`. The core's 12 and the apps' 7 have none, or one per app (`form_`, `habit_`, `link_`). 39 of 59 migrations start with a layer's name.
-- **Messages:** all 7,227 are snake_case and 6,794 have three parts or more. Two products abbreviate their prefix (`ch_` 1,378, `pd_` 856) and two spell it (`taskline_` 1,609, `kharcha_` 1,045).
-- **Server folders:** 31 hold `repository.ts` and `service.ts`, 26 hold a service only, and the portfolio's 11 files are `<thing>-repository.ts` and `<thing>-service.ts`.
-- **Tests:** 158 of 207 files are named after a feature, a module or a core library. `tests/i18n` (3) and `tests/email` (1) sit outside `unit`, `server` and `components`.
-- **Lists:** of 64 `list…` functions, 16 take the list contract's input, 5 page in their own way, 12 take an input with no paging and 31 take none. None of their inputs names a cursor: the cursor contract is `cursorOrder` in `src/server/db/list.ts` and nothing more yet.
+| Rule | Listed | Emptied by |
+| --- | ---: | --- |
+| `feature-file`, `feature-component`, `feature-lib` | 171, 324, 1 | 101 |
+| `server-file`, `test-place`, `test-name`, `file-name` | 11, 4, 13, 1 | 101 |
+| `component-role`, `hook-file`, `export-name`, `message-name` | 172, 39, 361, 2 (2,234 keys) | 101 |
+| `function-verb`, `function-guards` | 51, 89 | 101 |
+| `timer`, `key-handler` | 56, 28 | 102, then the layers |
+| `bare-error`, `function-handler` | 63, 49 | 103, then the layers |
+| `write-path` | 149 | 105, then the layers |
+| `read-path`, `route-thin`, `route-import` | 137, 24, 20 | 106, then the layers |
+| `import-boundary` | 25 | 108 and 110 |
+| `documented-export` | 137 | 109 and 110 |
+| `table-name`, `migration-name`, `function-literal`, `function-validator` | 0 | hold today |
 
 ### 15.6 Optimistic writes: the position
 
@@ -4732,21 +4739,27 @@ The owner asked whether every operation can be optimistic, and said to do it if 
   - Whether the review should keep all twelve variants of every page. It is the only lever left on e2e's hour, and it is a decision about coverage, not speed.
   - The `build` gate empties `.output`, so a full `pnpm gates` builds twice (the production build for the bundle budget, then the e2e build with the `/dev` pages).
 
-### Task 100: The standard: rules, enforcement, AI rules, the generator
+### Task 100: The standard: rules, enforcement, AI rules, the generator (done)
 
-**Goal:** 15.5 becomes the repo's law, checked by tests, so neither a person nor an AI session can drift from it.
+**Done** (2026-11-15, decision 0297). 15.5 holds the settled text.
 
-- **Write it:** `docs/guides/conventions.md` and `crud.md` state the standard as rules with one example each, from Test CRUD. A decision records each choice Task 98's counts settled.
-- **Enforce it** (`tests/unit/standard/`): structure, names, verbs and guards; one write path, one read path, no raw key listeners or timers where the packages apply, `AppError` for refusals, thin routes, import boundaries, documented exports of the shared folders. Biome rules (restricted imports, a GritQL plugin if Biome supports it here) for what a linter sees better than a test.
-- **Ratchets:** each test reads `tests/unit/standard/known-deviations.json`, made from Task 98's lists. A new deviation fails. A fixed one still listed fails too. Task 127 deletes the file's mechanism when the lists are empty.
-- **AI rules that are in the repo, not in one machine's memory:**
-  - CLAUDE.md rewritten around "MUST" and "NEVER" lines and a "before you write code" checklist, still short, pointing at the guides;
-  - `AGENTS.md` pointing other tools at the same rules;
-  - path-scoped rules for routes, functions, server code, features, tests, messages and migrations (check Claude Code's current docs for rule files, skills and hooks);
-  - project skills for the repeated jobs: a new feature, a server function, a migration, running the gates, running a PLAN task (the effort question, targeted gates, worker caps, one commit on `main`);
-  - hooks that run Biome and the standard's tests on what a session edited.
-- **The generator:** `pnpm new:feature` emits the standard exactly, and `--in <product>` makes a product's module. CI's template job runs both.
-- **Tests:** the standard's tests themselves have tests (a fixture tree with one of each deviation).
+- **Written:** `docs/guides/conventions.md` has "The standard": each rule with Test CRUD's example and the id of the test that checks it. `crud.md` points at it and its examples follow it. Decision 0297 records each choice Task 98's counts settled.
+- **Enforced:**
+  - `scripts/standard/`: the words (`vocabulary.ts`), the tree of files the rules read (`tree.ts`), 27 rules (`rules/structure.ts`, `names.ts`, `functions.ts`, `code.ts`), the ratchet (`ratchet.ts`). `pnpm standard` (`scripts/standard.ts`) runs them in two seconds.
+  - `tests/unit/standard/`: `standard.test.ts` (each rule against `known-deviations.json`), `rules.test.ts` (the rules and the ratchet on a tree in memory with one of each deviation), `generator.test.ts` (the generator's templates, and `biome.json` against the vocabulary). 70 tests in 4 s.
+  - Biome: import boundaries per folder, `noConsole` in server code, two GritQL plugins (`scripts/standard/lint/`).
+- **The list:** 1,927 known deviations under 22 rules (15.5 has the table). Five rules hold with none.
+- **AI rules in the repo:** CLAUDE.md rewritten (a checklist, 12 MUST and 10 NEVER lines; the products' file maps stay in their guides), `AGENTS.md`, seven files in `.claude/rules/`, five skills in `.claude/skills/` (`new-feature`, `server-function`, `migration`, `gates`, `plan-task`), and a PostToolUse hook (`.claude/settings.json`, `scripts/standard/hook.ts`) that formats an edited file with Biome and hands back what Biome and the standard still find.
+- **The generator:** `pnpm new:feature` emits the standard. Its templates are rendered by `scripts/lib/feature-templates.ts` for the script and for the test, which found four gaps (static imports of `queries.ts` in four routes, DTO schemas without `Schema`, `withPublicServices`, a `-public` component). Its migration is `NNNN_core_<name>.sql`. `pnpm strip-demo` names its migration `core_strip_<layers>` and prunes the list. One run end to end here (`ci-sample --public --localized`, 29 files) passed typecheck, Biome, knip, the standard, `i18n:check`, its tests and `db:check`, and was discarded.
+- **Code that changed** (no behaviour change): the core's guards renamed to the vocabulary (`withPublic`, `requireDev`, `requireUser`, `requireAccountOwner`, `requireAdminAccess`, `withSession`); Test CRUD's four DTO schemas and two component files renamed, so the reference has no deviation; Chaal's tournament figures use `formatNumber`; two suppressions with their reasons (the console email provider, a type import in `src/lib/session.ts`).
+- **Deviations from the task as planned:**
+  - **`--in <product>` moved to Task 108a.** Task 101 renames the products' guards and moves their files, and Task 108 moves their shared patterns to the core; a module template written before them would be four templates for four shapes. CI's template job is unchanged: it already runs the generator both ways, and the standard's tests now run in it.
+  - **No rule for "a list under a contract":** the cursor contract is not a schema yet (Task 106).
+  - **The hook formats** as well as checks.
+- **Left for the owner:**
+  - The hook runs in every Claude Code session in this repo from now on. `/hooks` shows it.
+  - The working rules that lived only in Claude's memory on this machine (the effort question, targeted gates, workers, one commit on `main`) are now the `plan-task` and `gates` skills. The memory entries can stay or go.
+  - Nothing is pushed, so CI has not run the template job with the standard's tests.
 
 ### Task 101: Structure and names everywhere
 
@@ -4754,6 +4767,7 @@ The owner asked whether every operation can be optimistic, and said to do it if 
 
 - **One codemod** (`scripts/codemods/part9-structure.ts`, kept for reference): moves and renames files and exports for every layer, rewrites imports, and updates what holds paths as strings: `knip.json`, `scripts/strip-demo.ts`'s specs, Storybook's mocks, the guard tests' lists, lazy imports, `vite.config.ts`, the guides and CLAUDE.md.
 - **Covers:** components into `components/`, `collections.ts` to `collection.ts`, server files to `repository.ts` and `service.ts` in a folder per module, function verbs and guard names per 15.5, test files' names, message key prefixes that break the rule.
+- **The ratchet's lists it empties** (0297, the table in 15.5): `feature-file`, `feature-component`, `feature-lib`, `server-file`, `test-place`, `test-name`, `file-name`, `component-role`, `hook-file`, `export-name`, `message-name`, `function-verb` and `function-guards`, 1,239 deviations. Beyond the line above that means: other `.ts` files into `lib/` and hooks into `hooks/` as `use-<thing>.ts`, every schema renamed `<thing>Schema`, 172 component files given a role, 51 functions a standard verb, the products' guards the vocabulary's words, and `ch_` and `pd_` messages spelled out. The generator's templates, `.claude/rules/` and the skills follow the renames. After the moves, `pnpm standard --rewrite` writes the other lists again (their keys are paths); its diff must only rename keys.
 - **Renamed server functions** keep working for open tabs: check how Start derives a function's id, and say in the summary whether a deploy invalidates open pages.
 - **Database names don't change here.** A table or column rename is a migration with a cost; Task 104 decides each.
 - **Gates:** typecheck, check, knip, the full `pnpm test` and Storybook (a move can break any import), e2e for one flow per layer, the template matrix. The structure and name lists in the ratchets are empty afterwards.
@@ -4844,6 +4858,15 @@ The owner asked whether every operation can be optimistic, and said to do it if 
 - **Candidates** (Task 98's copy report decides): access resolvers and their refusal reasons, the access-matrix test helper, activity logs, notifications written in the transaction and delivered after it commits (`produce`, `deliver`), comments and mentions, invites and joining, `rev` freshness, settings rows with a version, daily counts for an admin overview, guest data, the admin overview's page.
 - **The rule:** extract when two products share most of the logic; otherwise only align the names and the shape. No abstraction with one user.
 - **Each extraction:** tests first on both products, then the move, then the products' tests still green. Layer independence holds: the shared piece is core and unmarked, and each `--keep-*` row of the matrix passes.
+
+### Task 108a: The generator's module for a product
+
+**Goal:** `pnpm new:feature <module> --in <product>` makes a product's module in the standard's shape, and it passes every gate as generated. Split from Task 100 (0297): the products' guards, folders and shared patterns had to be uniform first (Tasks 101 and 108).
+
+- **What it writes:** `src/features/<product>/<module>/` (schema, keys, queries, a page component and its story), `src/server/<product>/<module>/` (repository and service, access resolved first), `src/functions/<product>/<module>.ts` (the product's guards), a table with the product's prefix and its migration (`NNNN_<product>_<module>.sql`), messages in both languages, a PGlite test, and the rows shared lists need (the guard test, the product's access matrix, the e2e pages) at `// @new-feature:<slot>` lines.
+- **One set of templates** with the product as a token, in `scripts/templates/module/`, rendered by `scripts/lib/feature-templates.ts`. If a product still needs lines of its own, they are data in one table, not a second template.
+- **Tests:** `tests/unit/standard/generator.test.ts` renders the module for each product and expects no deviation. CI's template job runs `--in <product>` on the rows of the matrix that keep that product.
+- **Docs:** `crud.md`, each product's guide ("adding to it"), the `new-feature` skill.
 
 ### Task 109: The Learn page and the examples
 

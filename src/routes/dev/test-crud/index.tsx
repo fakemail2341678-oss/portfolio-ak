@@ -8,7 +8,7 @@ import { Page, PageHeader } from "@/components/page/page";
 import { ListSkeleton, PageHeaderSkeleton } from "@/components/page/skeletons";
 import { Button } from "@/components/ui/button";
 import { PublicCard, PublicCardSkeleton } from "@/features/test-crud/components/public-card";
-import { TestCrudQuickView } from "@/features/test-crud/components/quick-view";
+import { TestCrudQuickView } from "@/features/test-crud/components/quick-view-dialog";
 import { publicTestCrudListQueryOptions } from "@/features/test-crud/queries";
 import {
 	TEST_CRUD_PUBLIC_PAGE_SIZE,

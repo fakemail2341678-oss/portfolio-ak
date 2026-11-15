@@ -70,7 +70,7 @@ export const testCrudStatusUpdateSchema = z.strictObject({ id: z.uuid(), status:
 
 const image = z.custom<ImageAsset>();
 
-export const testCrudListItem = z.object({
+export const testCrudListItemSchema = z.object({
 	id: z.string(),
 	slug: z.string(),
 	title: z.string(),
@@ -82,10 +82,10 @@ export const testCrudListItem = z.object({
 	publishedAt: isoDateTime().nullable(),
 	updatedAt: isoDateTime(),
 });
-export type TestCrudListItem = z.output<typeof testCrudListItem>;
+export type TestCrudListItem = z.output<typeof testCrudListItemSchema>;
 export type TestCrudPage = Paged<TestCrudListItem>;
 
-export const testCrudDetail = testCrudListItem.extend({
+export const testCrudDetailSchema = testCrudListItemSchema.extend({
 	/** Every image, in order (the first is `image`). */
 	images: z.array(image),
 	summary: z.string(),
@@ -93,11 +93,11 @@ export const testCrudDetail = testCrudListItem.extend({
 	phone: z.string().nullable(),
 	createdAt: isoDateTime(),
 });
-export type TestCrudDetail = z.output<typeof testCrudDetail>;
+export type TestCrudDetail = z.output<typeof testCrudDetailSchema>;
 
 // Public side (/dev/test-crud): published items only, no auth (search params in ./search.ts).
 
-export const publicTestCrudCard = z.object({
+export const publicTestCrudCardSchema = z.object({
 	slug: z.string(),
 	title: z.string(),
 	summary: z.string(),
@@ -106,13 +106,13 @@ export const publicTestCrudCard = z.object({
 	image: image.nullable(),
 	publishedAt: isoDateTime(),
 });
-export type PublicTestCrudCard = z.output<typeof publicTestCrudCard>;
+export type PublicTestCrudCard = z.output<typeof publicTestCrudCardSchema>;
 export type PublicTestCrudPage = Paged<PublicTestCrudCard>;
 
-export const publicTestCrudDetail = publicTestCrudCard.extend({
+export const publicTestCrudDetailSchema = publicTestCrudCardSchema.extend({
 	images: z.array(image),
 	/** Sanitized on the server (sanitizeRichText); render with <RichTextContent>. */
 	body: z.custom<SafeHtml>(),
 	phone: z.string().nullable(),
 });
-export type PublicTestCrudDetail = z.output<typeof publicTestCrudDetail>;
+export type PublicTestCrudDetail = z.output<typeof publicTestCrudDetailSchema>;

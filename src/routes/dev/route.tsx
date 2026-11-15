@@ -14,7 +14,7 @@ import { getLocale } from "@/paraglide/runtime";
  * the public Test CRUD pages, /dev/forms and /dev/examples. They exist only when
  * DEV_ROUTES is on (`vite dev`, or a build made with VITE_DEV_ROUTES=true): in
  * a plain build every page here answers with the localized 404 before its loader
- * runs, and their server functions refuse too (devOnlyMiddleware). Never indexed.
+ * runs, and their server functions refuse too (requireDev). Never indexed.
  */
 export const Route = createFileRoute("/dev")({
 	beforeLoad: () => {

@@ -8,7 +8,7 @@ import { getLocale } from "@/paraglide/runtime";
  * Pages that need a signed-in user. Anonymous visitors go to /login with a
  * return URL; guests (decision 0185) to /upgrade, which offers an account that
  * keeps what they made. The session in context is resolved on the server during
- * SSR (Phase 6); server functions must still check it themselves (requireUserMiddleware).
+ * SSR (Phase 6); server functions must still check it themselves (requireUser).
  */
 export const Route = createFileRoute("/_authed")({
 	beforeLoad: ({ context, location }) => {

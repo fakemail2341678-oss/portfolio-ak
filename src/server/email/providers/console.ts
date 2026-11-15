@@ -10,6 +10,7 @@ export class ConsoleProvider implements EmailProvider {
 
 	constructor(
 		private readonly from: string,
+		// biome-ignore lint/suspicious/noConsole: this provider is the console: it prints the email for a developer to read, which is not a log line
 		private readonly write: (line: string) => void = (line) => console.info(line),
 	) {}
 

@@ -4,15 +4,15 @@ import type { ImageAsset } from "@/features/attachments/schema";
 import {
 	type PublicTestCrudDetail,
 	type PublicTestCrudPage,
-	publicTestCrudCard,
-	publicTestCrudDetail,
+	publicTestCrudCardSchema,
+	publicTestCrudDetailSchema,
 	type TestCrudDetail,
 	type TestCrudInput,
 	type TestCrudListItem,
 	type TestCrudPage,
 	type TestCrudStatus,
-	testCrudDetail,
-	testCrudListItem,
+	testCrudDetailSchema,
+	testCrudListItemSchema,
 } from "@/features/test-crud/schema";
 import type { TestCrudListInput } from "@/features/test-crud/search";
 import { ruleError } from "@/lib/errors";
@@ -73,11 +73,11 @@ async function withImages<T>(
 }
 
 const listItem = (row: TestCrudRow, images: ImageAsset[]): TestCrudListItem =>
-	testCrudListItem.parse({ ...row, image: images[0] ?? null });
+	testCrudListItemSchema.parse({ ...row, image: images[0] ?? null });
 
 /** The body is sanitized again on the way out: defence in depth for rows not written by this code. */
 const detail = (row: TestCrudRow, images: ImageAsset[]): TestCrudDetail =>
-	testCrudDetail.parse({ ...row, image: images[0] ?? null, images, body: sanitizeRichText(row.body) });
+	testCrudDetailSchema.parse({ ...row, image: images[0] ?? null, images, body: sanitizeRichText(row.body) });
 
 const one = async <T>(
 	db: Db,
@@ -247,7 +247,7 @@ const isPublished = eq(testCrud.status, "published");
 
 /** Published rows always have a date; fall back defensively for hand-edited data. */
 const publicCard = (row: TestCrudRow, images: ImageAsset[]) =>
-	publicTestCrudCard.parse({ ...row, image: images[0] ?? null, publishedAt: row.publishedAt ?? row.updatedAt });
+	publicTestCrudCardSchema.parse({ ...row, image: images[0] ?? null, publishedAt: row.publishedAt ?? row.updatedAt });
 
 /** Newest first: a fixed order, so the public list has no sort param. */
 export function listPublishedTestCrud(
@@ -276,7 +276,7 @@ export async function getPublishedTestCrud(
 		.where(and(eq(testCrud.slug, slug), isPublished));
 	if (!row) return null;
 	return one(db, store, row, (item, images) =>
-		publicTestCrudDetail.parse({
+		publicTestCrudDetailSchema.parse({
 			...item,
 			image: images[0] ?? null,
 			images,

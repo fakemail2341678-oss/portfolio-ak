@@ -9,7 +9,7 @@ import { testCrudColumns } from "../columns";
 import { TEST_CRUD_TABLE_ID } from "../schema";
 import { TestCrudEditDialog } from "./edit-dialog";
 import { PublicCard, PublicCardSkeleton } from "./public-card";
-import { TestCrudQuickView } from "./quick-view";
+import { TestCrudQuickView } from "./quick-view-dialog";
 import { TestCrudForm } from "./test-crud-form";
 
 const meta = { title: "Test CRUD", component: TestCrudForm } satisfies Meta<typeof TestCrudForm>;

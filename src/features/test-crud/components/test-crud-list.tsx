@@ -16,7 +16,7 @@ import { testCrudKeys } from "../keys";
 import { testCrudListQueryOptions, testCrudMutations, testCrudTagsQueryOptions } from "../queries";
 import { TEST_CRUD_TABLE_ID, type TestCrudListItem } from "../schema";
 import { TestCrudEditDialog } from "./edit-dialog";
-import { EditItemLink } from "./masked-links";
+import { EditItemLink } from "./masked-link";
 import { NewTestCrudButton } from "./test-crud-pending";
 
 const route = getRouteApi("/_admin/admin/test-crud/");

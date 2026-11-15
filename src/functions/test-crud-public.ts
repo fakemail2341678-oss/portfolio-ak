@@ -6,8 +6,8 @@ import {
 	testCrudSlugParamSchema,
 } from "@/features/test-crud/search";
 import { zodInput } from "@/functions/_lib/validator";
-import { devOnlyMiddleware } from "@/middleware/dev";
-import { withPublicServices } from "@/middleware/services";
+import { requireDev } from "@/middleware/dev";
+import { withPublic } from "@/middleware/services";
 import * as testCrud from "@/server/test-crud/service";
 
 /**
@@ -16,7 +16,7 @@ import * as testCrud from "@/server/test-crud/service";
  * draft looks exactly like a missing slug (NOT_FOUND).
  */
 export const listPublicTestCrud = createServerFn({ method: "GET" })
-	.middleware([devOnlyMiddleware, withPublicServices])
+	.middleware([requireDev, withPublic])
 	.validator(zodInput(testCrudPublicSearchSchema))
 	.handler(
 		({ data, context }): Promise<PublicTestCrudPage> =>
@@ -24,6 +24,6 @@ export const listPublicTestCrud = createServerFn({ method: "GET" })
 	);
 
 export const getPublicTestCrud = createServerFn({ method: "GET" })
-	.middleware([devOnlyMiddleware, withPublicServices])
+	.middleware([requireDev, withPublic])
 	.validator(zodInput(testCrudSlugParamSchema))
 	.handler(({ data, context }): Promise<PublicTestCrudDetail> => testCrud.getPublished(context, data.slug));

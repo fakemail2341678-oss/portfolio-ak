@@ -650,7 +650,8 @@ if (stripped.length > 0) {
 	run(
 		"writing the migration that drops the layers' tables and columns",
 		node,
-		["node_modules/drizzle-kit/bin.cjs", "generate", "--name", `strip_${stripped.join("_")}`],
+		// The standard: a migration's name starts with its layer; what is left after stripping is the core.
+		["node_modules/drizzle-kit/bin.cjs", "generate", "--name", `core_strip_${stripped.join("_")}`],
 		configEnv,
 	);
 	run("formatting the migration's metadata", node, [
@@ -660,6 +661,8 @@ if (stripped.length > 0) {
 		"drizzle/meta",
 	]);
 }
+// The removed layers' deviations from the standard are gone with their files (tests/unit/standard).
+run("taking the removed layers off the standard's list of known deviations", node, ["scripts/standard.ts", "--prune"]);
 if (build) {
 	run("building (regenerates the route tree)", node, ["node_modules/vite/bin/vite.js", "build"], configEnv);
 }

@@ -24,7 +24,7 @@ export type PublicServices = Pick<Services, "db" | "imageStore">;
 
 export const publicServices = (): PublicServices => ({ db, imageStore });
 
-/** The signed-in user of a server-function call, as `requireUserMiddleware` puts them in its context. */
+/** The signed-in user of a server-function call, as `requireUser` puts them in its context. */
 type CallContext = { user: Session["user"]; permissions: Session["permissions"]; impersonatedBy: string | null };
 
 /**

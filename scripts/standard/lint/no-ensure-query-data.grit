@@ -1,0 +1,5 @@
+language js
+
+`$client.ensureQueryData($options)` where {
+	register_diagnostic(span=$client, message="Query deprecated ensureQueryData: a loader awaits ensureQuery(queryClient, options) from src/lib/query.ts (golden rule 1, decision 0111).", severity="error")
+}

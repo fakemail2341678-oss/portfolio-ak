@@ -711,7 +711,7 @@ const KHARCHA_FUNCTIONS: Record<string, ReadonlyArray<string>> = {
  */
 const UNGUARDED_FILES: Record<string, { why: string; functions: ReadonlyArray<string> }> = {
 	"auth.ts": {
-		why: "the session itself; per-user functions use requireUserMiddleware (account changes requireAccountOwnerMiddleware), the admin gate requireAdminAccessMiddleware",
+		why: "the session itself; per-user functions use requireUser (account changes requireAccountOwner), the admin gate requireAdminAccess",
 		functions: [
 			"getSession",
 			"getAuthFeatures",
@@ -724,11 +724,11 @@ const UNGUARDED_FILES: Record<string, { why: string; functions: ReadonlyArray<st
 		],
 	},
 	"admin.ts": {
-		why: "the admin area's gate (requireAdminAccessMiddleware); the dashboard fills only the parts whose read permission the user holds",
+		why: "the admin area's gate (requireAdminAccess); the dashboard fills only the parts whose read permission the user holds",
 		functions: ["getDashboard"],
 	},
 	"guests.ts": {
-		why: "moves this browser's guest data to the signed-in account (requireUserMiddleware: accounts only; the guest comes from a signed httpOnly cookie, decision 0186)",
+		why: "moves this browser's guest data to the signed-in account (requireUser: accounts only; the guest comes from a signed httpOnly cookie, decision 0186)",
 		functions: ["claimGuestData"],
 	},
 	// portfolio:start
@@ -766,18 +766,18 @@ const UNGUARDED_FILES: Record<string, { why: string; functions: ReadonlyArray<st
 	},
 	// kharcha:end
 	"test-crud-public.ts": {
-		why: "dev-only /dev/test-crud reads (devOnlyMiddleware); the repository only returns published rows",
+		why: "dev-only /dev/test-crud reads (requireDev); the repository only returns published rows",
 		functions: ["listPublicTestCrud", "getPublicTestCrud"],
 	},
 	"stack.ts": {
-		why: "dev-only /dev/stack data (static, devOnlyMiddleware)",
+		why: "dev-only /dev/stack data (static, requireDev)",
 		functions: ["listStack", "getStackStats"],
 	},
 	"health.ts": { why: "public health check", functions: ["getDbHealth"] },
 	"feature-flags.ts": { why: "public feature flags for the current visitor", functions: ["getHomeFlags"] },
-	"dev.ts": { why: "dev-only /dev/forms preview (devOnlyMiddleware)", functions: ["previewRichText"] },
+	"dev.ts": { why: "dev-only /dev/forms preview (requireDev)", functions: ["previewRichText"] },
 	"examples.ts": {
-		why: "dev-only /dev/examples, devOnlyMiddleware on each",
+		why: "dev-only /dev/examples, requireDev on each",
 		functions: [
 			"getExampleSnapshot",
 			"getSlowExample",

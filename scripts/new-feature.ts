@@ -22,9 +22,10 @@
  * without a flag, and `*.public.tpl` files exist only with --public.
  */
 import { spawnSync } from "node:child_process";
-import { existsSync, mkdirSync, readdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { featureNames, renderTemplates } from "./lib/feature-templates.ts";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const templates = path.join(root, "scripts/templates/feature");
@@ -75,18 +76,7 @@ const feature = name as string;
 if (!/^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$/.test(feature))
 	fail(`"${feature}" must be kebab-case, e.g. "projects" or "event-logs"`);
 
-const words = feature.split("-");
-const capital = (word: string) => (word[0]?.toUpperCase() ?? "") + word.slice(1);
-const names = {
-	name: feature,
-	snake: words.join("_"),
-	camel: (words[0] ?? "") + words.slice(1).map(capital).join(""),
-	Pascal: words.map(capital).join(""),
-	UPPER: words.join("_").toUpperCase(),
-	Title: titleOption ?? capital(words.join(" ")),
-	// Without a Nepali name the English one is marked for translation (ne messages must differ from en).
-	TitleNe: titleNeOption ?? `${titleOption ?? capital(words.join(" "))} (अनुवाद गर्नुहोस्)`,
-};
+const names = featureNames(feature, titleOption, titleNeOption);
 
 const RESERVED = new Set([
 	"admin",
@@ -142,52 +132,17 @@ for (const file of schemaFiles) {
 	}
 }
 
-/** Keeps `{{#flag}}…{{/flag}}` when the flag is set and `{{^flag}}…{{/flag}}` when it isn't; a tag alone on a line takes the line with it. */
-const sections = (text: string) => {
-	let out = text.replace(/^[ \t]*(\{\{[#^/]\w+\}\})[ \t]*\r?\n/gm, "$1");
-	for (;;) {
-		const next = out.replace(
-			/\{\{([#^])(\w+)\}\}((?:(?!\{\{[#^]\2\}\})[\s\S])*?)\{\{\/\2\}\}/g,
-			(_, kind: string, flag: string, inner: string) =>
-				(kind === "#") === Boolean(flags[flag as keyof typeof flags]) ? inner : "",
-		);
-		if (next === out) return out;
-		out = next;
-	}
-};
-
-const fill = (text: string) =>
-	text
-		.replaceAll("__name__", names.name)
-		.replaceAll("__snake__", names.snake)
-		.replaceAll("__camel__", names.camel)
-		.replaceAll("__Pascal__", names.Pascal)
-		.replaceAll("__UPPER__", names.UPPER)
-		.replaceAll("__TitleNe__", names.TitleNe)
-		.replaceAll("__Title__", names.Title);
-
 // ---------------------------------------------------------------------------
 // 1. Files from the templates
 // ---------------------------------------------------------------------------
 
-const walk = (dir: string): string[] =>
-	readdirSync(dir).flatMap((entry) => {
-		const full = path.join(dir, entry);
-		return statSync(full).isDirectory() ? walk(full) : [full];
-	});
-const files = walk(templates)
-	.map((template) => ({
-		template,
-		target: fill(path.relative(templates, template).replaceAll("\\", "/")).replace(/(\.public)?\.tpl$/, ""),
-		publicOnly: template.endsWith(".public.tpl"),
-	}))
-	.filter((file) => flags.public || !file.publicOnly);
+const files = renderTemplates(templates, names, flags);
 for (const { target } of files) if (existsSync(path.join(root, target))) fail(`${target} already exists`);
 
 touchedTree = true;
-for (const { template, target } of files) {
+for (const { target, content } of files) {
 	created.push(target);
-	write(target, fill(sections(readFileSync(template, "utf8"))));
+	write(target, content);
 }
 
 // ---------------------------------------------------------------------------
@@ -377,7 +332,7 @@ const run = (label: string, command: string, commandArgs: string[], env: Record<
 const node = process.execPath;
 
 // drizzle-kit only diffs the schema against drizzle/ here; it never connects, so any URL will do.
-run("generating the migration", node, ["node_modules/drizzle-kit/bin.cjs", "generate", "--name", s], {
+run("generating the migration", node, ["node_modules/drizzle-kit/bin.cjs", "generate", "--name", `core_${s}`], {
 	DATABASE_URL: process.env.DATABASE_URL || "postgresql://user:password@localhost:5432/new_feature",
 });
 // drizzle/ too: drizzle-kit writes its JSON snapshots in its own style.

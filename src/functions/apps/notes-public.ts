@@ -2,7 +2,7 @@ import { createServerFn } from "@tanstack/react-start";
 import { sharedNoteInput } from "@/features/apps/notes/schema";
 import type { SharedNote } from "@/features/apps/notes/types";
 import { zodInput } from "@/functions/_lib/validator";
-import { withPublicServices } from "@/middleware/services";
+import { withPublic } from "@/middleware/services";
 import { getSharedNote as readSharedNote } from "@/server/apps/notes/service";
 
 /**
@@ -11,6 +11,6 @@ import { getSharedNote as readSharedNote } from "@/server/apps/notes/service";
  * revoked or unknown token is NOT_FOUND.
  */
 export const getSharedNote = createServerFn({ method: "GET" })
-	.middleware([withPublicServices])
+	.middleware([withPublic])
 	.validator(zodInput(sharedNoteInput))
 	.handler(({ data, context }): Promise<SharedNote> => readSharedNote(context, data.token));

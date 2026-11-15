@@ -1,6 +1,6 @@
 import { createMiddleware } from "@tanstack/react-start";
 import { AppError } from "@/lib/errors";
-import { sessionMiddleware } from "./auth";
+import { withSession } from "./auth";
 
 /**
  * The showcase apps' gate (decision 0185): anyone signed in, guests included.
@@ -10,7 +10,7 @@ import { sessionMiddleware } from "./auth";
  * permission is involved: each user only ever sees their own rows.
  */
 export const requireAppUser = createMiddleware({ type: "function" })
-	.middleware([sessionMiddleware])
+	.middleware([withSession])
 	.server(({ next, context }) => {
 		if (!context.session) throw new AppError("UNAUTHORIZED", "Authentication required");
 		return next({

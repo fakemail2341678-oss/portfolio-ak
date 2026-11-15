@@ -40,6 +40,7 @@
 		"test:storybook": "node scripts/test-storybook.ts",
 		"test:e2e": "playwright test",
 		"test:e2e:ui": "playwright test --ui",
+		"standard": "node scripts/standard.ts",
 		"gates": "node scripts/gates.ts",
 		"gates:clean": "node scripts/gates.ts --clean",
 		"test:coverage": "vitest run --project unit --project components --project server --coverage && node scripts/coverage-report.ts",

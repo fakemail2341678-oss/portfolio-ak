@@ -3,7 +3,7 @@ import { getRequest } from "@tanstack/react-start/server";
 import { joinTokenInput } from "@/features/kharcha/schema";
 import type { JoinInvite } from "@/features/kharcha/types";
 import { zodInput } from "@/functions/_lib/validator";
-import { withPublicServices } from "@/middleware/services";
+import { withPublic } from "@/middleware/services";
 import { clientIpHash, trustedClientIp } from "@/server/auth/client-ip";
 import * as invites from "@/server/kharcha/invites/service";
 
@@ -13,7 +13,7 @@ import * as invites from "@/server/kharcha/invites/service";
  * nothing else; an unknown token is NOT_FOUND (the page's 404). Rate limited per visitor.
  */
 export const getKharchaInvite = createServerFn({ method: "GET" })
-	.middleware([withPublicServices])
+	.middleware([withPublic])
 	.validator(zodInput(joinTokenInput))
 	.handler(
 		({ data, context }): Promise<JoinInvite> =>

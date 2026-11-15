@@ -5,7 +5,7 @@ import { CloudImage } from "@/features/attachments/components/cloud-image";
 import { formatCurrency, formatDate } from "@/lib/i18n/intl";
 import { m } from "@/paraglide/messages";
 import type { PublicTestCrudCard } from "../schema";
-import { QuickViewButton } from "./masked-links";
+import { QuickViewButton } from "./masked-link";
 
 /**
  * One published item. The title link is stretched over the card, so the whole

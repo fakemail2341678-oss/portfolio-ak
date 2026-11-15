@@ -3,7 +3,7 @@
 Record every non-obvious choice here: **What**, **Why**, **Alternatives considered**. Newest entries at the bottom.
 
 <details>
-<summary>Index (295 entries)</summary>
+<summary>Index (296 entries)</summary>
 
 - [0001](#0001-project-has-its-own-git-repository): Project has its own git repository
 - [0002](#0002-default-deployment-target-is-vercel-assumption): Default deployment target is Vercel (assumption)
@@ -301,6 +301,7 @@ Record every non-obvious choice here: **What**, **Why**, **Alternatives consider
 - [0294](#0294-admin-lists-write-through-tanstack-db-one-collection-per-list-fed-by-the-query-cache): Admin lists write through TanStack DB: one collection per list, fed by the Query cache
 - [0295](#0295-part-9s-baseline-every-gate-measured-every-deviation-counted-task-98): Part 9's baseline: every gate measured, every deviation counted (Task 98)
 - [0296](#0296-fast-gates-where-the-suites-time-went-workers-from-free-memory-one-command-for-all-gates-task-99): Fast gates: where the suites' time went, workers from free memory, one command for all gates (Task 99)
+- [0297](#0297-the-standard-its-final-text-tests-with-a-ratchet-ai-rules-in-the-repo-task-100): The standard: its final text, tests with a ratchet, AI rules in the repo (Task 100)
 </details>
 
 ---
@@ -4394,3 +4395,51 @@ Measured on the owner's Windows machine (Node 24.11, 12 threads, 11.7 GB, about 
   - **Reviewing fewer variants per page:** it is the lever that would halve the e2e time, and it removes checks. The task forbids it; it is the owner's decision.
   - **Moving every tool to TypeScript 7 now:** the tools need the API.
 - **Not done:** CI has not run with these changes (nothing is pushed). The e2e time at three or four workers was not measured: the machine had memory for two.
+
+## 0297: The standard: its final text, tests with a ratchet, AI rules in the repo (Task 100)
+
+- **What:**
+  - **The standard's text is `docs/guides/conventions.md`, "The standard",** with one example per rule from Test CRUD. PLAN 15.5 was the target; where it and Task 98's counts disagreed, each line below says which one moved.
+  - **The folder shape stays, with its open ends closed.** A feature folder holds the named files, `components/`, `hooks/` (`use-<thing>.ts`) and `lib/` (everything else, with no React). Three kinds were added to the list because several products already use them: `load.ts` (8), `head.ts` (3) and `store.ts`. The code moves: 171 `.ts` files and 324 components sit beside the data files today.
+  - **Component roles: the list was widened from 10 to 49,** grouped as screens, regions, collections, items, controls and overlays (`COMPONENT_ROLES`). 172 files end in no role, where the first list left 291.
+  - **`queries.ts` exports `<thing>QueryOptions` functions and one `<feature>Mutations` object.** The standard moved to the code here: 218 options functions, 19 mutation objects and the reference feature already have that shape, and a function per read lets a loader import one.
+  - **A schema is `<thing>Schema`, and its type is the name without `Schema`.** The code moves: 290 exports of `schema.ts` files, most of them named `<thing>Input`. DTO schemas follow the same rule (`testCrudListItemSchema`).
+  - **Guards have one vocabulary** (`REQUIRE_GUARDS`, `WITH_GUARDS`): `requirePermission`, `requireUser`, `requireAccountOwner`, `requireAdminAccess`, `requireDev`, `withServices`, `withPublic`, `withSession`, and for a layer `require<Layer>User`, `with<Layer>Services`, `with<Layer>Public`. The core's were renamed in this task (`withPublicServices`, `devOnlyMiddleware`, `sessionMiddleware` and three `require…Middleware` names, 43 uses). 89 functions are left for Task 101: `requirePardaViewer` (35), `requireAppUser` with `withAppServices` (32), `withPardaCatalog` (19), and the three functions with no guard, which must say they are public with a `with…Public` provider.
+  - **Validators:** the rule is "a handler that reads `data` validates it with `zodInput`". The 17 `POST`s without a validator take no data, so none deviates.
+  - **Verbs:** the 16 of 15.5, 42 domain verbs (`DOMAIN_VERBS`) and 31 words a standard verb already says (`FOLDED_VERBS`: 15.5's seven and 24 more, such as `bulk`, `clear`, `rename`, `pause`, `archive`, `end`, `watch`). 51 functions are named with a folded word. A layer task may move a word to the domain list with a line in its decision.
+  - **Tables** carry the product's prefix, `portfolio_`, or an app's name; the core's have none. Nothing deviates, and no table is renamed. **Migrations** are `NNNN_<layer>_<what>.sql` from 0059 on; the 59 that shipped keep their names. `pnpm new:feature` names its migration `core_<name>` and `pnpm strip-demo` `core_strip_<layers>`.
+  - **Messages start with a feature's name, spelled out,** or with one of 70 words the shared kit and the core's admin pages use today (`SHARED_MESSAGE_WORDS`). `ch_` (1,378 keys) and `pd_` (856) become `chaal_` and `parda_` in Task 101; the two-letter prefixes stay for tables. There is no rule about the number of parts.
+  - **Tests** live in three folders and are named after something that exists in the source (a feature, a module, a file, a script): 4 files are in other folders and 13 have another name.
+  - **"One way" rules that code can be checked for:** `write-path` (149 raw `useMutation` calls), `read-path` (137 `useQuery` calls with no reason), `route-thin` (24 hooks in 7 route files), `route-import` (20 static imports of a feature's queries, schema or collection, 19 of them `features/auth/queries`), `key-handler` (28), `timer` (56), `bare-error` (63), `function-handler` (49), `import-boundary` (25) and `documented-export` (137 exports of the shared folders without a comment).
+  - **A reason in the code is the exception's home:** `// useQuery: …`, `// timer: …` and `// keys: …` right above the line make the rule accept it. A known-deviations list must end empty; a permanent exception must not live in it.
+  - **`/dev` example routes are left out of `route-thin` and `route-import`,** and the root route out of `route-thin`.
+  - **The ratchet:** 27 rules in `scripts/standard/rules/`, each a function from a tree of files to deviations. `tests/unit/standard/known-deviations.json` holds 1,927 of them under 22 rules, as keys (a path, or `path#name`) or as counts per file. A new one fails; a listed one that is gone fails too. `pnpm standard` is the same check from the command line (`--list`, `--summary`, `--prune`, `--rewrite`).
+  - **The rules are tested on trees in memory** (`rules.test.ts`): one of each deviation, and a feature in the standard's shape that no rule may flag. The generator's templates are rendered into such a tree and must have no deviation (`generator.test.ts`).
+  - **The reference follows its own rules:** Test CRUD has no deviation (four DTO schemas, two component files and its guards were renamed).
+  - **The generator emits the standard.** The test found four gaps: its routes imported `queries.ts` statically (Test CRUD's had not since 0197), its DTO schemas had no `Schema` suffix, its public functions used `withPublicServices`, and its public pages were in `<name>-public.tsx`. `scripts/lib/feature-templates.ts` now renders the templates for both the script and the test.
+  - **Biome:** `noRestrictedImports` per folder for the boundaries that hold today, `noConsole` in `src/server`, `src/functions` and `src/middleware`, and two GritQL plugins (`scripts/standard/lint/`): `ensureQueryData`, and `toLocaleString` or `new Intl.NumberFormat` outside `src/lib/i18n`. One call site was changed for it (Chaal's tournament figures).
+  - **AI rules in the repo:** CLAUDE.md is rewritten around a "before you write code" checklist and MUST and NEVER lines; `AGENTS.md` points other tools at it; `.claude/rules/` has seven path-scoped files (routes, functions, server, features, tests, messages, migrations); `.claude/skills/` has five recipes (`new-feature`, `server-function`, `migration`, `gates`, `plan-task`); `.claude/settings.json` runs `scripts/standard/hook.ts` after every edit, which formats the file with Biome and hands back what Biome and `pnpm standard` still find.
+  - **`pnpm strip-demo` prunes the list** when it ends, since a removed layer's deviations are gone with its files.
+  - **`--in <product>` is Task 108a,** after Task 108.
+- **Why:**
+  - **A count per file, not a line number or one total per rule.** A line number changes with every edit above it. One total lets a fix hide a new deviation. A path with a count fails on the file that got worse and survives edits.
+  - **"A fixed one still listed fails" is what makes the list a ratchet.** Without it the list keeps room that a later change can fill unnoticed.
+  - **Rules as functions over a tree** made three things cheap: testing the rules without fixture files on disk (which Biome, knip and the type check would read as source), checking the generator's output without running it, and the two-second run that lets a hook check every edit.
+  - **`Schema` on every schema:** `testCrudInput` reads as a value that holds an input, beside the type `TestCrudInput` and a parameter named `input`; an import picks the wrong one of two names that differ by one capital. The suffix costs more renames (290 against 65) but a codemod does them, and the reference, the generator and the guides already use it.
+  - **Messages spell the name** because people read them (translators too) and every other place a feature is named uses its folder's name. Table names are typed in SQL and have a length limit, so they keep two letters.
+  - **The generator's module for a product waits** because Task 101 renames the products' guards and moves their files, and Task 108 moves their shared patterns to the core. Written now it would be four templates for four shapes that the next tasks change.
+  - **Biome holds only what is clean today:** it has no list of known deviations, and `pnpm check` fails on any finding.
+  - **`AGENTS.md` points, CLAUDE.md holds the rules:** Claude Code reads `AGENTS.md` only when there is no CLAUDE.md, so the rules are loaded once, and other tools are sent to the same text.
+- **Alternatives considered:**
+  - **Schemas named as their types** (`testCrudInput`), which the counts favoured: the reason above.
+  - **A role list of ten, renaming 291 files,** or no list at all: a name like `sprint-board.tsx` already says what it renders, and one like `task-bits.tsx` does not; the wider list keeps the first and still refuses the second.
+  - **Fixture files on disk** for the rules' tests: every tool would need an exclusion.
+  - **ESLint for the rules:** a second linter beside Biome, and still no ratchet.
+  - **Leaving `tests/i18n` and `tests/email`:** two more folders to learn for four files.
+  - **A rule for lists under a contract:** the cursor contract does not exist as a schema yet. Task 106 adds the rule with it.
+  - **Checking only that a hook does not write files:** the hook formats, because a session's edit is seldom formatted exactly, and a report of spacing after every edit teaches nothing.
+- **Surprises:**
+  - **Biome 2.4.5 runs GritQL plugins,** scoped by `overrides[].plugins`. The `includes` on a plugin entry that the docs show is 2.5's. A pattern's `$name` matches exactly one argument; `$...` matches any number.
+  - **Biome's `noRestrictedImports` has no "types only" allowance,** so one type import (`src/lib/session.ts`) carries a suppression with its reason.
+  - **Claude Code's hooks have an exec form** (`command` with `args`), which needs no shell quoting on Windows, and a PostToolUse hook answers with `{ "decision": "block", "reason": … }` on stdout.
+- **Checked by hand:** the generator ran once end to end here (`pnpm new:feature ci-sample --public --localized`, 29 files, migration `0059_core_ci_sample.sql`); what it made passed typecheck, Biome, knip, `pnpm standard`, `i18n:check`, its own PGlite test, the guard and route-SEO tests and `db:check`, and was then discarded. **Not done:** CI's template job (strip-demo, then the generator, on seven rows) has not run, since nothing is pushed. The hook was tested by hand with a JSON input, not inside a session.

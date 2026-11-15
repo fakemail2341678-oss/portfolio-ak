@@ -1,6 +1,6 @@
 import { createMiddleware } from "@tanstack/react-start";
 import { AppError } from "@/lib/errors";
-import { sessionMiddleware } from "./auth";
+import { withSession } from "./auth";
 
 /**
  * Chaal's public gate (PLAN 13.5, decision 0254): open to everyone, signed in or not.
@@ -15,7 +15,7 @@ import { sessionMiddleware } from "./auth";
  * The server modules are imported inside `.server()`, which the client build strips.
  */
 export const withChaalPublic = createMiddleware({ type: "function" })
-	.middleware([sessionMiddleware])
+	.middleware([withSession])
 	.server(async ({ next, context }) => {
 		const { chaalPublic } = await import("@/server/chaal/context");
 		return next({ context: { chaal: await chaalPublic(context.session) } });
@@ -27,7 +27,7 @@ export const withChaalPublic = createMiddleware({ type: "function" })
  * (`ch_block`) with FORBIDDEN; adds `context.chaalUser`.
  */
 export const requireChaalUser = createMiddleware({ type: "function" })
-	.middleware([sessionMiddleware])
+	.middleware([withSession])
 	.server(async ({ next, context }) => {
 		// Refused before the server module loads: an anonymous call builds nothing.
 		if (!context.session) throw new AppError("UNAUTHORIZED", "Authentication required");

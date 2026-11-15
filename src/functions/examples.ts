@@ -14,7 +14,7 @@ import {
 import { zodInput } from "@/functions/_lib/validator";
 import { AppError } from "@/lib/errors";
 import { bulkIdsSchema } from "@/lib/list/paging";
-import { devOnlyMiddleware } from "@/middleware/dev";
+import { requireDev } from "@/middleware/dev";
 import { m } from "@/paraglide/messages";
 import { trustedClientIp } from "@/server/auth/client-ip";
 import { db } from "@/server/db/client";
@@ -27,7 +27,7 @@ import { verifyTurnstile } from "@/server/http/turnstile";
 
 /**
  * Server functions behind the /dev/examples pages. Every one runs
- * devOnlyMiddleware: in a production build they answer NOT_FOUND. The
+ * requireDev: in a production build they answer NOT_FOUND. The
  * permission example's functions are in examples-permissions.ts.
  */
 
@@ -35,12 +35,12 @@ const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 /** Loader + Query: each call counts, so a refetch after hydration would show. */
 export const getExampleSnapshot = createServerFn({ method: "GET" })
-	.middleware([devOnlyMiddleware])
+	.middleware([requireDev])
 	.handler(() => nextSnapshot());
 
 /** Streaming: deliberately slow, so the page streams its fallback first. */
 export const getSlowExample = createServerFn({ method: "GET" })
-	.middleware([devOnlyMiddleware])
+	.middleware([requireDev])
 	.handler(async () => {
 		const started = Date.now();
 		await sleep(1500);
@@ -48,13 +48,13 @@ export const getSlowExample = createServerFn({ method: "GET" })
 	});
 
 export const listExampleTasks = createServerFn({ method: "GET" })
-	.middleware([devOnlyMiddleware])
+	.middleware([requireDev])
 	.validator(zodInput(exampleTaskSearchSchema))
 	.handler(({ data }): ExampleTaskPage => listTasks(data));
 
 /** One task, for the masking example's full page. Missing: NOT_FOUND. */
 export const getExampleTask = createServerFn({ method: "GET" })
-	.middleware([devOnlyMiddleware])
+	.middleware([requireDev])
 	.validator(zodInput(exampleTaskIdSchema))
 	.handler(({ data }) => {
 		const task = getTask(data.id);
@@ -64,7 +64,7 @@ export const getExampleTask = createServerFn({ method: "GET" })
 
 /** Marks tasks done or not; `fail` makes it refuse (after a delay), to show the optimistic rollback. */
 export const setExampleTasksDone = createServerFn({ method: "POST" })
-	.middleware([devOnlyMiddleware])
+	.middleware([requireDev])
 	.validator(zodInput(exampleTasksDoneSchema))
 	.handler(async ({ data }) => {
 		await sleep(600);
@@ -73,12 +73,12 @@ export const setExampleTasksDone = createServerFn({ method: "POST" })
 	});
 
 export const deleteExampleTasks = createServerFn({ method: "POST" })
-	.middleware([devOnlyMiddleware])
+	.middleware([requireDev])
 	.validator(zodInput(bulkIdsSchema()))
 	.handler(({ data }) => ({ deleted: deleteTasks(data.ids) }));
 
 export const resetExampleTasks = createServerFn({ method: "POST" })
-	.middleware([devOnlyMiddleware])
+	.middleware([requireDev])
 	.handler(() => {
 		resetTasks();
 		return { ok: true };
@@ -86,7 +86,7 @@ export const resetExampleTasks = createServerFn({ method: "POST" })
 
 /** Forms: the same schema as the client, plus a rule only the server knows (taken usernames). */
 export const submitExampleSignup = createServerFn({ method: "POST" })
-	.middleware([devOnlyMiddleware])
+	.middleware([requireDev])
 	.validator(zodInput(exampleSignupSchema))
 	.handler(({ data }) => {
 		if (["admin", "root", "taken"].includes(data.username.toLowerCase())) {
@@ -99,7 +99,7 @@ export const submitExampleSignup = createServerFn({ method: "POST" })
 
 /** Errors: throws what the example asks for. A plain Error reaches the client as INTERNAL. */
 export const failExample = createServerFn({ method: "POST" })
-	.middleware([devOnlyMiddleware])
+	.middleware([requireDev])
 	.validator(zodInput(exampleErrorSchema))
 	.handler(({ data }): never => {
 		if (data.case === "forbidden") throw new AppError("FORBIDDEN", "Example refusal");
@@ -109,17 +109,17 @@ export const failExample = createServerFn({ method: "POST" })
 
 /** Idempotency: the messages sent so far. */
 export const listExampleMessages = createServerFn({ method: "GET" })
-	.middleware([devOnlyMiddleware])
+	.middleware([requireDev])
 	.handler(() => listMessages());
 
 /** Idempotency: sends once per key (repeats answer with the first message, `replayed: true`). */
 export const sendExampleMessage = createServerFn({ method: "POST" })
-	.middleware([devOnlyMiddleware])
+	.middleware([requireDev])
 	.validator(zodInput(exampleMessageSchema))
 	.handler(({ data }) => sendMessage(data));
 
 export const resetExampleMessages = createServerFn({ method: "POST" })
-	.middleware([devOnlyMiddleware])
+	.middleware([requireDev])
 	.handler(() => {
 		resetMessages();
 		return { ok: true };
@@ -127,7 +127,7 @@ export const resetExampleMessages = createServerFn({ method: "POST" })
 
 /** Contact form recipe: honeypot, Turnstile when configured, a database-backed rate limit per IP. */
 export const submitExampleContact = createServerFn({ method: "POST" })
-	.middleware([devOnlyMiddleware])
+	.middleware([requireDev])
 	.validator(zodInput(exampleContactSchema))
 	.handler(({ data }) => {
 		const ip = trustedClientIp(getRequest());
@@ -140,6 +140,6 @@ export const submitExampleContact = createServerFn({ method: "POST" })
 
 /** Background jobs recipe: runs the example job in process, the second step failing `failures` times. */
 export const runExampleJobFn = createServerFn({ method: "POST" })
-	.middleware([devOnlyMiddleware])
+	.middleware([requireDev])
 	.validator(zodInput(exampleJobSchema))
 	.handler(({ data }) => runExampleJob(data.failures));

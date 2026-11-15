@@ -2,17 +2,12 @@ import { createServerFn } from "@tanstack/react-start";
 import { type AccountSecurity, sessionIdSchema, setPasswordSchema } from "@/features/auth/schema";
 import { zodInput } from "@/functions/_lib/validator";
 import type { Session } from "@/lib/session";
-import {
-	requireAccountOwnerMiddleware,
-	requireAdminAccessMiddleware,
-	requireUserMiddleware,
-	sessionMiddleware,
-} from "@/middleware/auth";
+import { requireAccountOwner, requireAdminAccess, requireUser, withSession } from "@/middleware/auth";
 import { withServices } from "@/middleware/services";
 
 /** Current session or null. Used by the root route to fill the router context. */
 export const getSession = createServerFn({ method: "GET" })
-	.middleware([sessionMiddleware])
+	.middleware([withSession])
 	.handler(({ context }): Session | null => context.session);
 
 /** Which optional sign-in methods are configured (the Google button depends on this). */
@@ -27,7 +22,7 @@ export const getAuthFeatures = createServerFn({ method: "GET" }).handler(async (
  * for this request, never from client state.
  */
 export const ensureAdminAccess = createServerFn({ method: "GET" })
-	.middleware([requireAdminAccessMiddleware])
+	.middleware([requireAdminAccess])
 	.handler(({ context }): Session => ({ user: context.user, permissions: context.permissions }));
 
 /** A session as the account page sees it. No token: tokens never leave the server. */
@@ -40,7 +35,7 @@ export type AccountSession = {
 
 /** The signed-in user's sessions, newest first, for the account page. */
 export const listMySessions = createServerFn({ method: "GET" })
-	.middleware([requireUserMiddleware])
+	.middleware([requireUser])
 	.handler(async (): Promise<{ sessions: AccountSession[]; now: string }> => {
 		const [{ auth }, { getRequestHeaders }] = await Promise.all([
 			import("@/server/auth/auth"),
@@ -67,7 +62,7 @@ export const listMySessions = createServerFn({ method: "GET" })
 
 /** Signs out one of the user's other sessions by id (the token is looked up on the server). */
 export const revokeMySession = createServerFn({ method: "POST" })
-	.middleware([requireAccountOwnerMiddleware])
+	.middleware([requireAccountOwner])
 	.validator(zodInput(sessionIdSchema))
 	.handler(async ({ data }): Promise<void> => {
 		const [{ auth }, { revokeOwnSession }, { getRequestHeaders }] = await Promise.all([
@@ -80,7 +75,7 @@ export const revokeMySession = createServerFn({ method: "POST" })
 
 /** How the signed-in user signs in (password, Google, two-factor), for the account page. */
 export const getAccountSecurity = createServerFn({ method: "GET" })
-	.middleware([requireUserMiddleware])
+	.middleware([requireUser])
 	.handler(async ({ context }): Promise<AccountSecurity> => {
 		const [{ auth, authFeatures }, { getRequestHeaders }] = await Promise.all([
 			import("@/server/auth/auth"),
@@ -98,7 +93,7 @@ export const getAccountSecurity = createServerFn({ method: "GET" })
 
 /** Adds a password to an account that has none (signed up with Google). */
 export const setMyPassword = createServerFn({ method: "POST" })
-	.middleware([requireAccountOwnerMiddleware])
+	.middleware([requireAccountOwner])
 	.validator(zodInput(setPasswordSchema))
 	.handler(async ({ data }): Promise<void> => {
 		const [{ auth }, { setOwnPassword }, { serverEnv }, { isPasswordCompromised }, { getRequestHeaders }] =
@@ -122,7 +117,7 @@ export const setMyPassword = createServerFn({ method: "POST" })
  * Any signed-in user may call it; it refuses sessions that aren't impersonated.
  */
 export const stopImpersonating = createServerFn({ method: "POST" })
-	.middleware([requireUserMiddleware, withServices])
+	.middleware([requireUser, withServices])
 	.handler(async ({ context }): Promise<void> => {
 		const [{ auth }, rbac, { getRequestHeaders }, { forgetSession }] = await Promise.all([
 			import("@/server/auth/auth"),

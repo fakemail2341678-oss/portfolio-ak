@@ -6,7 +6,7 @@ import {
 	__camel__SlugSchema,
 } from "@/features/__name__/search";
 import { zodInput } from "@/functions/_lib/validator";
-import { withPublicServices } from "@/middleware/services";
+import { withPublic } from "@/middleware/services";
 import * as __camel__ from "@/server/__name__/service";
 
 /**
@@ -14,7 +14,7 @@ import * as __camel__ from "@/server/__name__/service";
  * published rows, and a draft looks exactly like a missing slug (NOT_FOUND).
  */
 export const listPublic__Pascal__ = createServerFn({ method: "GET" })
-	.middleware([withPublicServices])
+	.middleware([withPublic])
 	.validator(zodInput(__camel__PublicSearchSchema))
 	.handler(
 		({ data, context }): Promise<__Pascal__PublicPage> =>
@@ -22,6 +22,6 @@ export const listPublic__Pascal__ = createServerFn({ method: "GET" })
 	);
 
 export const getPublic__Pascal__ = createServerFn({ method: "GET" })
-	.middleware([withPublicServices])
+	.middleware([withPublic])
 	.validator(zodInput(__camel__SlugSchema))
 	.handler(({ data, context }): Promise<__Pascal__PublicItem> => __camel__.getPublished(context, data.slug));

@@ -57,7 +57,7 @@
 	},
 	"overrides": [
 		{
-			"includes": ["src/components/**", "src/features/**/components/**", "src/hooks/**"],
+			"includes": ["src/features/**"],
 			"linter": {
 				"rules": {
 					"style": {
@@ -70,12 +70,12 @@
 								},
 								"patterns": [
 									{
-										"group": ["@/server/**", "**/server/**"],
-										"message": "Components run in the browser: call a server function (src/functions) instead of importing src/server."
+										"group": ["@/routes/**"],
+										"message": "Nothing imports a route file: read the URL with getRouteApi(\"…\"), and keep shared code in src/features or src/lib."
 									},
 									{
-										"group": ["@/lib/start/**"],
-										"message": "src/lib/start needs the Start runtime, which Storybook doesn't have: use it from routes or server code only."
+										"group": ["@/middleware/**"],
+										"message": "Middleware runs around server functions: only src/functions and the server import it."
 									}
 								]
 							}
@@ -83,6 +83,204 @@
 					}
 				}
 			}
+		},
+		{
+			"includes": ["src/components/**", "src/features/**/components/**"],
+			"linter": {
+				"rules": {
+					"style": {
+						"noRestrictedImports": {
+							"level": "error",
+							"options": {
+								"paths": {
+									"zod/v4": "Import \"zod\": it resolves to src/lib/zod.ts, which turns off Zod's eval probe for the CSP (decision 0086).",
+									"zod/mini": "Import \"zod\": it resolves to src/lib/zod.ts, which turns off Zod's eval probe for the CSP (decision 0086)."
+								},
+								"patterns": [
+									{
+										"group": ["@/server/**"],
+										"message": "Components and hooks run in the browser: call a server function (src/functions) instead of importing src/server."
+									},
+									{
+										"group": ["@/lib/start/**"],
+										"message": "src/lib/start needs the Start runtime, which Storybook doesn't have: use it from routes or server code only."
+									},
+									{
+										"group": ["@/routes/**"],
+										"message": "Nothing imports a route file: read the URL with getRouteApi(\"…\"), and keep shared code in src/features or src/lib."
+									},
+									{
+										"group": ["@/middleware/**"],
+										"message": "Middleware runs around server functions: only src/functions and the server import it."
+									}
+								]
+							}
+						}
+					}
+				}
+			}
+		},
+		{
+			"includes": ["src/hooks/**"],
+			"linter": {
+				"rules": {
+					"style": {
+						"noRestrictedImports": {
+							"level": "error",
+							"options": {
+								"paths": {
+									"zod/v4": "Import \"zod\": it resolves to src/lib/zod.ts, which turns off Zod's eval probe for the CSP (decision 0086).",
+									"zod/mini": "Import \"zod\": it resolves to src/lib/zod.ts, which turns off Zod's eval probe for the CSP (decision 0086)."
+								},
+								"patterns": [
+									{
+										"group": ["@/server/**"],
+										"message": "Components and hooks run in the browser: call a server function (src/functions) instead of importing src/server."
+									},
+									{
+										"group": ["@/lib/start/**"],
+										"message": "src/lib/start needs the Start runtime, which Storybook doesn't have: use it from routes or server code only."
+									},
+									{
+										"group": ["@/routes/**"],
+										"message": "Nothing imports a route file: read the URL with getRouteApi(\"…\"), and keep shared code in src/features or src/lib."
+									},
+									{
+										"group": ["@/middleware/**"],
+										"message": "Middleware runs around server functions: only src/functions and the server import it."
+									},
+									{
+										"group": ["@/features/**"],
+										"message": "Shared code knows no feature (the standard, conventions.md): pass what it needs as props or arguments."
+									},
+									{
+										"group": ["@/functions/**"],
+										"message": "Shared code calls no server function: the feature's queries.ts does, and passes the result in."
+									}
+								]
+							}
+						}
+					}
+				}
+			}
+		},
+		{
+			"includes": ["src/lib/**", "!src/lib/start/**"],
+			"linter": {
+				"rules": {
+					"style": {
+						"noRestrictedImports": {
+							"level": "error",
+							"options": {
+								"paths": {
+									"zod/v4": "Import \"zod\": it resolves to src/lib/zod.ts, which turns off Zod's eval probe for the CSP (decision 0086).",
+									"zod/mini": "Import \"zod\": it resolves to src/lib/zod.ts, which turns off Zod's eval probe for the CSP (decision 0086)."
+								},
+								"patterns": [
+									{
+										"group": ["@/features/**"],
+										"message": "Shared code knows no feature (the standard, conventions.md): pass what it needs as props or arguments."
+									},
+									{
+										"group": ["@/functions/**"],
+										"message": "Shared code calls no server function: the feature's queries.ts does, and passes the result in."
+									},
+									{
+										"group": ["@/routes/**"],
+										"message": "Nothing imports a route file: read the URL with getRouteApi(\"…\"), and keep shared code in src/features or src/lib."
+									},
+									{
+										"group": ["@/server/**"],
+										"message": "src/lib is shared by the browser and the server: server-only code stays in src/server."
+									},
+									{
+										"group": ["@/middleware/**"],
+										"message": "Middleware runs around server functions: only src/functions and the server import it."
+									}
+								]
+							}
+						}
+					}
+				}
+			}
+		},
+		{
+			"includes": ["src/server/**", "src/middleware/**"],
+			"linter": {
+				"rules": {
+					"style": {
+						"noRestrictedImports": {
+							"level": "error",
+							"options": {
+								"paths": {
+									"zod/v4": "Import \"zod\": it resolves to src/lib/zod.ts, which turns off Zod's eval probe for the CSP (decision 0086).",
+									"zod/mini": "Import \"zod\": it resolves to src/lib/zod.ts, which turns off Zod's eval probe for the CSP (decision 0086)."
+								},
+								"patterns": [
+									{
+										"group": ["@/components/**"],
+										"message": "Server code renders nothing: no component here."
+									},
+									{
+										"group": ["@/hooks/**"],
+										"message": "Server code runs no React hook."
+									},
+									{
+										"group": ["@/routes/**"],
+										"message": "Nothing imports a route file: read the URL with getRouteApi(\"…\"), and keep shared code in src/features or src/lib."
+									},
+									{
+										"group": ["@/functions/**"],
+										"message": "A service is called by a server function, never the other way round."
+									}
+								]
+							}
+						}
+					},
+					"suspicious": {
+						"noConsole": "error"
+					}
+				}
+			}
+		},
+		{
+			"includes": ["src/functions/**"],
+			"linter": {
+				"rules": {
+					"style": {
+						"noRestrictedImports": {
+							"level": "error",
+							"options": {
+								"paths": {
+									"zod/v4": "Import \"zod\": it resolves to src/lib/zod.ts, which turns off Zod's eval probe for the CSP (decision 0086).",
+									"zod/mini": "Import \"zod\": it resolves to src/lib/zod.ts, which turns off Zod's eval probe for the CSP (decision 0086)."
+								},
+								"patterns": [
+									{
+										"group": ["@/components/**"],
+										"message": "Server code renders nothing: no component here."
+									},
+									{
+										"group": ["@/hooks/**"],
+										"message": "Server code runs no React hook."
+									},
+									{
+										"group": ["@/routes/**"],
+										"message": "Nothing imports a route file: read the URL with getRouteApi(\"…\"), and keep shared code in src/features or src/lib."
+									}
+								]
+							}
+						}
+					},
+					"suspicious": {
+						"noConsole": "error"
+					}
+				}
+			}
+		},
+		{
+			"includes": ["src/**", "!src/lib/i18n/**", "!src/components/ui/**"],
+			"plugins": ["./scripts/standard/lint/no-own-formatting.grit"]
 		},
 		{
 			"includes": ["src/lib/zod.ts"],
@@ -104,5 +302,6 @@
 		"parser": {
 			"tailwindDirectives": true
 		}
-	}
+	},
+	"plugins": ["./scripts/standard/lint/no-ensure-query-data.grit"]
 }

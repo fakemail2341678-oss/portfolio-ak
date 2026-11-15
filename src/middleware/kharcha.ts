@@ -1,6 +1,6 @@
 import { createMiddleware } from "@tanstack/react-start";
 import { AppError } from "@/lib/errors";
-import { sessionMiddleware } from "./auth";
+import { withSession } from "./auth";
 
 /**
  * Kharcha's gate (docs/guides/kharcha.md, decision 0277): anyone signed in, guests
@@ -10,7 +10,7 @@ import { sessionMiddleware } from "./auth";
  * answered by the resolvers (src/server/kharcha/access.ts) before anything else.
  */
 export const requireKharchaUser = createMiddleware({ type: "function" })
-	.middleware([sessionMiddleware])
+	.middleware([withSession])
 	.server(({ next, context }) => {
 		if (!context.session) throw new AppError("UNAUTHORIZED", "Authentication required");
 		return next({

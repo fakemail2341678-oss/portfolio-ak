@@ -51,7 +51,7 @@ const text = z.object({ en: z.string(), ne: z.string() });
 const text = z.string();
 {{/localized}}
 
-export const __camel__ListItem = z.object({
+export const __camel__ListItemSchema = z.object({
 	id: z.string(),
 	title: text,
 {{#public}}
@@ -60,15 +60,15 @@ export const __camel__ListItem = z.object({
 {{/public}}
 	updatedAt: isoDateTime(),
 });
-export type __Pascal__ListItem = z.output<typeof __camel__ListItem>;
+export type __Pascal__ListItem = z.output<typeof __camel__ListItemSchema>;
 export type __Pascal__Page = Paged<__Pascal__ListItem>;
 
-export const __camel__Detail = __camel__ListItem.extend({ notes: text, createdAt: isoDateTime() });
-export type __Pascal__Detail = z.output<typeof __camel__Detail>;
+export const __camel__DetailSchema = __camel__ListItemSchema.extend({ notes: text, createdAt: isoDateTime() });
+export type __Pascal__Detail = z.output<typeof __camel__DetailSchema>;
 {{#public}}
 
 /** A published row as the public pages show it (no admin-only fields). */
-export const __camel__PublicItem = z.object({ slug: z.string(), title: text, notes: text, updatedAt: isoDateTime() });
-export type __Pascal__PublicItem = z.output<typeof __camel__PublicItem>;
+export const __camel__PublicItemSchema = z.object({ slug: z.string(), title: text, notes: text, updatedAt: isoDateTime() });
+export type __Pascal__PublicItem = z.output<typeof __camel__PublicItemSchema>;
 export type __Pascal__PublicPage = Paged<__Pascal__PublicItem>;
 {{/public}}

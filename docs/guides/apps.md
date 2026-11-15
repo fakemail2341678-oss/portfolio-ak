@@ -12,7 +12,7 @@ Small, complete apps under `/apps/<slug>` that visitors try without an account (
 
 ## What a guest can't do (0185)
 
-Nothing in the admin area (no permissions, not even the baseline role's), no account change (Better Auth `GUEST_REFUSED_PATHS`, `requireUserMiddleware`), no email (`sendEmail` refuses `.invalid` addresses), no analytics identity, and nothing public: an app checks `context.user.isGuest` before publishing a short link, a form or a shared note. Guests are left out of `/admin/users`, the role counts and the dashboard.
+Nothing in the admin area (no permissions, not even the baseline role's), no account change (Better Auth `GUEST_REFUSED_PATHS`, `requireUser`), no email (`sendEmail` refuses `.invalid` addresses), no analytics identity, and nothing public: an app checks `context.user.isGuest` before publishing a short link, a form or a shared note. Guests are left out of `/admin/users`, the role counts and the dashboard.
 
 ## The shape of an app
 
@@ -92,4 +92,4 @@ Remove `anonymous(…)` from `src/server/auth/auth.ts` and `anonymousClient()` f
 - **A two-factor sign-in loses the guest's session:** the password step clears the session cookie before the anonymous plugin's hook runs; the `guest_claim` cookie and `claimGuestData` after sign-in are what keep the data.
 - **"Too many attempts" when trying an app:** guest sign-ins are limited per address and per hour (30, `GUEST_SIGN_INS_PER_HOUR`), counted in the database. Mobile carriers share one address among many visitors, and in dev every attempt is 127.0.0.1 (dev builds don't limit it). The try button names the limit instead of "wait a moment" (0201).
 - **A count then an insert isn't a limit:** under READ COMMITTED two requests both count `quota − 1` and both insert. Take `lockQuota` (`src/server/db/quota.ts`, core since 0206: a transaction-scoped advisory lock per owner, or per form for responses) before the count, inside the same transaction (0199).
-- **A session can be a guest's** (`session.isAnonymous`, 0185): visitors trying the apps. They hold no permissions; `requireUserMiddleware` refuses them, so account functions must use it (or a `requirePermission`), and the apps use `requireAppUser` + `withAppServices`. App tables have `owner_id` and every query goes through `ownedBy`.
+- **A session can be a guest's** (`session.isAnonymous`, 0185): visitors trying the apps. They hold no permissions; `requireUser` refuses them, so account functions must use it (or a `requirePermission`), and the apps use `requireAppUser` + `withAppServices`. App tables have `owner_id` and every query goes through `ownedBy`.

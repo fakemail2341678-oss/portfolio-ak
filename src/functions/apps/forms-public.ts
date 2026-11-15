@@ -3,7 +3,7 @@ import { getRequest } from "@tanstack/react-start/server";
 import { formSlugInput, submitResponseInput } from "@/features/apps/forms/schema";
 import type { PublicForm } from "@/features/apps/forms/types";
 import { zodInput } from "@/functions/_lib/validator";
-import { withPublicServices } from "@/middleware/services";
+import { withPublic } from "@/middleware/services";
 import * as forms from "@/server/apps/forms/service";
 import { clientIpHash, trustedClientIp } from "@/server/auth/client-ip";
 import { serverEnv } from "@/server/env";
@@ -17,12 +17,12 @@ import { verifyTurnstile } from "@/server/http/turnstile";
  * schema.
  */
 export const getPublicForm = createServerFn({ method: "GET" })
-	.middleware([withPublicServices])
+	.middleware([withPublic])
 	.validator(zodInput(formSlugInput))
 	.handler(({ data, context }): Promise<PublicForm> => forms.getPublicForm(context, data.slug));
 
 export const submitFormResponse = createServerFn({ method: "POST" })
-	.middleware([withPublicServices])
+	.middleware([withPublic])
 	.validator(zodInput(submitResponseInput))
 	.handler(({ data, context }): Promise<{ sent: true }> => {
 		const ip = trustedClientIp(getRequest());

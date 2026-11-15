@@ -85,7 +85,7 @@ For the portfolio's `/contact` the page already exists; add the form below its e
 Use the attachments flow (decision 0098, [attachments.md](attachments.md)); `/dev/examples/attachments` is the same upload, sign and confirm sequence.
 
 1. A scope `avatar` in `src/features/attachments/constants.ts` with its limits (one image, square crop on delivery).
-2. On the account page, an `ImageGalleryField`-like single picker (`max={1}`) in a new `AvatarSection` (`features/auth/components/`), saving through a new `setMyAvatar({ attachmentId })` function with `requireAccountOwnerMiddleware` that links the attachment to the user (`syncEntityAttachments` with entity `user`) and stores its delivery URL in Better Auth's `user.image`.
+2. On the account page, an `ImageGalleryField`-like single picker (`max={1}`) in a new `AvatarSection` (`features/auth/components/`), saving through a new `setMyAvatar({ attachmentId })` function with `requireAccountOwner` that links the attachment to the user (`syncEntityAttachments` with entity `user`) and stores its delivery URL in Better Auth's `user.image`.
 3. Render with `CloudImage` (`variant="thumb"`), with the initials as the fallback; delete the old asset when replaced (`purge`), and in account deletion (0129) as today.
 
 ## CSV export, delete with undo, saved views

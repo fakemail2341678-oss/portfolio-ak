@@ -6,7 +6,7 @@ import { overwriteGetLocale } from "@/paraglide/runtime";
 
 /**
  * The layout routes' beforeLoad guards. The admin role check itself is a server
- * function (ensureAdminAccess -> requireAdminAccessMiddleware, tested in auth-middleware.test.ts);
+ * function (ensureAdminAccess -> requireAdminAccess, tested in auth-middleware.test.ts);
  * here it's mocked to return or throw what the server would.
  */
 const ensureAdminAccess = vi.hoisted(() => vi.fn<() => Promise<Session>>());

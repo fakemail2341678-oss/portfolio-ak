@@ -13,7 +13,7 @@ import { m } from "@/paraglide/messages";
  * strips: this file reaches the browser through server-function modules, and
  * src/server/** must never follow it there (import protection).
  */
-export const sessionMiddleware = createMiddleware({ type: "function" }).server(async ({ next }) => {
+export const withSession = createMiddleware({ type: "function" }).server(async ({ next }) => {
 	const { getServerSession } = await import("@/server/auth/session");
 	const session: Session | null = await getServerSession();
 	return next({ context: { session } });
@@ -27,8 +27,8 @@ export const sessionMiddleware = createMiddleware({ type: "function" }).server(a
  * password, two-factor) and every admin function goes through it, so a guest reaches
  * none of them; the apps use `requireAppUser`.
  */
-export const requireUserMiddleware = createMiddleware({ type: "function" })
-	.middleware([sessionMiddleware])
+export const requireUser = createMiddleware({ type: "function" })
+	.middleware([withSession])
 	.server(({ next, context }) => {
 		if (!context.session || context.session.isAnonymous) throw new AppError("UNAUTHORIZED", "Authentication required");
 		return next({
@@ -46,8 +46,8 @@ export const requireUserMiddleware = createMiddleware({ type: "function" })
  * refused with FORBIDDEN in an impersonated session. Better Auth's own account
  * endpoints are refused the same way by a hook (src/server/auth/hooks.ts).
  */
-export const requireAccountOwnerMiddleware = createMiddleware({ type: "function" })
-	.middleware([requireUserMiddleware])
+export const requireAccountOwner = createMiddleware({ type: "function" })
+	.middleware([requireUser])
 	.server(({ next, context }) => {
 		if (context.impersonatedBy) {
 			throw ruleError("FORBIDDEN", "Account change while impersonating", m.auth_error_impersonating());
@@ -64,7 +64,7 @@ export const requireAccountOwnerMiddleware = createMiddleware({ type: "function"
  */
 export const requirePermission = (...required: [Permission, ...Permission[]]) =>
 	createMiddleware({ type: "function" })
-		.middleware([requireUserMiddleware])
+		.middleware([requireUser])
 		.server(({ next, context }) => {
 			if (!hasAll(context.permissions, required)) {
 				throw new AppError("FORBIDDEN", `Missing permission: ${required.join(", ")}`);
@@ -77,8 +77,8 @@ export const requirePermission = (...required: [Permission, ...Permission[]]) =>
  * their own). A user who must set up two-factor first gets FORBIDDEN with the
  * "two-factor-required" reason, which the _admin layout turns into a redirect.
  */
-export const requireAdminAccessMiddleware = createMiddleware({ type: "function" })
-	.middleware([requireUserMiddleware])
+export const requireAdminAccess = createMiddleware({ type: "function" })
+	.middleware([requireUser])
 	.server(({ next, context }) => {
 		if (context.twoFactorRequired) {
 			throw new AppError("FORBIDDEN", "Two-factor authentication required", { reason: "two-factor-required" });

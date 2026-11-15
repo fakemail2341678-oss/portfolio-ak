@@ -8,7 +8,7 @@ export const assertDev = () => {
 };
 
 /** Server functions that exist for the /dev pages only: NOT_FOUND in production. */
-export const devOnlyMiddleware = createMiddleware({ type: "function" }).server(({ next }) => {
+export const requireDev = createMiddleware({ type: "function" }).server(({ next }) => {
 	assertDev();
 	return next();
 });

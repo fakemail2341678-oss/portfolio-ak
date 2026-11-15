@@ -1,6 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { Public__Pascal__Detail } from "@/features/__name__/components/__name__-public";
-import { public__Pascal__DetailQueryOptions } from "@/features/__name__/queries";
+import { Public__Pascal__Detail } from "@/features/__name__/components/__name__-public-page";
 import { __camel__SlugSchema } from "@/features/__name__/search";
 import { loaderTitleCrumb } from "@/lib/breadcrumbs";
 import { loadDetailOr404 } from "@/lib/crud/route";
@@ -16,6 +15,8 @@ export const Route = createFileRoute("/_public/__name__/$slug")({
 	params: { parse: (raw) => parseParams(__camel__SlugSchema, raw) },
 	// Missing and draft slugs are both the 404 page. Only what head() and the breadcrumb need.
 	loader: async ({ context, params }) => {
+		// On demand: the queries and their server functions stay out of every page's JavaScript (0194).
+		const { public__Pascal__DetailQueryOptions } = await import("@/features/__name__/queries");
 		const item = await loadDetailOr404(context.queryClient, public__Pascal__DetailQueryOptions(params.slug));
 		return {
 			title: {{#localized}}localizedValue(item.title){{/localized}}{{^localized}}item.title{{/localized}},

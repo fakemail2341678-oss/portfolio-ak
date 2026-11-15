@@ -1,6 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
 import type { Dashboard } from "@/features/admin/dashboard";
-import { requireAdminAccessMiddleware } from "@/middleware/auth";
+import { requireAdminAccess } from "@/middleware/auth";
 import { getDashboard as buildDashboard } from "@/server/admin/dashboard";
 import { db } from "@/server/db/client";
 
@@ -9,5 +9,5 @@ import { db } from "@/server/db/client";
  * each part is filled only for the sections whose read permission they hold.
  */
 export const getDashboard = createServerFn({ method: "GET" })
-	.middleware([requireAdminAccessMiddleware])
+	.middleware([requireAdminAccess])
 	.handler(({ context }): Promise<Dashboard> => buildDashboard(db, context.permissions));

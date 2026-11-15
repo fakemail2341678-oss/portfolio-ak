@@ -1,6 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { __Pascal__EditPage } from "@/features/__name__/components/__name__-detail";
-import { __camel__DetailQueryOptions } from "@/features/__name__/queries";
 import { assertRoutePermission } from "@/features/rbac/route-guard";
 import { loaderTitleCrumb } from "@/lib/breadcrumbs";
 import { loadDetailOr404, titleHead } from "@/lib/crud/route";
@@ -17,6 +16,8 @@ export const Route = createFileRoute("/_admin/admin/__name__/$id")({
 	beforeLoad: ({ context }) => assertRoutePermission(context.session, "__name__:update"),
 	// Only what the breadcrumb needs; the row itself travels in the Query cache.
 	loader: async ({ context, params }) => {
+		// On demand: the queries and their server functions stay out of every page's JavaScript (0194).
+		const { __camel__DetailQueryOptions } = await import("@/features/__name__/queries");
 		const row = await loadDetailOr404(context.queryClient, __camel__DetailQueryOptions(params.id));
 		return { title: {{#localized}}localizedValue(row.title){{/localized}}{{^localized}}row.title{{/localized}} };
 	},

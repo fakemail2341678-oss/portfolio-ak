@@ -102,7 +102,7 @@ keys by the router's `stringifySearch` (`src/lib/list/url.ts`, wired in
 The list's URL gets a param (`?edit=<id>`), while the address bar shows the record's own page (`/admin/test-crud/<id>`).
 
 ```tsx
-// a link (see features/test-crud/components/masked-links.tsx)
+// a link (see features/test-crud/components/masked-link.tsx)
 <Link
 	from="/admin/test-crud/" to="."
 	search={(prev) => ({ ...prev, edit: id })}

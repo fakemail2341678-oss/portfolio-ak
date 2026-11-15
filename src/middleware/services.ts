@@ -1,5 +1,5 @@
 import { createMiddleware } from "@tanstack/react-start";
-import { requireUserMiddleware } from "./auth";
+import { requireUser } from "./auth";
 
 /**
  * Adds what a handler hands to its service (decision 0173): `context.db`,
@@ -16,14 +16,14 @@ import { requireUserMiddleware } from "./auth";
  * strips: this file reaches the browser through the server-function modules.
  */
 export const withServices = createMiddleware({ type: "function" })
-	.middleware([requireUserMiddleware])
+	.middleware([requireUser])
 	.server(async ({ next, context }) => {
 		const { servicesFor } = await import("@/server/services");
 		return next({ context: servicesFor(context) });
 	});
 
 /** For public reads (no user): `context.db` and `context.imageStore`. Their functions decide what's public. */
-export const withPublicServices = createMiddleware({ type: "function" }).server(async ({ next }) => {
+export const withPublic = createMiddleware({ type: "function" }).server(async ({ next }) => {
 	const { publicServices } = await import("@/server/services");
 	return next({ context: publicServices() });
 });

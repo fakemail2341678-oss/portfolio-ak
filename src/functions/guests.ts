@@ -1,6 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
 import { deleteCookie, getCookie } from "@tanstack/react-start/server";
-import { requireUserMiddleware } from "@/middleware/auth";
+import { requireUser } from "@/middleware/auth";
 import { db } from "@/server/db/client";
 import { GUEST_CLAIM_COOKIE, readGuestClaim } from "@/server/guests/claim-cookie";
 import { claimGuest } from "@/server/guests/service";
@@ -12,10 +12,10 @@ import { log } from "@/server/log";
  * (two-factor's included) and on the verify-email landing, because those paths can lose
  * the guest's session cookie before the anonymous plugin's own claim runs. Idempotent:
  * a guest already claimed or cleaned up claims nothing, and the cookie goes either way.
- * Accounts only (`requireUserMiddleware` refuses guests and visitors).
+ * Accounts only (`requireUser` refuses guests and visitors).
  */
 export const claimGuestData = createServerFn({ method: "POST" })
-	.middleware([requireUserMiddleware])
+	.middleware([requireUser])
 	.handler(async ({ context }): Promise<{ claimed: boolean }> => {
 		const guestId = readGuestClaim(getCookie(GUEST_CLAIM_COOKIE));
 		if (!guestId) return { claimed: false };

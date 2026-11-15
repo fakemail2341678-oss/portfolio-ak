@@ -29,7 +29,7 @@ What protects the app, and the rules that keep it that way. Most of it is enforc
 - **CSRF:** server functions reject cross-site calls (Sec-Fetch-Site, then Origin, then Referer; `src/middleware/csrf.ts`).
 - **Errors** never leak details: anything unexpected becomes `INTERNAL` with a request id ([routing-data.md](routing-data.md)).
 - **Server-only code** can't reach the browser: import protection fails the build, and `env-boundary.test.ts` scans imports. Only `VITE_` variables are public.
-- **Dev-only pages and functions** answer 404 in production (`/dev` layout, `devOnlyMiddleware`).
+- **Dev-only pages and functions** answer 404 in production (`/dev` layout, `requireDev`).
 
 ## Auth (Better Auth)
 
@@ -40,14 +40,14 @@ What protects the app, and the rules that keep it that way. Most of it is enforc
 - **Expired sessions:** any server function that answers UNAUTHORIZED in the browser sends the user to `/login?redirect=…` (`src/middleware/session-expiry.ts`, 0113). Client route guards read a session at most a minute old (0111); server functions always check it themselves.
 - **Admin plugin endpoints are off:** `/api/auth/admin/*` answers 404 (`src/server/auth/disabled-paths.ts`, 0112), so nothing skips the RBAC rules in `src/server/rbac/service.ts`.
 - **Audit log:** role, user and publish/delete changes write an `audit_event` row in the same transaction, with the request id and client IP; `/admin/audit` needs `audit:read` (0132, [rbac.md](rbac.md)).
-- **Impersonation:** admins only, never of an admin, at most an hour, audited; the impersonated session can't change the account (password, email, two-factor, linked accounts, sessions, deletion: `OWNER_ONLY_PATHS`, `requireAccountOwnerMiddleware`; 0134).
+- **Impersonation:** admins only, never of an admin, at most an hour, audited; the impersonated session can't change the account (password, email, two-factor, linked accounts, sessions, deletion: `OWNER_ONLY_PATHS`, `requireAccountOwner`; 0134).
 - **Session tokens stay on the server:** the account page lists sessions by id and revokes them with `revokeMySession` (0114).
 - **Two-factor (0126):** TOTP with backup codes (Better Auth `twoFactor`), turned on from the account page; the login form asks for the code after the password. `AUTH_REQUIRE_ADMIN_2FA=true` (default off) holds back every admin permission until it's on: the session comes back with `permissions: []` and `twoFactorRequired`, so every `requirePermission` refuses and `/admin` redirects to the account page. Email-code sign-in is refused for accounts with two-factor on (`src/server/auth/hooks.ts`); Google sign-in relies on Google's own second factor.
 - **Breached passwords (0127):** sign-up, reset, change and set-password refuse passwords found in Have I Been Pwned (only 5 hash characters leave the server). `AUTH_BREACHED_PASSWORD_CHECK=false` turns it off (the e2e harness does).
 - **Bot protection (0128):** with `TURNSTILE_SITE_KEY` and `TURNSTILE_SECRET_KEY` set, register, forgot-password and sign-in-code need a Turnstile token (`CAPTCHA_PATHS`, `src/server/auth/policy.ts`) and the CSP allows Cloudflare's challenge frame. Every auth form has a honeypot field (`bot-check.tsx`).
 - **Account lifecycle (0129, 0130):** deleting an account always takes an emailed link to `/account/delete`; the last active admin can't be deleted; unsaved uploads are queued for cleanup. `GET /api/account/export` returns the user's own data (never hashes, tokens or 2FA secrets). Users can add a password, link and unlink Google, but never remove their last way in. Each change to how someone signs in emails a `security-notice`.
 - **Rate limits for each endpoint** are in `src/server/auth/auth.ts` (`customRules`): two-factor 10 a minute, account deletion 3, linking and unlinking 5, guest sign-in 30 an hour per address (`GUEST_SIGN_INS_PER_HOUR`, unlimited in dev builds; 0201).
-- **Guest sessions (0185, 0186):** visitors try the apps as guests (Better Auth's `anonymous` plugin). A guest holds no permissions, `requireUserMiddleware` refuses them (the apps use `requireAppUser`), Better Auth refuses them every account change (`GUEST_REFUSED_PATHS`), no email goes to their `.invalid` address, analytics never identifies them, and they never publish anything public. Signing up or in moves their data to the account (`onLinkAccount`, then the signed `guest_claim` cookie); the daily cleanup deletes them after 7 days. See [apps.md](apps.md).
+- **Guest sessions (0185, 0186):** visitors try the apps as guests (Better Auth's `anonymous` plugin). A guest holds no permissions, `requireUser` refuses them (the apps use `requireAppUser`), Better Auth refuses them every account change (`GUEST_REFUSED_PATHS`), no email goes to their `.invalid` address, analytics never identifies them, and they never publish anything public. Signing up or in moves their data to the account (`onLinkAccount`, then the signed `guest_claim` cookie); the daily cleanup deletes them after 7 days. See [apps.md](apps.md).
 
 ## Recipes: last login method, passkeys
 

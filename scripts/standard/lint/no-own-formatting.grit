@@ -1,0 +1,10 @@
+language js
+
+or {
+	`$value.toLocaleString($...)`,
+	`$value.toLocaleDateString($...)`,
+	`$value.toLocaleTimeString($...)`,
+	`new Intl.NumberFormat($...)`
+} as $format where {
+	register_diagnostic(span=$format, message="Dates, numbers and money are formatted by src/lib/i18n (formatNumber, formatDate, formatMoney), so every page shows them the same way in both languages.", severity="error")
+}
