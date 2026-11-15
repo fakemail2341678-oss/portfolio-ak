@@ -3,21 +3,21 @@ import "../src/styles/app.css";
 import type { Decorator, Preview } from "@storybook/react-vite";
 import { type Locale, locales, overwriteGetLocale } from "../src/paraglide/runtime";
 import { type AppParameters, AppProviders } from "./app-providers";
+import { storyVariant } from "./variant";
 
 type Theme = "light" | "dark";
 
 /**
- * The Vitest "storybook-dark-ne" project defines STORYBOOK_VARIANT to run every
- * story a second time in Nepali with the dark theme (vitest.config.ts).
+ * Toolbar: language (en/ne) and theme (light/dark), applied like the app does.
+ *
+ * The Vitest instance "storybook-dark-ne" runs every story a second time in Nepali with the dark
+ * theme (vitest.config.ts). Its variant is read here, when a story renders, not in `initialGlobals`:
+ * this module can be evaluated before the instance's setup file has run (./variant.ts).
  */
-const variant: string | undefined = import.meta.env.STORYBOOK_VARIANT;
-export const INITIAL_GLOBALS =
-	variant === "dark-ne" ? { locale: "ne", theme: "dark" } : { locale: "en", theme: "light" };
-
-/** Toolbar: language (en/ne) and theme (light/dark), applied like the app does. */
 const withLocaleAndTheme: Decorator = (Story, context) => {
-	const locale = (context.globals.locale ?? "en") as Locale;
-	const theme = (context.globals.theme ?? "light") as Theme;
+	const darkNe = storyVariant() === "dark-ne";
+	const locale = (darkNe ? "ne" : (context.globals.locale ?? "en")) as Locale;
+	const theme = (darkNe ? "dark" : (context.globals.theme ?? "light")) as Theme;
 	// Paraglide messages and Intl helpers read getLocale() at render time.
 	overwriteGetLocale(() => locale);
 	document.documentElement.lang = locale;
@@ -56,7 +56,7 @@ const preview: Preview = {
 			},
 		},
 	},
-	initialGlobals: INITIAL_GLOBALS,
+	initialGlobals: { locale: "en", theme: "light" },
 	parameters: {
 		layout: "padded",
 		// Accessibility violations fail the story (in the Vitest run and the a11y panel).

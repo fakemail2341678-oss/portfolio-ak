@@ -39,4 +39,20 @@ export const E2E = {
 	},
 } as const;
 
+/**
+ * The public settings the harness builds the app with (compiled into the bundle), so they are part
+ * of what makes a build stale (build-hash.ts).
+ */
+export const E2E_PUBLIC_ENV = {
+	VITE_APP_TITLE: E2E.appTitle,
+	VITE_SITE_URL: E2E.baseURL,
+	// Set but empty, so values from .env don't reach the bundle (real env wins over .env files).
+	VITE_SENTRY_DSN: "",
+	VITE_POSTHOG_KEY: "",
+	VITE_POSTHOG_HOST: "",
+	// The browser review covers the /dev pages too (src/lib/dev-routes.ts).
+	VITE_DEV_ROUTES: "true",
+	SENTRY_AUTH_TOKEN: "",
+};
+
 export type E2EUser = keyof typeof E2E.users;

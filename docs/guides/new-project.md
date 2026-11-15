@@ -51,5 +51,5 @@ How it works: each layer's files, package scripts, crons, knip entries and table
 
 ## 6. Gates
 
-- [ ] `pnpm typecheck && pnpm check && pnpm knip && pnpm test && pnpm test:storybook && pnpm test:e2e && pnpm build && pnpm build-storybook`. CI runs the same on every PR.
+- [ ] `pnpm gates --full` (typecheck, check, knip, i18n:check, test, test:storybook, build, the bundle budget, build-storybook and test:e2e, each whole). CI runs the same on every PR.
 - [ ] Deploy: [deployment.md](deployment.md).

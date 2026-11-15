@@ -218,7 +218,7 @@ async function reviewForm(query: DemoQuery, email: string | null) {
 }
 // apps:end
 
-export async function serveHarness(port: number, query: DemoQuery) {
+export async function serveHarness(port: number, query: DemoQuery, build: string) {
 	const emails: CapturedEmail[] = [];
 	// New per start (a fresh database): tests key their saved sign-ins on it.
 	const runId = randomUUID();
@@ -254,7 +254,8 @@ export async function serveHarness(port: number, query: DemoQuery) {
 					emails.filter((email) => !to || email.to === to),
 				);
 			}
-			if (route === "GET /e2e/run") return send(response, 200, { id: runId });
+			// `build`: the hash of the source the server was built from (build-hash.ts); `pnpm gates` stops a stale one.
+			if (route === "GET /e2e/run") return send(response, 200, { id: runId, build });
 			if (route === "POST /e2e/reset-rate-limits") {
 				await query(`delete from "rate_limit"`);
 				return send(response, 200, { ok: true });

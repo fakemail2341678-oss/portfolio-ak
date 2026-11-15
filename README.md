@@ -143,13 +143,14 @@ Create a Neon database, set the variables above in Vercel (including `VITE_SITE_
 | `pnpm dev:offline` | The dev server with no outside services: in-memory PGlite (migrated and seeded), console email, Sentry/PostHog/Cloudinary/Turnstile/Google off ([recipes](docs/guides/recipes.md#offline-development)). |
 | `pnpm build` | Production build (client, SSR and Nitro server output in `.output/`). |
 | `pnpm start` | Run the production build with Node, loading `.env` if present. |
-| `pnpm typecheck` | TypeScript in strict mode, no emit. |
+| `pnpm gates` | Every gate below in order, narrowed to the files that changed, with a table of times. `--full` runs every suite whole; `pnpm gates:clean` stops what a killed run left behind. |
+| `pnpm typecheck` | TypeScript in strict mode, no emit (the native TypeScript 7 compiler, incremental). |
 | `pnpm check` | Biome lint + format check. Warnings fail the run. |
 | `pnpm check:fix` | Apply Biome fixes and formatting. |
 | `pnpm knip` | Report unused files, exports, types and dependencies (`knip.json`). |
-| `pnpm test` | Run the unit, component and server tests once (Vitest project `unit`). |
-| `pnpm test:watch` | Run the unit project in watch mode. |
-| `pnpm test:coverage` | Unit run with v8 coverage (`coverage/`, HTML included), then a per-area table. |
+| `pnpm test` | Run the unit, component and server tests once (Vitest projects `unit`, `components` and `server`). |
+| `pnpm test:watch` | Run the same three projects in watch mode. |
+| `pnpm test:coverage` | The same run with v8 coverage (`coverage/`, HTML included), then a per-area table. |
 | `pnpm test:storybook` | Render every story in headless Chrome, twice (English/light, then Nepali/dark), run play functions and fail on any a11y violation. Uses the installed Chrome. |
 | `pnpm test:e2e` | Build and start a production server (in-memory PGlite, emails captured by a fake Resend API), then run the flows (sign-up, sign-in code, password reset, Test CRUD, permissions, no-JS lists) and the browser review of every page in en/ne × light/dark × 390/768/1280. Uses the installed Chrome. |
 | `pnpm db:generate` | Generate a SQL migration in `drizzle/` from schema changes. |
@@ -176,7 +177,7 @@ Create a Neon database, set the variables above in Vercel (including `VITE_SITE_
 
 ## CI and git hooks
 
-GitHub Actions (`.github/workflows/ci.yml`) runs typecheck, check, knip, a schema-vs-migrations check, test, test:storybook, test:e2e (3 shards, on Postgres), build and build-storybook on every pull request and push to `main`. `pnpm install` installs git hooks (`lefthook.yml`): Biome on staged files before a commit, typecheck and unused-dependency checks before a push. Dependabot opens grouped update PRs weekly. Version pinning rules: decision 0119.
+GitHub Actions (`.github/workflows/ci.yml`) runs typecheck, check, knip, a schema-vs-migrations check, test, test:storybook, test:e2e (5 shards, on Postgres), build and build-storybook on every pull request and push to `main`. `pnpm install` installs git hooks (`lefthook.yml`): Biome on staged files before a commit, typecheck and unused-dependency checks before a push. Dependabot opens grouped update PRs weekly. Version pinning rules: decision 0119.
 
 ## Testing
 

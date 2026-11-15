@@ -21,7 +21,7 @@ import { importSpend } from "@/server/kharcha/spend/import";
 import * as saved from "@/server/kharcha/spend/saved";
 import * as spend from "@/server/kharcha/spend/service";
 import * as threads from "@/server/kharcha/threads/service";
-import { createFakeCloudinary } from "../utils/fake-cloudinary";
+import { createFakeCloudinary, type FakeAsset } from "../utils/fake-cloudinary";
 import { createTestDb } from "../utils/test-db";
 import { caller, code, insertUsers, uploadReceipt } from "./kharcha-helpers";
 
@@ -99,7 +99,7 @@ const expense = (overrides: Partial<Parameters<typeof expenses.createExpense>[1]
 	...overrides,
 });
 
-async function setUp(): Promise<World> {
+async function buildWorld(): Promise<World> {
 	await env.reset();
 	const personOf = async (id: Caller) => (await me.getMe(as(id))).person.id;
 	const owner = await personOf("owner");
@@ -230,6 +230,25 @@ async function setUp(): Promise<World> {
 		groupPayment,
 		groupComment,
 	};
+}
+
+/**
+ * The world as it was first built: the same rows with the same ids. Building it takes some
+ * thirty service calls and the matrix asks for it about 400 times, so it is built once and
+ * its rows (and the fake Cloudinary's assets) are put back each time (decision 0296).
+ */
+let built: { world: World; assets: Array<[string, FakeAsset]> } | undefined;
+async function setUp(): Promise<World> {
+	if (!built) {
+		const first = await buildWorld();
+		await env.snapshot();
+		built = { world: first, assets: [...cloudinary.assets] };
+	} else {
+		await env.restore();
+		cloudinary.assets.clear();
+		for (const [publicId, asset] of built.assets) cloudinary.assets.set(publicId, { ...asset });
+	}
+	return structuredClone(built.world);
 }
 
 type Expected = Partial<Record<Caller, string>>;

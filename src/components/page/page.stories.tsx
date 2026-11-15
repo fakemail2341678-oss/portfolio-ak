@@ -4,6 +4,7 @@ import { expect } from "storybook/test";
 import { Button } from "@/components/ui/button";
 import { breadcrumbJsonLd } from "@/lib/breadcrumbs";
 import { m } from "@/paraglide/messages";
+import { storyVariant } from "../../../.storybook/variant";
 import { Breadcrumbs } from "./breadcrumbs";
 import { EmptyState } from "./empty-state";
 import { Page, PageHeader } from "./page";
@@ -89,10 +90,10 @@ export const Skeletons: Story = {
 	),
 };
 
-/** Guards the story-test setup: each Vitest project really renders its own locale and theme. */
+/** Guards the story-test setup: each Vitest instance really renders its own locale and theme. */
 export const VariantProbe: Story = {
 	play: async () => {
-		const darkNe = import.meta.env.STORYBOOK_VARIANT === "dark-ne";
+		const darkNe = storyVariant() === "dark-ne";
 		await expect(document.documentElement.lang).toBe(darkNe ? "ne" : "en");
 		await expect(document.documentElement.classList.contains("dark")).toBe(darkNe);
 	},

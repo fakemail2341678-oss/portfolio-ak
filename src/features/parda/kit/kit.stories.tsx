@@ -80,8 +80,9 @@ export const PosterPreview: Story = {
 	play: async ({ canvas, userEvent }) => {
 		await userEvent.hover(canvas.getByTestId("poster-card"));
 		const preview = await waitFor(() => within(document.body).getByTestId("poster-preview"), { timeout: 3000 });
-		await expect(within(preview).getByText("The Long Monsoon")).toBeVisible();
-		await expect(within(preview).getByText(/lighthouse keeper/)).toBeVisible();
+		// The preview fades in: on a busy machine the text was found before it was visible.
+		await waitFor(() => expect(within(preview).getByText("The Long Monsoon")).toBeVisible());
+		await waitFor(() => expect(within(preview).getByText(/lighthouse keeper/)).toBeVisible());
 	},
 };
 

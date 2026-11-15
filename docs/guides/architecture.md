@@ -12,7 +12,7 @@ How the app is put together and how a request flows through it. The file-by-file
 
 ## Stack
 
-- **App:** TanStack Start 1.168 + Router 1.170 (file routes, server functions), Nitro 3 RC (h3 2.0.8), deployed to Vercel; React 19.3, TypeScript 6 strict.
+- **App:** TanStack Start 1.168 + Router 1.170 (file routes, server functions), Nitro 3 RC (h3 2.0.8), deployed to Vercel; React 19.3, TypeScript 6 strict (`pnpm typecheck` runs TypeScript 7's native compiler, installed beside it as `typescript7`; the tools that read TypeScript keep 6, 0296).
 - **TanStack libraries:** Query 5, DB 0.5, Form 1.33, Store 0.11.
 - **UI:** Tailwind 4.3 + shadcn/ui (Radix), lucide icons; TanStack Table 9, Recharts 3 (lazy), dnd-kit (`@dnd-kit/react`).
 - **Validation, i18n, env:** Zod 4.6 (aliased, jitless), Paraglide 2.25, T3 Env.

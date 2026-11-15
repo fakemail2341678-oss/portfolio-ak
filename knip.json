@@ -9,7 +9,8 @@
 		"src/server/email/preview.ts",
 		"src/lib/zod.ts",
 		"vite.config.ts",
-		".storybook/mocks/**/*.ts"
+		".storybook/mocks/**/*.ts",
+		".storybook/variant-dark-ne.ts"
 	],
 	"project": [
 		"src/**/*.{ts,tsx,css}",

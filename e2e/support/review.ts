@@ -53,7 +53,10 @@ export async function reviewPage(
 		.soft(layout.cls, `cumulative layout shift ≤ ${MAX_CLS}; shifts: ${layout.shifts.join(" | ")}`)
 		.toBeLessThanOrEqual(MAX_CLS);
 
-	const axe = await new AxeBuilder({ page }).withTags(AXE_TAGS).analyze();
+	// Legacy mode: axe runs in the page and asks its frames itself. The default mode opens a blank page
+	// for every run to put the frames' results together, which took as long as the rules did
+	// (0.3 to 0.6 s a check against 0.15 to 0.3 s; the same rules and the same results, decision 0296).
+	const axe = await new AxeBuilder({ page }).withTags(AXE_TAGS).setLegacyMode(true).analyze();
 	const violations = axe.violations.map(
 		(violation) =>
 			`${violation.id} (${violation.impact}): ${violation.nodes

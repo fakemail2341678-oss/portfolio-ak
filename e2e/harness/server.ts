@@ -1,7 +1,8 @@
 /**
  * Starts everything the e2e suite runs against (Playwright's webServer command):
  * 1. a production build (`vite build`) with fixed public settings and no
- *    Sentry/PostHog, unless E2E_SKIP_BUILD=1 reuses the last one;
+ *    Sentry/PostHog, unless the source hasn't changed since the harness last built it
+ *    (build-hash.ts) or E2E_SKIP_BUILD=1 reuses whatever `.output` holds;
  * 2. a database: in-memory PGlite over TCP, or E2E_DATABASE_URL (a real Postgres
  *    whose database name contains "e2e" or "test"; it is emptied first);
  * 3. migrations, an admin and the demo data;
@@ -14,8 +15,9 @@ import { spawn, spawnSync } from "node:child_process";
 import { rmSync } from "node:fs";
 import { createServer } from "node:net";
 import { PGlite } from "@electric-sql/pglite";
+import { buildCache } from "./build-hash.ts";
 import { FAKE_CLOUDINARY } from "./cloudinary.ts";
-import { E2E } from "./config.ts";
+import { E2E, E2E_PUBLIC_ENV } from "./config.ts";
 import { prepareDatabase } from "./database.ts";
 import { serveHarness } from "./inbox.ts";
 import { servePglite } from "./pglite-server.ts";
@@ -30,17 +32,7 @@ const APP_ENV =
 	/^(VITE_|DATABASE_|EMAIL_|RESEND_|BETTER_AUTH_|AUTH_|TURNSTILE_|GOOGLE_|ADMIN_|DEMO_|SENTRY_|CLOUDINARY_|CRON_|TMDB_|PARDA_|LICHESS_|CHAAL_)/;
 const inherited = Object.fromEntries(Object.entries(process.env).filter(([key]) => !APP_ENV.test(key)));
 
-const publicEnv = {
-	VITE_APP_TITLE: E2E.appTitle,
-	VITE_SITE_URL: E2E.baseURL,
-	// Set but empty, so values from .env don't reach the bundle (real env wins over .env files).
-	VITE_SENTRY_DSN: "",
-	VITE_POSTHOG_KEY: "",
-	VITE_POSTHOG_HOST: "",
-	// The browser review covers the /dev pages too (src/lib/dev-routes.ts).
-	VITE_DEV_ROUTES: "true",
-	SENTRY_AUTH_TOKEN: "",
-};
+const publicEnv = E2E_PUBLIC_ENV;
 
 /** Fails fast, before the build, when a port is taken (often a server left from another run). */
 const assertFree = (port: number, name: string, host?: string) =>
@@ -58,8 +50,11 @@ await assertFree(E2E.appPort, "app");
 // Same address the harness binds (the app listens on all interfaces).
 await assertFree(E2E.harnessPort, "harness", "127.0.0.1");
 
+const built = buildCache(publicEnv);
 if (process.env.E2E_SKIP_BUILD === "1") {
 	log("E2E_SKIP_BUILD=1: reusing .output");
+} else if (built.fresh) {
+	log("the source hasn't changed since the last build: reusing .output");
 } else {
 	log("building (vite build)…");
 	// Vite writes notes (plugin timings, chunk sizes) to stderr. Playwright shows the webServer's
@@ -73,6 +68,7 @@ if (process.env.E2E_SKIP_BUILD === "1") {
 		process.exit(build.status ?? 1);
 	}
 	process.stdout.write(build.stderr);
+	built.stamp();
 }
 
 let databaseUrl = process.env.E2E_DATABASE_URL;
@@ -108,7 +104,7 @@ await database.query(
 	 values ('{"en":"Viduki","ne":"Viduki"}'::jsonb, '/1/movie/{id}?color={color}', '/1/tv/{id}/{season}/{episode}?color={color}', 'viduki', false, 99)`,
 );
 // parda:end
-const harness = await serveHarness(E2E.harnessPort, database.query);
+const harness = await serveHarness(E2E.harnessPort, database.query, built.hash);
 log(`harness (fake Resend, controls): ${E2E.harnessURL}`);
 
 const app = spawn(process.execPath, [".output/server/index.mjs"], {

@@ -4441,7 +4441,7 @@ As 10.1 (with 14.1's differences), and:
 - **Read:** CLAUDE.md, 10.1, then 15.1–15.7 and the task's own section, not the other tasks. Once Task 98 is done, read `docs/history/part9-audit.md` for the parts the task names: its numbers replace 15.4's.
 - **Effort:** before starting, ask the owner to confirm the session's effort against 15.3's column, and wait.
 - **Plugins:** 15.3 names what each task needs. Turn them on at the start and off at the end (`enabledPlugins` in the user settings file; a restart applies it), and say so in the report. Turn context-mode off for a phase that uses agents. Use subagents only when the owner's prompt for the task allows them.
-- **Gates:** by the changed-files rule (0280) until Task 127, which runs every suite in full. Workers stay capped (`--maxWorkers=4`, e2e `--workers=2`) until Task 99 puts the caps in the configs. From Task 99 on, use `pnpm gates`.
+- **Gates:** by the changed-files rule (0280) until Task 127, which runs every suite in full. Since Task 99 the configs take their worker counts from the free memory (0296), so no flag is needed: use `pnpm gates`.
 - **Ratchets (from Task 100):** the standard's tests carry lists of known deviations. A task that fixes one removes it from the list in the same commit. Nothing is added to a list without a decision.
 - **Refactors keep behaviour.** Before moving or rewriting code that has no test, write the test.
 - **Too big for one session?** Split the task in 15.3 (as 65a and 69a were) before starting it. Never drop a part silently.
@@ -4474,7 +4474,7 @@ As 10.1 (with 14.1's differences), and:
 | Task | Name | Effort | Plugins | Status |
 | --- | --- | --- | --- | --- |
 | 98 | Baseline and audit: every gate timed, coverage, every deviation counted, package verdicts, the old plan's gaps | xhigh | context7, playwright | Done (decision 0295) |
-| 99 | Fast gates: find why the suites are slow, fix it, `pnpm gates` | high | context7 | Planned |
+| 99 | Fast gates: find why the suites are slow, fix it, `pnpm gates` | high | context7 | Done (decision 0296) |
 | 100 | The standard: rules written, enforced by tests, AI rules, the generator | xhigh | context7, claude-code-setup | Planned |
 | 101 | Structure and names everywhere: one codemod, no behaviour change | high | typescript-lsp, serena | Planned |
 | 102 | Packages: upgrades, Pacer, Hotkeys, replacements | high | context7 | Planned |
@@ -4518,7 +4518,7 @@ Task 98 measured these again and corrected the lines below where its counts diff
 
 - **Size:** 1,873 source files and 206,000 lines in `src`; 262 routes; 582 server functions in 113 files; 59 migrations; 7,227 messages; 207 test files, 77 story files with 394 stories, 302 reviewed page entries in e2e (3,624 checks); 293 decisions before Part 9.
 - **State:** the tree is clean on `main` and `pnpm typecheck` is green. The last commit (`ac15bf9`, "optimistic trying still") is 0294's work: admin lists write through TanStack DB.
-- **Gate times (0295, 2 e2e workers, 4 Vitest workers):** typecheck 1 min 45 s with no cache and 58 s with nothing changed; `pnpm test` 207 files and 2,534 tests in 3 min 26 s; Storybook 394 stories twice, 55 s and 53 s at 7.3 GB; `pnpm test:e2e` 3,832 tests in 73 min 26 s, in ten shards to fit the tool's 10-minute limit; build 1 min 34 s; `build-storybook` 1 min 16 s. Everything but e2e takes 11 min 17 s. The owner's machine has 11.7 GB of memory, which caps the workers.
+- **Gate times (0295, 2 e2e workers, 4 Vitest workers):** typecheck 1 min 45 s with no cache and 58 s with nothing changed; `pnpm test` 207 files and 2,534 tests in 3 min 26 s; Storybook 394 stories twice, 55 s and 53 s at 7.3 GB; `pnpm test:e2e` 3,832 tests in 73 min 26 s, in ten shards to fit the tool's 10-minute limit; build 1 min 34 s; `build-storybook` 1 min 16 s. Everything but e2e takes 11 min 17 s. The owner's machine has 11.7 GB of memory, which caps the workers. **Since Task 99 (0296):** typecheck 1 min 13 s and 2 s, `pnpm test` 1 min 44 s (2,538 tests), Storybook 2 min 49 s on one page or 1 min 49 s on two, `pnpm test:e2e` 61 min 31 s for the same 3,832 tests; everything but e2e 9 min 13 s.
 - **Two folder conventions:** core features keep components in `components/` (Test CRUD, rbac, portfolio, auth: 140 `.tsx` files). The four products keep them beside the data files in module folders (taskline 111, chaal 93, kharcha 81, parda 74).
 - **Names that differ:** `collection.ts` (10 files) and `collections.ts` (3); `repository.ts` and `service.ts` in a folder (core), `posts-repository.ts` style (portfolio), and many other file kinds in the products' server folders; function verbs outside the usual set (`save` 10, `find`, `locate`, `patch`, `toggle`, `add`/`remove` next to `create`/`delete`).
 - **Two write paths:** `useCrudMutation` (71 calls, the admin's, 0294) and raw `useMutation` (151 calls), in 122 files together. 36 of the 222 call sites are optimistic today. Collections: `crudCollection` descriptors for admin lists, and `queryCollectionOptions` collections in Notes, Habits and Taskline's board.
@@ -4694,19 +4694,43 @@ The owner asked whether every operation can be optimistic, and said to do it if 
 
 ### Task 99: Fast gates
 
-**Goal:** every suite as fast as the machine allows, with no check removed, and every remaining minute explained.
+**Done** (2026-11-15, decision 0296). No check was removed: the same tests, stories and review checks run, and four tests were added. The times and what is left of them are in `docs/guides/testing.md` ("How long the gates take").
 
-- **Profile first,** from Task 98's per-file times. Suspects to confirm or clear:
-  - **unit:** one Vitest project for node, jsdom and PGlite tests; the DOM setup file loaded by every file; a PGlite data directory loaded per file (65 files); guard tests that walk the tree again and again; isolation where pure tests don't need it;
-  - **Storybook:** two projects, so two Vite servers and two dependency optimizations (the cause of the "first run fails" in 0292); full Chrome through `channel: "chrome"`;
-  - **e2e:** full Chrome, a new context and sign-in per check, the 12-way matrix over 104 pages, one PGlite connection behind the production server, the harness rebuilding when nothing changed, retries hiding slow tests;
-  - **anything that hangs:** orphaned runners, servers on port 3100 and automated Chromes; the low-memory reaper.
-- **Fix** what the profile shows. Candidates: Vitest projects split by environment with the right pool and isolation for each; one Storybook run with both variants as browser instances; a lighter browser for the review; contexts reused per locale and theme; the harness's build cached by a hash of the source; worker counts computed from free memory, in the configs, so no flag is needed.
-- **TypeScript 7:** try the native compiler for `pnpm typecheck` (the 4 GB heap of 0222 may go). Keep it only if every tool that reads TypeScript still works.
-- **`pnpm gates`:** one command for all gates in the right order, `--changed` (the changed-files rule, 0280) by default and `--full`, with a table of times at the end; `pnpm gates:clean` kills leftovers of a stopped run.
-- **CI:** caches for the pnpm store, the tsc and PGlite caches and Vite's; shard counts from the new times; cancelled runs on a new push.
-- **Aims** (from 15.4; the summary says where the time goes if one is missed): `pnpm test` under 2 minutes, both Storybook variants under 3, the full e2e under 30 at two workers with the same 3,832 checks or more.
-- **Proof:** the number of tests and review checks before and after, in the summary. **Docs:** `docs/guides/testing.md` with the real times.
+- **Before and after** (the owner's machine, 12 threads, 11.7 GB, measured with `scripts/audit/measure.ts`):
+
+  | Gate | Task 98 | Now | Tests before | Tests now |
+  | --- | ---: | ---: | --- | --- |
+  | typecheck, no cache | 1 min 45 s | 1 min 13 s | | |
+  | typecheck, nothing changed | 58 s | 2 s | | |
+  | test | 3 min 26 s | 1 min 44 s | 207 files, 2,534 | 208 files, 2,538 |
+  | test:storybook, both passes | 1 min 48 s with 39 MB free | 2 min 49 s on one page with 1.6 GB free; 1 min 49 s on two | 2 × 394 stories | 2 × 394 |
+  | test:e2e, two workers | 73 min 26 s | 61 min 31 s | 3,832 (3,624 review checks, 208 flows), 1 flaky | 3,832 (3,624 and 208), none flaky |
+  | everything but e2e | 11 min 17 s | 9 min 13 s | | |
+
+  `check`, `knip`, `i18n:check`, `build`, the bundle budget and `build-storybook` were not changed (8 s, 5 s, 6 s, 1 min 46 s, 2 s, 1 min 18 s).
+- **The aims:** `pnpm test` under 2 minutes: met. Both Storybook passes under 3: met, by 11 s when memory allows one page. The full e2e under 30 at two workers: **missed, 61 min 31 s.**
+  - **Where e2e's time goes:** 3,624 review checks at 1.83 s (2.2 s before) are 55 minutes on two workers, the flows 6. A check is a warm-up load (0.26 s), the measured load (0.4 s), Playwright's wait for the network to be idle (0.5 s), axe (0.4 s, was 0.8 s) and a new context with its sign-in (0.17 s). Thirty minutes needs a check under 0.9 s: no part can go without weakening the check. Four workers might (about 31 minutes if the time halves; not measured) and need 6.6 GB free; the machine had 5.3 GB.
+- **What the profile showed, and the fix:**
+  - **unit.** `kharcha-access` built its world of thirty service calls about 400 times: 173 s of 206. It now builds once and restores a snapshot (`snapshot()`/`restore()` in `tests/utils/test-db.ts`): 7 s. `reset()` truncated 123 tables in 80 to 100 ms a test: it now deletes as a replica in 4 to 5 ms. Every file loaded 10 MB of compiled messages through Vite in 0.8 s: Node loads them now (0.15 s). One project became three (`unit` with no isolation, `components`, `server`), on worker threads.
+  - **Cleared:** the DOM setup file (it loads Testing Library only in jsdom files already); the guard tests' walks (the slowest is one test of 5 s, the server-only import boundary); the PGlite data directory per file (0.4 s to load a migrated one; starting an empty one is 1.5 s).
+  - **typecheck.** `i18n:compile` ran every time: 44 s of the 58. It now compiles only when the messages changed (`scripts/i18n-compile.ts`). TypeScript 7's native `tsc` checks the project in 14 s where TypeScript 6 took a minute.
+  - **Storybook.** One project with two browser instances, so one Vite config and one dependency cache; each pass in its own process (`scripts/test-storybook.ts`), because both in one held 8.9 GB. Its speed before came from four pages in 7.3 GB with 39 MB of memory left. A pass holds 3.6 GB on one page and 4.5 GB on two, so the count now follows the free memory.
+  - **e2e.** axe's default mode opens a blank page for every run: `setLegacyMode(true)` halves axe's time with the same rules and results. The harness builds only when a hash of the build's inputs changed (its start: 79 s with a build, 8 s without). `globalTimeout` ends a stuck run after two hours, and the ten slowest tests are listed after every run. **Cleared:** retries hid nothing (no test was retried in the full run); the one PGlite connection behind the server is not the limit at two workers (a page's warm-up load, server and database included, is 0.26 s).
+  - **Hangs.** `pnpm gates:clean` stops runners, workers, the harness, its server and Playwright's Chromes. Worker counts come from free memory (`scripts/lib/workers.ts`), so nothing starts 57 Chromes again.
+- **Tried and rejected, with the numbers** (testing.md's pitfalls): no isolation for `server` and `components` (a file of each failed when shuffled); Chrome's headless shell (four stories failed; e2e was 11% slower); one browser context per e2e worker (8 of 604 checks failed on CLS); both story passes in one process (8.9 GB); collecting garbage after each story file (a pass 24 s slower).
+- **TypeScript 7** is installed beside TypeScript 6 as `typescript7` and runs only `pnpm typecheck`. knip, Storybook's docgen, the audit scripts and the editor use the compiler's JavaScript API, and the 7.0 package ships only `tsc`, so they keep 6. Both compilers pass the tree. Task 102 moves the rest when the API is there.
+- **`pnpm gates`** (`scripts/gates.ts`): every gate in order, narrowed by the changed-files rule, `--full`, `--list`, `--only`, `--skip`, `--base`, `--e2e`, `--keep-going`, and a table of scopes and times. It restarts an e2e server whose build is stale.
+- **CI:** caches for the compiled messages, `tsc`'s incremental file, the PGlite data directory, Vitest's modules, Storybook's dependencies and the e2e build (the pnpm store was cached already, and a new push already cancelled a running one). Playwright's workers there now come from the runner's memory and processors, not a fixed four. The e2e shards stay five: the suite is 16% shorter, not half.
+- **Docs:** `docs/guides/testing.md` (the projects, `snapshot()`, "pnpm gates", the times, the pitfalls), `i18n.md`, `architecture.md`, `new-project.md`, README, CLAUDE.md.
+- **Deviations:**
+  - **The e2e aim is missed** (above). "A lighter browser" and "contexts reused per locale and theme" were tried and failed their checks.
+  - **Storybook's two passes are two processes,** not one run: one run needed more memory than the machine has.
+  - **Storybook is slower than Task 98 measured when memory allows only one page:** that run was one sample away from running out of memory.
+  - **CI was not run:** nothing was pushed. The new cache steps and the shard count are unproven until the next push.
+- **Left for the owner:**
+  - The editor's TypeScript server held 1.8 GB while these ran. Closed, the machine would have about 7 GB free, and the rule would give Storybook three pages and e2e four workers by itself.
+  - Whether the review should keep all twelve variants of every page. It is the only lever left on e2e's hour, and it is a decision about coverage, not speed.
+  - The `build` gate empties `.output`, so a full `pnpm gates` builds twice (the production build for the bundle budget, then the e2e build with the `/dev` pages).
 
 ### Task 100: The standard: rules, enforcement, AI rules, the generator
 

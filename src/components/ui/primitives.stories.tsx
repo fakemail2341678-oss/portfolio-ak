@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { BoldIcon, InfoIcon, ItalicIcon, TriangleAlertIcon } from "lucide-react";
-import { expect, within } from "storybook/test";
+import { expect, waitFor, within } from "storybook/test";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "./accordion";
 import { Alert, AlertDescription, AlertTitle } from "./alert";
 import { Button } from "./button";
@@ -125,7 +125,9 @@ export const Overlays: Story = {
 	),
 	play: async ({ canvas, userEvent, canvasElement }) => {
 		await userEvent.pointer({ keys: "[MouseRight]", target: canvas.getByText("Right-click here") });
-		await expect(await within(canvasElement.ownerDocument.body).findByRole("menuitem", { name: "Edit" })).toBeVisible();
+		const item = await within(canvasElement.ownerDocument.body).findByRole("menuitem", { name: "Edit" });
+		// The menu is in the document a frame before it is shown: on a loaded machine the check ran in between.
+		await waitFor(() => expect(item).toBeVisible());
 		await userEvent.keyboard("{Escape}");
 	},
 };

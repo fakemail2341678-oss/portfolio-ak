@@ -3,7 +3,7 @@
 Record every non-obvious choice here: **What**, **Why**, **Alternatives considered**. Newest entries at the bottom.
 
 <details>
-<summary>Index (294 entries)</summary>
+<summary>Index (295 entries)</summary>
 
 - [0001](#0001-project-has-its-own-git-repository): Project has its own git repository
 - [0002](#0002-default-deployment-target-is-vercel-assumption): Default deployment target is Vercel (assumption)
@@ -300,6 +300,7 @@ Record every non-obvious choice here: **What**, **Why**, **Alternatives consider
 - [0293](#0293-after-the-plan-the-temporary-knip-entry-gone-with-the-two-functions-it-hid): After the plan: the temporary knip entry gone, with the two functions it hid
 - [0294](#0294-admin-lists-write-through-tanstack-db-one-collection-per-list-fed-by-the-query-cache): Admin lists write through TanStack DB: one collection per list, fed by the Query cache
 - [0295](#0295-part-9s-baseline-every-gate-measured-every-deviation-counted-task-98): Part 9's baseline: every gate measured, every deviation counted (Task 98)
+- [0296](#0296-fast-gates-where-the-suites-time-went-workers-from-free-memory-one-command-for-all-gates-task-99): Fast gates: where the suites' time went, workers from free memory, one command for all gates (Task 99)
 </details>
 
 ---
@@ -4357,3 +4358,39 @@ Measured on the owner's Windows machine (Node 24.11, 12 threads, 11.7 GB), 2026-
 - **Corrected in the plan:** 15.4's counts and times, and a new paragraph in 15.5 on where the standard as written and the code disagree (the role list, the schema suffix, the guard words, the messages' prefixes), for Task 100 to settle.
 - **Not done:** the libraries' docs were read line by line for four of them (Start, DB, Pacer, Hotkeys); the others were checked by version and by the deprecated-API scan. Empty and loading states inside a page cannot be found by a script; the UX passes look at them.
 - **Alternatives considered:** counting with `grep` (15.4's first numbers: a comment or a string counts as a call, and several were off); committing the screenshots as JPEG (34 MB in every clone of a template); a separate Playwright spec for the screenshots (it would copy the review's 60 lines that turn a route into a URL); measuring the machine's memory instead of the command's (whatever else runs is counted too).
+
+## 0296: Fast gates: where the suites' time went, workers from free memory, one command for all gates (Task 99)
+
+Measured on the owner's Windows machine (Node 24.11, 12 threads, 11.7 GB, about 5.3 GB free), 2026-11-15, with `scripts/audit/measure.ts` as 0295 was. The times, and where what is left of them goes, are in `docs/guides/testing.md` ("How long the gates take"); every run's record, the trials included, is in `docs/history/part9-audit/gates-task99.json`.
+
+- **Result:** `pnpm test` 3 min 26 s → 1 min 44 s (208 files, 2,538 tests: the 2,534 of before and four new). `pnpm typecheck` 1 min 45 s → 1 min 13 s with no cache, 58 s → 2 s with nothing changed. `pnpm test:e2e` 73 min 26 s → 61 min 31 s at two workers (the same 3,832 tests, none failed, none flaky). `pnpm test:storybook` 1 min 48 s with 39 MB of memory left → 2 min 49 s on one page with 1.6 GB left, 1 min 49 s on two (the same 394 stories twice). Everything but e2e: 11 min 17 s → 9 min 13 s. The plan's aim of a 30-minute e2e is missed.
+- **What:**
+  - **`reset()` deletes, it doesn't truncate** (`tests/utils/test-db.ts`). `truncate … cascade` over 123 tables took 80 to 100 ms a test. `delete from` every table with `session_replication_role = replica` (no foreign-key checks, no triggers), then `alter sequence … restart`, takes 4 to 5 ms.
+  - **`snapshot()` and `restore()`** copy every non-empty table into a `snapshot` schema and put the rows and sequence values back. `kharcha-access` built its world through thirty service calls about 400 times, 173 s of the suite's 206; it builds once and restores: 7 s. Generated columns are left out of the copy.
+  - **Three Vitest projects** in place of one: `unit` (`tests/unit`, `i18n`, `email`) with `isolate: false`, `components` (jsdom) and `server` (PGlite), all on worker threads. Projects with different worker counts need their own `sequence.groupOrder`.
+  - **Paraglide's compiled messages are external to Vite in tests** (`server.deps.external`): 10 MB that nearly every file imports took 0.8 s a file through the module runner and 0.15 s loaded by Node. `fsModuleCache` keeps the other transforms between runs.
+  - **`pnpm i18n:compile` compiles only when its inputs' hash changed** (`scripts/i18n-compile.ts`). It was 44 s of every typecheck.
+  - **TypeScript 7's native `tsc` runs `pnpm typecheck`,** installed as `typescript7` (`npm:typescript@7.0.2`) beside TypeScript 6: 14 s for 5,886 files with `--checkers 2`, where 6 took a minute. Four checkers took 4.5 GB for 2 s less, one took 18.5 s. The 7.0 package ships only `tsc`, no JavaScript API, so knip, Storybook, the audit scripts and the editor keep 6. Both compilers pass the tree.
+  - **Storybook: one project, two browser instances** (`storybook`, `storybook-dark-ne`), so one Vite config and one dependency cache. The variant is a global the second instance's setup file sets (`.storybook/variant.ts`), read when a story renders, not a build-time define. `scripts/test-storybook.ts` runs each instance in its own Vitest process.
+  - **axe runs in the page** (`setLegacyMode(true)` in `e2e/support/review.ts`). Its default mode opens a blank page per run to join the frames' results, which cost as much as the rules: 0.8 s → 0.4 s a check, same rules, same results.
+  - **The e2e harness builds only when its inputs changed** (`e2e/harness/build-hash.ts`): a hash of `src`, `public`, `messages`, the Vite and TypeScript configs, the lockfile, `.env` and the harness's public settings, kept in `.output/.e2e-build-hash`. Any other build empties `.output`, and the hash with it. The harness reports the hash at `/e2e/run`.
+  - **`playwright.config.ts`:** `globalTimeout` of two hours, and `reportSlowTests` lists the ten slowest over 20 s.
+  - **Worker counts come from free memory** (`scripts/lib/workers.ts`, used by both configs): for each suite a measured base and cost per worker, 1 GB kept free, never more workers than helped (`unit` 4, `components` and `server` 6, stories 3, e2e 4). `GATE_WORKERS` forces a count. `tests/unit/gate-workers.test.ts` holds the arithmetic.
+  - **`pnpm gates`** (`scripts/gates.ts`) runs the ten gates in order and prints each one's scope and time. By default each is narrowed to the changed files (0280): Biome on those files, `vitest related` plus the tests that read the source as files, `STORIES_ONLY` for the folders near a change, and for e2e a `--grep` of the changed layers' names, plus every page once (English, light, 1280) when shared code changed. `--full` runs everything. It stops an e2e server whose build hash is not the source's. `pnpm gates:clean` stops what a killed run leaves, by command line, and of browsers only those with Playwright's throwaway profile.
+  - **CI:** six caches (compiled messages, `tsc`'s incremental file, the PGlite data directory, Vitest's modules, Storybook's dependencies, the e2e build). Playwright's workers come from the runner, not a fixed four. Five e2e shards stay.
+- **Why:**
+  - **The profile came first.** Task 98's per-file times named one file for 42% of `pnpm test`; a profile of `reset()` and of one file's imports found the next two. None of the three was on the plan's list of suspects.
+  - **Memory, not processors, limits every suite here.** Vitest's and Playwright's defaults started more workers than 11.7 GB holds, and the caps had lived in a memory file and in flags. In the configs, a fresh clone and CI get them too.
+  - **Storybook's budget is from the worst run.** A pass holds 3.6 GB on one page, 4.5 GB on two and about 5.4 GB on three: a page keeps what its story files loaded until Chrome collects it. The first budget (from runs that had started with more free memory than assumed) gave three pages with 5.4 GB free: 374 MB were left and a story failed. Task 98's 55 s a pass was four pages with 39 MB left.
+  - **The e2e hour is the count of checks.** At 1.83 s a check, a check is two loads (0.26 s and 0.4 s), Playwright's 0.5 s network-idle window, axe (0.4 s) and a new context (0.17 s). Each is what makes a check true: the warm-up keeps CLS independent of the machine's load (0121), the idle wait is what "loaded" means for the console, CSP and CLS checks, the new context keeps a sign-in from leaking.
+  - **Two TypeScripts for now:** the 44 s and the minute were the two largest costs of the gate that runs most often.
+- **Alternatives considered:**
+  - **No isolation for `server` and `components`:** in a shuffled order a file of each failed (`taskline-admin`'s invitations, `task-panel`).
+  - **Chrome's headless shell:** four stories failed in it; for e2e it saved 320 MB a worker and was 11% slower (28.1 s against 25.3 s for the same checks).
+  - **One browser context per e2e worker,** with the warm-up only for a URL not yet loaded: 8 of 604 checks failed on CLS, all in Nepali, and it was no faster. The font has to be in the page's memory cache.
+  - **Both story instances in one run,** as the plan wrote it: 8.2 to 8.9 GB, 15 MB of memory left.
+  - **Forcing a collection after each story file** (`--js-flags=--expose-gc`): three pages in 4.1 GB, but 72 s a pass; two pages without it take 50 s in 4.5 GB.
+  - **A smaller reserve than 1 GB,** which would give Storybook two pages and e2e three workers on this machine today: the hour-long run would sit within 850 MB of the limit, and runs have been killed there before.
+  - **Reviewing fewer variants per page:** it is the lever that would halve the e2e time, and it removes checks. The task forbids it; it is the owner's decision.
+  - **Moving every tool to TypeScript 7 now:** the tools need the API.
+- **Not done:** CI has not run with these changes (nothing is pushed). The e2e time at three or four workers was not measured: the machine had memory for two.
