@@ -2,7 +2,7 @@ import { Link } from "@tanstack/react-router";
 import { SearchIcon } from "lucide-react";
 import { lazy, type MouseEvent, Suspense, useState } from "react";
 import { Kbd } from "@/components/ui/kbd";
-import { useHotkeyLabel, useHotkeys } from "@/hooks/use-hotkeys";
+import { useShortcutLabel, useShortcuts } from "@/hooks/use-shortcuts";
 import { m } from "@/paraglide/messages";
 import { pardaLinks } from "../../links";
 
@@ -20,8 +20,11 @@ export function PardaSearchButton({ className }: { className?: string }) {
 		setUsed(true);
 		setOpen(true);
 	};
-	useHotkeys({ "mod+k": show, "/": show });
-	const shortcut = useHotkeyLabel("mod+k");
+	useShortcuts(m.shortcuts_group_general(), [
+		{ keys: "Mod+K", name: m.parda_search_title(), run: show },
+		{ keys: "/", name: m.parda_search_title(), run: show },
+	]);
+	const shortcut = useShortcutLabel("Mod+K");
 	const onClick = (event: MouseEvent<HTMLAnchorElement>) => {
 		if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
 		event.preventDefault();

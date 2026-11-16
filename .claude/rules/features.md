@@ -17,8 +17,8 @@ Guides: `docs/guides/conventions.md` ("The standard"), `docs/guides/crud.md`, `d
 - A list MUST use the list contract (`listSchema`, `useListPage`, `CrudListPage`), with its state in the URL.
 - Reuse the kit (`src/components/page`, `data-table`, `data-display`, `filters`, `dialogs`, `forms`) before writing a component. A pattern used twice becomes shared.
 - Every user-visible string MUST be a Paraglide message in both languages, called at render time (`m.key()`), NEVER in a module-level constant.
-- A shortcut MUST be registered through the hotkeys hook. A key handler that is a widget's own keyboard model needs a `// keys: <reason>` comment.
-- Debouncing and throttling go through the shared helpers (TanStack Pacer from Task 102). Another `setTimeout` or `setInterval` needs a `// timer: <reason>` comment.
+- A shortcut MUST be registered with `useShortcuts` (`src/hooks/use-shortcuts.ts`, TanStack Hotkeys), with a name and a group. A key handler that is a widget's own keyboard model needs a `// keys: <reason>` comment.
+- Debouncing, throttling and queuing go through TanStack Pacer (`useDebouncedValue`, `useThrottledCallback`, `usePacedRefresh`, `createJobQueue`; state.md, "Pacing"). Another `setTimeout` or `setInterval` needs a `// timer: <reason>` comment.
 - Dates, numbers and money MUST be formatted by `src/lib/i18n`; NEVER `toLocaleString` or `new Intl.NumberFormat`.
 - NEVER add `useMemo` or `useCallback` for speed (the React Compiler memoizes).
 - `src/components`, `src/hooks` and `src/lib` know no feature: NEVER import `@/features`, `@/functions`, `@/routes` or `@/server` there. Every export there MUST say what it is for in a comment above it.

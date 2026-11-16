@@ -97,6 +97,10 @@ export default defineConfig(async ({ command, mode }) => {
 		environments: {
 			client: {
 				build: {
+					// The entry is one chunk on purpose (the "entry" group below), 760 kB before gzip. The
+					// bundle budget measures what a page loads (scripts/check-bundle.ts); this limit only
+					// keeps Vite's warning for a chunk that grows past the entry (decision 0299).
+					chunkSizeWarningLimit: 800,
 					rolldownOptions: {
 						// A loader imports its feature's queries.ts with `await import(…)` to keep it out of
 						// the route's options, which every page loads, and the page's own chunk imports it
@@ -105,8 +109,7 @@ export default defineConfig(async ({ command, mode }) => {
 						// note names the React Compiler and Tailwind on every build: nothing to act on.
 						checks: { ineffectiveDynamicImport: false, pluginTimings: false },
 						output: {
-							// React changes rarely; a separate chunk stays cached across deploys and keeps
-							// the entry chunk under Vite's 500 kB warning. See docs/decisions.md.
+							// React changes rarely: a separate chunk stays cached across deploys. See docs/decisions.md.
 							codeSplitting: {
 								groups: [
 									{
@@ -116,6 +119,10 @@ export default defineConfig(async ({ command, mode }) => {
 									// cva's class joiner, on its own: left alone, Rolldown may put it in tailwind-merge's
 									// chunk, which the entry then imports directly (decision 0211).
 									{ name: "clsx", test: /\/node_modules\/(?:\.pnpm\/[^/]+\/node_modules\/)?clsx\// },
+									// The client entry with everything it imports statically (a group takes its modules'
+									// dependencies along), as one chunk. Every page loads all of it anyway; left alone,
+									// Rolldown 1.2.19 cut it into 76 files, each compressed on its own (decision 0299).
+									{ name: "entry", test: /\/src\/client\.tsx$/ },
 								],
 							},
 						},

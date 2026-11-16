@@ -4477,7 +4477,7 @@ As 10.1 (with 14.1's differences), and:
 | 99 | Fast gates: find why the suites are slow, fix it, `pnpm gates` | high | context7 | Done (decision 0296) |
 | 100 | The standard: rules written, enforced by tests, AI rules, the generator | xhigh | context7, claude-code-setup | Done (decision 0297) |
 | 101 | Structure and names everywhere: one codemod, no behaviour change | high | typescript-lsp, serena | Done (decision 0298) |
-| 102 | Packages: upgrades, Pacer, Hotkeys, replacements | high | context7 | Planned |
+| 102 | Packages: upgrades, Pacer, Hotkeys, replacements | high | context7 | Done (decision 0299) |
 | 103 | Server core: requests, errors, auth, logs | xhigh | context7 | Planned |
 | 104 | Data core: repositories, migrations, seeds | high | context7 | Planned |
 | 105 | Writes: the optimistic engine | xhigh | context7 | Planned |
@@ -4799,20 +4799,29 @@ The owner asked whether every operation can be optimistic, and said to do it if 
   - The production build, `build-storybook` and the e2e flows ran before the last three fixes (the section-home context, a test's name, a vocabulary word); typecheck, Biome, knip, the standard and the tests those fixes touch ran after them.
   - The 51 new function ids on the next deploy, as above.
 
-### Task 102: Packages: upgrades, Pacer, Hotkeys, replacements
+### Task 102: Packages: upgrades, Pacer, Hotkeys, replacements (done)
 
-**Goal:** current versions, and maintained packages where they beat our own code.
+Done in decision 0299. Current versions everywhere a release is safe to ship, TanStack Pacer and Hotkeys as the one way, and one hand-written algorithm replaced by its package.
 
-- **Upgrades,** one at a time with the gates: TypeScript 7 (if Task 99 didn't), TanStack DB 1.0 (the release candidate only if its notes say it is safe to ship), Start, Router, Query, Vitest, Nitro, Storybook, Biome and the rest. Record every surprise.
-- **TanStack Pacer** (`@tanstack/react-pacer`, and `@tanstack/pacer` on the server):
-  - `PacerProvider` with the app's defaults;
-  - replaces `useDebouncedValue` and the hand-written timers in the filter bar, the async combobox, the slug field and the validators (a form's own `asyncDebounceMs` stays);
-  - throttles what fires fast: scroll, resize and drag handlers, progress pulses, and the refetches that polling, `rev` and realtime events trigger (the "loader throttling" the owner asked for: a burst of events reloads a route's data once);
-  - queues uploads with a concurrency; a per-row queue is Task 105's;
-  - on the server, Chaal's lanes and cooldown and TMDB's pacing move to it only if the tests show the same behaviour.
-- **TanStack Hotkeys** (`@tanstack/react-hotkeys`): `HotkeysProvider`; `use-hotkeys.ts` goes; every shortcut is registered with a name and a group, so the shortcuts dialog lists what is really bound (`useHotkeyRegistrations`, `formatForDisplay`); sequences (`g` then `h`) where a product wants them. The server-rendered label and its fixed-width `Kbd` (no layout shift) must survive.
-- **Replacements** by Task 98's verdicts. Each needs a test that our stored data behaves the same (order keys made by `fractional-index.ts` must still sort between their neighbours), the CSP still holds (no eval, no blob workers), and the bundle does not grow on every page.
-- **Shown:** a `/dev/examples` page for Pacer, for Hotkeys and for each replacement, and `/dev/stack` updated.
+- **Upgrades:** every dependency is at the registry's latest but four held back with their reasons: TanStack DB (0.5.12, the last line before the 1.0 candidate, whose notes do not say it is safe to ship), TypeScript 6 for the tools (7 runs `pnpm typecheck`, 0296), `@babel/core` 7 (the React Compiler's plugin is built on Babel 7's types) and `@types/node` 22 (the oldest Node the app runs on). Three majors went in: Paraglide 3, lucide-react 1, jsdom 31.
+- **Pacer:** `PacingProvider` at the root; `useDebouncedValue` and `useDebouncer` replace `use-debounced-value.ts` and the filter bar's timer; `Rail` throttles its scroll handler; `usePacedRefresh` is the "loader throttling" (a burst of events reloads at once and once at its end) in Taskline's and Kharcha's freshness; `createJobQueue` queues uploads three at a time and is Chaal's lanes (their test unchanged). A form's own `asyncDebounceMs` stays (the slug field, the validators).
+- **Hotkeys:** `ShortcutsProvider` at the root; `use-hotkeys.ts` is gone; `useShortcuts` registers every shortcut with a name and a group, and `ShortcutsList` renders what is bound in the three products' shortcuts dialogs. Sequences work (`["G", "C"]` on the example page). The server-rendered label and its fixed-width `Kbd` are kept by `useShortcutLabel`.
+- **Replacements:** `fractional-indexing` 4.0.0 is the algorithm of `src/lib/fractional-index.ts` (177 lines to 79); 681 recorded answers of the old code match the package's, key for key. No eval and no worker came with any package (the browser review's CSP check is the proof).
+- **Shown:** `/dev/examples/pacing`, `/dev/examples/shortcuts`, `/dev/examples/order-keys`; TanStack Pacer and Hotkeys on `/dev/stack`.
+- **Numbers:**
+  - Known deviations 687 to 652: `timer` 56 to 31, `key-handler` 28 to 22, `route-thin` 24 to 23, `route-import` 20 to 18. The core has none left under `timer` and `key-handler`; the rest is the products' and the portfolio's.
+  - The entry is 294.1 kB gzip in 4 files (297.1 kB in 70 before); the heaviest route adds 351.6 kB (355.3 before).
+- **Gates:** typecheck, Biome, knip, `i18n:check`, `pnpm standard`, the full `pnpm test` (213 files, 2,621 tests) and Storybook (394 stories, twice), the build with the bundle budget, `build-storybook`, and e2e by the changed-files rule: 3,305 tests of the changed layers' pages and flows in eight shards, and every page once (305). None failed, none flaky.
+- **Deviations from the task as planned:**
+  - **The task was done in two sessions.** The first left the upgrades, Hotkeys and the debounces uncommitted with two failing tests; the second finished it.
+  - **TanStack DB 1.0 was not taken:** it is a release candidate with five patch releases in thirteen days and removed APIs. Task 105 decides again.
+  - **`lru-cache` does not replace `src/server/cache/lru.ts`:** measured, its stale-while-revalidate has no end and a failed refresh removes the entry. The rate limiter and the CSV parser stay by Task 98's verdicts. TMDB's pacing stays a loop with an injected sleep.
+  - **Throttling covers what the core and the two `rev` watchers do.** Chaal's and Parda's own timers (29 of the 31 left) and drag handlers are their layers' tasks, as 15.5's table says ("102, then the layers").
+  - **Chaal's move controls are a `group`, not a `toolbar`:** Hotkeys leaves arrow keys to a focused toolbar, and the bar never moved focus with them.
+  - **`createJobQueue` works around Pacer 0.23.1,** which fills a free slot only when a job finishes.
+- **Left for the owner:**
+  - Nothing is pushed, so CI has not run.
+  - When TanStack DB 1.0 is final (or before Task 105): the upgrade, with `transaction.isPersisted.promise` becoming `transaction.when("settled")` at five call sites and a query collection's handlers refetching themselves.
 
 ### Task 103: Server core: requests, errors, auth, logs
 

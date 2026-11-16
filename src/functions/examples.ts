@@ -31,6 +31,7 @@ import { verifyTurnstile } from "@/server/http/turnstile";
  * permission example's functions are in examples-permissions.ts.
  */
 
+// timer: sleeps, because the examples answer slowly on purpose.
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 /** Loader + Query: each call counts, so a refetch after hydration would show. */

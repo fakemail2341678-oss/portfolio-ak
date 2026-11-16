@@ -158,6 +158,7 @@ export function TagsInputField({ label, description, optional, placeholder }: Ta
 						if (text.includes(",")) add(text);
 						else setDraft(text);
 					}}
+					// keys: the tag input's own model: Enter or a comma adds the tag, Backspace in an empty field removes the last.
 					onKeyDown={onKeyDown}
 					onBlur={() => {
 						add(draft);

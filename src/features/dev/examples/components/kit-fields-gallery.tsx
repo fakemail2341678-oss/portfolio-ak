@@ -34,6 +34,7 @@ const newId = () => crypto.randomUUID();
 
 /** Slugs this demo pretends are taken (a real form calls a server function, see test-crud-form.tsx). */
 const TAKEN = new Set(["taken", "hello-world"]);
+// timer: pretends a server check that answers after 300 ms (the example has no server).
 const isAvailable = (slug: string) =>
 	new Promise<boolean>((resolve) => setTimeout(() => resolve(!TAKEN.has(slug)), 300));
 

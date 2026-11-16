@@ -17,7 +17,8 @@ import { lazy, type ReactNode, Suspense, useEffect, useRef, useState } from "rea
 import { ConfirmProvider } from "@/components/dialogs/confirm";
 import { NavigationProgress } from "@/components/layout/navigation-progress";
 import { sessionQueryOptions } from "@/features/auth/queries";
-import { useHotkeys } from "@/hooks/use-hotkeys";
+import { usePacedRefresh } from "@/hooks/use-paced-refresh";
+import { useShortcuts } from "@/hooks/use-shortcuts";
 import { GUEST_LIFETIME_DAYS } from "@/lib/guests";
 import { formatNumber } from "@/lib/i18n/intl";
 import { cn } from "@/lib/utils";
@@ -112,11 +113,11 @@ export function KharchaShell({ children }: { children: ReactNode }) {
 		editExpense: (expense) => setDialog({ action: "expense", expense }),
 		settleUp: (start = {}) => setDialog({ action: "settle", start }),
 	};
-	useHotkeys({
-		"mod+k": () => setPaletteOpen((open) => !open),
-		"shift+?": () => setShortcutsOpen(true),
-		n: () => actions.addExpense(),
-	});
+	useShortcuts(m.shortcuts_group_general(), [
+		{ keys: "Mod+K", name: m.kharcha_shortcut_palette(), run: () => setPaletteOpen((open) => !open) },
+		{ keys: "Shift+?", name: m.kharcha_shortcut_help(), run: () => setShortcutsOpen(true) },
+		{ keys: "N", name: m.kharcha_shortcut_new_expense(), run: () => actions.addExpense() },
+	]);
 	const dragging = useDropReceipts((files) => actions.addExpense({ files }), Boolean(me) && dialog === null);
 	const guest = session?.isAnonymous === true;
 	return (
@@ -250,11 +251,13 @@ function useFreshness(userId: string): number {
 	const { data: pulse } = useQuery({ ...kharchaRevQueryOptions(userId), enabled: Boolean(userId) });
 	const rev = pulse?.rev;
 	const seen = useRef<number | undefined>(undefined);
+	// Several moves in a second (a friend adds expenses one after another) reload the pages once or twice.
+	const refresh = usePacedRefresh(() => refreshKharcha(queryClient, userId));
 	useEffect(() => {
 		if (rev === undefined) return;
-		if (seen.current !== undefined && seen.current !== rev) void refreshKharcha(queryClient, userId);
+		if (seen.current !== undefined && seen.current !== rev) refresh();
 		seen.current = rev;
-	}, [rev, queryClient, userId]);
+	}, [rev, refresh]);
 	return pulse?.unread ?? 0;
 }
 

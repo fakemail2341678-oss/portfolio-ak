@@ -1,3 +1,4 @@
+import { useDebouncedValue } from "@tanstack/react-pacer";
 import { keepPreviousData, useQuery, useQueryClient } from "@tanstack/react-query";
 import { CheckIcon, UploadIcon } from "lucide-react";
 import { useId, useRef, useState } from "react";
@@ -18,7 +19,6 @@ import { uploadRule } from "@/features/attachments/constants";
 import { UploadError, uploadImage } from "@/features/attachments/lib/upload";
 import type { ImageAsset } from "@/features/attachments/schema";
 import { useCan } from "@/features/rbac/hooks/use-can";
-import { useDebouncedValue } from "@/hooks/use-debounced-value";
 import { formatNumber } from "@/lib/i18n/intl";
 import { localizedValue } from "@/lib/i18n/localized";
 import { cn } from "@/lib/utils";
@@ -57,7 +57,7 @@ export function MediaPicker({
 	const [selected, setSelected] = useState<Array<{ id: string; preview: ImageAsset }>>([]);
 	const [uploads, setUploads] = useState<Upload[]>([]);
 	const inputRef = useRef<HTMLInputElement>(null);
-	const query = useDebouncedValue(q, 250);
+	const [query] = useDebouncedValue(q, { wait: 250 });
 	const input = { q: query, kind, usage: "all" as const, sort: "-uploaded" as const, page, pageSize: MEDIA_PAGE_SIZE };
 	const list = useQuery({ ...mediaListQueryOptions(input), placeholderData: keepPreviousData });
 	const items = (list.data?.items ?? []).filter((item) => !exclude.includes(item.id));

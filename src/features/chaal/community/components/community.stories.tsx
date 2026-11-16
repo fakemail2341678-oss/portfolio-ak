@@ -128,7 +128,7 @@ export const StudyChapter: Story = {
 		// The start's comment, then a move further on.
 		const comment = () => canvasElement.querySelector("[data-testid=chaal-study-comment]")?.textContent ?? "";
 		await expect(comment()).not.toBe("");
-		const buttons = canvasElement.querySelectorAll<HTMLButtonElement>("[role=toolbar] button");
+		const buttons = canvasElement.querySelectorAll<HTMLButtonElement>("[data-testid=chaal-controls] button");
 		const forward = buttons[2];
 		if (!forward) throw new Error("no controls");
 		await userEvent.click(forward);

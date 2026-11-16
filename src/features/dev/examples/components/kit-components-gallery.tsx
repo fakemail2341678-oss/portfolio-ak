@@ -1,3 +1,4 @@
+import { useDebouncedValue } from "@tanstack/react-pacer";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
 import { BoldIcon, CheckCircle2Icon, InboxIcon, InfoIcon, ListChecksIcon, TriangleAlertIcon } from "lucide-react";
@@ -30,9 +31,8 @@ import { Spinner } from "@/components/ui/spinner";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Toggle } from "@/components/ui/toggle";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
-import { useDebouncedValue } from "@/hooks/use-debounced-value";
-import { useHotkeyLabel, useHotkeys } from "@/hooks/use-hotkeys";
 import { useMediaQuery } from "@/hooks/use-media-query";
+import { useShortcutLabel, useShortcuts } from "@/hooks/use-shortcuts";
 import { formatNumber, formatWeekdayShort } from "@/lib/i18n/intl";
 import { required } from "@/lib/validation";
 import { m } from "@/paraglide/messages";
@@ -245,8 +245,8 @@ const nameSchema = () => z.object({ name: required({ max: 60 }) });
 function Dialogs() {
 	const confirm = useConfirm();
 	const [open, setOpen] = useState<"dialog" | "sheet" | null>(null);
-	useHotkeys({ "mod+j": () => setOpen("sheet") });
-	const shortcut = useHotkeyLabel("mod+j");
+	useShortcuts(m.shortcuts_group_general(), [{ keys: "Mod+J", name: m.kit_form_sheet(), run: () => setOpen("sheet") }]);
+	const shortcut = useShortcutLabel("Mod+J");
 	const ask = async () => {
 		const confirmed = await confirm({
 			title: m.kit_confirm_title(),
@@ -304,7 +304,7 @@ function NameForm({ kind, onClose }: { kind: "dialog" | "sheet"; onClose: () => 
 
 function Hooks() {
 	const [text, setText] = useState("");
-	const debounced = useDebouncedValue(text, 400);
+	const [debounced] = useDebouncedValue(text, { wait: 400 });
 	const wide = useMediaQuery("(min-width: 1024px)");
 	return (
 		<Demo title={m.kit_hooks_title()} note={m.kit_hooks_note()}>

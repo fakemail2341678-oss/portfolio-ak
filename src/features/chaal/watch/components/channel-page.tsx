@@ -6,7 +6,7 @@ import { errorMessage } from "@/components/errors/error-page";
 import { MAIN_CONTENT } from "@/components/layout/skip-link";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useHotkeys } from "@/hooks/use-hotkeys";
+import { useShortcuts } from "@/hooks/use-shortcuts";
 import { m } from "@/paraglide/messages";
 import { localizeHref } from "@/paraglide/runtime";
 import { Board } from "../../board/components/board";
@@ -102,7 +102,9 @@ function ChannelBoard({
 		setView((current) => next(current, value, performance.now())),
 	);
 	const [flipped, setFlipped] = useState(false);
-	useHotkeys({ f: () => setFlipped((value) => !value) });
+	useShortcuts(m.shortcuts_group_board(), [
+		{ keys: "F", name: m.chaal_control_flip(), run: () => setFlipped((value) => !value) },
+	]);
 	const orientation: Color = flipped ? opposite(view.orientation) : view.orientation;
 	const turn = view.fen ? sideToMove(view.fen) : null;
 	const channel = CHANNEL_NAMES[game.channel]();

@@ -12,13 +12,13 @@ How the app is put together and how a request flows through it. The file-by-file
 
 ## Stack
 
-- **App:** TanStack Start 1.168 + Router 1.170 (file routes, server functions), Nitro 3 RC (h3 2.0.8), deployed to Vercel; React 19.3, TypeScript 6 strict (`pnpm typecheck` runs TypeScript 7's native compiler, installed beside it as `typescript7`; the tools that read TypeScript keep 6, 0296).
-- **TanStack libraries:** Query 5, DB 0.5, Form 1.33, Store 0.11.
+- **App:** TanStack Start 1.169 + Router 1.170 (file routes, server functions), Nitro 3 RC (h3 2.0.8), deployed to Vercel; React 19.3, TypeScript 6 strict (`pnpm typecheck` runs TypeScript 7's native compiler, installed beside it as `typescript7`; the tools that read TypeScript keep 6, 0296).
+- **TanStack libraries:** Query 5, DB 0.5 (the last line before the 1.0 release candidate, 0299), Form 1.33, Store 0.11, Pacer 0.24 (debounce, throttle, queues), Hotkeys 0.26 (shortcuts).
 - **UI:** Tailwind 4.3 + shadcn/ui (Radix), lucide icons; TanStack Table 9, Recharts 3 (lazy), dnd-kit (`@dnd-kit/react`).
-- **Validation, i18n, env:** Zod 4.6 (aliased, jitless), Paraglide 2.25, T3 Env.
+- **Validation, i18n, env:** Zod 4.6 (aliased, jitless), Paraglide 3.2, T3 Env.
 - **Data and auth:** Better Auth 1.7, Drizzle 0.45 + Neon Postgres (PGlite in tests).
 - **Services:** Cloudinary (REST, no SDK), React Email 6 + Resend, Sentry 11, PostHog.
-- **Tooling:** Vitest 5 + Storybook 10.6, Biome 2.4, Knip 6, lefthook 2, pnpm 10, Node ≥ 22 (`.nvmrc`: 24), Vite 8. CI: GitHub Actions; updates: Dependabot.
+- **Tooling:** Vitest 5.1 + Storybook 10.6, Biome 2.6, Knip 6, lefthook 2, pnpm 10, Node ≥ 22 (`.nvmrc`: 24), Vite 8. CI: GitHub Actions; updates: Dependabot.
 
 ## Layers
 

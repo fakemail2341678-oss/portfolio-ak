@@ -96,6 +96,7 @@ test.describe("Parda's player lab as the admin", () => {
 	}) => {
 		await page.goto("/admin/parda/player-lab", { waitUntil: "networkidle" });
 		const source = page.getByLabel("Source");
+		// biome-ignore lint/performance/useDomNodeTextContent: a Playwright locator, not a DOM node: innerText() is how it reads the option as shown
 		await source.selectOption({ label: await source.locator("option", { hasText: "Viduki" }).innerText() });
 		await page.getByRole("button", { name: "Load player" }).click();
 		await expect(page.getByTestId("pd-lab-position")).toContainText("Position:", { timeout: 10_000 });

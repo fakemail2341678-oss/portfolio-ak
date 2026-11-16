@@ -58,8 +58,8 @@ export const ReplayAnalysed: Story = {
 		await expect(canvasElement.querySelector("[data-testid=chaal-replay-summary]")).not.toBeNull();
 		// It opens at the end: the mate is on the board; the first step goes back to the start.
 		await waitFor(() => expect(canvasElement.querySelector('[data-at="f7"][data-piece="wQ"]')).not.toBeNull());
-		// The toolbar's first button goes to the start.
-		const first = canvasElement.querySelector<HTMLButtonElement>("[role=toolbar] button");
+		// The controls' first button goes to the start.
+		const first = canvasElement.querySelector<HTMLButtonElement>("[data-testid=chaal-controls] button");
 		if (!first) throw new Error("no controls");
 		await userEvent.click(first);
 		await waitFor(() => expect(canvasElement.querySelector('[data-at="d1"][data-piece="wQ"]')).not.toBeNull());

@@ -14,7 +14,7 @@ import {
 	DropdownMenuSeparator,
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useHotkeys } from "@/hooks/use-hotkeys";
+import { useShortcuts } from "@/hooks/use-shortcuts";
 import { localizedValue } from "@/lib/i18n/localized";
 import { cn } from "@/lib/utils";
 import { m } from "@/paraglide/messages";
@@ -119,14 +119,22 @@ function Screen({ data }: { data: Data }) {
 	const watchLink = (target: { season: number; episode: number }) =>
 		pardaLinks.watch(title.media, title.id, title.slug, target);
 
-	useHotkeys({
-		n: () => data.next && void navigate(watchLink(data.next)),
-		p: () => data.previous && void navigate(watchLink(data.previous)),
-		e: () => episode && setEpisodesOpen((open) => !open),
-		t: () => setTheater((on) => !on),
-		escape: () => setTheater(false),
-		k: () => canCommand && player.command({ action: player.playing ? "pause" : "play" }),
-	});
+	useShortcuts(m.shortcuts_group_player(), [
+		{ keys: "N", name: m.parda_watch_shortcut_next(), run: () => data.next && void navigate(watchLink(data.next)) },
+		{
+			keys: "P",
+			name: m.parda_watch_shortcut_previous(),
+			run: () => data.previous && void navigate(watchLink(data.previous)),
+		},
+		{ keys: "E", name: m.parda_watch_shortcut_episodes(), run: () => episode && setEpisodesOpen((open) => !open) },
+		{ keys: "T", name: m.parda_watch_theater(), run: () => setTheater((on) => !on) },
+		{ keys: "Escape", name: m.parda_watch_shortcut_leave_theater(), run: () => setTheater(false) },
+		{
+			keys: "K",
+			name: m.parda_watch_shortcut_play(),
+			run: () => canCommand && player.command({ action: player.playing ? "pause" : "play" }),
+		},
+	]);
 
 	const heading = episode ? `${title.title} · ${episodeCode(episode.season, episode.episode)}` : title.title;
 	const frameTitle = player.source

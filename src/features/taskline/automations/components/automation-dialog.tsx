@@ -1,10 +1,10 @@
 import { formOptions } from "@tanstack/react-form";
+import { useDebouncedValue } from "@tanstack/react-pacer";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { FormSheet } from "@/components/dialogs/form-dialog";
 import { formValidators, handleSaveError, useAppForm } from "@/components/forms";
 import { SortableListField } from "@/components/forms/fields/list-fields";
-import { useDebouncedValue } from "@/hooks/use-debounced-value";
 import { formatNumber } from "@/lib/i18n/intl";
 import { m } from "@/paraglide/messages";
 import { CATEGORY_LABELS, PRIORITY_LABELS, TYPE_LABELS } from "../../labels";
@@ -471,7 +471,7 @@ export default function AutomationDialog({
 
 /** "Would match 12 open tasks now", from the conditions as they stand (a moment after the last change). */
 function PreviewLine({ rows, preview }: { rows: ConditionForm[]; preview: AutomationPreviewSource }) {
-	const conditions = useDebouncedValue(previewConditions(rows), 400);
+	const [conditions] = useDebouncedValue(previewConditions(rows), { wait: 400 });
 	const { data } = useQuery({
 		queryKey: [...preview.queryKey, conditions],
 		queryFn: () => preview.run(conditions),

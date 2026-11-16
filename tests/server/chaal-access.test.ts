@@ -346,54 +346,57 @@ describe("Chaal's access matrix", () => {
 		expect(fetcher).not.toHaveBeenCalled();
 	});
 
-	it.each(
-		Object.keys(PLAY_OPERATIONS),
-	)("%s needs a connection that can play: refused without one, without play's scopes, revoked, or with play off", async (name) => {
-		const operation = PLAY_OPERATIONS[name];
-		if (!operation) throw new Error(name);
-		await expect(operation("member")).rejects.toMatchObject({ reason: "lichess-reconnect" });
-		await connected("member", "member_lichess", ["puzzle:read"]);
-		await expect(operation("member")).rejects.toMatchObject({ reason: "lichess-reconnect" });
-		await env.db.update(schema.chConnection).set({ scopes: PLAY, revokedAt: new Date(0) });
-		await expect(operation("member")).rejects.toMatchObject({ reason: "lichess-reconnect" });
-		await env.db.update(schema.chConnection).set({ revokedAt: null });
-		await env.db.insert(schema.chSettings).values({ id: 1, features: { play: false } });
-		await expect(operation("member")).rejects.toMatchObject({ code: "FORBIDDEN" });
-		expect(fetcher).not.toHaveBeenCalled();
-	});
+	it.each(Object.keys(PLAY_OPERATIONS))(
+		"%s needs a connection that can play: refused without one, without play's scopes, revoked, or with play off",
+		async (name) => {
+			const operation = PLAY_OPERATIONS[name];
+			if (!operation) throw new Error(name);
+			await expect(operation("member")).rejects.toMatchObject({ reason: "lichess-reconnect" });
+			await connected("member", "member_lichess", ["puzzle:read"]);
+			await expect(operation("member")).rejects.toMatchObject({ reason: "lichess-reconnect" });
+			await env.db.update(schema.chConnection).set({ scopes: PLAY, revokedAt: new Date(0) });
+			await expect(operation("member")).rejects.toMatchObject({ reason: "lichess-reconnect" });
+			await env.db.update(schema.chConnection).set({ revokedAt: null });
+			await env.db.insert(schema.chSettings).values({ id: 1, features: { play: false } });
+			await expect(operation("member")).rejects.toMatchObject({ code: "FORBIDDEN" });
+			expect(fetcher).not.toHaveBeenCalled();
+		},
+	);
 
-	it.each(
-		Object.keys(PLAY_OPERATIONS),
-	)("%s acts with the caller's own token: another player's game or challenge is Lichess's to refuse", async (name) => {
-		const operation = PLAY_OPERATIONS[name];
-		if (!operation) throw new Error(name);
-		await connected("member", "member_lichess", PLAY);
-		await connected("other", "other_lichess", PLAY);
-		fetcher.mockImplementation(async () => Response.json({ error: "Not found" }, { status: 404 }));
-		await expect(operation("other")).rejects.toMatchObject({ code: "NOT_FOUND" });
-		const tokens = fetcher.mock.calls.map(
-			([, init]) => (init?.headers as Record<string, string> | undefined)?.authorization,
-		);
-		expect(tokens.length).toBeGreaterThan(0);
-		expect(tokens.every((token) => token === "Bearer lio_other_lichess")).toBe(true);
-		fetcher.mockImplementation(async () => new Response(null, { status: 204 }));
-	});
+	it.each(Object.keys(PLAY_OPERATIONS))(
+		"%s acts with the caller's own token: another player's game or challenge is Lichess's to refuse",
+		async (name) => {
+			const operation = PLAY_OPERATIONS[name];
+			if (!operation) throw new Error(name);
+			await connected("member", "member_lichess", PLAY);
+			await connected("other", "other_lichess", PLAY);
+			fetcher.mockImplementation(async () => Response.json({ error: "Not found" }, { status: 404 }));
+			await expect(operation("other")).rejects.toMatchObject({ code: "NOT_FOUND" });
+			const tokens = fetcher.mock.calls.map(
+				([, init]) => (init?.headers as Record<string, string> | undefined)?.authorization,
+			);
+			expect(tokens.length).toBeGreaterThan(0);
+			expect(tokens.every((token) => token === "Bearer lio_other_lichess")).toBe(true);
+			fetcher.mockImplementation(async () => new Response(null, { status: 204 }));
+		},
+	);
 
-	it.each(
-		Object.keys(FOLLOW_OPERATIONS),
-	)("%s needs a connection with the social scopes: refused without one, without them, revoked, or with social off", async (name) => {
-		const operation = FOLLOW_OPERATIONS[name];
-		if (!operation) throw new Error(name);
-		await expect(operation("member")).rejects.toMatchObject({ reason: "lichess-reconnect" });
-		await connected("member", "member_lichess", PLAY);
-		await expect(operation("member")).rejects.toMatchObject({ reason: "lichess-reconnect" });
-		await env.db.update(schema.chConnection).set({ scopes: SOCIAL, revokedAt: new Date(0) });
-		await expect(operation("member")).rejects.toMatchObject({ reason: "lichess-reconnect" });
-		await env.db.update(schema.chConnection).set({ revokedAt: null });
-		await env.db.insert(schema.chSettings).values({ id: 1, features: { social: false } });
-		await expect(operation("member")).rejects.toMatchObject({ code: "FORBIDDEN" });
-		expect(fetcher).not.toHaveBeenCalled();
-	});
+	it.each(Object.keys(FOLLOW_OPERATIONS))(
+		"%s needs a connection with the social scopes: refused without one, without them, revoked, or with social off",
+		async (name) => {
+			const operation = FOLLOW_OPERATIONS[name];
+			if (!operation) throw new Error(name);
+			await expect(operation("member")).rejects.toMatchObject({ reason: "lichess-reconnect" });
+			await connected("member", "member_lichess", PLAY);
+			await expect(operation("member")).rejects.toMatchObject({ reason: "lichess-reconnect" });
+			await env.db.update(schema.chConnection).set({ scopes: SOCIAL, revokedAt: new Date(0) });
+			await expect(operation("member")).rejects.toMatchObject({ reason: "lichess-reconnect" });
+			await env.db.update(schema.chConnection).set({ revokedAt: null });
+			await env.db.insert(schema.chSettings).values({ id: 1, features: { social: false } });
+			await expect(operation("member")).rejects.toMatchObject({ code: "FORBIDDEN" });
+			expect(fetcher).not.toHaveBeenCalled();
+		},
+	);
 
 	it.each(Object.keys(FOLLOW_OPERATIONS))("%s acts with the caller's own token only", async (name) => {
 		const operation = FOLLOW_OPERATIONS[name];
@@ -409,83 +412,90 @@ describe("Chaal's access matrix", () => {
 		fetcher.mockImplementation(async () => new Response(null, { status: 204 }));
 	});
 
-	it.each(
-		Object.keys(WATCH_OPERATIONS),
-	)("%s is public: no session or token, on the public lane; refused when watch is off, before Lichess", async (name) => {
-		const operation = WATCH_OPERATIONS[name];
-		if (!operation) throw new Error(name);
-		const controls = createChaalControls(env.db, () => 0);
-		const chaal = { lichess: deps().lichess, cache: createChaalCache(), settings: await controls.settings() };
-		fetcher.mockImplementation(async () => Response.json({ error: "Not found" }, { status: 404 }));
-		await operation(chaal).catch(() => undefined);
-		const asked = fetcher.mock.calls.map(([, init]) => (init?.headers as Record<string, string>).authorization);
-		expect(asked.length).toBeGreaterThan(0);
-		expect(asked.every((token) => token === undefined)).toBe(true);
-		fetcher.mockClear();
-		await env.db.insert(schema.chSettings).values({ id: 1, features: { watch: false } });
-		const off = { ...chaal, settings: await createChaalControls(env.db, () => 0).settings() };
-		await expect(operation(off)).rejects.toMatchObject({ code: "FORBIDDEN" });
-		expect(fetcher).not.toHaveBeenCalled();
-		fetcher.mockImplementation(async () => new Response(null, { status: 204 }));
-	});
+	it.each(Object.keys(WATCH_OPERATIONS))(
+		"%s is public: no session or token, on the public lane; refused when watch is off, before Lichess",
+		async (name) => {
+			const operation = WATCH_OPERATIONS[name];
+			if (!operation) throw new Error(name);
+			const controls = createChaalControls(env.db, () => 0);
+			const chaal = { lichess: deps().lichess, cache: createChaalCache(), settings: await controls.settings() };
+			fetcher.mockImplementation(async () => Response.json({ error: "Not found" }, { status: 404 }));
+			await operation(chaal).catch(() => undefined);
+			const asked = fetcher.mock.calls.map(
+				([, init]) => (init?.headers as Record<string, string> | undefined)?.authorization,
+			);
+			expect(asked.length).toBeGreaterThan(0);
+			expect(asked.every((token) => token === undefined)).toBe(true);
+			fetcher.mockClear();
+			await env.db.insert(schema.chSettings).values({ id: 1, features: { watch: false } });
+			const off = { ...chaal, settings: await createChaalControls(env.db, () => 0).settings() };
+			await expect(operation(off)).rejects.toMatchObject({ code: "FORBIDDEN" });
+			expect(fetcher).not.toHaveBeenCalled();
+			fetcher.mockImplementation(async () => new Response(null, { status: 204 }));
+		},
+	);
 
-	it.each(
-		Object.keys(COMMUNITY_PUBLIC),
-	)("%s is public: no session or token, on the public lane; refused when its switch is off, before Lichess", async (name) => {
-		const operation = COMMUNITY_PUBLIC[name];
-		if (!operation) throw new Error(name);
-		const controls = createChaalControls(env.db, () => 0);
-		const chaal = {
-			lichess: deps().lichess,
-			cache: createChaalCache(),
-			controls,
-			settings: await controls.settings(),
-			appToken: null,
-			connectConfigured: true,
-			connectDeps: async () => deps(),
-		} satisfies ChaalPublic;
-		fetcher.mockImplementation(async () => Response.json({ error: "Not found" }, { status: 404 }));
-		await operation.call(chaal).catch(() => undefined);
-		const asked = fetcher.mock.calls.map(([, init]) => (init?.headers as Record<string, string>).authorization);
-		expect(asked.length).toBeGreaterThan(0);
-		expect(asked.every((token) => token === undefined)).toBe(true);
-		fetcher.mockClear();
-		await env.db.insert(schema.chSettings).values({ id: 1, features: { [operation.feature]: false } });
-		const off = { ...chaal, settings: await createChaalControls(env.db, () => 0).settings() };
-		await expect(operation.call(off)).rejects.toMatchObject({ code: "FORBIDDEN" });
-		expect(fetcher).not.toHaveBeenCalled();
-		fetcher.mockImplementation(async () => new Response(null, { status: 204 }));
-	});
+	it.each(Object.keys(COMMUNITY_PUBLIC))(
+		"%s is public: no session or token, on the public lane; refused when its switch is off, before Lichess",
+		async (name) => {
+			const operation = COMMUNITY_PUBLIC[name];
+			if (!operation) throw new Error(name);
+			const controls = createChaalControls(env.db, () => 0);
+			const chaal = {
+				lichess: deps().lichess,
+				cache: createChaalCache(),
+				controls,
+				settings: await controls.settings(),
+				appToken: null,
+				connectConfigured: true,
+				connectDeps: async () => deps(),
+			} satisfies ChaalPublic;
+			fetcher.mockImplementation(async () => Response.json({ error: "Not found" }, { status: 404 }));
+			await operation.call(chaal).catch(() => undefined);
+			const asked = fetcher.mock.calls.map(
+				([, init]) => (init?.headers as Record<string, string> | undefined)?.authorization,
+			);
+			expect(asked.length).toBeGreaterThan(0);
+			expect(asked.every((token) => token === undefined)).toBe(true);
+			fetcher.mockClear();
+			await env.db.insert(schema.chSettings).values({ id: 1, features: { [operation.feature]: false } });
+			const off = { ...chaal, settings: await createChaalControls(env.db, () => 0).settings() };
+			await expect(operation.call(off)).rejects.toMatchObject({ code: "FORBIDDEN" });
+			expect(fetcher).not.toHaveBeenCalled();
+			fetcher.mockImplementation(async () => new Response(null, { status: 204 }));
+		},
+	);
 
-	it.each(
-		Object.keys(COMMUNITY_OPERATIONS),
-	)("%s needs a connection with its area's scopes: refused without one, without them, revoked, its switch off, or the admin's control off", async (name) => {
-		const operation = COMMUNITY_OPERATIONS[name];
-		if (!operation) throw new Error(name);
-		const scopes = [...COMMUNITY_SCOPES[operation.feature]];
-		await expect(operation.call("member")).rejects.toMatchObject({ reason: "lichess-reconnect" });
-		await connected("member", "member_lichess", PLAY);
-		await expect(operation.call("member")).rejects.toMatchObject({ reason: "lichess-reconnect" });
-		await env.db.update(schema.chConnection).set({ scopes, revokedAt: new Date(0) });
-		await expect(operation.call("member")).rejects.toMatchObject({ reason: "lichess-reconnect" });
-		await env.db.update(schema.chConnection).set({ revokedAt: null });
-		await env.db.insert(schema.chSettings).values({ id: 1, features: { [operation.feature]: false } });
-		await expect(operation.call("member")).rejects.toMatchObject({ code: "FORBIDDEN" });
-		if (operation.control) {
-			await env.db.update(schema.chSettings).set({
-				features: {},
-				community: {
-					joinTournaments: true,
-					joinTeams: true,
-					saveToStudy: true,
-					studiesBy: "lichess",
-					[operation.control]: false,
-				},
-			});
+	it.each(Object.keys(COMMUNITY_OPERATIONS))(
+		"%s needs a connection with its area's scopes: refused without one, without them, revoked, its switch off, or the admin's control off",
+		async (name) => {
+			const operation = COMMUNITY_OPERATIONS[name];
+			if (!operation) throw new Error(name);
+			const scopes = [...COMMUNITY_SCOPES[operation.feature]];
+			await expect(operation.call("member")).rejects.toMatchObject({ reason: "lichess-reconnect" });
+			await connected("member", "member_lichess", PLAY);
+			await expect(operation.call("member")).rejects.toMatchObject({ reason: "lichess-reconnect" });
+			await env.db.update(schema.chConnection).set({ scopes, revokedAt: new Date(0) });
+			await expect(operation.call("member")).rejects.toMatchObject({ reason: "lichess-reconnect" });
+			await env.db.update(schema.chConnection).set({ revokedAt: null });
+			await env.db.insert(schema.chSettings).values({ id: 1, features: { [operation.feature]: false } });
 			await expect(operation.call("member")).rejects.toMatchObject({ code: "FORBIDDEN" });
-		}
-		expect(fetcher).not.toHaveBeenCalled();
-	});
+			if (operation.control) {
+				await env.db.update(schema.chSettings).set({
+					features: {},
+					community: {
+						joinTournaments: true,
+						joinTeams: true,
+						saveToStudy: true,
+						studiesBy: "lichess",
+						[operation.control]: false,
+					},
+				});
+				await expect(operation.call("member")).rejects.toMatchObject({ code: "FORBIDDEN" });
+			}
+			expect(fetcher).not.toHaveBeenCalled();
+		},
+	);
 
 	it.each(Object.keys(COMMUNITY_OPERATIONS))("%s acts with the caller's own token only", async (name) => {
 		const operation = COMMUNITY_OPERATIONS[name];

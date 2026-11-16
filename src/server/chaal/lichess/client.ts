@@ -298,6 +298,7 @@ export function createLichess(config: LichessConfig, fetcher: typeof fetch = fet
 		stream: async (request) => {
 			// The timeout covers the answer's headers only: the body stays open for minutes.
 			const controller = new AbortController();
+			// timer: the request's timeout, cleared when the answer's headers arrive.
 			const timer = setTimeout(() => controller.abort(new Error("timeout")), timeoutMs);
 			const signal = request.signal ? AbortSignal.any([controller.signal, request.signal]) : controller.signal;
 			try {

@@ -709,7 +709,7 @@ export function createPlay({ emit }: PlayDeps) {
 			if (verb && method === "POST") {
 				const challenge = challenges.get(verb[1] ?? "");
 				const form = await readForm(request);
-				if (!challenge || challenge.status !== "created") {
+				if (challenge?.status !== "created") {
 					json(response, 404, { error: "No such challenge" });
 					return true;
 				}
@@ -798,7 +798,7 @@ export function createPlay({ emit }: PlayDeps) {
 			if (route === "POST /e2e/lichess/respond") {
 				const challenge = challenges.get(String(body.id ?? ""));
 				const account = (body.account as Account) ?? challenge?.dest ?? "e2e_rival";
-				if (!challenge || challenge.status !== "created") {
+				if (challenge?.status !== "created") {
 					json(response, 404, { error: "No such challenge" });
 					return true;
 				}

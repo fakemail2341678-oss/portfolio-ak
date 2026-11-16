@@ -50,6 +50,7 @@ export const isEnded = (status: string | null) => status === "Ended" || status =
  * `concurrency` at a time: each batch takes at least `concurrency / perSecond` seconds.
  * Stops early when `stop()` says so (TMDB down), leaving the rest for the next run.
  */
+// timer: the sleep that fills a batch's second, passed in so tests don't wait (TMDB's pacing: decision 0299 says why this is not a Pacer queue).
 export async function paced<T>(
 	items: ReadonlyArray<T>,
 	work: (item: T) => Promise<void>,

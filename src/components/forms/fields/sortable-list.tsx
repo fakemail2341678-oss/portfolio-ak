@@ -136,6 +136,7 @@ function SortableItem({
 			type="button"
 			aria-label={m.sortable_handle({ item: label })}
 			aria-keyshortcuts="Alt+ArrowUp Alt+ArrowDown"
+			// keys: Alt+↑/↓ moves the focused item: the drag handle's keyboard model (aria-keyshortcuts says so).
 			onKeyDown={onKeyDown}
 			className="flex size-(--control-height) shrink-0 cursor-grab touch-none items-center justify-center rounded-md text-muted-foreground outline-none hover:bg-accent hover:text-foreground focus-visible:ring-[3px] focus-visible:ring-ring/50 active:cursor-grabbing"
 			data-testid="sortable-handle"

@@ -57,7 +57,7 @@ src/
     services.ts           Services: what a handler hands to its service (db, actor, imageStore)
     <name>/               repository.ts (Drizzle over an injected Db) and service.ts (rules, audit, I/O)
   middleware/             Start middleware (security headers, CSRF, auth, logging, errors)
-  hooks/                  React hooks: useListPage, useListQuery, useHotkeys, useDebouncedValue, useMediaQuery, useMinuteClock
+  hooks/                  React hooks: useListPage, useListQuery, useShortcuts, usePacedRefresh, useMediaQuery, useMinuteClock
   lib/                    Isomorphic helpers, grouped by area (0158):
     list/                 params.ts (URL params), paging.ts (Paged, page maths), url.ts (search serialization)
     env/ i18n/ http/      client env schema; intl, Nepali digits, calendar days; CSP, cache-control, redirects
@@ -167,8 +167,8 @@ One word per meaning (`function-verb`):
 | A server function | a literal `createServerFn(…)` chain: `.middleware([require…, with…])`, `.validator(zodInput(schema))` when it takes data, a handler that is one call into a service | `function-literal`, `function-guards`, `function-validator`, `function-handler` |
 | A route | its search, loader, head and a component that renders one feature component; `queries.ts` imported inside the loader | `route-thin`, `route-import` |
 | A refusal | an `AppError` (`new AppError`, `ruleError`, `notFound`), never a bare `Error` | `bare-error` |
-| A shortcut | the hotkeys hook (`useHotkeys`; TanStack Hotkeys from Task 102) | `key-handler` |
-| Debounce, throttle, queue, batch | the shared helpers (TanStack Pacer from Task 102) | `timer` |
+| A shortcut | `useShortcuts(group, [{ keys, name, run }])` (`src/hooks/use-shortcuts.ts`, TanStack Hotkeys, 0299): registered with a name, so `ShortcutsList` shows what is bound | `key-handler` |
+| Debounce, throttle, queue, batch | TanStack Pacer (0299): `useDebouncedValue` and `useDebouncer` for typing, `useThrottledCallback` for scroll and resize, `usePacedRefresh` for a reload that events ask for, `createJobQueue` (`src/lib/job-queue.ts`) for work that must not all start at once | `timer` |
 | A log line | `log()`, never `console.*` on the server | Biome `noConsole` |
 | Dates, numbers, money | `src/lib/i18n` | Biome plugin |
 | Shared code | `src/lib`, `src/hooks` and `src/components` import no feature, function, route or server code; every export there says what it is for in a comment | `import-boundary`, `documented-export` |

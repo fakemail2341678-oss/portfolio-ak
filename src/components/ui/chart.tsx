@@ -275,4 +275,4 @@ function getPayloadConfigFromPayload(config: ChartConfig, payload: unknown, key:
 	return configLabelKey in config ? config[configLabelKey] : config[key];
 }
 
-export { ChartContainer, ChartTooltip, ChartTooltipContent, ChartLegend, ChartLegendContent };
+export { ChartContainer, ChartLegend, ChartLegendContent, ChartTooltip, ChartTooltipContent };

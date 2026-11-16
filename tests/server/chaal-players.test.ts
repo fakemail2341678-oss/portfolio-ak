@@ -41,7 +41,7 @@ const gamesLines = (n: number, start: number) =>
 
 const fetcher = vi.fn<typeof fetch>(async (input, init) => {
 	const url = new URL(String(input));
-	const token = (init?.headers as Record<string, string>).authorization?.replace("Bearer ", "") ?? null;
+	const token = (init?.headers as Record<string, string> | undefined)?.authorization?.replace("Bearer ", "") ?? null;
 	const method = init?.method ?? "GET";
 	calls.push({ method, url, token });
 	if (token === "lio_refused") return new Response("{}", { status: 401 });

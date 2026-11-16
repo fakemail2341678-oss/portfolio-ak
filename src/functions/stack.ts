@@ -25,6 +25,7 @@ export const listStack = createServerFn({ method: "GET" })
 export const getStackStats = createServerFn({ method: "GET" })
 	.middleware([requireDev])
 	.handler(async (): Promise<StackStats> => {
+		// timer: slow on purpose, so /dev/stack shows a deferred value arriving.
 		await new Promise((resolve) => setTimeout(resolve, 800));
 		return { tools: STACK.length, categories: new Set(STACK.map((entry) => entry.category)).size };
 	});

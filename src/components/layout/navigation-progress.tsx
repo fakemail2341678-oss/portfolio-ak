@@ -25,10 +25,12 @@ export function NavigationProgress({ className }: { className?: string }) {
 
 	useEffect(() => {
 		if (loading) {
+			// timer: the bar shows only when a navigation outlasts SHOW_AFTER_MS: one delay.
 			const timer = setTimeout(() => setPhase("loading"), SHOW_AFTER_MS);
 			return () => clearTimeout(timer);
 		}
 		setPhase((current) => (current === "loading" ? "done" : "idle"));
+		// timer: the finished bar stays for FINISH_MS, then hides: one delay.
 		const timer = setTimeout(() => setPhase("idle"), FINISH_MS);
 		return () => clearTimeout(timer);
 	}, [loading]);

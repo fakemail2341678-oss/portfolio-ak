@@ -13,6 +13,7 @@ let timer: ReturnType<typeof setInterval> | undefined;
 const subscribe = (listener: () => void) => {
 	listeners.add(listener);
 	if (!timer) {
+		// timer: the clock: one shared tick a minute for every relative time on the page.
 		timer = setInterval(() => {
 			now = Date.now();
 			for (const each of listeners) each();

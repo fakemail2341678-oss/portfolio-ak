@@ -84,6 +84,7 @@ function relay<L extends object>({ name, upstream, abort, map, windowMs, closing
 			};
 			// A first keepalive sends the headers at once, so the client knows it's open.
 			controller.enqueue(encoder.encode("\n"));
+			// timer: the stream's window: the route ends it before the platform's time limit does.
 			const deadline = setTimeout(() => finish("window"), windowMs);
 			try {
 				for await (const text of ndjsonLines(upstream)) {

@@ -26,6 +26,7 @@ export function CopyButton({
 	const [copied, setCopied] = useState(false);
 	useEffect(() => {
 		if (!copied) return;
+		// timer: "Copied" shows for a moment and resets: one delay, nothing to pace.
 		const timer = setTimeout(() => setCopied(false), RESET_MS);
 		return () => clearTimeout(timer);
 	}, [copied]);

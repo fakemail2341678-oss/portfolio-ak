@@ -11,6 +11,7 @@ import "@tanstack/react-start/server-only";
  */
 export type StepLog = { step: string; attempt: number; outcome: "ok" | "failed"; delayMs: number };
 
+// timer: the sleep between retries (the backoff), passed in so tests don't wait.
 export async function runSteps(
 	steps: ReadonlyArray<{ name: string; run: (attempt: number) => Promise<void> }>,
 	{ retries = 3, baseDelayMs = 50, sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms)) } = {},

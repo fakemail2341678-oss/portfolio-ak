@@ -15,6 +15,7 @@ export type Tmdb = {
 	get: (path: string, params?: TmdbParams) => Promise<unknown>;
 };
 
+// timer: sleeps for the wait TMDB's Retry-After asks for before one retry.
 const defaultSleep = (ms: number) => new Promise<void>((resolve) => setTimeout(resolve, ms));
 
 const unavailable = (path: string, detail: string, cause?: unknown) => {

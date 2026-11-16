@@ -165,6 +165,27 @@ export const EXAMPLES = [
 		source: route("contact.tsx"),
 		guide: "docs/guides/recipes.md",
 	},
+	{
+		slug: "pacing",
+		title: m.examples_pacing_title,
+		description: m.examples_pacing_description,
+		source: route("pacing.tsx"),
+		guide: "docs/guides/state.md",
+	},
+	{
+		slug: "shortcuts",
+		title: m.examples_shortcuts_title,
+		description: m.examples_shortcuts_description,
+		source: route("shortcuts.tsx"),
+		guide: "docs/guides/design-system.md",
+	},
+	{
+		slug: "order-keys",
+		title: m.examples_order_title,
+		description: m.examples_order_description,
+		source: route("order-keys.tsx"),
+		guide: "docs/guides/conventions.md",
+	},
 ] as const satisfies ReadonlyArray<Example>;
 
 export type ExampleSlug = (typeof EXAMPLES)[number]["slug"];

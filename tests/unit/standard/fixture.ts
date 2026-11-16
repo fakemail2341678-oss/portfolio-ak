@@ -152,8 +152,8 @@ const DEVIATING: Record<string, string> = {
 		export function GadgetForm() {
 			const save = useMutation({ mutationFn: saveGadget });
 			const rows = useQuery(gadgetQueryOptions());
-			const later = useDebouncedValue(text, 300);
 			window.setTimeout(close, 100);
+			const poll = setInterval(read, 1000);
 			document.addEventListener("keydown", onKey);
 			return <input onKeyDown={onKey} />;
 		}

@@ -1,4 +1,4 @@
-# State: Query, DB, Store, Form and the URL
+# State: Query, DB, Store, Form, the URL, and pacing
 
 Pick the tool by what the state is (decision 0064). Examples: `/dev/examples/loader-query`, `/dev/examples/optimistic`, `/dev/examples/preferences`, `/dev/examples/filters`.
 
@@ -49,6 +49,23 @@ export const thingsCollection = (input) => collectionOptions(id, (client) =>
 - **After a save:** call `await collection.utils.refetch()` and return `{ refetch: false }` from the handler. Query collections' automatic refetch is deprecated and logs a warning (which fails the browser review).
 - **Per-call data** (like the example's "make the server refuse") travels as `collection.update(id, { metadata }, …)`.
 - **Per request:** one DbClient per QueryClient (`dbClientFor`, `src/lib/tanstack-db.ts`), so server requests never share rows; `DbScope` cleans it up when the server render ends.
+
+## Pacing (debounce, throttle, queue)
+
+TanStack Pacer is the one way (0299; `/dev/examples/pacing`). `PacingProvider` at the root holds the defaults: debounce 250 ms, throttle 100 ms with a first and a last call, queues three at a time.
+
+| Need | Use |
+| --- | --- |
+| A search that waits for a pause in typing | `const [settled] = useDebouncedValue(typed, { wait: 250 })`, then a query keyed by `settled` |
+| One action after a pause (the filter bar's URL entry) | `useDebouncer(fn, { wait })`: `maybeExecute()`, `cancel()` |
+| A handler that fires on every frame (scroll, resize, drag) | `useThrottledCallback(fn, { wait: 100 })` (`Rail`'s edges) |
+| A reload that events ask for (a poll that found a moved `rev`, realtime messages, focus) | `usePacedRefresh(refresh)` (`src/hooks/use-paced-refresh.ts`): at once, at most once a second, and once more when the burst ends. Taskline's and Kharcha's freshness use it |
+| Work that must not all start at once | `createJobQueue(concurrency)` (`src/lib/job-queue.ts`): uploads go three at a time, Chaal's Lichess lanes are queues of one |
+| A check while typing in a form | the form's own `onChangeAsyncDebounceMs` (`slugValidators`, `availabilityValidators`): TanStack Form paces it |
+
+- **The user's own write refreshes directly,** not through `usePacedRefresh`: it is one call and must not wait.
+- **Not Pacer's:** a delay that is no debounce (a toast that leaves, a request's timeout, a clock's tick) stays a `setTimeout` or `setInterval` with a `// timer: <reason>` comment. Limits that every server instance must share stay in Postgres (`src/server/http/rate-limit.ts`): Pacer's rate limiter is in memory.
+- **A queue fills its free slots at once.** Pacer 0.23's `AsyncQueuer` starts a job added while another runs only when one finishes; `createJobQueue` makes it look again (`tests/unit/job-queue.test.ts` holds it to that).
 
 ## Store (preferences)
 

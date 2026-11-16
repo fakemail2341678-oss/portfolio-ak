@@ -5,7 +5,7 @@ import type { ReactNode } from "react";
 import { MAIN_CONTENT } from "@/components/layout/skip-link";
 import { Button } from "@/components/ui/button";
 import { Kbd } from "@/components/ui/kbd";
-import { useHotkeyLabel } from "@/hooks/use-hotkeys";
+import { useShortcutLabel } from "@/hooks/use-shortcuts";
 import { isoDateInstant, todayInZone } from "@/lib/i18n/date-only";
 import { formatDate, formatMonthShort, formatNumber } from "@/lib/i18n/intl";
 import { cn } from "@/lib/utils";
@@ -35,7 +35,7 @@ export function KharchaHome() {
 	const { data: me } = useSuspenseQuery(kharchaMeQueryOptions(userId));
 	const { data: home } = useSuspenseQuery(kharchaHomeQueryOptions(userId));
 	const { openPalette } = useKharchaActions();
-	const palette = useHotkeyLabel("mod+k");
+	const palette = useShortcutLabel("Mod+K");
 	const name = me.isGuest ? m.guest_label() : me.person.name;
 	const summary =
 		me.profile.start === "split"

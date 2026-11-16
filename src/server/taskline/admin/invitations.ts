@@ -199,7 +199,7 @@ export async function acceptInvitations(db: Db, userId: string): Promise<number>
 		.select({ id: user.id, name: user.name, email: user.email, verified: user.emailVerified, guest: user.isAnonymous })
 		.from(user)
 		.where(eq(user.id, userId));
-	if (!account || !account.verified || account.guest === true) return 0;
+	if (!account?.verified || account.guest === true) return 0;
 	const workspace = await members.teamWorkspace(db);
 	if (!workspace) return 0;
 	const email = account.email.toLowerCase();

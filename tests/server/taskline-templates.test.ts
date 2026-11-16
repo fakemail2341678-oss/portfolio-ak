@@ -273,7 +273,7 @@ describe("a project from a template", () => {
 			.select()
 			.from(schema.auditEvent)
 			.where(eq(schema.auditEvent.action, "taskline.project.create"));
-		expect((log?.after as { template?: string }).template).toBe("Client project");
+		expect((log?.after as { template?: string } | undefined)?.template).toBe("Client project");
 	});
 });
 

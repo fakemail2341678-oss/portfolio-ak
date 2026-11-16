@@ -59,14 +59,11 @@ describe("redirect search param", () => {
 		expect(safeRedirectPath.safeParse(value).success).toBe(true);
 	});
 
-	it.each([
-		"https://evil.example",
-		"//evil.example",
-		"/\\evil.example",
-		"javascript:alert(1)",
-		"",
-	])("rejects %s", (value) => {
-		expect(safeRedirectPath.safeParse(value).success).toBe(false);
-		expect(redirectSearchSchema.parse({ redirect: value }).redirect).toBeUndefined();
-	});
+	it.each(["https://evil.example", "//evil.example", "/\\evil.example", "javascript:alert(1)", ""])(
+		"rejects %s",
+		(value) => {
+			expect(safeRedirectPath.safeParse(value).success).toBe(false);
+			expect(redirectSearchSchema.parse({ redirect: value }).redirect).toBeUndefined();
+		},
+	);
 });

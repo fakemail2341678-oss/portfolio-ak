@@ -7,6 +7,7 @@ import {
 	keyBetweenNeighbours,
 	MAX_ORDER_KEY_LENGTH,
 } from "@/lib/fractional-index";
+import orderKeys from "../fixtures/order-keys.json";
 
 /** A small deterministic generator, so a failing sequence can be replayed. */
 const random = (seed: number) => () => {
@@ -91,5 +92,43 @@ describe("fractional index", () => {
 		expect(isOrderKey("a0".padEnd(MAX_ORDER_KEY_LENGTH + 1, "V"))).toBe(false);
 		expect(isOrderKey("x")).toBe(false);
 		expect(isOrderKey("a 0")).toBe(false);
+		expect(isOrderKey("a0é")).toBe(false);
+		expect(isOrderKey(`A${"0".repeat(26)}`)).toBe(false);
+	});
+});
+
+/**
+ * The keys in the database were made by the hand-written copy of the algorithm that
+ * `fractional-indexing` replaced (decision 0299). `tests/fixtures/order-keys.json` holds 681
+ * of its answers, recorded before it went: a list growing at its end and at its start, one
+ * gap halved forty times toward each side, and 300 inserts at random places.
+ */
+describe("the package against the keys already stored", () => {
+	const triples = orderKeys.triples as Array<[string | null, string | null, string]>;
+
+	it("gives the key the old code gave, for every recorded pair of neighbours", () => {
+		expect(triples).toHaveLength(681);
+		for (const [a, b, key] of triples) expect(generateKeyBetween(a, b)).toBe(key);
+	});
+
+	it("accepts every stored key, and puts a new one between any two of them", () => {
+		const stored = [...new Set(triples.map(([, , key]) => key))].sort(compareOrderKeys);
+		expect(stored.every(isOrderKey)).toBe(true);
+		for (let index = 1; index < stored.length; index++) {
+			const before = stored[index - 1] ?? "";
+			const after = stored[index] ?? "";
+			const between = generateKeyBetween(before, after);
+			expect(between > before && between < after).toBe(true);
+		}
+		const [first, last] = [stored[0] ?? null, stored.at(-1) ?? null];
+		expect(generateKeyBetween(null, first) < (first ?? "")).toBe(true);
+		expect(generateKeyBetween(last, null) > (last ?? "")).toBe(true);
+	});
+
+	it("spreads several keys between two stored ones, in order", () => {
+		const keys = generateKeysBetween("a0", "a1", 20);
+		expect(new Set(keys).size).toBe(20);
+		expect([...keys].sort(compareOrderKeys)).toEqual(keys);
+		expect(keys.every((key) => key > "a0" && key < "a1" && isOrderKey(key))).toBe(true);
 	});
 });

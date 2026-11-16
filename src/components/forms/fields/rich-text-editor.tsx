@@ -184,6 +184,7 @@ function LinkButton({
 					placeholder="https://"
 					value={href}
 					onChange={(event) => setHref(event.target.value)}
+					// keys: Enter applies the link instead of submitting the surrounding form: the field's own key.
 					onKeyDown={(event) => {
 						// Enter would otherwise submit the surrounding form.
 						if (event.key === "Enter") {
@@ -272,6 +273,7 @@ function Toolbar({ editor }: { editor: TiptapEditor }) {
 		</Button>
 	);
 
+	// keys: the toolbar pattern's roving focus (arrow keys, Home, End), the widget's own model.
 	return (
 		<div role="toolbar" aria-label={m.rt_toolbar()} className={RICH_TEXT_TOOLBAR} onKeyDown={onKeyDown}>
 			{ACTIONS.map((action, index) => renderButton(action, index, { pressed: state.active[index] ?? false }))}

@@ -78,9 +78,11 @@ const loadManifest = async (): Promise<Manifest> => {
  * The release snippet Sentry's build plugin puts at the top of every chunk when the build has
  * SENTRY_AUTH_TOKEN, SENTRY_ORG and SENTRY_PROJECT (a local `.env` may): about 0.2 kB gzip a
  * chunk, 15 kB over the entry's 70. It is left out, so a build measures the same with or
- * without them (decision 0279).
+ * without them (decision 0279). The plugin's 11.12 reads `globalThis` first where 11.4 read
+ * `window`: a snippet the pattern misses adds about 14 kB to a route of 90 chunks (0299).
  */
-const SENTRY_SNIPPET = /^\(function\(\)\{try\{var e=typeof window[\s\S]*?_sentryDebugIds[\s\S]*?\}catch\{\}\}\)\(\);/;
+const SENTRY_SNIPPET =
+	/^\(function\(\)\{try\{var e=typeof (?:window|globalThis)[\s\S]*?_sentryDebugIds[\s\S]*?\}catch\{\}\}\)\(\);/;
 
 const gzipCache = new Map<string, number>();
 const gzipKb = (asset: string): number => {

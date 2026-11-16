@@ -37,7 +37,7 @@ import {
 	useSidebar,
 } from "@/components/ui/sidebar";
 import { sessionQueryOptions } from "@/features/auth/queries";
-import { useHotkeyLabel } from "@/hooks/use-hotkeys";
+import { useShortcutLabel } from "@/hooks/use-shortcuts";
 import { formatNumber } from "@/lib/i18n/intl";
 import { m } from "@/paraglide/messages";
 import { TASKLINE_NAME } from "../../lib/brand";
@@ -62,7 +62,7 @@ export const WORKSPACE_ICONS = { team: UsersIcon, sandbox: FlaskConicalIcon } as
  */
 export function TasklineSidebar({ nav, onOpenPalette }: { nav: TasklineNav; onOpenPalette: () => void }) {
 	const current = useCurrentWorkspace(nav.workspaces);
-	const shortcut = useHotkeyLabel("mod+k");
+	const shortcut = useShortcutLabel("Mod+K");
 	const params = useParams({ strict: false });
 	const { data: session } = useQuery(sessionQueryOptions());
 	const [creating, setCreating] = useState(false);

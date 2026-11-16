@@ -32,7 +32,15 @@ export function GameControls({
 		{ step: "last", label: m.chaal_control_last(), Icon: ChevronLastIcon, enabled: canForward },
 	] as const;
 	return (
-		<div role="toolbar" aria-label={m.chaal_controls_label()} className={`flex items-center gap-1 ${className ?? ""}`}>
+		// A group, not a toolbar: a toolbar owns the arrow keys (they move its focus), and here ← and →
+		// step through the game from anywhere on the page, a focused button included (decision 0299).
+		// biome-ignore lint/a11y/useSemanticElements: a row of buttons, not form controls: a <fieldset> would need a legend and brings form styling.
+		<div
+			role="group"
+			aria-label={m.chaal_controls_label()}
+			data-testid="chaal-controls"
+			className={`flex items-center gap-1 ${className ?? ""}`}
+		>
 			{buttons.map(({ step, label, Icon, enabled }) => (
 				<Button
 					key={step}

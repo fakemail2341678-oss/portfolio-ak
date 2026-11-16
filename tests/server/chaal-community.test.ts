@@ -38,7 +38,7 @@ const recorded = (url: URL) => {
 
 const fetcher = vi.fn<typeof fetch>(async (input, init) => {
 	const url = new URL(String(input));
-	const token = (init?.headers as Record<string, string>).authorization?.replace("Bearer ", "") ?? null;
+	const token = (init?.headers as Record<string, string> | undefined)?.authorization?.replace("Bearer ", "") ?? null;
 	const method = init?.method ?? "GET";
 	calls.push({ method, url, token, body: typeof init?.body === "string" ? init.body : null });
 	if (method === "POST" && url.pathname.endsWith("/import-pgn"))

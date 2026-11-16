@@ -1,6 +1,7 @@
 import type { Permission } from "@/features/rbac/lib/permissions";
 import { confirmImageUpload, discardImageUpload, getUploadSettings, signImageUpload } from "@/functions/attachments";
 import { formatNumber } from "@/lib/i18n/intl";
+import { createJobQueue } from "@/lib/job-queue";
 import { m } from "@/paraglide/messages";
 import { IMAGE_MAX_BYTES, type UploadScope, uploadRule } from "../constants";
 import type { ImageAsset, UploadTicket } from "../schema";
@@ -80,10 +81,17 @@ const cloudinaryMessage = (text: string): string | null => {
 	}
 };
 
+/** How many uploads run at once in a tab: the rest wait their turn (decision 0299). */
+const UPLOAD_CONCURRENCY = 3;
+
+// One queue for the tab: twenty dropped files open three connections, not twenty.
+const queued = createJobQueue(UPLOAD_CONCURRENCY);
+
 /**
  * Uploads one image: a signature from our server, the file straight to
  * Cloudinary (with progress, cancellable), then our server verifies it and
  * records it as a pending attachment. Resolves with the ready-to-show image.
+ * Three uploads run at a time; one cancelled while it waits never starts.
  */
 export async function uploadImage(
 	file: File,
@@ -96,7 +104,10 @@ export async function uploadImage(
 ): Promise<ImageAsset> {
 	const problem = checkImageFile(file, scope);
 	if (problem) throw new UploadError(problem);
-	const ticket = await transport.sign(scope);
-	await send(ticket.url, ticket.fields, file, onProgress, signal);
-	return transport.confirm(scope, ticket.publicId);
+	return queued(async () => {
+		if (signal.aborted) throw new DOMException("Upload cancelled", "AbortError");
+		const ticket = await transport.sign(scope);
+		await send(ticket.url, ticket.fields, file, onProgress, signal);
+		return transport.confirm(scope, ticket.publicId);
+	});
 }

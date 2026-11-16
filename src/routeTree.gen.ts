@@ -82,9 +82,12 @@ import { Route as DevExamplesListExtrasRouteImport } from './routes/dev/examples
 import { Route as DevExamplesLoaderQueryRouteImport } from './routes/dev/examples/loader-query'
 import { Route as DevExamplesMaskingRouteRouteImport } from './routes/dev/examples/masking/route'
 import { Route as DevExamplesOptimisticRouteImport } from './routes/dev/examples/optimistic'
+import { Route as DevExamplesOrderKeysRouteImport } from './routes/dev/examples/order-keys'
+import { Route as DevExamplesPacingRouteImport } from './routes/dev/examples/pacing'
 import { Route as DevExamplesPermissionsRouteImport } from './routes/dev/examples/permissions'
 import { Route as DevExamplesPreferencesRouteImport } from './routes/dev/examples/preferences'
 import { Route as DevExamplesSeoRouteImport } from './routes/dev/examples/seo'
+import { Route as DevExamplesShortcutsRouteImport } from './routes/dev/examples/shortcuts'
 import { Route as DevExamplesStreamingRouteImport } from './routes/dev/examples/streaming'
 import { Route as DevTestCrudIndexRouteImport } from './routes/dev/test-crud/index'
 import { Route as DevTestCrudSlugRouteImport } from './routes/dev/test-crud/$slug'
@@ -626,6 +629,16 @@ const DevExamplesOptimisticRoute = DevExamplesOptimisticRouteImport.update({
   path: '/optimistic',
   getParentRoute: () => DevExamplesRouteRoute,
 } as any)
+const DevExamplesOrderKeysRoute = DevExamplesOrderKeysRouteImport.update({
+  id: '/order-keys',
+  path: '/order-keys',
+  getParentRoute: () => DevExamplesRouteRoute,
+} as any)
+const DevExamplesPacingRoute = DevExamplesPacingRouteImport.update({
+  id: '/pacing',
+  path: '/pacing',
+  getParentRoute: () => DevExamplesRouteRoute,
+} as any)
 const DevExamplesPermissionsRoute = DevExamplesPermissionsRouteImport.update({
   id: '/permissions',
   path: '/permissions',
@@ -639,6 +652,11 @@ const DevExamplesPreferencesRoute = DevExamplesPreferencesRouteImport.update({
 const DevExamplesSeoRoute = DevExamplesSeoRouteImport.update({
   id: '/seo',
   path: '/seo',
+  getParentRoute: () => DevExamplesRouteRoute,
+} as any)
+const DevExamplesShortcutsRoute = DevExamplesShortcutsRouteImport.update({
+  id: '/shortcuts',
+  path: '/shortcuts',
   getParentRoute: () => DevExamplesRouteRoute,
 } as any)
 const DevExamplesStreamingRoute = DevExamplesStreamingRouteImport.update({
@@ -1740,9 +1758,12 @@ export interface FileRoutesByFullPath {
   '/dev/examples/list-extras': typeof DevExamplesListExtrasRoute
   '/dev/examples/loader-query': typeof DevExamplesLoaderQueryRoute
   '/dev/examples/optimistic': typeof DevExamplesOptimisticRoute
+  '/dev/examples/order-keys': typeof DevExamplesOrderKeysRoute
+  '/dev/examples/pacing': typeof DevExamplesPacingRoute
   '/dev/examples/permissions': typeof DevExamplesPermissionsRoute
   '/dev/examples/preferences': typeof DevExamplesPreferencesRoute
   '/dev/examples/seo': typeof DevExamplesSeoRoute
+  '/dev/examples/shortcuts': typeof DevExamplesShortcutsRoute
   '/dev/examples/streaming': typeof DevExamplesStreamingRoute
   '/dev/test-crud/$slug': typeof DevTestCrudSlugRoute
   '/admin/': typeof AdminAdminIndexRoute
@@ -1979,9 +2000,12 @@ export interface FileRoutesByTo {
   '/dev/examples/list-extras': typeof DevExamplesListExtrasRoute
   '/dev/examples/loader-query': typeof DevExamplesLoaderQueryRoute
   '/dev/examples/optimistic': typeof DevExamplesOptimisticRoute
+  '/dev/examples/order-keys': typeof DevExamplesOrderKeysRoute
+  '/dev/examples/pacing': typeof DevExamplesPacingRoute
   '/dev/examples/permissions': typeof DevExamplesPermissionsRoute
   '/dev/examples/preferences': typeof DevExamplesPreferencesRoute
   '/dev/examples/seo': typeof DevExamplesSeoRoute
+  '/dev/examples/shortcuts': typeof DevExamplesShortcutsRoute
   '/dev/examples/streaming': typeof DevExamplesStreamingRoute
   '/dev/test-crud/$slug': typeof DevTestCrudSlugRoute
   '/admin': typeof AdminAdminIndexRoute
@@ -2228,9 +2252,12 @@ export interface FileRoutesById {
   '/dev/examples/list-extras': typeof DevExamplesListExtrasRoute
   '/dev/examples/loader-query': typeof DevExamplesLoaderQueryRoute
   '/dev/examples/optimistic': typeof DevExamplesOptimisticRoute
+  '/dev/examples/order-keys': typeof DevExamplesOrderKeysRoute
+  '/dev/examples/pacing': typeof DevExamplesPacingRoute
   '/dev/examples/permissions': typeof DevExamplesPermissionsRoute
   '/dev/examples/preferences': typeof DevExamplesPreferencesRoute
   '/dev/examples/seo': typeof DevExamplesSeoRoute
+  '/dev/examples/shortcuts': typeof DevExamplesShortcutsRoute
   '/dev/examples/streaming': typeof DevExamplesStreamingRoute
   '/dev/test-crud/$slug': typeof DevTestCrudSlugRoute
   '/_admin/admin/': typeof AdminAdminIndexRoute
@@ -2482,9 +2509,12 @@ export interface FileRouteTypes {
     | '/dev/examples/list-extras'
     | '/dev/examples/loader-query'
     | '/dev/examples/optimistic'
+    | '/dev/examples/order-keys'
+    | '/dev/examples/pacing'
     | '/dev/examples/permissions'
     | '/dev/examples/preferences'
     | '/dev/examples/seo'
+    | '/dev/examples/shortcuts'
     | '/dev/examples/streaming'
     | '/dev/test-crud/$slug'
     | '/admin/'
@@ -2721,9 +2751,12 @@ export interface FileRouteTypes {
     | '/dev/examples/list-extras'
     | '/dev/examples/loader-query'
     | '/dev/examples/optimistic'
+    | '/dev/examples/order-keys'
+    | '/dev/examples/pacing'
     | '/dev/examples/permissions'
     | '/dev/examples/preferences'
     | '/dev/examples/seo'
+    | '/dev/examples/shortcuts'
     | '/dev/examples/streaming'
     | '/dev/test-crud/$slug'
     | '/admin'
@@ -2969,9 +3002,12 @@ export interface FileRouteTypes {
     | '/dev/examples/list-extras'
     | '/dev/examples/loader-query'
     | '/dev/examples/optimistic'
+    | '/dev/examples/order-keys'
+    | '/dev/examples/pacing'
     | '/dev/examples/permissions'
     | '/dev/examples/preferences'
     | '/dev/examples/seo'
+    | '/dev/examples/shortcuts'
     | '/dev/examples/streaming'
     | '/dev/test-crud/$slug'
     | '/_admin/admin/'
@@ -3698,6 +3734,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DevExamplesOptimisticRouteImport
       parentRoute: typeof DevExamplesRouteRoute
     }
+    '/dev/examples/order-keys': {
+      id: '/dev/examples/order-keys'
+      path: '/order-keys'
+      fullPath: '/dev/examples/order-keys'
+      preLoaderRoute: typeof DevExamplesOrderKeysRouteImport
+      parentRoute: typeof DevExamplesRouteRoute
+    }
+    '/dev/examples/pacing': {
+      id: '/dev/examples/pacing'
+      path: '/pacing'
+      fullPath: '/dev/examples/pacing'
+      preLoaderRoute: typeof DevExamplesPacingRouteImport
+      parentRoute: typeof DevExamplesRouteRoute
+    }
     '/dev/examples/permissions': {
       id: '/dev/examples/permissions'
       path: '/permissions'
@@ -3717,6 +3767,13 @@ declare module '@tanstack/react-router' {
       path: '/seo'
       fullPath: '/dev/examples/seo'
       preLoaderRoute: typeof DevExamplesSeoRouteImport
+      parentRoute: typeof DevExamplesRouteRoute
+    }
+    '/dev/examples/shortcuts': {
+      id: '/dev/examples/shortcuts'
+      path: '/shortcuts'
+      fullPath: '/dev/examples/shortcuts'
+      preLoaderRoute: typeof DevExamplesShortcutsRouteImport
       parentRoute: typeof DevExamplesRouteRoute
     }
     '/dev/examples/streaming': {
@@ -5366,9 +5423,12 @@ interface DevExamplesRouteRouteChildren {
   DevExamplesListExtrasRoute: typeof DevExamplesListExtrasRoute
   DevExamplesLoaderQueryRoute: typeof DevExamplesLoaderQueryRoute
   DevExamplesOptimisticRoute: typeof DevExamplesOptimisticRoute
+  DevExamplesOrderKeysRoute: typeof DevExamplesOrderKeysRoute
+  DevExamplesPacingRoute: typeof DevExamplesPacingRoute
   DevExamplesPermissionsRoute: typeof DevExamplesPermissionsRoute
   DevExamplesPreferencesRoute: typeof DevExamplesPreferencesRoute
   DevExamplesSeoRoute: typeof DevExamplesSeoRoute
+  DevExamplesShortcutsRoute: typeof DevExamplesShortcutsRoute
   DevExamplesStreamingRoute: typeof DevExamplesStreamingRoute
   DevExamplesIndexRoute: typeof DevExamplesIndexRoute
 }
@@ -5391,9 +5451,12 @@ const DevExamplesRouteRouteChildren: DevExamplesRouteRouteChildren = {
   DevExamplesListExtrasRoute: DevExamplesListExtrasRoute,
   DevExamplesLoaderQueryRoute: DevExamplesLoaderQueryRoute,
   DevExamplesOptimisticRoute: DevExamplesOptimisticRoute,
+  DevExamplesOrderKeysRoute: DevExamplesOrderKeysRoute,
+  DevExamplesPacingRoute: DevExamplesPacingRoute,
   DevExamplesPermissionsRoute: DevExamplesPermissionsRoute,
   DevExamplesPreferencesRoute: DevExamplesPreferencesRoute,
   DevExamplesSeoRoute: DevExamplesSeoRoute,
+  DevExamplesShortcutsRoute: DevExamplesShortcutsRoute,
   DevExamplesStreamingRoute: DevExamplesStreamingRoute,
   DevExamplesIndexRoute: DevExamplesIndexRoute,
 }

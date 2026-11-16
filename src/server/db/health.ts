@@ -22,6 +22,7 @@ export const checkDatabaseHealth = async (
 	const checkedAt = new Date().toISOString();
 	let timer: ReturnType<typeof setTimeout> | undefined;
 	const timeout = new Promise<never>((_, reject) => {
+		// timer: the timeout the database ping races against.
 		timer = setTimeout(() => reject(new Error(`Timed out after ${timeoutMs} ms`)), timeoutMs);
 	});
 	try {

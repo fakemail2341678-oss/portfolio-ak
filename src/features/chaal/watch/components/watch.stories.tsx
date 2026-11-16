@@ -109,7 +109,7 @@ export const BoardFollowed: Story = {
 				"6",
 			),
 		);
-		const first = canvasElement.querySelector<HTMLButtonElement>("[role=toolbar] button");
+		const first = canvasElement.querySelector<HTMLButtonElement>("[data-testid=chaal-controls] button");
 		if (!first) throw new Error("no controls");
 		await userEvent.click(first);
 		await waitFor(() =>

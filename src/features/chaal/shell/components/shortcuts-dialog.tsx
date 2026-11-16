@@ -1,28 +1,15 @@
+import { ShortcutsList } from "@/components/dialogs/shortcuts-list";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Kbd } from "@/components/ui/kbd";
-import { useHotkeyLabel } from "@/hooks/use-hotkeys";
 import { m } from "@/paraglide/messages";
 
 /**
  * Every keyboard shortcut in Chaal (PLAN 13.6, "Keyboard"), opened with `?` or from the
- * palette. Shortcuts go through `useHotkeys` and are listed here: the board's (←/→, Home,
- * End, `f`, `/`) came with the board kit (Task 74); zen (`z`) with Task 78.
+ * palette. The shortcuts the page has bound are listed from the registry (`useShortcuts`
+ * names them, decision 0299): the frame's everywhere, the board's (←/→, Home, End, `f`,
+ * `/`) on a page with a board, zen (`z`) on a game's page. The rows below are the keys the
+ * palette and the dialogs handle themselves.
  */
 export function ChaalShortcutsDialog({ open, onOpenChange }: { open: boolean; onOpenChange: (open: boolean) => void }) {
-	const palette = useHotkeyLabel("mod+k");
-	const rows = [
-		{ keys: [palette], label: m.chaal_shortcut_palette() },
-		{ keys: ["?"], label: m.chaal_shortcut_help() },
-		{ keys: ["↑", "↓", "↵"], label: m.chaal_shortcut_palette_pick() },
-		{ keys: ["Esc"], label: m.chaal_shortcut_close() },
-		// The board's (Task 74): `useBoardKeys` and the move input.
-		{ keys: ["←", "→"], label: m.chaal_shortcut_moves() },
-		{ keys: ["Home", "End"], label: m.chaal_shortcut_ends() },
-		{ keys: ["f"], label: m.chaal_control_flip() },
-		{ keys: ["/"], label: m.chaal_move_input_label() },
-		// Zen on a game's page (Task 78).
-		{ keys: ["z"], label: m.chaal_shortcut_zen() },
-	];
 	return (
 		<Dialog open={open} onOpenChange={onOpenChange}>
 			<DialogContent className="sm:max-w-md" data-testid="chaal-shortcuts">
@@ -30,18 +17,14 @@ export function ChaalShortcutsDialog({ open, onOpenChange }: { open: boolean; on
 					<DialogTitle className="ch-display text-ch-head">{m.chaal_shortcuts_title()}</DialogTitle>
 					<DialogDescription>{m.chaal_shortcuts_description()}</DialogDescription>
 				</DialogHeader>
-				<dl className="flex flex-col text-body">
-					{rows.map((row) => (
-						<div key={row.label} className="ch-hairline flex items-center justify-between gap-4 py-2 last:border-b-0">
-							<dt>{row.label}</dt>
-							<dd className="flex shrink-0 gap-1" dir="ltr">
-								{row.keys.map((key) => (
-									<Kbd key={key}>{key}</Kbd>
-								))}
-							</dd>
-						</div>
-					))}
-				</dl>
+				<ShortcutsList
+					rowClassName="ch-hairline last:border-b-0"
+					extraTitle={m.shortcuts_group_widgets()}
+					extra={[
+						{ keys: ["↑", "↓", "↵"], name: m.chaal_shortcut_palette_pick() },
+						{ keys: ["Esc"], name: m.chaal_shortcut_close() },
+					]}
+				/>
 			</DialogContent>
 		</Dialog>
 	);

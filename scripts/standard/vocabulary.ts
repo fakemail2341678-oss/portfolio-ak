@@ -249,6 +249,7 @@ export const SHARED_MESSAGE_WORDS: ReadonlySet<string> = new Set([
 	"select",
 	"seo",
 	"settings",
+	"shortcuts",
 	"showcase",
 	"sidebar",
 	"site",

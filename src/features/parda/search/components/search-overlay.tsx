@@ -1,10 +1,10 @@
+import { useDebouncedValue } from "@tanstack/react-pacer";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { type LinkOptions, useNavigate } from "@tanstack/react-router";
 import { ClockIcon, HistoryIcon, SearchIcon, TrendingUpIcon, UserRoundIcon, XIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { useDebouncedValue } from "@/hooks/use-debounced-value";
 import { isAppError } from "@/lib/errors";
 import { m } from "@/paraglide/messages";
 import { getLocale } from "@/paraglide/runtime";
@@ -83,7 +83,7 @@ export default function SearchOverlay({
 	const navigate = useNavigate();
 	const locale = getLocale();
 	const [typed, setTyped] = useState("");
-	const q = useDebouncedValue(typed.trim(), 250);
+	const [q] = useDebouncedValue(typed.trim(), { wait: 250 });
 	const searching = typed.trim().length >= MIN_QUERY;
 	const suggest = useQuery({
 		...pardaSuggestQueryOptions(locale, q),

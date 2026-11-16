@@ -1,5 +1,6 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect } from "react";
+import { usePacedRefresh } from "@/hooks/use-paced-refresh";
 import { tasklineKeys } from "../keys";
 import { projectRevQueryOptions } from "../queries";
 
@@ -14,12 +15,17 @@ export function useProjectFreshness(userId: string, ws: string, key: string, sho
 	const queryClient = useQueryClient();
 	const { data } = useQuery(projectRevQueryOptions(userId, ws, key));
 	const latest = data?.rev;
-	useEffect(() => {
-		if (latest === undefined || latest <= shownRev) return;
-		void queryClient.invalidateQueries({
+	// The poll, the tab's focus and a write of one's own can all find a moved rev within a second:
+	// the project is read again once at once, and once more when they stop.
+	const refresh = usePacedRefresh(() =>
+		queryClient.invalidateQueries({
 			queryKey: tasklineKeys.project(userId, ws, key),
 			// The rev itself was just read: refetching it again would only repeat the question.
 			predicate: (query) => query.queryKey.at(-1) !== "rev",
-		});
-	}, [latest, shownRev, queryClient, userId, ws, key]);
+		}),
+	);
+	useEffect(() => {
+		if (latest === undefined || latest <= shownRev) return;
+		refresh();
+	}, [latest, shownRev, refresh]);
 }

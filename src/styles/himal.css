@@ -853,6 +853,7 @@
 	 * The pending page's range (chrome/portfolio-pending.tsx): printed again and again
 	 * while a page loads (keyframes hm-print-0…2 above). Transform only (decision 0201).
 	 */
+	/* biome-ignore lint/style/noDescendingSpecificity: the pending page's range carries no data-print, so the one-shot rule above never matches the same band */
 	.hm-printing .hm-relief-band {
 		animation: hm-print-0 3.6s cubic-bezier(0.45, 0, 0.2, 1) infinite;
 	}

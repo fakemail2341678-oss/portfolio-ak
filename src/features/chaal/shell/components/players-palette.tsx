@@ -1,7 +1,7 @@
+import { useDebouncedValue } from "@tanstack/react-pacer";
 import { useQuery } from "@tanstack/react-query";
 import { UserIcon } from "lucide-react";
 import { CommandGroup, CommandItem } from "@/components/ui/command";
-import { useDebouncedValue } from "@/hooks/use-debounced-value";
 import { m } from "@/paraglide/messages";
 import { playerSearchQueryOptions } from "../../players/queries";
 
@@ -14,7 +14,7 @@ const NAME = /^[A-Za-z0-9][A-Za-z0-9_-]{1,29}$/;
  */
 export default function PalettePlayers({ term, onPick }: { term: string; onPick: (username: string) => void }) {
 	const typed = term.trim();
-	const settled = useDebouncedValue(typed, 250);
+	const [settled] = useDebouncedValue(typed, { wait: 250 });
 	const searchable = NAME.test(settled) && settled.length >= 3;
 	const { data } = useQuery({ ...playerSearchQueryOptions(settled), enabled: searchable });
 	if (!NAME.test(typed)) return null;

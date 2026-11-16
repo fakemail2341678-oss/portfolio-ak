@@ -1,3 +1,4 @@
+import { useDebouncer } from "@tanstack/react-pacer";
 import { useNavigate } from "@tanstack/react-router";
 import { type FormEvent, type ReactNode, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
@@ -71,7 +72,6 @@ export function FilterBar({
 }) {
 	const navigate = useNavigate();
 	const formRef = useRef<HTMLFormElement>(null);
-	const timer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
 
 	const apply = (replace: boolean) => {
 		const form = formRef.current;
@@ -90,21 +90,21 @@ export function FilterBar({
 	useEffect(() => {
 		if (formRef.current) syncControls(formRef.current, values);
 	}, [values]);
-	useEffect(() => () => clearTimeout(timer.current), []);
+	// One history entry per pause in typing, not per keystroke. A pending one is dropped on unmount.
+	const typing = useDebouncer(() => apply(true), { wait: DEBOUNCE_MS });
 
 	const onChange = (event: FormEvent<HTMLFormElement>) => {
 		const target = event.target;
-		clearTimeout(timer.current);
 		if (target instanceof HTMLInputElement && DEBOUNCED_TYPES.has(target.type)) {
-			// One history entry per pause in typing, not per keystroke.
-			timer.current = setTimeout(() => apply(true), DEBOUNCE_MS);
+			typing.maybeExecute();
 		} else {
+			typing.cancel();
 			apply(false);
 		}
 	};
 	const onSubmit = (event: FormEvent<HTMLFormElement>) => {
 		event.preventDefault();
-		clearTimeout(timer.current);
+		typing.cancel();
 		apply(false);
 	};
 

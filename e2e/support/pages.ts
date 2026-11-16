@@ -99,6 +99,9 @@ export const REVIEWED_PAGES: ReadonlyArray<ReviewedPage> = [
 	{ route: "/dev/examples/caching" },
 	{ route: "/dev/examples/background-jobs" },
 	{ route: "/dev/examples/contact" },
+	{ route: "/dev/examples/pacing" },
+	{ route: "/dev/examples/shortcuts" },
+	{ route: "/dev/examples/order-keys" },
 	// A fixed in-memory task (src/server/examples/tasks.ts).
 	{ route: "/dev/examples/masking/$id", path: "/dev/examples/masking/00000000-0000-4000-8000-000000000001" },
 	// Signing in

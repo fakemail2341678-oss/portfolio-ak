@@ -1,6 +1,6 @@
+import { useDebouncedValue } from "@tanstack/react-pacer";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { useRef, useState } from "react";
-import { useDebouncedValue } from "@/hooks/use-debounced-value";
 import type { AsyncSearch } from "./async-combobox-field";
 import type { FieldOption } from "./choice-fields";
 
@@ -10,7 +10,7 @@ export function useAsyncOptions(
 	open: boolean,
 ) {
 	const [query, setQuery] = useState("");
-	const debounced = useDebouncedValue(query.trim(), debounceMs);
+	const [debounced] = useDebouncedValue(query.trim(), { wait: debounceMs });
 	const results = useQuery({
 		queryKey: [...queryKey, "search", debounced],
 		queryFn: () => search(debounced),

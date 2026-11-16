@@ -131,6 +131,7 @@ export function MultiSelectFilter({
 			}
 		};
 		document.addEventListener("pointerdown", onPointerDown);
+		// keys: Escape closes this popover and returns focus to its summary: the widget's own key, on its own element.
 		details.addEventListener("keydown", onKeyDown);
 		return () => {
 			document.removeEventListener("pointerdown", onPointerDown);

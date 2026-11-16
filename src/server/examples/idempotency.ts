@@ -74,6 +74,7 @@ export const resetMessages = () => {
 };
 
 const send = async (text: string): Promise<ExampleMessage> => {
+	// timer: pretends a slow send, so the example can show a retry arriving meanwhile.
 	await new Promise((resolve) => setTimeout(resolve, 400));
 	const message = { id: nextId++, text, sentAt: new Date().toISOString() };
 	messages.push(message);

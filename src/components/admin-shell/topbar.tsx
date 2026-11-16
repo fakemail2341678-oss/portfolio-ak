@@ -15,7 +15,7 @@ import { Button } from "@/components/ui/button";
 import { Kbd } from "@/components/ui/kbd";
 import { Separator } from "@/components/ui/separator";
 import { SidebarTrigger } from "@/components/ui/sidebar";
-import { useHotkeyLabel } from "@/hooks/use-hotkeys";
+import { useShortcutLabel } from "@/hooks/use-shortcuts";
 import { crumbsFromMatches } from "@/lib/breadcrumbs";
 import { cn } from "@/lib/utils";
 import { m } from "@/paraglide/messages";
@@ -59,7 +59,7 @@ export function TopbarBreadcrumbs() {
  * user menu.
  */
 export function Topbar({ onOpenCommandMenu }: { onOpenCommandMenu: () => void }) {
-	const shortcut = useHotkeyLabel("mod+k");
+	const shortcut = useShortcutLabel("Mod+K");
 	return (
 		<header className="sticky top-0 z-20 flex h-12 shrink-0 items-center gap-2 border-b bg-background/85 px-3 backdrop-blur supports-[backdrop-filter]:bg-background/70 sm:px-4">
 			<SidebarTrigger className="-ms-1" />

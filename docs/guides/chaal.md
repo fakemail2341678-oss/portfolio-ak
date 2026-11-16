@@ -238,7 +238,7 @@ const puzzle = await chaal.cache.read(
 
 - **`json(request, schema)`** for answers, **`send(request)`** when the body doesn't matter (a 204, a move), **`stream(request)`** for ndjson and PGN streams, **`lines(request, schema, max?)`** for a finite ndjson answer (with `max`, only its first lines are read: Task 83), **`pgn(request, maxBytes)`** for a PGN.
 - **`endpoint`** names the call in the log and the counters: keep it short and stable (`account`, `puzzle-daily`, `stream:event`).
-- **Lanes** (`lanes.ts`): `public` for calls without a user's token, `userLane(id)` for a user's reads and writes, `playLane(id)` for moves. One call at a time per lane per instance. Streams take no lane.
+- **Lanes** (`lanes.ts`): `public` for calls without a user's token, `userLane(id)` for a user's reads and writes, `playLane(id)` for moves. One call at a time per lane per instance: a lane is a queue of one (`createJobQueue`, TanStack Pacer, 0299), made by its first call and dropped when it empties. Streams take no lane.
 - **`host`**: `api` (default), `explorer` or `tablebase`.
 - **Errors:** `UPSTREAM_UNAVAILABLE` (a timeout, a 5xx after the retry, an answer whose shape changed), `NOT_FOUND`, `RATE_LIMITED` with reason `lichess-wait` (a cooldown), `LichessAuthError` (a 401 with a user's token: FORBIDDEN, reason `lichess-reconnect`), a plain FORBIDDEN for a 401 without a token, BAD_REQUEST for other 4xx.
 - **Schemas** (`schemas.ts`) read only what Chaal uses and map it to Chaal's own shape: the page's dehydrated state is in its HTML. Add a schema next to the others; never pass Lichess's JSON through.

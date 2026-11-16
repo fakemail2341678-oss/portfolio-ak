@@ -5,16 +5,12 @@ import { Pagination } from "@/components/navigation/pagination";
 import { Breadcrumbs } from "@/components/page/breadcrumbs";
 import { EmptyState } from "@/components/page/empty-state";
 import { Page, PageHeader } from "@/components/page/page";
-import { ListSkeleton, PageHeaderSkeleton } from "@/components/page/skeletons";
 import { Button } from "@/components/ui/button";
-import { PublicCard, PublicCardSkeleton } from "@/features/test-crud/components/public-card";
+import { PublicCard } from "@/features/test-crud/components/public-card";
+import { PublicListPending } from "@/features/test-crud/components/public-list-pending";
 import { TestCrudQuickView } from "@/features/test-crud/components/quick-view-dialog";
 import { publicTestCrudListQueryOptions } from "@/features/test-crud/queries";
-import {
-	TEST_CRUD_PUBLIC_PAGE_SIZE,
-	TEST_CRUD_PUBLIC_SEARCH_DEFAULTS,
-	testCrudPublicRouteSearchSchema,
-} from "@/features/test-crud/search";
+import { TEST_CRUD_PUBLIC_SEARCH_DEFAULTS, testCrudPublicRouteSearchSchema } from "@/features/test-crud/search";
 import { useListQuery } from "@/hooks/use-list-query";
 import { formatNumber } from "@/lib/i18n/intl";
 import { loadList } from "@/lib/query";
@@ -94,21 +90,6 @@ function PublicListPage() {
 
 			<Pagination page={data.page} pageCount={data.pageCount} layout="center" hideWhenSingle />
 			{view ? <TestCrudQuickView slug={view} /> : null}
-		</Page>
-	);
-}
-
-/** Card-shaped placeholders while a client-side navigation loads (SSR never shows this). */
-function PublicListPending() {
-	return (
-		<Page width="wide" className="gap-8" aria-busy="true">
-			<output className="sr-only">{m.test_crud_public_loading()}</output>
-			<PageHeaderSkeleton size="display" extra />
-			<ListSkeleton
-				count={Math.min(6, TEST_CRUD_PUBLIC_PAGE_SIZE)}
-				item={<PublicCardSkeleton />}
-				className="sm:grid-cols-2 lg:grid-cols-3"
-			/>
 		</Page>
 	);
 }

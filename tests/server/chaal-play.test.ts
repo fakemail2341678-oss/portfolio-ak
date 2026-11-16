@@ -36,7 +36,7 @@ function fakeLichess() {
 		const body = typeof init?.body === "string" ? init.body : null;
 		const token = (init?.headers as Record<string, string> | undefined)?.authorization?.replace("Bearer ", "") ?? null;
 		const form =
-			body && (init?.headers as Record<string, string>)["content-type"]?.includes("form")
+			body && (init?.headers as Record<string, string> | undefined)?.["content-type"]?.includes("form")
 				? new URLSearchParams(body)
 				: null;
 		calls.push({ method, path: url.pathname, search: url.search, form, token });

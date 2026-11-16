@@ -133,7 +133,7 @@ const KEY_PROPS = new Set(["onKeyDown", "onKeyUp", "onKeyPress", "onKeyDownCaptu
 
 const keyHandler: Rule = {
 	id: "key-handler",
-	rule: `A shortcut is registered through the hotkeys hook; a raw key listener or onKeyDown needs a "// ${REASON_WORDS.keys}: <reason>" comment.`,
+	rule: `A shortcut is registered with useShortcuts (TanStack Hotkeys); a raw key listener or onKeyDown needs a "// ${REASON_WORDS.keys}: <reason>" comment.`,
 	check: (tree) => {
 		const found: Deviation[] = [];
 		for (const file of sourceFiles(tree)) {
@@ -151,7 +151,7 @@ const keyHandler: Rule = {
 					found.push({
 						key: file,
 						line: lineOf(source, node),
-						message: `a key handler: register a shortcut through the hotkeys hook, or say why it is not one in "// ${REASON_WORDS.keys}: …"`,
+						message: `a key handler: register a shortcut with useShortcuts, or say why it is not one in "// ${REASON_WORDS.keys}: …"`,
 					});
 				}
 			});
@@ -160,7 +160,7 @@ const keyHandler: Rule = {
 	},
 };
 
-const TIMERS = new Set(["setTimeout", "setInterval", "useDebouncedValue"]);
+const TIMERS = new Set(["setTimeout", "setInterval"]);
 
 const timer: Rule = {
 	id: "timer",

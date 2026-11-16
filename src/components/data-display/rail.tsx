@@ -1,3 +1,4 @@
+import { useThrottledCallback } from "@tanstack/react-pacer";
 import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
 import { type ReactNode, useId, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
@@ -40,14 +41,19 @@ export function Rail({
 	// Until the rail is touched, assume it starts at the beginning and runs past the edge.
 	const [edges, setEdges] = useState({ start: true, end: false });
 
-	const measure = () => {
-		const node = list.current;
-		if (!node) return;
-		// scrollLeft is negative in right-to-left layouts.
-		const offset = Math.abs(node.scrollLeft);
-		const next = { start: offset <= 1, end: offset + node.clientWidth >= node.scrollWidth - 1 };
-		if (next.start !== edges.start || next.end !== edges.end) setEdges(next);
-	};
+	// A scroll fires on every frame: the edges are measured at most ten times a second, and once
+	// more when it stops (the throttle's trailing call), so the arrows end up right.
+	const measure = useThrottledCallback(
+		() => {
+			const node = list.current;
+			if (!node) return;
+			// scrollLeft is negative in right-to-left layouts.
+			const offset = Math.abs(node.scrollLeft);
+			const next = { start: offset <= 1, end: offset + node.clientWidth >= node.scrollWidth - 1 };
+			setEdges((current) => (next.start === current.start && next.end === current.end ? current : next));
+		},
+		{ wait: 100 },
+	);
 
 	const page = (direction: 1 | -1) => {
 		const node = list.current;

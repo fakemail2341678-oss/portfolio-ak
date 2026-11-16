@@ -97,6 +97,7 @@ function ListExtrasExample() {
 
 	const deleteWithUndo = (task: ExampleTask) => {
 		show(task.id, false);
+		// timer: the delete happens when the Undo toast runs out: one delay per row, cancelled by Undo.
 		timers.current.set(
 			task.id,
 			setTimeout(() => {

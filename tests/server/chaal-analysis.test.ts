@@ -36,7 +36,7 @@ const BASES: Record<LichessHost, string> = {
 const calls: Array<{ url: URL; token: string | null }> = [];
 const fetcher = vi.fn<typeof fetch>(async (input, init) => {
 	const url = new URL(String(input));
-	const token = (init?.headers as Record<string, string>).authorization?.replace("Bearer ", "") ?? null;
+	const token = (init?.headers as Record<string, string> | undefined)?.authorization?.replace("Bearer ", "") ?? null;
 	calls.push({ url, token });
 	const host = (Object.entries(BASES).find(([, base]) => url.origin === base)?.[0] ?? "api") as LichessHost;
 	if (host === "explorer" && !token) return new Response("{}", { status: 401 });

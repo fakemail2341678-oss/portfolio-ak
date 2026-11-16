@@ -9,6 +9,8 @@ import { ErrorPage } from "@/components/errors/error-page";
 import { NotFoundPage } from "@/components/errors/not-found-page";
 import { ImpersonationBanner } from "@/components/layout/impersonation-banner";
 import { ConsentBanner, ObservabilitySync } from "@/components/layout/observability";
+import { PacingProvider } from "@/components/layout/pacing-provider";
+import { ShortcutsProvider } from "@/components/layout/shortcuts-provider";
 import { SkipLink } from "@/components/layout/skip-link";
 import { preferenceHtmlProps, SystemThemeScript, ThemeSync } from "@/components/layout/theme";
 import { sessionQueryOptions } from "@/features/auth/queries";
@@ -112,7 +114,11 @@ function RootDocument({ children }: { children: ReactNode }) {
 			<body className="flex min-h-dvh flex-col">
 				<SkipLink />
 				<ImpersonationBanner />
-				<div className="flex flex-1 flex-col">{children}</div>
+				<div className="flex flex-1 flex-col">
+					<PacingProvider>
+						<ShortcutsProvider>{children}</ShortcutsProvider>
+					</PacingProvider>
+				</div>
 				<ThemeSync theme={theme} />
 				<ObservabilitySync />
 				<ConsentBanner />

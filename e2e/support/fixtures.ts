@@ -21,7 +21,7 @@ declare global {
 const installObservers = () => {
 	const state: Window["__e2e"] = { cls: 0, shifts: [], csp: [] };
 	window.__e2e = state;
-	const describe = (node: Node | null | undefined) => {
+	const describeNode = (node: Node | null | undefined) => {
 		if (!(node instanceof Element)) return node?.nodeName ?? "?";
 		const id = node.id ? `#${node.id}` : "";
 		const classes = typeof node.className === "string" ? node.className.split(/\s+/).slice(0, 3).join(".") : "";
@@ -32,7 +32,9 @@ const installObservers = () => {
 		for (const entry of list.getEntries() as Shift[]) {
 			if (entry.hadRecentInput) continue;
 			state.cls += entry.value;
-			state.shifts.push(`${entry.value.toFixed(4)}: ${(entry.sources ?? []).map((s) => describe(s.node)).join(", ")}`);
+			state.shifts.push(
+				`${entry.value.toFixed(4)}: ${(entry.sources ?? []).map((s) => describeNode(s.node)).join(", ")}`,
+			);
 		}
 	}).observe({ type: "layout-shift", buffered: true });
 	document.addEventListener("securitypolicyviolation", (event) => {

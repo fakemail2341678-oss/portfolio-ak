@@ -1,4 +1,5 @@
 import "@tanstack/react-start/server-only";
+import { createJobQueue, type JobQueue } from "@/lib/job-queue";
 
 /**
  * "Only make one request at a time" (Lichess's API rules, PLAN 13.4). Each lane runs its
@@ -26,22 +27,20 @@ export type Lanes = {
 };
 
 export function createLanes(): Lanes {
-	const tails = new Map<LaneKey, Promise<unknown>>();
+	// A lane is a queue of one (TanStack Pacer's, through `createJobQueue`, decision 0299): made
+	// by its first call and dropped when its last one settles. The next call starts when this
+	// one settles, however it settles.
+	const lanes = new Map<LaneKey, { queued: JobQueue; calls: number }>();
 	return {
-		busy: () => tails.size,
+		busy: () => lanes.size,
 		run: <T>(lane: LaneKey, task: () => Promise<T>) => {
-			const previous = tails.get(lane) ?? Promise.resolve();
-			// The next call starts when this one settles, however it settles.
-			const result = previous.then(task, task);
-			const tail = result.then(
-				() => undefined,
-				() => undefined,
-			);
-			tails.set(lane, tail);
-			void tail.then(() => {
-				if (tails.get(lane) === tail) tails.delete(lane);
+			const entry = lanes.get(lane) ?? { queued: createJobQueue(1), calls: 0 };
+			lanes.set(lane, entry);
+			entry.calls += 1;
+			return entry.queued(task).finally(() => {
+				entry.calls -= 1;
+				if (entry.calls === 0 && lanes.get(lane) === entry) lanes.delete(lane);
 			});
-			return result;
 		},
 	};
 }

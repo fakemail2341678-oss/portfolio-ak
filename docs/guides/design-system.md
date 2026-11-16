@@ -105,7 +105,14 @@ The admin kit (Task 37, decision 0168): everything an admin page needs, so a fea
 
 **Table** (`components/data-table/`, decision 0169): `DataTable` on TanStack Table v9 with its toolbar (saved views, CSV export, Columns), `RowAction`s with permissions and a context menu, a sticky header on long pages and a pinned first column on phones ([tables-filters.md](tables-filters.md)).
 
-**Hooks** (`src/hooks/`): `useHotkeys({ "mod+k": … })` (Ctrl or ⌘; plain keys don't fire while typing) with `useHotkeyLabel("mod+k")` for the `Kbd` hint ("Ctrl K" on the server, "⌘ K" on a Mac after hydration, in a fixed-width `Kbd`); `useDebouncedValue`; `useMediaQuery` (the server value first: for things that open on interaction, not for first-paint layout).
+**Hooks** (`src/hooks/`):
+
+- **Shortcuts** (TanStack Hotkeys, 0299; `/dev/examples/shortcuts`): `useShortcuts(group, [{ keys: "Mod+K", name: m.command_title(), run }])` registers each shortcut with a name and a group. `keys` is "Mod+K" (Ctrl or ⌘), a single key ("N", "Shift+?", "Escape") or a sequence (`["G", "H"]`). A single key or a Shift/Alt combination is skipped while a field has the focus; a key press another handler already took is left alone (`ShortcutsProvider` at the root sets both). `enabled: false` keeps a shortcut silent and off the list.
+- **The label:** `useShortcutLabel("Mod+K")` for the `Kbd` hint: "Ctrl K" on the server, "⌘ K" on a Mac after hydration, in a fixed-width `Kbd` so the swap shifts nothing.
+- **The dialog:** `<ShortcutsList extra={…} />` (`src/components/dialogs/shortcuts-list.tsx`) lists what is registered right now, under its groups' headings. A product's dialog supplies the frame and adds rows only for keys that are not shortcuts (arrow keys in a list). Two mounted components must not bind one key: the package warns in the console, and the browser review fails on a console message.
+- **Not a shortcut:** a widget's own keyboard model (arrows in a grid, Enter in a field) stays an `onKeyDown` with a `// keys: <reason>` comment.
+- **Pacing** (TanStack Pacer, 0299): see [state.md](state.md), "Pacing".
+- `useMediaQuery` (the server value first: for things that open on interaction, not for first-paint layout).
 
 **Primitives added in Task 37** (`components/ui/`, story `UI/Primitives`): tabs, scroll-area (`label` makes the viewport a focusable region), hover-card, accordion, collapsible, toggle, toggle-group, chart, progress, alert (`info`, `success`, `warning`, `destructive` in the status tones), spinner, button-group, context-menu. Tabs, toggles and the like use `--control-height`.
 

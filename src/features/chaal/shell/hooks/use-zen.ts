@@ -1,5 +1,6 @@
 import { useRouterState } from "@tanstack/react-router";
-import { useHotkeys } from "@/hooks/use-hotkeys";
+import { useShortcuts } from "@/hooks/use-shortcuts";
+import { m } from "@/paraglide/messages";
 import { useChaalPreferences } from "../../settings/hooks/use-preferences";
 
 /** A page where a game is played: a game on Lichess or a local one (either language's path). */
@@ -21,5 +22,7 @@ export function useZen(): { zen: boolean; playing: boolean; toggle: () => void }
 /** `z` on a game's page (the frame listens; the shortcuts list says it). */
 export function useZenKey(): void {
 	const { playing, toggle } = useZen();
-	useHotkeys({ z: () => toggle() }, { enabled: playing });
+	useShortcuts(m.shortcuts_group_board(), [{ keys: "Z", name: m.chaal_shortcut_zen(), run: () => toggle() }], {
+		enabled: playing,
+	});
 }

@@ -15,7 +15,11 @@
 			"!**/storybook-static",
 			"!**/tests/fixtures/tmdb",
 			"!**/tests/fixtures/lichess",
-			"!**/docs/history/part9-audit"
+			"!**/docs/history/part9-audit",
+			"!**/*.md",
+			"!**/*.svg",
+			"!**/*.yml",
+			"!**/*.yaml"
 		]
 	},
 	"formatter": {
@@ -35,10 +39,10 @@
 		"domains": {
 			"react": "recommended",
 			"test": "recommended",
-			"playwright": "recommended"
+			"playwright": "none"
 		},
 		"rules": {
-			"recommended": true,
+			"preset": "recommended",
 			"suspicious": {
 				"noExplicitAny": "error"
 			},
@@ -52,6 +56,12 @@
 						}
 					}
 				}
+			},
+			"complexity": {
+				"useMathMinMax": "off"
+			},
+			"correctness": {
+				"noComponentHookFactories": "off"
 			}
 		}
 	},
@@ -289,6 +299,14 @@
 					"style": {
 						"noRestrictedImports": "off"
 					}
+				}
+			}
+		},
+		{
+			"includes": ["e2e/**"],
+			"linter": {
+				"domains": {
+					"playwright": "recommended"
 				}
 			}
 		}

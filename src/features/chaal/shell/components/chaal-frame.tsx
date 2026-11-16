@@ -23,7 +23,7 @@ import { ThemeToggle } from "@/components/layout/theme";
 import { Button } from "@/components/ui/button";
 import { Kbd } from "@/components/ui/kbd";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
-import { useHotkeyLabel, useHotkeys } from "@/hooks/use-hotkeys";
+import { useShortcutLabel, useShortcuts } from "@/hooks/use-shortcuts";
 import { m } from "@/paraglide/messages";
 import { chaalLinks } from "../../links";
 import { useLiveEvents } from "../../live/hooks/use-live-events";
@@ -123,7 +123,7 @@ const MORE: ReadonlyArray<{ link: LinkOptions; label: () => string; icon: Lucide
  * footer has it below), theme and the account. Ruled off from the page with a heavy rule.
  */
 function ChaalHeader({ onOpenPalette }: { onOpenPalette: () => void }) {
-	const shortcut = useHotkeyLabel("mod+k");
+	const shortcut = useShortcutLabel("Mod+K");
 	return (
 		<header className="sticky top-0 z-40 border-ch-ink border-b-2 bg-ch-ground" data-testid="chaal-header">
 			<div className="mx-auto flex h-[3.625rem] max-w-7xl items-center gap-4 px-4 sm:px-6 lg:gap-8 lg:px-8">
@@ -321,10 +321,10 @@ export function ChaalFrame({ children }: { children: ReactNode }) {
 	useLiveNotices();
 	useZenKey();
 	const { zen, playing } = useZen();
-	useHotkeys({
-		"mod+k": () => setPaletteOpen((open) => !open),
-		"shift+?": () => setShortcutsOpen(true),
-	});
+	useShortcuts(m.shortcuts_group_general(), [
+		{ keys: "Mod+K", name: m.chaal_shortcut_palette(), run: () => setPaletteOpen((open) => !open) },
+		{ keys: "Shift+?", name: m.chaal_shortcut_help(), run: () => setShortcutsOpen(true) },
+	]);
 	const openPalette = () => setPaletteOpen(true);
 	return (
 		<div

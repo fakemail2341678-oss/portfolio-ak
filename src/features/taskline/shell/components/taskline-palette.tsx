@@ -1,3 +1,4 @@
+import { useDebouncedValue } from "@tanstack/react-pacer";
 import { useQuery } from "@tanstack/react-query";
 import { useNavigate, useParams, useRouterState } from "@tanstack/react-router";
 import {
@@ -23,7 +24,6 @@ import {
 	CommandSeparator,
 } from "@/components/ui/command";
 import { useAuthNavigation } from "@/features/auth/hooks/use-auth-actions";
-import { useDebouncedValue } from "@/hooks/use-debounced-value";
 import { THEMES } from "@/lib/stores/preferences";
 import { useTheme } from "@/lib/stores/use-stores";
 import { m } from "@/paraglide/messages";
@@ -66,7 +66,7 @@ export function TasklinePalette({
 	const several = nav.workspaces.length > 1;
 	const params = useParams({ strict: false });
 	const [typed, setTyped] = useState("");
-	const q = useDebouncedValue(typed.trim(), 200);
+	const [q] = useDebouncedValue(typed.trim(), { wait: 200 });
 	const { data: tasks = [] } = useQuery({ ...findTasksQueryOptions(userId, q), enabled: open && q.length >= 2 });
 	// Search all: in the workspace on screen, else the first.
 	const searchWs = nav.workspaces.find((workspace) => workspace.segment === params.ws) ?? nav.workspaces[0];

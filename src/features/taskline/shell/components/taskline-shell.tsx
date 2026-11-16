@@ -11,7 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { sessionQueryOptions } from "@/features/auth/queries";
-import { useHotkeys } from "@/hooks/use-hotkeys";
+import { useShortcuts } from "@/hooks/use-shortcuts";
 import { GUEST_LIFETIME_DAYS } from "@/lib/guests";
 import { formatNumber } from "@/lib/i18n/intl";
 import { useSidebar } from "@/lib/stores/use-stores";
@@ -36,10 +36,10 @@ export function TasklineShell({ nav, children }: { nav: TasklineNav; children: R
 	const { data: session } = useQuery(sessionQueryOptions());
 	const [paletteOpen, setPaletteOpen] = useState(false);
 	const [shortcutsOpen, setShortcutsOpen] = useState(false);
-	useHotkeys({
-		"mod+k": () => setPaletteOpen((open) => !open),
-		"shift+?": () => setShortcutsOpen(true),
-	});
+	useShortcuts(m.shortcuts_group_general(), [
+		{ keys: "Mod+K", name: m.taskline_shortcut_palette(), run: () => setPaletteOpen((open) => !open) },
+		{ keys: "Shift+?", name: m.taskline_shortcut_help(), run: () => setShortcutsOpen(true) },
+	]);
 	return (
 		<ConfirmProvider>
 			<SidebarProvider

@@ -5,17 +5,11 @@ import { Pagination } from "@/components/navigation/pagination";
 import { Breadcrumbs } from "@/components/page/breadcrumbs";
 import { EmptyState } from "@/components/page/empty-state";
 import { Page, PageHeader } from "@/components/page/page";
-import { ListSkeleton, PageHeaderSkeleton } from "@/components/page/skeletons";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { StackPending } from "@/features/stack/components/stack-pending";
 import { stackListQueryOptions } from "@/features/stack/queries";
-import {
-	STACK_PAGE_SIZE,
-	STACK_SEARCH_DEFAULTS,
-	type StackSort,
-	type StackStats,
-	stackSearchSchema,
-} from "@/features/stack/schema";
+import { STACK_SEARCH_DEFAULTS, type StackSort, type StackStats, stackSearchSchema } from "@/features/stack/schema";
 import { getStackStats } from "@/functions/stack";
 import { useListQuery } from "@/hooks/use-list-query";
 import { staticCrumb } from "@/lib/breadcrumbs";
@@ -165,21 +159,6 @@ function StackPage() {
 			)}
 
 			<Pagination page={data.page} pageCount={data.pageCount} layout="center" hideWhenSingle />
-		</Page>
-	);
-}
-
-/** Skeleton shown while a client-side navigation loads the list. */
-function StackPending() {
-	return (
-		<Page className="gap-8" aria-busy="true">
-			<output className="sr-only">{m.pending_loading()}</output>
-			<PageHeaderSkeleton size="display" />
-			<ListSkeleton
-				count={STACK_PAGE_SIZE}
-				item={<div className="h-40 w-full animate-pulse rounded-xl bg-muted" />}
-				className="gap-4 sm:grid-cols-2 lg:grid-cols-3"
-			/>
 		</Page>
 	);
 }

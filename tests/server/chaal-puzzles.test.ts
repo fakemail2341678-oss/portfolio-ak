@@ -32,7 +32,7 @@ type Call = { method: string; url: URL; token: string | null; body: unknown };
 const calls: Call[] = [];
 const fetcher = vi.fn<typeof fetch>(async (input, init) => {
 	const url = new URL(String(input));
-	const token = (init?.headers as Record<string, string>).authorization?.replace("Bearer ", "") ?? null;
+	const token = (init?.headers as Record<string, string> | undefined)?.authorization?.replace("Bearer ", "") ?? null;
 	const method = init?.method ?? "GET";
 	calls.push({ method, url, token, body: init?.body ? JSON.parse(String(init.body)) : null });
 	if (token === "lio_refused") return new Response("{}", { status: 401 });
@@ -202,7 +202,7 @@ describe("Chaal's puzzles: Lichess's reads", () => {
 		expect(calls).toHaveLength(1);
 		expect(calls[0]).toMatchObject({ method: "POST", token: "lio_member" });
 		expect(calls[0]?.url.searchParams.get("nb")).toBe("15");
-		expect((calls[0]?.body as { solutions: unknown[] }).solutions).toHaveLength(2);
+		expect((calls[0]?.body as { solutions: unknown[] } | undefined)?.solutions).toHaveLength(2);
 		const rows = await rowsOf("member");
 		expect(rows.every((row) => row.lichess === "sent")).toBe(true);
 		expect(rows.map((row) => row.ratingDiff).sort()).toEqual([-9, 6]);

@@ -19,8 +19,9 @@ describe("/dev/examples", () => {
 	it("covers every module named in the plan", () => {
 		// 14 from Part 2, plus the recipes: idempotency keys (Task 28), list extras, caching,
 		// background jobs and the contact form (Task 33). Task 31's command palette became
-		// part of the admin shell in Task 36 (decision 0165); Task 37 added the kit pages (components, fields).
-		expect(EXAMPLES).toHaveLength(21);
+		// part of the admin shell in Task 36 (decision 0165); Task 37 added the kit pages (components, fields);
+		// Task 102 added pacing, shortcuts and order keys (decision 0299).
+		expect(EXAMPLES).toHaveLength(24);
 	});
 
 	it("each example's source file and guide exist", () => {

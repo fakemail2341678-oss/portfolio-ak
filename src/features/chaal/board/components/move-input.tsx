@@ -1,7 +1,7 @@
 import { useId, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { useHotkeys } from "@/hooks/use-hotkeys";
+import { useShortcuts } from "@/hooks/use-shortcuts";
 import { m } from "@/paraglide/messages";
 import { moveSuggestions, readTypedMove, showSan } from "../../chess/lib/notation";
 import type { PlayedMove } from "../../chess/lib/rules";
@@ -28,7 +28,11 @@ export function MoveInput({
 	const input = useRef<HTMLInputElement>(null);
 	const [text, setText] = useState("");
 	const [error, setError] = useState<string | null>(null);
-	useHotkeys({ "/": () => input.current?.focus() }, { enabled: hotkey && !disabled });
+	useShortcuts(
+		m.shortcuts_group_board(),
+		[{ keys: "/", name: m.chaal_move_input_label(), run: () => input.current?.focus() }],
+		{ enabled: hotkey && !disabled },
+	);
 	const suggestions = disabled ? [] : moveSuggestions(fen, text);
 
 	const submit = (typed: string) => {
