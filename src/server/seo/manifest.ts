@@ -3,6 +3,15 @@ import { clientEnv } from "@/lib/env/client";
 import { m } from "@/paraglide/messages";
 import { getTextDirection, type Locale, localizeHref } from "@/paraglide/runtime";
 
+/** A manifest as its route answers it: the app's and each product's (src/server/routes/*-manifest.ts). */
+export const manifestResponse = (manifest: object): Response =>
+	new Response(JSON.stringify(manifest), {
+		headers: {
+			"content-type": "application/manifest+json; charset=utf-8",
+			"cache-control": "public, max-age=0, s-maxage=3600, stale-while-revalidate=86400",
+		},
+	});
+
 /**
  * The web app manifest in one language (/manifest.webmanifest and
  * /ne/manifest.webmanifest; the root head links the current one). Colours match

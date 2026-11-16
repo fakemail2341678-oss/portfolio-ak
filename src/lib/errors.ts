@@ -1,37 +1,54 @@
 /**
- * The one error shape that crosses the server/client boundary.
+ * The one error shape that crosses the server/client boundary: the envelope
+ * (`code`, `reason`, `message`, `fieldErrors`, `requestId`, decision 0300).
  *
- * Server functions never leak raw errors: errorMiddleware (src/middleware/errors.ts)
- * turns anything thrown into an AppError. The serialization adapter below keeps
- * the class intact across the wire, so client code can rely on
- * `error instanceof AppError` and branch on `code`. User-facing text is never
+ * Server functions and server routes never leak raw errors: whatever is thrown is
+ * mapped to an AppError in one place (src/server/http/errors.ts). A function sends
+ * it through the serialization adapter below, which keeps the class intact across
+ * the wire, so client code can rely on `error instanceof AppError` and branch on
+ * `code`; a route sends the same fields as problem JSON. User-facing text is never
  * sent; the client picks a localized message by `code` (see errorMessage()).
  */
 import { createSerializationAdapter } from "@tanstack/react-router";
 import type { z } from "zod";
 
+/**
+ * - VALIDATION: the input failed its schema (`fieldErrors` says where). BAD_REQUEST is
+ *   a well-formed request the rules refuse.
+ * - METHOD_NOT_ALLOWED: a server route asked with a method it doesn't take (a server
+ *   function never answers it).
+ * - TIMEOUT: the server gave up waiting for its own work; UPSTREAM_UNAVAILABLE: a
+ *   service it depends on failed. Both, with INTERNAL, are "unknown" outcomes (a
+ *   status of 500 or more): the write may or may not have happened.
+ */
 export const APP_ERROR_CODES = [
 	"BAD_REQUEST",
+	"VALIDATION",
 	"UNAUTHORIZED",
 	"FORBIDDEN",
 	"NOT_FOUND",
+	"METHOD_NOT_ALLOWED",
 	"CONFLICT",
 	"RATE_LIMITED",
 	"INTERNAL",
 	"UPSTREAM_UNAVAILABLE",
+	"TIMEOUT",
 ] as const;
 
 export type AppErrorCode = (typeof APP_ERROR_CODES)[number];
 
 export const HTTP_STATUS: Readonly<Record<AppErrorCode, number>> = {
 	BAD_REQUEST: 400,
+	VALIDATION: 422,
 	UNAUTHORIZED: 401,
 	FORBIDDEN: 403,
 	NOT_FOUND: 404,
+	METHOD_NOT_ALLOWED: 405,
 	CONFLICT: 409,
 	RATE_LIMITED: 429,
 	INTERNAL: 500,
 	UPSTREAM_UNAVAILABLE: 503,
+	TIMEOUT: 504,
 };
 
 /**
@@ -40,12 +57,16 @@ export const HTTP_STATUS: Readonly<Record<AppErrorCode, number>> = {
  * (optimistic concurrency, src/lib/concurrency.ts). "two-factor-required" is a
  * FORBIDDEN because the user must turn on two-factor authentication before using
  * their admin permissions (AUTH_REQUIRE_ADMIN_2FA, decisions.md 0126).
+ * "retry" is a CONFLICT because the write lost a race inside the database (a
+ * serialization failure, a deadlock): nothing was written and the same call can be
+ * sent again (decision 0300).
  * "lichess-wait" is a RATE_LIMITED because Lichess asked Chaal to wait (a 429 starts a
  * cooldown), and "lichess-reconnect" a FORBIDDEN because the user's Lichess token was
  * revoked or lacks a scope (decision 0255).
  */
 export const APP_ERROR_REASONS = [
 	"stale",
+	"retry",
 	"two-factor-required",
 	"lichess-wait", // @chaal
 	"lichess-reconnect", // @chaal
@@ -116,6 +137,20 @@ export class AppError extends Error {
 }
 
 export const isAppError = (value: unknown): value is AppError => value instanceof AppError;
+
+/**
+ * Whether the server refused (a 4xx: the same call fails again, so roll back and say why)
+ * or the outcome is unknown (anything else: the network, a timeout, a 5xx), PLAN 15.6.
+ */
+export const isRefusal = (error: unknown): error is AppError => isAppError(error) && error.status < 500;
+
+/**
+ * A broken invariant: something the code relies on did not hold (an insert returned no
+ * row). A bug, not a refusal: the caller sees INTERNAL with no detail, the log has the
+ * message and the stack.
+ */
+export const internalError = (message: string, cause?: unknown) =>
+	new AppError("INTERNAL", message, cause === undefined ? {} : { cause });
 
 /** Registered in src/start.ts. Rebuilds AppError on the client with its class and fields. */
 export const appErrorSerializationAdapter = createSerializationAdapter({

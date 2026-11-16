@@ -328,14 +328,3 @@ export async function seekStream(
 		closing: (ending) => (ending === "ended" ? { type: "ended" } : reconnect(ending)),
 	});
 }
-
-/**
- * A POST from one of our pages, not another site's (the stream routes run outside the server
- * functions' CSRF check): the browser's `Sec-Fetch-Site`, else the `Origin`.
- */
-export function sameOrigin(headers: Headers, url: string): boolean {
-	const site = headers.get("sec-fetch-site");
-	if (site) return site === "same-origin";
-	const origin = headers.get("origin");
-	return origin !== null && origin === new URL(url).origin;
-}

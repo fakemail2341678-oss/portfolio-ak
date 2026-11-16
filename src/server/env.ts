@@ -106,6 +106,14 @@ export const serverEnvSchema = {
 	CLOUDINARY_DELIVERY_BASE: z.url().default("https://res.cloudinary.com"),
 	/** Bearer token for scheduled jobs (/api/cron/*); Vercel Cron sends it. Unset: the routes answer 404. */
 	CRON_SECRET: z.string().trim().min(16).optional(),
+	/**
+	 * How long a server function or a server route may take, in ms, before its caller gets
+	 * TIMEOUT (504) in the error envelope instead of the platform's own page (decision 0300).
+	 * Keep it under the host's limit for a function. 0: no limit.
+	 */
+	REQUEST_TIMEOUT_MS: z.coerce.number().int().min(0).default(30_000),
+	/** A request slower than this many ms (to its response's head) leaves a "slow request" log line. 0: never. */
+	SLOW_REQUEST_MS: z.coerce.number().int().min(0).default(2_000),
 	// parda:start
 	// TMDB's API read token: Parda's catalogue. Without it the catalogue is "not configured".
 	TMDB_READ_TOKEN: z.string().trim().min(20, "Use the API read access token from your TMDB settings.").optional(),

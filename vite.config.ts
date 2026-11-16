@@ -145,8 +145,9 @@ export default defineConfig(async ({ command, mode }) => {
 			chaalEngine(), // @chaal
 			devtools(),
 			nitro({
-				// Validates server env at boot. See the file for why this is a Nitro plugin.
-				plugins: ["./src/server/plugins/validate-env.ts"],
+				// Validates server env at boot (see the file for why this is a Nitro plugin), and logs
+				// what nothing else caught: unhandled rejections, uncaught exceptions (decision 0300).
+				plugins: ["./src/server/plugins/validate-env.ts", "./src/server/plugins/process-errors.ts"],
 				// Scheduled jobs (Vercel Cron, see vercel.json): bearer CRON_SECRET, 404 when unset.
 				routes: {
 					"/api/cron/attachments": { handler: "./src/server/routes/cron-attachments.ts", method: "GET" },

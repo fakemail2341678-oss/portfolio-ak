@@ -1,6 +1,7 @@
 import "@tanstack/react-start/server-only";
 import type { z } from "zod";
 import { AppError } from "@/lib/errors";
+import { createOutbound, type OutboundInit } from "@/server/http/outbound";
 import { log } from "@/server/log";
 import { type Counters, createCounters } from "./counters";
 import { cooldownKey, createLanes, type LaneKey, type Lanes, laneKind } from "./lanes";
@@ -135,7 +136,19 @@ export type LichessDeps = {
 	timeoutMs?: number;
 };
 
-export function createLichess(config: LichessConfig, fetcher: typeof fetch = fetch, deps: LichessDeps = {}): Lichess {
+export function createLichess(config: LichessConfig, transport: typeof fetch = fetch, deps: LichessDeps = {}): Lichess {
+	// Lichess's three hosts only, and a cap on an answer's size (src/server/http/outbound.ts,
+	// decision 0300). The rest stays this client's: its timeouts are per kind of call, a 429
+	// starts a cooldown instead of a retry, and its log line carries the lane.
+	const fetcher = createOutbound({
+		service: "lichess",
+		bases: [config.apiBase, config.explorerBase, config.tablebaseBase],
+		timeoutMs: 0,
+		retries: 0,
+		maxBytes: 20 * 1024 * 1024,
+		logs: "none",
+		fetcher: transport,
+	});
 	const cooldowns = deps.cooldowns ?? memoryCooldowns();
 	const counters = deps.counters ?? createCounters();
 	const lanes = deps.lanes ?? createLanes();
@@ -155,7 +168,7 @@ export function createLichess(config: LichessConfig, fetcher: typeof fetch = fet
 		return url;
 	};
 
-	const initOf = (request: LichessRequest, accept: string, signal: AbortSignal): RequestInit => {
+	const initOf = (request: LichessRequest, accept: string, signal: AbortSignal, stream: boolean): OutboundInit => {
 		// In English: Lichess names some things (a broadcast's "Round 1") in the language it's asked in,
 		// and one cached answer serves both of Chaal's languages (Task 82).
 		const headers: Record<string, string> = { "user-agent": config.userAgent, accept, "accept-language": "en" };
@@ -171,7 +184,14 @@ export function createLichess(config: LichessConfig, fetcher: typeof fetch = fet
 			headers["content-type"] = "application/json";
 			body = JSON.stringify(request.json);
 		}
-		return { method: request.method ?? "GET", headers, body, signal, redirect: "manual" };
+		return {
+			method: request.method ?? "GET",
+			headers,
+			body,
+			signal,
+			redirect: "manual",
+			outbound: { stream, label: request.endpoint },
+		};
 	};
 
 	const note = (request: LichessRequest, status: number, started: number) => {
@@ -192,6 +212,7 @@ export function createLichess(config: LichessConfig, fetcher: typeof fetch = fet
 		accept: string,
 		signal: () => AbortSignal,
 		retried = false,
+		stream = false,
 	): Promise<Response> => {
 		const key = cooldownKey(request.lane);
 		const cooldown = await cooldowns.read(key);
@@ -199,7 +220,7 @@ export function createLichess(config: LichessConfig, fetcher: typeof fetch = fet
 		const started = now();
 		let response: Response;
 		try {
-			response = await fetcher(urlOf(request), initOf(request, accept, signal()));
+			response = await fetcher(urlOf(request), initOf(request, accept, signal(), stream));
 		} catch (error) {
 			note(request, 0, started);
 			throw unavailable(request.endpoint, "request failed", error);
@@ -218,7 +239,7 @@ export function createLichess(config: LichessConfig, fetcher: typeof fetch = fet
 		}
 		if (response.status === 404) throw new AppError("NOT_FOUND", `Lichess ${request.endpoint}: not found`);
 		if (response.status >= 500) {
-			if ((request.method ?? "GET") === "GET" && !retried) return call(request, accept, signal, true);
+			if ((request.method ?? "GET") === "GET" && !retried) return call(request, accept, signal, true, stream);
 			throw unavailable(request.endpoint, `status ${response.status}`);
 		}
 		throw new AppError("BAD_REQUEST", `Lichess ${request.endpoint}: status ${response.status}`);
@@ -302,7 +323,7 @@ export function createLichess(config: LichessConfig, fetcher: typeof fetch = fet
 			const timer = setTimeout(() => controller.abort(new Error("timeout")), timeoutMs);
 			const signal = request.signal ? AbortSignal.any([controller.signal, request.signal]) : controller.signal;
 			try {
-				const response = await call(request, "application/x-ndjson", () => signal);
+				const response = await call(request, "application/x-ndjson", () => signal, false, true);
 				if (!response.body) throw unavailable(request.endpoint, "no body");
 				return response.body;
 			} finally {

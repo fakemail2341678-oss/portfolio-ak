@@ -4,6 +4,7 @@ import { PostHog } from "posthog-node";
 import { analyticsHost, analyticsKey, posthogCookieName } from "@/lib/observability/analytics";
 import { PREFERENCE_COOKIES } from "@/lib/stores/preferences";
 import { serverEnv } from "@/server/env";
+import { createOutbound } from "@/server/http/outbound";
 import { errorFields, log } from "../log";
 
 /**
@@ -27,6 +28,15 @@ const getClient = (): PostHog | null => {
 					// Without one, a slow PostHog must not slow page renders: the flag falls back
 					// to off after 300 ms, and answers are cached below.
 					featureFlagsRequestTimeoutMs: 300,
+					// PostHog's host only, a cap on an answer's size, and a log line when a call
+					// fails (src/server/http/outbound.ts). The SDK keeps its own retries.
+					fetch: createOutbound({
+						service: "posthog",
+						bases: [analyticsHost],
+						timeoutMs: 10_000,
+						retries: 0,
+						logs: "failures",
+					}),
 				})
 			: null;
 	}

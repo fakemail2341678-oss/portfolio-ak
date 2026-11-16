@@ -1,6 +1,10 @@
 import "@tanstack/react-start/server-only";
+import { createOutbound, type Outbound } from "./outbound";
 
 const SITEVERIFY = "https://challenges.cloudflare.com/turnstile/v0/siteverify";
+
+/** Cloudflare's host only, 5 s, sent once (src/server/http/outbound.ts). */
+const turnstile = createOutbound({ service: "turnstile", bases: [SITEVERIFY], timeoutMs: 5_000 });
 
 /**
  * Checks a Turnstile token for a form of your own (Better Auth's captcha plugin
@@ -11,13 +15,13 @@ export async function verifyTurnstile(
 	secret: string,
 	token: string | undefined,
 	ip: string | undefined,
-	fetcher: typeof fetch = fetch,
+	fetcher: Outbound | typeof fetch = turnstile,
 ): Promise<boolean> {
 	if (!token) return false;
 	const body = new URLSearchParams({ secret, response: token });
 	if (ip) body.set("remoteip", ip);
 	try {
-		const response = await fetcher(SITEVERIFY, { method: "POST", body, signal: AbortSignal.timeout(5000) });
+		const response = await fetcher(SITEVERIFY, { method: "POST", body });
 		const result = (await response.json()) as { success?: unknown };
 		return result.success === true;
 	} catch {

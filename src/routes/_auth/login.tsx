@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { GoogleButton } from "@/features/auth/components/google-button";
 import { LoginForm } from "@/features/auth/components/login-form";
+import { SessionEndedBanner } from "@/features/auth/components/session-ended-banner";
 import { useAuthNavigation } from "@/features/auth/hooks/use-auth-actions";
 import { authFeaturesQueryOptions } from "@/features/auth/queries";
 import { ensureQuery } from "@/lib/query";
@@ -22,6 +23,7 @@ function LoginPage() {
 	return (
 		<>
 			<h1 className="font-semibold text-2xl tracking-tight">{m.auth_login_title()}</h1>
+			{search.reason === "session-ended" ? <SessionEndedBanner /> : null}
 			<LoginForm onSignedIn={() => afterSignIn(target)} />
 			<div className="flex flex-col gap-2 text-sm">
 				<Link to="/forgot-password" className="underline underline-offset-4">

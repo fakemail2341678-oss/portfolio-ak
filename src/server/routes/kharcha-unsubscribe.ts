@@ -8,11 +8,11 @@
  * - **GET** is the page the link opens: it asks first, so a link scanner opening it stops
  *   nothing. A plain page of its own, with no script: Kharcha's pages need a session.
  */
-import { defineHandler } from "nitro";
-import { KHARCHA_NAME } from "../../features/kharcha/lib/brand";
-import { m } from "../../paraglide/messages.js";
-import { baseLocale, isLocale, type Locale } from "../../paraglide/runtime.js";
+import { KHARCHA_NAME } from "@/features/kharcha/lib/brand";
+import { m } from "@/paraglide/messages";
+import { baseLocale, isLocale, type Locale } from "@/paraglide/runtime";
 import { db } from "../db/client";
+import { defineApiRoute } from "../http/api-route";
 import { unsubscribe, validUnsubscribe } from "../kharcha/notify/contact-mail";
 import { log } from "../log";
 
@@ -57,37 +57,43 @@ button:focus-visible { outline: 3px solid #e0a526; outline-offset: 2px; }
 		},
 	);
 
-export default defineHandler(async (event) => {
-	const url = new URL(event.req.url);
-	const personId = url.searchParams.get("p") ?? "";
-	const token = url.searchParams.get("t") ?? "";
-	const asked = url.searchParams.get("l") ?? "";
-	const locale: Locale = isLocale(asked) ? asked : baseLocale;
-	const valid = UUID.test(personId) && validUnsubscribe(personId, token);
-	if (!valid) {
-		return page(
-			400,
-			locale,
-			m.kharcha_unsubscribe_invalid_heading({}, { locale }),
-			m.kharcha_unsubscribe_invalid_body({}, { locale }),
-		);
-	}
-	if (event.req.method === "POST") {
-		const done = await unsubscribe(db, personId);
-		log("info", "kharcha unsubscribe", { done });
+export default defineApiRoute({
+	name: "kharcha-unsubscribe",
+	// The POST comes from a mail app or from this page's own form: any origin, and the token is what counts.
+	methods: ["GET", "POST"],
+	// Tokens can't be guessed (an HMAC); this only keeps one address from trying all day.
+	rateLimit: { max: 30, windowSeconds: 60 },
+	handler: async ({ request, url }) => {
+		const personId = url.searchParams.get("p") ?? "";
+		const token = url.searchParams.get("t") ?? "";
+		const asked = url.searchParams.get("l") ?? "";
+		const locale: Locale = isLocale(asked) ? asked : baseLocale;
+		const valid = UUID.test(personId) && validUnsubscribe(personId, token);
+		if (!valid) {
+			return page(
+				400,
+				locale,
+				m.kharcha_unsubscribe_invalid_heading({}, { locale }),
+				m.kharcha_unsubscribe_invalid_body({}, { locale }),
+			);
+		}
+		if (request.method === "POST") {
+			const done = await unsubscribe(db, personId);
+			log("info", "kharcha unsubscribe", { done });
+			return page(
+				200,
+				locale,
+				m.kharcha_unsubscribe_done_heading({}, { locale }),
+				m.kharcha_unsubscribe_done_body({ site: KHARCHA_NAME }, { locale }),
+			);
+		}
+		const action = escapeHtml(`${url.pathname}${url.search}`);
 		return page(
 			200,
 			locale,
-			m.kharcha_unsubscribe_done_heading({}, { locale }),
-			m.kharcha_unsubscribe_done_body({ site: KHARCHA_NAME }, { locale }),
+			m.kharcha_unsubscribe_heading({ site: KHARCHA_NAME }, { locale }),
+			m.kharcha_unsubscribe_body({ site: KHARCHA_NAME }, { locale }),
+			`<form method="post" action="${action}"><button type="submit">${escapeHtml(m.kharcha_unsubscribe_button({}, { locale }))}</button></form>`,
 		);
-	}
-	const action = escapeHtml(`${url.pathname}${url.search}`);
-	return page(
-		200,
-		locale,
-		m.kharcha_unsubscribe_heading({ site: KHARCHA_NAME }, { locale }),
-		m.kharcha_unsubscribe_body({ site: KHARCHA_NAME }, { locale }),
-		`<form method="post" action="${action}"><button type="submit">${escapeHtml(m.kharcha_unsubscribe_button({}, { locale }))}</button></form>`,
-	);
-});
+	},
+}).nitro;

@@ -3,7 +3,7 @@ import { getRequestHeaders } from "@tanstack/react-start/server";
 import type { Role, Session } from "@/lib/session";
 import { db } from "@/server/db/client";
 import { serverEnv } from "@/server/env";
-import { forgetRequestMemo, requestMemo } from "@/server/http/request-scope";
+import { forgetRequestMemo, requestMemo, setRequestUser, timed } from "@/server/http/request-scope";
 import { permissionsForUser } from "@/server/rbac/repository";
 import { auth } from "./auth";
 import { mustSetUpTwoFactor } from "./policy";
@@ -30,10 +30,14 @@ export const getServerSession = (): Promise<Session | null> => requestMemo(SESSI
 /** For a request that changes the session (e.g. stopping impersonation): the next read looks it up again. */
 export const forgetSession = () => forgetRequestMemo(SESSION_MEMO);
 
-const loadSession = async (): Promise<Session | null> => {
+const loadSession = (): Promise<Session | null> => timed("session", resolveSession);
+
+const resolveSession = async (): Promise<Session | null> => {
 	const result = await auth.api.getSession({ headers: getRequestHeaders() });
 	if (!result) return null;
 	const { user } = result;
+	// From here on, the request's log lines say who it is from.
+	setRequestUser(user.id);
 	const impersonation = result.session.impersonatedBy ? { impersonatedBy: result.session.impersonatedBy } : {};
 	const role = toRole(user.role);
 	const twoFactorEnabled = user.twoFactorEnabled === true;

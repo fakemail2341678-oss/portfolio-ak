@@ -6,7 +6,7 @@ import { addDays, todayInZone } from "@/lib/i18n/date-only";
 import { tlInvitation, tlMember, tlNotification, tlProject, tlTask, tlWorkspace } from "@/server/db/schema";
 import type { Db } from "@/server/db/types";
 import type { EmailProvider } from "@/server/email/types";
-import { errorFields, log } from "@/server/log";
+import { type CronSteps, runSteps } from "@/server/http/cron";
 import { runTimeRule } from "./automations/engine";
 import { catchUpRecurrences } from "./automations/recurrence";
 import * as automations from "./automations/repository";
@@ -291,31 +291,31 @@ export async function automationTimeTriggers(
 	return { runs, pruned };
 }
 
-async function step(name: string, run: () => Promise<object>): Promise<CronStep> {
-	try {
-		return { ok: true, ...(await run()) };
-	} catch (error) {
-		log("error", `taskline cron: ${name} failed`, errorFields(error));
-		return { ok: false };
-	}
-}
-
-export async function runTasklineCron(
+/** The job's steps, in the order they run (`defineCron`, src/server/http/cron.ts). */
+export function tasklineCronSteps(
 	db: Db,
 	{ provider, now = new Date() }: { provider?: EmailProvider; now?: Date } = {},
-): Promise<CronResult> {
+) {
 	// What the steps below made with an instant email: sent before the digests, which leave young instant rows alone.
 	const instant: string[] = [];
 	return {
-		timers: await step("timers", () => stopForgottenTimers(db, now, instant)),
+		timers: () => stopForgottenTimers(db, now, instant),
 		// Before the notices and digests, which then carry what the automations said.
-		automations: await step("automations", () => automationTimeTriggers(db, now, instant)),
-		recurrences: await step("recurrences", () => catchUpRecurrences(db, now)),
-		notices: await step("notices", () => dueNotices(db, now, instant)),
-		instant: await step("instant", (): Promise<DeliveryResult> => deliverInstant(db, instant, { provider, now })),
-		digests: await step("digests", (): Promise<DeliveryResult> => sendDigests(db, { provider, now })),
-		sprints: await step("sprints", () => sprintSnapshots(db, now)),
-		trash: await step("trash", () => purgeTrash(db, now)),
-		invitations: await step("invitations", () => expireInvitations(db, now)),
-	};
+		automations: () => automationTimeTriggers(db, now, instant),
+		recurrences: () => catchUpRecurrences(db, now),
+		notices: () => dueNotices(db, now, instant),
+		instant: (): Promise<DeliveryResult> => deliverInstant(db, instant, { provider, now }),
+		digests: (): Promise<DeliveryResult> => sendDigests(db, { provider, now }),
+		sprints: () => sprintSnapshots(db, now),
+		trash: () => purgeTrash(db, now),
+		invitations: () => expireInvitations(db, now),
+	} satisfies CronSteps;
+}
+
+/** The whole job, as the route runs it: what each step left. */
+export async function runTasklineCron(
+	db: Db,
+	options: { provider?: EmailProvider; now?: Date } = {},
+): Promise<CronResult> {
+	return (await runSteps("taskline", tasklineCronSteps(db, options))).results;
 }

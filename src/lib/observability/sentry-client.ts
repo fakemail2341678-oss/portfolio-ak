@@ -1,4 +1,5 @@
 import type { AnyRouter } from "@tanstack/react-router";
+import type { ClientErrorSource } from "./client-errors";
 import { sentryDsn, sentryOptions } from "./sentry";
 
 /**
@@ -40,10 +41,33 @@ const bufferEarlyErrors = (loading: Promise<Sdk>): Promise<Sdk | undefined> => {
 	);
 };
 
-/** Starts loading and initialising the browser SDK (once). Undefined without a DSN or on the server. */
+/**
+ * Without a DSN the browser's errors go to the server log instead (./client-errors.ts,
+ * decision 0300). The reporter is loaded when the first error happens.
+ */
+const toServerLog = (error: unknown, source: ClientErrorSource) => {
+	void import("./client-errors").then(({ reportClientError }) => reportClientError(error, source)).catch(() => {});
+};
+
+let listening = false;
+const listenForServerLog = () => {
+	if (listening) return;
+	listening = true;
+	window.addEventListener("error", (event) => toServerLog(event.error ?? event.message, "error"));
+	window.addEventListener("unhandledrejection", (event) => toServerLog(event.reason, "unhandledrejection"));
+};
+
+/**
+ * Starts loading and initialising the browser SDK (once). Undefined on the server, and
+ * without a DSN, where it starts the server-log reporter instead.
+ */
 export const loadSentry = (): Promise<Sdk | undefined> | undefined => {
 	const dsn = sentryDsn;
-	if (!dsn || typeof window === "undefined") return undefined;
+	if (typeof window === "undefined") return undefined;
+	if (!dsn) {
+		listenForServerLog();
+		return undefined;
+	}
 	sdk ??= bufferEarlyErrors(
 		import("@sentry/tanstackstart-react").then((Sentry) => {
 			Sentry.init(sentryOptions(dsn));
@@ -53,7 +77,9 @@ export const loadSentry = (): Promise<Sdk | undefined> | undefined => {
 	return sdk;
 };
 
+/** Reports an error an error boundary caught: to Sentry, or to the server log without a DSN. */
 export const captureException = (error: unknown) => {
+	if (!sentryDsn && typeof window !== "undefined") toServerLog(error, "boundary");
 	void loadSentry()?.then((Sentry) => Sentry?.captureException(error));
 };
 

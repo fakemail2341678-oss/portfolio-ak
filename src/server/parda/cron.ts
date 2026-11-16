@@ -1,7 +1,7 @@
 import "@tanstack/react-start/server-only";
 import type { Db } from "@/server/db/types";
 import type { EmailProvider } from "@/server/email/types";
-import { errorFields, log } from "@/server/log";
+import { type CronSteps, runSteps } from "@/server/http/cron";
 import { refreshCertificates, refreshTitles } from "./catalog/refresh";
 import { createPardaControls, type PardaControls } from "./controls";
 import { type CheckResult, checkNewEpisodes } from "./notify/check";
@@ -30,91 +30,51 @@ export type PardaCronResult = {
  * `refreshed_at` and today's rollup rows: a series checked today waits a day, and an
  * alert is emailed once. Idle watch parties end last (decision 0243).
  */
+type PardaCronOptions = {
+	now?: Date;
+	onRanked?: () => void;
+	/** The controls the alerts read (takedowns, the kids' cap); a fresh reader when not given. */
+	controls?: PardaControls;
+	emailProvider?: EmailProvider;
+	sleep?: (ms: number) => Promise<void>;
+};
+
+/** A step that needs TMDB, when the catalogue isn't configured. */
+const SKIPPED = { skipped: true } as const;
+
+/** The job's steps, in the order they run (`defineCron`, src/server/http/cron.ts). */
+export function pardaCronSteps(db: Db, tmdb: Tmdb | null, options: PardaCronOptions = {}) {
+	const controls = options.controls ?? createPardaControls(db);
+	const at = options.now ? { now: options.now } : {};
+	return {
+		titles: async () => (tmdb ? refreshTitles(db, tmdb) : SKIPPED),
+		certificates: async () => (tmdb ? refreshCertificates(db, tmdb, at) : SKIPPED),
+		ranking: async () => {
+			const result = await rollupSources(db, options.now);
+			// This process orders from the new scores at once; others within 30 s.
+			options.onRanked?.();
+			return result;
+		},
+		overview: () => rollupDaily(db, options.now),
+		episodes: async () =>
+			tmdb
+				? checkNewEpisodes(db, tmdb, controls, { ...at, ...(options.sleep ? { sleep: options.sleep } : {}) })
+				: SKIPPED,
+		// After the check's transactions committed (as decision 0214): yesterday's unsent alerts go too.
+		digest: async () =>
+			sendDigests(db, await controls.blocked(), {
+				...at,
+				...(options.emailProvider ? { provider: options.emailProvider } : {}),
+			}),
+		parties: () => endIdleParties(db, options.now),
+	} satisfies CronSteps;
+}
+
+/** The whole job, as the route runs it: what each step left. */
 export async function runPardaCron(
 	db: Db,
 	tmdb: Tmdb | null,
-	options: {
-		now?: Date;
-		onRanked?: () => void;
-		/** The controls the alerts read (takedowns, the kids' cap); a fresh reader when not given. */
-		controls?: PardaControls;
-		emailProvider?: EmailProvider;
-		sleep?: (ms: number) => Promise<void>;
-	} = {},
+	options: PardaCronOptions = {},
 ): Promise<PardaCronResult> {
-	let titles: PardaCronResult["titles"];
-	if (!tmdb) titles = { ok: true, skipped: true };
-	else {
-		try {
-			titles = { ok: true, ...(await refreshTitles(db, tmdb)) };
-		} catch (error) {
-			log("error", "parda title refresh failed", errorFields(error));
-			titles = { ok: false };
-		}
-	}
-	let certificates: PardaCronResult["certificates"];
-	if (!tmdb) certificates = { ok: true, skipped: true };
-	else {
-		try {
-			certificates = { ok: true, ...(await refreshCertificates(db, tmdb, options.now ? { now: options.now } : {})) };
-		} catch (error) {
-			log("error", "parda certificate refresh failed", errorFields(error));
-			certificates = { ok: false };
-		}
-	}
-	let ranking: PardaCronResult["ranking"];
-	try {
-		ranking = { ok: true, ...(await rollupSources(db, options.now)) };
-		// This process orders from the new scores at once; others within 30 s.
-		options.onRanked?.();
-	} catch (error) {
-		log("error", "parda source rollup failed", errorFields(error));
-		ranking = { ok: false };
-	}
-	let overview: PardaCronResult["overview"];
-	try {
-		overview = { ok: true, ...(await rollupDaily(db, options.now)) };
-	} catch (error) {
-		log("error", "parda daily rollup failed", errorFields(error));
-		overview = { ok: false };
-	}
-	const controls = options.controls ?? createPardaControls(db);
-	let episodes: PardaCronResult["episodes"];
-	if (!tmdb) episodes = { ok: true, skipped: true };
-	else {
-		try {
-			episodes = {
-				ok: true,
-				...(await checkNewEpisodes(db, tmdb, controls, {
-					...(options.now ? { now: options.now } : {}),
-					...(options.sleep ? { sleep: options.sleep } : {}),
-				})),
-			};
-		} catch (error) {
-			log("error", "parda episode check failed", errorFields(error));
-			episodes = { ok: false };
-		}
-	}
-	// After the check's transactions committed (as decision 0214): yesterday's unsent alerts go too.
-	let digest: PardaCronResult["digest"];
-	try {
-		digest = {
-			ok: true,
-			...(await sendDigests(db, await controls.blocked(), {
-				...(options.now ? { now: options.now } : {}),
-				...(options.emailProvider ? { provider: options.emailProvider } : {}),
-			})),
-		};
-	} catch (error) {
-		log("error", "parda digest failed", errorFields(error));
-		digest = { ok: false };
-	}
-	let parties: PardaCronResult["parties"];
-	try {
-		parties = { ok: true, ...(await endIdleParties(db, options.now)) };
-	} catch (error) {
-		log("error", "parda party cleanup failed", errorFields(error));
-		parties = { ok: false };
-	}
-	return { titles, certificates, ranking, overview, episodes, digest, parties };
+	return (await runSteps("parda", pardaCronSteps(db, tmdb, options))).results;
 }

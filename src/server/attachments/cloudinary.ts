@@ -2,6 +2,8 @@ import "@tanstack/react-start/server-only";
 import { createHash, randomUUID } from "node:crypto";
 import { IMAGE_MAX_BYTES, type UploadScope, uploadRule } from "@/features/attachments/constants";
 import type { UploadTicket } from "@/features/attachments/schema";
+import { AppError } from "@/lib/errors";
+import { createOutbound } from "@/server/http/outbound";
 
 /**
  * A thin client for the parts of Cloudinary this app uses, over its REST API
@@ -60,7 +62,17 @@ export function signParams(params: Readonly<Record<string, string | number>>, ap
 
 const PUBLIC_ID = /^[a-z0-9_-]+(?:\/[a-z0-9_-]+)+$/i;
 
-export function createCloudinary(config: CloudinaryConfig, fetcher: typeof fetch = fetch): ImageStore {
+/** What Cloudinary answered when it wasn't what the call expects: UPSTREAM_UNAVAILABLE, with the detail in the log. */
+const unavailable = (detail: string) => new AppError("UPSTREAM_UNAVAILABLE", `Cloudinary: ${detail}`);
+
+export function createCloudinary(config: CloudinaryConfig, transport: typeof fetch = fetch): ImageStore {
+	// Cloudinary's API host only, 10 s, a GET tried once more after a 5xx (src/server/http/outbound.ts).
+	const fetcher = createOutbound({
+		service: "cloudinary",
+		bases: [config.apiBase],
+		timeoutMs: 10_000,
+		fetcher: transport,
+	});
 	const api = (path: string) => `${config.apiBase.replace(/\/$/, "")}/v1_1/${config.cloudName}/${path}`;
 	const basicAuth = `Basic ${Buffer.from(`${config.apiKey}:${config.apiSecret}`).toString("base64")}`;
 	const timestamp = (now: Date) => Math.floor(now.getTime() / 1000);
@@ -96,7 +108,7 @@ export function createCloudinary(config: CloudinaryConfig, fetcher: typeof fetch
 				headers: { authorization: basicAuth },
 			});
 			if (response.status === 404) return null;
-			if (!response.ok) throw new Error(`Cloudinary Admin API ${response.status}`);
+			if (!response.ok) throw unavailable(`the Admin API answered ${response.status}`);
 			const body = (await response.json()) as Record<string, unknown>;
 			const num = (value: unknown) => (typeof value === "number" && Number.isFinite(value) ? value : null);
 			return {
@@ -118,10 +130,10 @@ export function createCloudinary(config: CloudinaryConfig, fetcher: typeof fetch
 				signature: signParams(signed, config.apiSecret),
 			});
 			const response = await fetcher(api("image/destroy"), { method: "POST", body });
-			if (!response.ok) throw new Error(`Cloudinary destroy ${response.status}`);
+			if (!response.ok) throw unavailable(`destroy answered ${response.status}`);
 			const { result } = (await response.json()) as { result?: string };
 			if (result === "ok" || result === "not found") return result;
-			throw new Error(`Cloudinary destroy: ${result}`);
+			throw unavailable(`destroy said "${result}"`);
 		},
 
 		url({ publicId, version }, transformation) {

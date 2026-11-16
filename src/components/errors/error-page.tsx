@@ -11,13 +11,16 @@ import { useSectionHome } from "./use-section-home";
 
 const messages: Record<AppErrorCode, () => string> = {
 	BAD_REQUEST: m.error_bad_request,
+	VALIDATION: m.error_bad_request,
 	UNAUTHORIZED: m.error_unauthorized,
 	FORBIDDEN: m.error_forbidden,
 	NOT_FOUND: m.error_not_found,
+	METHOD_NOT_ALLOWED: m.error_bad_request,
 	CONFLICT: m.error_conflict,
 	RATE_LIMITED: m.error_rate_limited,
 	INTERNAL: m.error_internal,
 	UPSTREAM_UNAVAILABLE: m.error_upstream_unavailable,
+	TIMEOUT: m.error_timeout,
 };
 
 /** Localized user-facing text for any error. Never shows raw error messages. */

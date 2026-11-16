@@ -3856,6 +3856,8 @@
 	"taskline_report_time_by_member": "सदस्यअनुसार लेखिएको समय",
 	"taskline_report_capacity_table": "प्रत्येक सदस्यको कार्यभार",
 	"error_upstream_unavailable": "यो पृष्ठ निर्भर रहेको सेवाले जवाफ दिइरहेको छैन। केही बेरमा फेरि प्रयास गर्नुहोस्।",
+	"error_timeout": "यसमा धेरै समय लाग्यो। फेरि प्रयास गर्नुहोस्।",
+	"auth_session_ended": "तपाईंको सत्र सकियो। जारी राख्न फेरि लग इन गर्नुहोस्।",
 	"perm_resource_parda": "पर्दा",
 	"perm_parda_read": "पर्दाको एडमिन हेर्ने",
 	"perm_parda_curate": "पर्दाको गृहपृष्ठ र सङ्ग्रहहरू मिलाउने",

@@ -8,8 +8,9 @@ import { createChaalControls } from "@/server/chaal/controls";
 import { runChaalCron } from "@/server/chaal/cron";
 import { createLichess } from "@/server/chaal/lichess/client";
 import * as play from "@/server/chaal/play/service";
-import { challengeStream, eventStream, gameStream, sameOrigin, seekStream } from "@/server/chaal/stream";
+import { challengeStream, eventStream, gameStream, seekStream } from "@/server/chaal/stream";
 import * as schema from "@/server/db/schema";
+import { sameOrigin } from "@/server/http/api-route";
 import { createTestDb } from "../utils/test-db";
 
 /**

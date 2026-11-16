@@ -16,12 +16,19 @@ export const CLIENT_IP_HEADER = "x-client-ip";
  * - Self-hosted, the TCP socket address is used (put a reverse proxy's trusted
  *   header here instead if you deploy behind one).
  */
-export const trustedClientIp = (request: Request): string | undefined => {
+export const trustedClientIp = (request: Request): string | undefined =>
+	clientIpOf(request, process.env.VERCEL ? undefined : (getRequestIP() ?? undefined));
+
+/**
+ * The same rule where the caller brings the socket's address itself: a Nitro route
+ * (src/server/http/api-route.ts) runs outside Start, whose `getRequestIP` has no request there.
+ */
+export const clientIpOf = (request: Request, socketIp: string | undefined): string | undefined => {
 	if (process.env.VERCEL) {
 		const forwarded = request.headers.get("x-vercel-forwarded-for") ?? request.headers.get("x-real-ip");
 		return forwarded?.split(",")[0]?.trim() || undefined;
 	}
-	return getRequestIP() ?? undefined;
+	return socketIp;
 };
 
 /** Copy of the request whose CLIENT_IP_HEADER is set by us, never by the client. */

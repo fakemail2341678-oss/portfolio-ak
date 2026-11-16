@@ -3856,6 +3856,8 @@
 	"taskline_report_time_by_member": "Time logged by member",
 	"taskline_report_capacity_table": "Each member's workload",
 	"error_upstream_unavailable": "A service this page depends on isn't responding. Try again in a moment.",
+	"error_timeout": "That took too long. Try again.",
+	"auth_session_ended": "Your session ended. Log in again to continue.",
 	"perm_resource_parda": "Parda",
 	"perm_parda_read": "See Parda's admin",
 	"perm_parda_curate": "Curate Parda's home page and collections",

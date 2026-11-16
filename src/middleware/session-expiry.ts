@@ -8,8 +8,10 @@ import { isAppError } from "@/lib/errors";
  *
  * When any server function answers UNAUTHORIZED in the browser (the session
  * expired, was revoked, or the user was banned), the cached session is cleared
- * and the user is sent to /login with a return URL. The error is still thrown,
- * so the caller's own handling (toast, error boundary, rollback) runs as usual.
+ * and the user is sent to /login with a return URL and the reason, which the
+ * login page shows ("Your session ended", decision 0300): what they were doing
+ * is where they come back to. The error is still thrown, so the caller's own
+ * handling (toast, error boundary, rollback) runs as usual.
  *
  * FORBIDDEN is not handled here: the user is signed in but lacks a permission,
  * which the caller shows (a toast, or the forbidden page for a route).
@@ -24,7 +26,10 @@ async function sendToLogin() {
 		router.options.context.queryClient.setQueryData(authKeys.session, null);
 		// Already on a sign-in page (e.g. a stale tab): nothing to redirect.
 		if (router.state.matches.some((match) => match.routeId.startsWith("/_auth"))) return;
-		await router.navigate({ to: "/login", search: { redirect: router.latestLocation.href } });
+		await router.navigate({
+			to: "/login",
+			search: { redirect: router.latestLocation.href, reason: "session-ended" },
+		});
 	} finally {
 		redirecting = false;
 	}

@@ -2,6 +2,7 @@ import { randomUUID } from "node:crypto";
 import { eq } from "drizzle-orm";
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 import * as schema from "@/server/db/schema";
+import { defineApiRoute } from "@/server/http/api-route";
 import * as settings from "@/server/parda/admin/settings";
 import * as adminSources from "@/server/parda/admin/sources";
 import type { PardaCatalog } from "@/server/parda/catalog/context";
@@ -9,7 +10,7 @@ import { type CatalogServices, popularTitles } from "@/server/parda/catalog/serv
 import { createPardaControls } from "@/server/parda/controls";
 import { runPardaCron } from "@/server/parda/cron";
 import { recordPlay } from "@/server/parda/player/plays";
-import { handleProbe } from "@/server/parda/player/probe";
+import { probeRoute } from "@/server/parda/player/probe";
 import { latestStandings, noteTitleFailure, rollupSources, skippedSources } from "@/server/parda/player/stats";
 import { watchPage } from "@/server/parda/player/watch";
 import { createTmdbCache } from "@/server/parda/tmdb/cache";
@@ -339,13 +340,14 @@ describe("the watch page's orders", () => {
 describe("the probe route", () => {
 	const SECRET = "probe-secret-0123456789";
 	const call = (method: string, body?: unknown, auth = `Bearer ${SECRET}`, secret: string | null = SECRET) =>
-		handleProbe(
+		defineApiRoute(
+			probeRoute({ db: env.db, controls: createPardaControls(env.db), secret: secret ?? undefined }),
+		).fetch(
 			new Request("https://parda.example/api/parda/probe", {
 				method,
 				headers: { authorization: auth, "content-type": "application/json" },
 				...(body === undefined ? {} : { body: typeof body === "string" ? body : JSON.stringify(body) }),
 			}),
-			{ db: env.db, controls: createPardaControls(env.db), secret: secret ?? undefined },
 		);
 	const result = (extra: Record<string, unknown> = {}) => ({
 		sourceId: idOf(1),
@@ -416,10 +418,15 @@ describe("the probe route", () => {
 	});
 
 	it("refuses bad JSON and a bad payload, and stores a run, dropping unknown sources", async () => {
-		expect((await call("POST", "{nope")).status).toBe(400);
-		expect((await call("POST", { results: [result({ extra: 1 })] })).status).toBe(400);
-		expect((await call("POST", { results: [result({ videoHosts: ["bad host/"] })] })).status).toBe(400);
-		expect((await call("POST", { results: [] })).status).toBe(400);
+		// Bad input is VALIDATION (422) in the error envelope, as from every route (decision 0300).
+		const notJson = await call("POST", "{nope");
+		expect(notJson.status).toBe(422);
+		expect(await notJson.json()).toMatchObject({ code: "VALIDATION", status: 422 });
+		const extra = await call("POST", { results: [result({ extra: 1 })] });
+		expect(extra.status).toBe(422);
+		expect(Object.keys((await extra.json()).fieldErrors)).toEqual(["results.0"]);
+		expect((await call("POST", { results: [result({ videoHosts: ["bad host/"] })] })).status).toBe(422);
+		expect((await call("POST", { results: [] })).status).toBe(422);
 		const stored = await call("POST", { results: [result(), result({ sourceId: randomUUID() })] });
 		expect(await stored.json()).toEqual({ ok: true, stored: 1, ignored: 1 });
 		const [row] = await env.db.select().from(schema.pdSourceProbe);

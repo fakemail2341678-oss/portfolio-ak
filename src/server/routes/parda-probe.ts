@@ -4,20 +4,17 @@
  * `Authorization: Bearer <PARDA_PROBE_SECRET>`. Without PARDA_PROBE_SECRET the route is a 404;
  * a wrong token is a 401.
  */
-import { defineHandler } from "nitro";
 import { db } from "../db/client";
 import { serverEnv } from "../env";
-import { log } from "../log";
-import { handleProbe } from "../parda/player/probe";
+import { defineApiRoute } from "../http/api-route";
+import { probeRoute } from "../parda/player/probe";
 import { pardaControls } from "../parda/tmdb/store";
 
-export default defineHandler(async (event) => {
-	const response = await handleProbe(event.req, {
+export default defineApiRoute(
+	probeRoute({
 		db,
 		controls: pardaControls,
 		secret: serverEnv.PARDA_PROBE_SECRET,
 		base: serverEnv.PARDA_PLAYER_BASE,
-	});
-	if (event.req.method === "POST" && response.ok) log("info", "parda probe stored", await response.clone().json());
-	return response;
-});
+	}),
+).nitro;

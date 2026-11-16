@@ -5,7 +5,7 @@ import { removeForEntities } from "@/server/attachments/repository";
 import { khExpense, khInvite, khPayment } from "@/server/db/schema";
 import type { Db } from "@/server/db/types";
 import type { EmailProvider } from "@/server/email/types";
-import { errorFields, log } from "@/server/log";
+import { type CronSteps, runSteps } from "@/server/http/cron";
 import { rollupDaily } from "./admin/daily";
 import { sendBudgetAlerts } from "./budgets/service";
 import { deliverInstant, sendDigests } from "./notify/deliver";
@@ -73,39 +73,37 @@ export async function expireInvites(db: Db, now = new Date()): Promise<number> {
 	return rows.length;
 }
 
-async function step(name: string, run: () => Promise<Record<string, unknown>>): Promise<CronStep> {
-	try {
-		return { ok: true, ...(await run()) };
-	} catch (error) {
-		log("error", `kharcha daily job: ${name} failed`, errorFields(error));
-		return { ok: false };
-	}
-}
-
-export async function runKharchaCron(
+/** The job's steps, in the order they run (`defineCron`, src/server/http/cron.ts). */
+export function kharchaCronSteps(
 	db: Db,
 	{ provider, now = new Date() }: { provider?: EmailProvider; now?: Date } = {},
-): Promise<KharchaCronResult> {
+) {
 	const instantly = async (ids: string[]) => {
 		if (ids.length > 0) await deliverInstant(db, ids, { ...(provider ? { provider } : {}), now });
 	};
 	return {
-		stats: await step("stats", async () => ({ days: await rollupDaily(db, now) })),
-		recurring: await step("recurring", async () => {
+		stats: async () => ({ days: await rollupDaily(db, now) }),
+		recurring: async () => {
 			const { instant, ...run } = await makeDueRecurring(db, now);
 			await instantly(instant);
 			return run;
-		}),
-		budgets: await step("budgets", async () => {
+		},
+		budgets: async () => {
 			const { instant, sent } = await sendBudgetAlerts(db, now);
 			await instantly(instant);
 			return { sent };
-		}),
-		digests: await step("digests", async () => ({
-			...(await sendDigests(db, { ...(provider ? { provider } : {}), now })),
-		})),
-		trash: await step("trash", async () => ({ ...(await purgeTrash(db, now)) })),
-		invites: await step("invites", async () => ({ expired: await expireInvites(db, now) })),
-		notifications: await step("notifications", async () => ({ pruned: await pruneRead(db, now) })),
-	};
+		},
+		digests: () => sendDigests(db, { ...(provider ? { provider } : {}), now }),
+		trash: () => purgeTrash(db, now),
+		invites: async () => ({ expired: await expireInvites(db, now) }),
+		notifications: async () => ({ pruned: await pruneRead(db, now) }),
+	} satisfies CronSteps;
+}
+
+/** The whole job, as the route runs it: what each step left. */
+export async function runKharchaCron(
+	db: Db,
+	options: { provider?: EmailProvider; now?: Date } = {},
+): Promise<KharchaCronResult> {
+	return (await runSteps("kharcha", kharchaCronSteps(db, options))).results;
 }

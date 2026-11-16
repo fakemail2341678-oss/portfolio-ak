@@ -1,4 +1,5 @@
 import { Resend } from "resend";
+import { outboundCall } from "../../http/outbound";
 import type { EmailMessage, EmailProvider, SendResult } from "../types";
 
 /** The slice of the Resend SDK we use; injectable for tests. */
@@ -22,16 +23,19 @@ export class ResendProvider implements EmailProvider {
 	}
 
 	async send(message: EmailMessage): Promise<SendResult> {
-		// The SDK returns errors as values instead of throwing.
-		const { data, error } = await this.client.emails.send({
-			from: this.from,
-			to: message.to,
-			subject: message.subject,
-			html: message.html,
-			text: message.text,
-			...(message.tag ? { tags: [{ name: "template", value: message.tag }] } : {}),
-			...(message.headers ? { headers: message.headers } : {}),
-		});
+		// The SDK makes the request itself: `outboundCall` gives it the deadline and the log line
+		// of every call out (src/server/http/outbound.ts). It returns errors as values instead of throwing.
+		const { data, error } = await outboundCall("resend", message.tag ?? "email", () =>
+			this.client.emails.send({
+				from: this.from,
+				to: message.to,
+				subject: message.subject,
+				html: message.html,
+				text: message.text,
+				...(message.tag ? { tags: [{ name: "template", value: message.tag }] } : {}),
+				...(message.headers ? { headers: message.headers } : {}),
+			}),
+		);
 		if (error || !data) {
 			throw new ResendDeliveryError(`Resend rejected the email: ${error?.name ?? "unknown"}: ${error?.message ?? ""}`);
 		}

@@ -1,10 +1,11 @@
 import "@tanstack/react-start/server-only";
-import { timingSafeEqual } from "node:crypto";
 import { and, asc, eq, isNotNull, sql } from "drizzle-orm";
 import { z } from "zod";
 import type { PardaSourceAdapter } from "@/features/parda/player/adapters/types";
 import { type PardaMedia, pdSource, pdSourceProbe, pdTitle } from "@/server/db/schema";
 import type { Db } from "@/server/db/types";
+import { type ApiRouteOptions, jsonResponse } from "@/server/http/api-route";
+import { log } from "@/server/log";
 import { type PardaControls, titleKey } from "../controls";
 import { playerLanguage, playerUrl } from "./sources";
 
@@ -135,18 +136,6 @@ export async function storeProbe(
 	return { stored: rows.length, ignored: results.length - rows.length };
 }
 
-const json = (status: number, body: unknown) =>
-	new Response(JSON.stringify(body), {
-		status,
-		headers: { "content-type": "application/json", "cache-control": "no-store" },
-	});
-
-const authorized = (header: string | null, secret: string) => {
-	const expected = Buffer.from(`Bearer ${secret}`);
-	const given = Buffer.from(header ?? "");
-	return given.length === expected.length && timingSafeEqual(given, expected);
-};
-
 export type ProbeDeps = {
 	db: Db;
 	controls: PardaControls;
@@ -155,21 +144,25 @@ export type ProbeDeps = {
 	base?: string | undefined;
 };
 
-/** The route itself, as a function of the request, so tests call it without a server. */
-export async function handleProbe(request: Request, deps: ProbeDeps): Promise<Response> {
-	if (!deps.secret) return json(404, { error: "Not found" });
-	if (!authorized(request.headers.get("authorization"), deps.secret)) return json(401, { error: "Unauthorized" });
-	if (request.method === "GET") {
-		return json(200, await probePlan(deps.db, deps.controls, new URL(request.url).origin, deps.base));
-	}
-	if (request.method !== "POST") return json(405, { error: "Method not allowed" });
-	let body: unknown;
-	try {
-		body = await request.json();
-	} catch {
-		return json(400, { error: "Invalid JSON" });
-	}
-	const parsed = probePayload.safeParse(body);
-	if (!parsed.success) return json(400, { error: "Invalid payload", issues: parsed.error.issues.length });
-	return json(200, { ok: true, ...(await storeProbe(deps.db, parsed.data.results)) });
-}
+/**
+ * The route, as what `defineApiRoute` takes (src/server/routes/parda-probe.ts), so tests
+ * build it over their own database: GET is what to probe, POST what was seen. The secret,
+ * the method and a body that isn't JSON are the route helper's to refuse.
+ */
+export const probeRoute = (deps: ProbeDeps): ApiRouteOptions => ({
+	name: "parda-probe",
+	methods: ["GET", "POST"],
+	secret: () => deps.secret,
+	// A day's results for a few hundred pages.
+	bodyLimit: 1024 * 1024,
+	handler: async ({ request, url, json }) => {
+		if (request.method === "GET") {
+			return jsonResponse(200, await probePlan(deps.db, deps.controls, url.origin, deps.base));
+		}
+		const parsed = probePayload.safeParse(await json());
+		if (!parsed.success) throw parsed.error;
+		const stored = await storeProbe(deps.db, parsed.data.results);
+		log("info", "parda probe stored", stored);
+		return jsonResponse(200, { ok: true, ...stored });
+	},
+});
