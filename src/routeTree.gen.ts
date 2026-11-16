@@ -35,6 +35,7 @@ import { Route as PublicVerifyEmailRouteImport } from './routes/_public/verify-e
 import { Route as SiteIndexRouteImport } from './routes/_site/index'
 import { Route as SiteAboutRouteImport } from './routes/_site/about'
 import { Route as SiteContactRouteImport } from './routes/_site/contact'
+import { Route as ApiClientErrorsRouteImport } from './routes/api/client-errors'
 import { Route as ApiCspReportRouteImport } from './routes/api/csp-report'
 import { Route as ApiHealthRouteImport } from './routes/api/health'
 import { Route as DevIndexRouteImport } from './routes/dev/index'
@@ -392,6 +393,11 @@ const SiteContactRoute = SiteContactRouteImport.update({
   id: '/contact',
   path: '/contact',
   getParentRoute: () => SiteRoute,
+} as any)
+const ApiClientErrorsRoute = ApiClientErrorsRouteImport.update({
+  id: '/api/client-errors',
+  path: '/api/client-errors',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const ApiCspReportRoute = ApiCspReportRouteImport.update({
   id: '/api/csp-report',
@@ -1718,6 +1724,7 @@ export interface FileRoutesByFullPath {
   '/verify-email': typeof PublicVerifyEmailRoute
   '/about': typeof SiteAboutRoute
   '/contact': typeof SiteContactRoute
+  '/api/client-errors': typeof ApiClientErrorsRoute
   '/api/csp-report': typeof ApiCspReportRoute
   '/api/health': typeof ApiHealthRoute
   '/dev/forms': typeof DevFormsRoute
@@ -1969,6 +1976,7 @@ export interface FileRoutesByTo {
   '/verify-email': typeof PublicVerifyEmailRoute
   '/about': typeof SiteAboutRoute
   '/contact': typeof SiteContactRoute
+  '/api/client-errors': typeof ApiClientErrorsRoute
   '/api/csp-report': typeof ApiCspReportRoute
   '/api/health': typeof ApiHealthRoute
   '/dev/forms': typeof DevFormsRoute
@@ -2211,6 +2219,7 @@ export interface FileRoutesById {
   '/_public/verify-email': typeof PublicVerifyEmailRoute
   '/_site/about': typeof SiteAboutRoute
   '/_site/contact': typeof SiteContactRoute
+  '/api/client-errors': typeof ApiClientErrorsRoute
   '/api/csp-report': typeof ApiCspReportRoute
   '/api/health': typeof ApiHealthRoute
   '/dev/forms': typeof DevFormsRoute
@@ -2469,6 +2478,7 @@ export interface FileRouteTypes {
     | '/verify-email'
     | '/about'
     | '/contact'
+    | '/api/client-errors'
     | '/api/csp-report'
     | '/api/health'
     | '/dev/forms'
@@ -2720,6 +2730,7 @@ export interface FileRouteTypes {
     | '/verify-email'
     | '/about'
     | '/contact'
+    | '/api/client-errors'
     | '/api/csp-report'
     | '/api/health'
     | '/dev/forms'
@@ -2961,6 +2972,7 @@ export interface FileRouteTypes {
     | '/_public/verify-email'
     | '/_site/about'
     | '/_site/contact'
+    | '/api/client-errors'
     | '/api/csp-report'
     | '/api/health'
     | '/dev/forms'
@@ -3213,6 +3225,7 @@ export interface RootRouteChildren {
   SiteRoute: typeof SiteRouteWithChildren
   RobotsDottxtRoute: typeof RobotsDottxtRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
+  ApiClientErrorsRoute: typeof ApiClientErrorsRoute
   ApiCspReportRoute: typeof ApiCspReportRoute
   ApiHealthRoute: typeof ApiHealthRoute
   FSlugRoute: typeof FSlugRoute
@@ -3404,6 +3417,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/contact'
       preLoaderRoute: typeof SiteContactRouteImport
       parentRoute: typeof SiteRoute
+    }
+    '/api/client-errors': {
+      id: '/api/client-errors'
+      path: '/api/client-errors'
+      fullPath: '/api/client-errors'
+      preLoaderRoute: typeof ApiClientErrorsRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/api/csp-report': {
       id: '/api/csp-report'
@@ -6003,6 +6023,7 @@ const rootRouteChildren: RootRouteChildren = {
   SiteRoute: SiteRouteWithChildren,
   RobotsDottxtRoute: RobotsDottxtRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
+  ApiClientErrorsRoute: ApiClientErrorsRoute,
   ApiCspReportRoute: ApiCspReportRoute,
   ApiHealthRoute: ApiHealthRoute,
   FSlugRoute: FSlugRoute,

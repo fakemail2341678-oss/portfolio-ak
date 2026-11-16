@@ -10,6 +10,7 @@ import {
 	userListItemSchema,
 } from "@/features/rbac/schema";
 import type { UserListInput } from "@/features/rbac/search";
+import { internalError } from "@/lib/errors";
 import { slugify } from "@/lib/slug";
 import { m } from "@/paraglide/messages";
 import { isValueFree, listPage, uniqueSlug, uniqueViolation, updateVersioned } from "@/server/db/crud";
@@ -128,7 +129,7 @@ export async function createRole(tx: Tx, input: RoleInput): Promise<RoleRow> {
 			.insert(role)
 			.values({ key, name: input.name, description: input.description })
 			.returning();
-		if (!created) throw new Error("Role insert returned no row");
+		if (!created) throw internalError("Role insert returned no row");
 		return created;
 	} catch (error) {
 		throw roleSaveError(error);
@@ -207,7 +208,7 @@ export async function createInvitedUser(tx: Tx, input: { name: string; email: st
 			.insert(user)
 			.values({ id: crypto.randomUUID(), name: input.name, email: input.email, emailVerified: false, role: "user" })
 			.returning({ id: user.id, name: user.name, email: user.email });
-		if (!created) throw new Error("User insert returned no row");
+		if (!created) throw internalError("User insert returned no row");
 		return created;
 	} catch (error) {
 		throw uniqueViolation(error, { user_email_unique: { field: "email", message: m.users_invite_email_taken } });

@@ -1,11 +1,13 @@
 import "@tanstack/react-start/server-only";
+import { deleteCookie, getCookie } from "@tanstack/react-start/server";
 import { and, eq, inArray, isNull, lt } from "drizzle-orm";
 import type { Locale } from "@/paraglide/runtime";
 import type { ImageStore } from "@/server/attachments/cloudinary";
 import { purge } from "@/server/attachments/service";
 import { attachment, user } from "@/server/db/schema";
 import type { Db } from "@/server/db/types";
-import { GUEST_LIFETIME_MS } from "./claim-cookie";
+import { log } from "@/server/log";
+import { GUEST_CLAIM_COOKIE, GUEST_LIFETIME_MS, readGuestClaim } from "./claim-cookie";
 import { GUEST_DATA, type GuestData } from "./data";
 
 /**
@@ -108,4 +110,18 @@ export async function deleteExpiredGuests(
 		if (removed.count < BATCH) break;
 	}
 	return { guests, attachments, failedAttachments: failed };
+}
+
+/**
+ * Moves the guest this browser's `guest_claim` cookie names to the signed-in account
+ * (`claimGuestData`, src/functions/guests.ts). Idempotent: a guest already claimed or
+ * cleaned up claims nothing, and the cookie goes either way.
+ */
+export async function claimFromCookie(db: Db, userId: string): Promise<{ claimed: boolean }> {
+	const guestId = readGuestClaim(getCookie(GUEST_CLAIM_COOKIE));
+	if (!guestId) return { claimed: false };
+	const claimed = await claimGuest(db, guestId, userId);
+	if (claimed) log("info", "guest claimed", { guestId });
+	deleteCookie(GUEST_CLAIM_COOKIE, { path: "/" });
+	return { claimed };
 }

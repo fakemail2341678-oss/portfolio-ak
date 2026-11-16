@@ -1,5 +1,4 @@
 import { createServerFn } from "@tanstack/react-start";
-import { getRequest } from "@tanstack/react-start/server";
 import { z } from "zod";
 import { contactInputSchema } from "@/features/portfolio/schema";
 import { portfolioSlugParamSchema } from "@/features/portfolio/search";
@@ -16,11 +15,9 @@ import { hasAll } from "@/features/rbac/lib/permissions";
 import { zodInput } from "@/functions/_lib/validator";
 import { withPublic } from "@/middleware/services";
 import { locales } from "@/paraglide/runtime";
-import { clientIpHash, trustedClientIp } from "@/server/auth/client-ip";
 import { getServerSession } from "@/server/auth/session";
 import { sendEmail } from "@/server/email/send";
-import { serverEnv } from "@/server/env";
-import { verifyTurnstile } from "@/server/http/turnstile";
+import { publicFormGuards } from "@/server/http/turnstile";
 import { submitContact } from "@/server/portfolio/messages/service";
 import * as portfolio from "@/server/portfolio/public";
 
@@ -99,12 +96,7 @@ export const getAppCaseStudies = createServerFn({ method: "GET" })
 export const submitContactMessage = createServerFn({ method: "POST" })
 	.middleware([withPublic])
 	.validator(zodInput(contactInputSchema))
-	.handler(({ data, context }): Promise<{ sent: true }> => {
-		const ip = trustedClientIp(getRequest());
-		const secret = serverEnv.TURNSTILE_SECRET_KEY;
-		return submitContact(context, data, {
-			ipHash: clientIpHash(ip),
-			verifyCaptcha: secret ? (token) => verifyTurnstile(secret, token, ip) : null,
-			send: sendEmail,
-		});
-	});
+	.handler(
+		({ data, context }): Promise<{ sent: true }> =>
+			submitContact(context, data, { ...publicFormGuards(), send: sendEmail }),
+	);

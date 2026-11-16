@@ -6,6 +6,14 @@ export const sessionIdSchema = z.object({ id: z.string().min(1).max(100) });
 /** A password for an account that has none yet (signed up with Google). Better Auth checks the length again. */
 export const setPasswordSchema = z.object({ newPassword: z.string().min(8).max(128) });
 
+/** A session as the account page sees it. No token: tokens never leave the server. */
+export type AccountSession = {
+	id: string;
+	current: boolean;
+	createdAt: string;
+	userAgent: string | null;
+};
+
 /** How the signed-in user can sign in, for the account page's security sections. */
 export type AccountSecurity = {
 	hasPassword: boolean;

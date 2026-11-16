@@ -1,6 +1,7 @@
 import "@tanstack/react-start/server-only";
 import { and, asc, eq, inArray, isNotNull, isNull, lt, or } from "drizzle-orm";
 import type { AttachmentRef } from "@/features/attachments/schema";
+import { internalError } from "@/lib/errors";
 import { type AttachmentRow, attachment } from "@/server/db/schema";
 import type { Db, Tx } from "@/server/db/types";
 import type { RemoteImage } from "./cloudinary";
@@ -34,7 +35,7 @@ export async function insertUpload(
 			entityType: library,
 		})
 		.returning();
-	if (!row) throw new Error("Attachment insert returned no row");
+	if (!row) throw internalError("Attachment insert returned no row");
 	return row;
 }
 

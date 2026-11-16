@@ -1,4 +1,5 @@
 import "@tanstack/react-start/server-only";
+import { ExampleCrash } from "./demos";
 
 /**
  * The background-jobs recipe's shape, in process (docs/guides/recipes.md,
@@ -44,7 +45,7 @@ export const runExampleJob = (failures: number, options?: Parameters<typeof runS
 			{
 				name: "send-email-batch",
 				run: async (attempt) => {
-					if (attempt <= failures) throw new Error("Provider timeout (simulated)");
+					if (attempt <= failures) throw new ExampleCrash("Provider timeout (simulated)");
 				},
 			},
 			{ name: "record-sent", run: async () => {} },

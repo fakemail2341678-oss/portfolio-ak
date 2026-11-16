@@ -15,12 +15,14 @@ export const requestLoggingMiddleware = createMiddleware({ type: "function" }).s
 		]);
 		const requestId = currentRequestId() ?? crypto.randomUUID();
 		const started = performance.now();
-		const base = { fn: serverFnMeta.name, method };
+		// The compiler names every function; without it (a test that runs the chain) there is no name.
+		const name: string = serverFnMeta?.name ?? "unknown";
+		const base = { fn: name, method };
 		// Outside a request's scope (a test) the line still says which call it was.
 		const id = currentRequestId() ? {} : { requestId };
 		const done = () => {
 			const ms = Math.round(performance.now() - started);
-			recordTiming("fn", ms, serverFnMeta.name);
+			recordTiming("fn", ms, name);
 			return ms;
 		};
 		try {

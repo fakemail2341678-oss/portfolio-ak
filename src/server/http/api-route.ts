@@ -3,6 +3,7 @@ import { timingSafeEqual } from "node:crypto";
 import { AppError } from "@/lib/errors";
 import { baseLocale, extractLocaleFromUrl, type Locale } from "@/paraglide/runtime";
 import { clientIpOf, trustedClientIp } from "../auth/client-ip";
+import type { Db } from "../db/types";
 import { serverEnv } from "../env";
 import { log } from "../log";
 import { problemResponse, toEnvelope, withDeadline } from "./errors";
@@ -72,6 +73,8 @@ export type ApiRouteOptions<TAuth extends ApiAuth = "public"> = {
 	bodyLimit?: number;
 	/** The handler's deadline in ms; `false` for a stream or a job. REQUEST_TIMEOUT_MS by default. */
 	timeoutMs?: number | false;
+	/** For tests: the database of the rate limit and the session's lookup, instead of the app's own. */
+	deps?: { db?: Db; session?: (request: Request) => Promise<ApiUser | null> };
 	handler: (context: ApiContext<TAuth>) => Response | Promise<Response>;
 };
 
@@ -163,7 +166,7 @@ export function defineApiRoute<TAuth extends ApiAuth = "public">(options: ApiRou
 
 		let user: ApiUser | null = null;
 		if (auth !== "public") {
-			user = await sessionUser(request);
+			user = await (options.deps?.session ?? sessionUser)(request);
 			if (user) setRequestUser(user.id);
 			if (auth !== "optional" && (!user || (auth === "user" && user.isGuest))) {
 				throw new AppError("UNAUTHORIZED", "Authentication required");
@@ -171,7 +174,9 @@ export function defineApiRoute<TAuth extends ApiAuth = "public">(options: ApiRou
 		}
 
 		if (options.rateLimit) {
-			const [{ consumeRateLimit }, { db }] = await Promise.all([import("./rate-limit"), import("../db/client")]);
+			// Loaded here: a route with no limit (a manifest) never opens the database.
+			const { consumeRateLimit } = await import("./rate-limit");
+			const db = options.deps?.db ?? (await import("../db/client")).db;
 			const result = await consumeRateLimit(db, `route:${name}:${user?.id ?? ip ?? "unknown"}`, options.rateLimit);
 			if (!result.allowed) {
 				throw Object.assign(new AppError("RATE_LIMITED", `Rate limited: ${name}`), {

@@ -10,12 +10,13 @@
 import "../env";
 import { definePlugin } from "nitro";
 import { DEV_ROUTES_IN_PRODUCTION, devRoutesInProduction } from "@/lib/env/client-schema";
+import { EnvValidationError } from "@/lib/env/shared";
 import { getEmailProvider } from "../email/config";
 
 export default definePlugin(() => {
 	getEmailProvider();
 	// The flag was inlined at build time; VERCEL_ENV is read at boot.
 	if (devRoutesInProduction({ VITE_DEV_ROUTES: import.meta.env.VITE_DEV_ROUTES, VERCEL_ENV: process.env.VERCEL_ENV })) {
-		throw new Error(DEV_ROUTES_IN_PRODUCTION);
+		throw new EnvValidationError(DEV_ROUTES_IN_PRODUCTION);
 	}
 });

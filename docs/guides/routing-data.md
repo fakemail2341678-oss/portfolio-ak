@@ -66,19 +66,77 @@ export const updateThing = createServerFn({ method: "POST" })
 
 - **Thin:** the middleware checks the permission, `zodInput` validates with the shared schema (field errors come back keyed by field), and the handler is one call into `src/server/**`. Logic lives there, where tests run it on PGlite.
 - **Every protected function** runs `requirePermission` first, and `tests/server/functions-guards.test.ts` lists each function with its permission ([rbac.md](rbac.md)). Use `requireUser` for "any signed-in account" (it refuses guests, 0185), `requireAppsUser` for the showcase apps (guests included) and `requireDev` for `/dev` helpers.
-- **Global function middleware** (`src/start.ts`): it sends the page locale as a header (so `m.*` and `getLocale()` work inside handlers), passes on the request's id (`context.requestId`, the same as the `x-request-id` header, 0123), logs one JSON line per call, and normalises errors.
-- **Runtime:** server functions run only inside Start. Test the plain functions they call, not the wrappers.
+- **Global function middleware** (`src/start.ts`): it sends the page locale as a header (so `m.*` and `getLocale()` work inside handlers), passes on the request's id (`context.requestId`, the same as the `x-request-id` header, 0123), logs one JSON line per call, gives the call `REQUEST_TIMEOUT_MS` (30 s; then `TIMEOUT`), and turns whatever it throws into the envelope (0300).
+- **Runtime:** server functions run only inside Start. Test the plain functions they call, not the wrappers. `tests/server/functions-contract.test.ts` runs every function's real middleware chain without its handler: anonymous is `UNAUTHORIZED`, a guest `UNAUTHORIZED` where an account is needed, no role `FORBIDDEN`, bad input `VALIDATION` with field errors, each in the envelope with the request's id.
+
+## The request (0300)
+
+`src/server/http/request-scope.ts` opens one scope per request: in the server entry for pages and functions, in `defineApiRoute` for a route (inside a page request's scope, a route joins it).
+
+- **What it holds:** the id (`x-request-id`), the user once the session is resolved (`setRequestUser`), the locale, the start time, and a memo for work every part of the request would repeat (the session, 0153).
+- **`Server-Timing`:** every response says how long it took (`total`) and what took the time: `session`, `fn;desc=<name>`, each call out (`tmdb`, `lichess`…). Add a part with `timed(name, work)` or `recordTiming(name, ms)`; at most 12 are named.
+- **Slow requests:** past `SLOW_REQUEST_MS` (2 s; 0 turns it off) the request leaves a `slow request` line with its method, path (never the query), status and parts.
+- **Timeouts:** a function or a route that takes longer than `REQUEST_TIMEOUT_MS` (30 s; 0 turns it off; keep it under the host's limit) answers `TIMEOUT` (504). The work isn't stopped, only no longer waited for, which ids and versions make safe to send again. Streams and jobs say `timeoutMs: false`.
 
 ## Errors
 
-- **Throw `AppError(code, devMessage, { fieldErrors })`** for expected failures: `BAD_REQUEST`, `UNAUTHORIZED`, `FORBIDDEN`, `NOT_FOUND`, `CONFLICT`, `RATE_LIMITED`. User-facing text is picked on the client by code (`errorMessage(error)`). `fieldErrors` hold localized messages for form fields; `ruleError(code, dev, user)` makes a whole-form message; `staleError(what)` is the `CONFLICT` for an edit that started from an older version (`reason: "stale"`, see [forms.md](forms.md)).
-- **Anything else** becomes `INTERNAL` with only a request id. The original is logged and sent to Sentry once (`src/middleware/errors.ts`).
+One envelope (0300): `code`, `reason`, `message`, `fieldErrors`, `requestId`. A function sends it as an `AppError` (the serialization adapter rebuilds the class in the browser); a route sends the same fields as problem JSON (`application/problem+json`, RFC 9457, with `type`, `title` and `status`).
+
+| Code | Status | When |
+| --- | --- | --- |
+| `BAD_REQUEST` | 400 | a well-formed request the rules refuse (a value the database refuses, a body over its limit) |
+| `VALIDATION` | 422 | the input failed its schema; `fieldErrors` says where (`_` is the whole input) |
+| `UNAUTHORIZED`, `FORBIDDEN` | 401, 403 | no session (or a guest where an account is needed); no permission |
+| `NOT_FOUND`, `METHOD_NOT_ALLOWED` | 404, 405 | no such row or route; a route asked with another method (`Allow` says which) |
+| `CONFLICT` | 409 | taken, changed since read (`reason: "stale"`), or a lost race (`reason: "retry"`: nothing was written, send it again) |
+| `RATE_LIMITED` | 429 | too many; a route adds `Retry-After` |
+| `INTERNAL` | 500 | a bug: the message is only "Internal error" |
+| `UPSTREAM_UNAVAILABLE`, `TIMEOUT` | 503, 504 | a service or the database failed; the work took too long |
+
+A status of 500 or more is an **unknown** outcome (the write may have happened), anything below it a **refusal** (`isRefusal(error)`, PLAN 15.6).
+
+- **Throw `AppError(code, devMessage, { fieldErrors })`** for expected failures. User-facing text is picked on the client by code (`errorMessage(error)`). `fieldErrors` hold localized messages for form fields; `ruleError(code, dev, user)` makes a whole-form message; `staleError(what)` is the `CONFLICT` for an edit that started from an older version (`reason: "stale"`, see [forms.md](forms.md)).
+- **A broken invariant** (an insert that returned no row) is `internalError(message)`: `INTERNAL` for the caller, its message and stack in the log. Never `throw new Error` in server code (the standard's `bare-error`).
+- **What others throw is mapped in one place** (`toAppError`, `src/server/http/errors.ts`): Zod is `VALIDATION`; Postgres' SQLSTATE, anywhere in the cause chain, is `CONFLICT` (23505 unique, 23503 foreign key, 40001/40P01 `reason: "retry"`), `BAD_REQUEST` (23502, 23514, 22xxx), `TIMEOUT` (57014) or `UPSTREAM_UNAVAILABLE` (08xxx, 53300, 57P0x, a refused connection); a call out that failed (`UpstreamError`) is `UPSTREAM_UNAVAILABLE`; Better Auth's `APIError` keeps its status. A repository still maps the unique constraints it knows onto their form fields first (`uniqueViolation`).
+- **Logged once:** a bug at `error` with its stack and sent to Sentry with the request id; a mapped error at `warn` with its cause chain; a refusal the code meant only in the function's own `server-fn` line.
 - **Over HTTP**, a server-function error is a 200 with a serialized payload (`x-tss-serialized`). Look for the code in the body.
 - **In loaders:**
   - `throw notFound()` for missing records, which renders the localized 404.
   - For an `AppError`, call `await setErrorStatus(error)` before rethrowing, so the SSR response carries 403/404 instead of 500.
   - The route's error component is `ErrorPage`; `src/client.tsx` doesn't log expected errors.
 - **In actions:** catch where they happen. Use `handleSaveError(form, error, onStale?)` for forms, otherwise a toast with `errorMessage(error)`.
+
+## Server routes and jobs (0300)
+
+A route outside the client route tree is a Nitro route (`src/server/routes`, registered in `vite.config.ts`) or a Start route under `src/routes/api`. Either is written with `defineApiRoute` (`src/server/http/api-route.ts`); the standard's `server-route` rule refuses anything else.
+
+```ts
+export default defineApiRoute({
+	name: "chaal-stream",          // the log line's `route`
+	methods: ["GET", "POST"],      // 405 with Allow for any other
+	auth: "optional",              // "public" (default) | "optional" | "session" (guests too) | "user" (an account): 401
+	sameOrigin: true,              // a POST, PUT, PATCH or DELETE from our own pages only: 403
+	rateLimit: { max: 20, windowSeconds: 60 }, // per user or client address, in Postgres: 429 + Retry-After
+	bodyLimit: 2_048,              // `text()` and `json()` refuse more: 400; `json()` refuses what isn't JSON: 422
+	timeoutMs: false,              // a stream; REQUEST_TIMEOUT_MS by default
+	handler: async ({ request, url, user, locale, json }) => …,
+}).nitro;                          // a Start route: server: { handlers: defineApiRoute({ … }).handlers }
+```
+
+- **In this order:** the request's scope, the secret (`secret: () => env.X`: unset is 404, another token 401, compared in constant time), the method, the origin, the session, the rate limit, the body, then the handler under its deadline. What any of them throws is problem JSON with the envelope, and every request leaves one `api-route` log line with its status and time.
+- **Jobs** are `defineCron({ name, steps })` (`src/server/http/cron.ts`): `Authorization: Bearer $CRON_SECRET` (unset: 404), one run at a time on every instance (a lease in the `rate_limit` table; a second request answers `{ ok: true, skipped: "running" }`, a lease older than 15 minutes is taken over), and named steps, each timed and on its own: one that throws is logged with its stack and sent to Sentry, the others still run, and the run answers 500 with `ok: false`. The answer is `{ ok, ms, timings, <step>: { ok, … } }`. A product's job exports its steps (`kharchaCronSteps(db)`), and `run<Product>Cron` runs them for its tests.
+- **Tests:** `tests/server/api-route.test.ts` and `cron.test.ts` for the helpers; `tests/server/routes.test.ts` calls every route with the wrong method, without its secret and with bad input.
+
+## Calls out (0300)
+
+Every call to another service goes through `createOutbound` (`src/server/http/outbound.ts`): TMDB, Lichess, Cloudinary, Turnstile and PostHog get their `fetch` from it, and Resend's SDK call is wrapped in `outboundCall`.
+
+- **Its hosts only:** a URL outside the service's base URLs is refused before anything is sent, and a redirect is an error, so nothing a user types can point a call at another machine.
+- **A timeout** (8 s by default, the whole answer; a stream's head only, with `outbound: { stream: true }`), joined with the caller's own signal.
+- **Retries** for a GET or a HEAD answered 429 or 5xx (`retries`, 1 by default), waiting what `Retry-After` asks (capped at 10 s) or backing off from 200 ms. A write is sent once, a timeout isn't tried again.
+- **A size cap** (5 MB by default) on the answer's body, declared or streamed.
+- **One log line** (`outbound`: service, method, path, status, time, attempts) and a `Server-Timing` part; never a header, a query string or a body. A failure throws `UpstreamError`, which the error mapper makes `UPSTREAM_UNAVAILABLE`.
+- Lichess keeps its own lanes, cooldowns and timeouts (0255) and takes the host allowlist and the size cap from it.
 
 ## Idempotency keys (recipe)
 
@@ -120,7 +178,8 @@ Modules that use Start runtime helpers (`createIsomorphicFn`, e.g. `src/lib/star
 Moved here from CLAUDE.md, which keeps only the ones that apply everywhere. Don't reintroduce them.
 
 - **The root `beforeLoad` and `matches`:** reading `matches` there makes the route tree's types circular (`match.routeId` turns `unknown` everywhere). Its return type is written out (`Promise<{ session: Session | null }>`) to break the cycle (0161).
-- **Nitro routes** (`vite.config.ts` → `nitro.routes`) are for endpoints outside Start, e.g. the cron job and the web manifest. Nitro's dev server hands requests whose `Sec-Fetch-Dest` isn't a document (`image`, `manifest`…) to Vite unless a Nitro route matches, so a Start server route fetched that way is a 404 in dev only (0067, 0103).
+- **Nitro routes** (`vite.config.ts` → `nitro.routes`) are for endpoints outside Start, e.g. the cron job and the web manifest. Nitro's dev server hands requests whose `Sec-Fetch-Dest` isn't a document (`image`, `manifest`…) to Vite unless a Nitro route matches, so a Start server route fetched that way is a 404 in dev only (0067, 0103). Its default export is `defineApiRoute({ … }).nitro`, a plain `(event) => Response` that h3 takes as it is.
+- **Start's helpers need Start's request** (`getRequest`, `getCookie`, `getRequestIP`): a Nitro route has none, so `defineApiRoute` passes the request and the socket's address itself (`clientIpOf`). A test that calls a Start route's handler runs it in `inStartEvent` (`tests/utils/start-event.ts`).
 - **Server-function errors are HTTP 200:** Start sends them as a serialized payload (`x-tss-serialized`). When checking a refusal over HTTP, look for the code (`FORBIDDEN`) in the body.
 - **Dev-only pages** live under `src/routes/dev/`: the layout 404s unless `DEV_ROUTES` (`src/lib/dev-routes.ts`: `vite dev`, or a build with `VITE_DEV_ROUTES=true`, which the e2e harness uses and production refuses; 0162). Their server functions use `requireDev`. Gate dev-only code on `DEV_ROUTES`, not `import.meta.env.DEV`, or the e2e build breaks it.
 - **Server-only imports in middleware go inside `.server()`** (`await import("@/server/…")`). A dynamic import in an exported helper is still in the client graph, and import protection warns in dev.

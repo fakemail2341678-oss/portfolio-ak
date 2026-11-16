@@ -22,8 +22,6 @@ export const clientErrorSchema = z.object({
 	requestId: z.string().max(64).optional(),
 });
 
-export type ClientErrorReport = z.output<typeof clientErrorSchema>;
-
 /**
  * Logs one report, within the client's budget (a counter in this instance's memory,
  * as for CSP reports: it protects the log, not a secret). 204 when it was read.

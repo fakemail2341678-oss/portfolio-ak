@@ -52,6 +52,20 @@ export const AUTH_LIFETIMES = {
 	deleteAccountSeconds: 60 * 60,
 } as const;
 
+/**
+ * How long a session lives (decision 0300). Better Auth's defaults, written down so a
+ * change is a decision and not an upgrade's side effect:
+ * - a session ends a week after its last use, and each day of use moves that end
+ *   (`updateAge`): someone who comes back every few days stays signed in;
+ * - changing a password, deleting the account and the like need a sign-in made in
+ *   the last day (`freshAge`), not just a live session.
+ */
+const SESSION_POLICY = {
+	expiresInSeconds: 60 * 60 * 24 * 7,
+	updateAgeSeconds: 60 * 60 * 24,
+	freshAgeSeconds: 60 * 60 * 24,
+} as const;
+
 const minutes = (seconds: number) => Math.round(seconds / 60);
 
 /** Fire-and-forget email delivery that never blocks or fails the auth response. */
@@ -120,6 +134,15 @@ export const auth = betterAuth({
 	trustedOrigins: [serverEnv.BETTER_AUTH_URL],
 	database: drizzleAdapter(db, { provider: "pg", schema }),
 	disabledPaths: [...DISABLED_ADMIN_PATHS, ...DISABLED_GUEST_PATHS],
+
+	session: {
+		expiresIn: SESSION_POLICY.expiresInSeconds,
+		updateAge: SESSION_POLICY.updateAgeSeconds,
+		freshAge: SESSION_POLICY.freshAgeSeconds,
+		// Every request reads its session row: a ban, a revoked session or a changed role
+		// applies on the next request, which a session cached in the cookie would delay.
+		cookieCache: { enabled: false },
+	},
 
 	emailAndPassword: {
 		enabled: true,

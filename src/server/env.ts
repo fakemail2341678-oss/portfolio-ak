@@ -10,10 +10,12 @@
 import "@tanstack/react-start/server-only";
 import { createEnv } from "@t3-oss/env-core";
 import { z } from "zod";
-import { postgresUrl, throwEnvError } from "../lib/env/shared.ts";
+import { EnvValidationError, postgresUrl, throwEnvError } from "../lib/env/shared.ts";
 
 if (typeof window !== "undefined") {
-	throw new Error("src/server/env.ts is server-only and was loaded in a browser. Call a server function instead.");
+	throw new EnvValidationError(
+		"src/server/env.ts is server-only and was loaded in a browser. Call a server function instead.",
+	);
 }
 
 const isEmail = (value: string) => z.email().safeParse(value).success;

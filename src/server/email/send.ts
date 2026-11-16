@@ -1,5 +1,6 @@
 import "@tanstack/react-start/server-only";
 import { clientEnv } from "@/lib/env/client";
+import { internalError } from "@/lib/errors";
 import type { Locale } from "@/paraglide/runtime";
 import { getEmailProvider } from "./config";
 import { renderEmail } from "./render";
@@ -32,7 +33,10 @@ export const sendEmail = async <K extends EmailTemplateId>(
 	options: SendEmailOptions<K>,
 	provider: EmailProvider = getEmailProvider(),
 ): Promise<SendResult> => {
-	if (isUndeliverable(options.to)) throw new Error(`Refused to email an undeliverable address (${options.template})`);
+	// A caller's bug, not something a user can cause: guests are filtered out before anything is sent.
+	if (isUndeliverable(options.to)) {
+		throw internalError(`Refused to email an undeliverable address (${options.template})`);
+	}
 	const email = await renderEmail(options.template, options.data, {
 		locale: options.locale,
 		siteName: options.siteName ?? clientEnv.VITE_APP_TITLE,

@@ -4,7 +4,7 @@ import { LOCALE_HEADER } from "@/lib/i18n/locale-header";
 import { csrfMiddleware } from "@/middleware/csrf";
 import { errorNormalizationMiddleware } from "@/middleware/errors";
 import { localeFunctionMiddleware } from "@/middleware/locale";
-import { logServerFn, requestLoggingMiddleware } from "@/middleware/logging";
+import { requestLoggingMiddleware } from "@/middleware/logging";
 import { overwriteGetLocale } from "@/paraglide/runtime";
 
 /**
@@ -99,12 +99,6 @@ describe("request logging", () => {
 		});
 		expect(error).toHaveBeenCalledOnce();
 		expect(lines[0]).toMatchObject({ level: "error", outcome: "TypeError" });
-	});
-
-	it("writes single-line JSON at the right level", () => {
-		const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
-		logServerFn("warn", { requestId: "r1" });
-		expect(JSON.parse(String(warn.mock.calls[0]?.[0]))).toEqual({ level: "warn", msg: "server-fn", requestId: "r1" });
 	});
 });
 

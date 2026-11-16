@@ -90,6 +90,14 @@ const CONFORMING: Record<string, string> = {
 	"src/routes/dev/examples/state.tsx":
 		"export function Example() { const [on, setOn] = useState(false); return null; }",
 	"src/routes/__root.tsx": "export function Root() { const theme = useTheme(); return null; }",
+	"src/server/routes/widget-feed.ts": `
+		export default defineApiRoute({ name: "widget-feed", methods: ["GET"], handler: () => jsonResponse(200, []) }).nitro;
+	`,
+	"src/routes/api/widgets.ts": `
+		export const Route = createFileRoute("/api/widgets")({
+			server: { handlers: defineApiRoute({ name: "widgets", methods: ["GET"], handler: () => jsonResponse(200, []) }).handlers },
+		});
+	`,
 	"src/lib/text.ts": `
 		/** The text without spaces around it. */
 		export const tidy = (text: string) => text.trim();
@@ -190,6 +198,14 @@ const DEVIATING: Record<string, string> = {
 			});
 		export const createGadget = guarded(createServerFn({ method: "POST" }));
 	`,
+	// server-route
+	"src/server/routes/gadget-feed.ts": `
+		import { defineHandler } from "nitro";
+		export default defineHandler(() => new Response("[]"));
+	`,
+	"src/routes/api/gadgets.ts": `
+		export const Route = createFileRoute("/api/gadgets")({ server: { handlers: { GET: () => new Response("[]") } } });
+	`,
 	// route-import, route-thin
 	"src/routes/_admin/admin/gadgets/index.tsx": `
 		import { useState } from "react";
@@ -273,6 +289,7 @@ export const EXPECTED: Record<string, Record<string, number>> = {
 	"key-handler": { "src/features/gadgets/components/gadget-form.tsx": 2 },
 	timer: { "src/features/gadgets/components/gadget-form.tsx": 2 },
 	"bare-error": { "src/server/gadgets/service.ts": 1 },
+	"server-route": { "src/server/routes/gadget-feed.ts": 1, "src/routes/api/gadgets.ts": 1 },
 	"import-boundary": { "src/lib/reach.ts": 1, "src/components/page/page-frame.tsx": 1 },
 	"documented-export": { "src/lib/reach.ts": 1 },
 };

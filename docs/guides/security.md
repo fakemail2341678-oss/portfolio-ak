@@ -27,17 +27,20 @@ What protects the app, and the rules that keep it that way. Most of it is enforc
 - **Input:** every function validates with its Zod schema before the handler runs (`validator(zodInput(schema))`).
 - **Escalation:** users can't grant permissions they don't hold or lock out the last admin (`src/server/rbac/service.ts`, 0096).
 - **CSRF:** server functions reject cross-site calls (Sec-Fetch-Site, then Origin, then Referer; `src/middleware/csrf.ts`).
-- **Errors** never leak details: anything unexpected becomes `INTERNAL` with a request id ([routing-data.md](routing-data.md)).
+- **Errors** never leak details: anything unexpected becomes `INTERNAL` with a request id, and a mapped database or service error says only what kind it was ([routing-data.md](routing-data.md), "Errors"). Server routes answer problem JSON with the same fields.
+- **Server routes** (0300) all go through `defineApiRoute` or `defineCron`: a secret compared in constant time (unset: 404), the method (405), the origin for a write from our pages (403), the session (401), a rate limit in Postgres (429), a body limit, a deadline. The standard's `server-route` rule refuses a route written any other way.
+- **Calls out** (0300) go through `createOutbound`: only the service's own hosts, no redirect followed (no SSRF through a path or a query a user typed), a timeout, a size cap, and a log line without headers or query strings.
+- **Logs** redact secrets and personal data on the way out (field names like `password` or `token`, bearer tokens, JWTs, credentials in URLs, email addresses), so a log drain never holds them ([observability.md](observability.md)).
 - **Server-only code** can't reach the browser: import protection fails the build, and `env-boundary.test.ts` scans imports. Only `VITE_` variables are public.
 - **Dev-only pages and functions** answer 404 in production (`/dev` layout, `requireDev`).
 
 ## Auth (Better Auth)
 
-- **Sessions:** signed cookies (`BETTER_AUTH_SECRET`).
+- **Sessions (0300, checked against Better Auth 1.7's docs):** a signed, `HttpOnly`, `SameSite=Lax` cookie, `Secure` (with the `__Secure-` prefix) when `BETTER_AUTH_URL` is https. A session ends a week after its last use, and each day of use moves that end (`SESSION_POLICY` in `src/server/auth/auth.ts`: `expiresIn` 7 days, `updateAge` 1 day); sensitive endpoints (changing a password, deleting the account) need a sign-in from the last day (`freshAge`). The cookie cache is off: every request reads its session row, so a ban, a revoked session or a changed role applies on the next request. Rotating `BETTER_AUTH_SECRET` signs everyone out; Better Auth 1.7 also reads `BETTER_AUTH_SECRETS` (`2:new,1:old`: the first signs, all verify) for a rotation that keeps sessions.
 - **Email:** sign-up requires a verified email. An email change sends a notice to the old address.
 - **Rate limits:** stored in the database (they hold across serverless instances) and keyed by a trusted client IP (`src/server/auth/client-ip.ts`). Sign-in is limited to 5 a minute. Behind a proxy other than Vercel, set its trusted header there.
 - **Redirects:** the sign-in `?redirect=` target must be a same-site path (`src/lib/http/redirect.ts`).
-- **Expired sessions:** any server function that answers UNAUTHORIZED in the browser sends the user to `/login?redirect=…` (`src/middleware/session-expiry.ts`, 0113). Client route guards read a session at most a minute old (0111); server functions always check it themselves.
+- **Expired sessions:** any server function that answers UNAUTHORIZED in the browser sends the user to `/login?redirect=…&reason=session-ended` (`src/middleware/session-expiry.ts`, 0113), and the login page says "Your session ended" above the form (0300); signing in takes them back to where they were. Client route guards read a session at most a minute old (0111); server functions always check it themselves.
 - **Admin plugin endpoints are off:** `/api/auth/admin/*` answers 404 (`src/server/auth/disabled-paths.ts`, 0112), so nothing skips the RBAC rules in `src/server/rbac/service.ts`.
 - **Audit log:** role, user and publish/delete changes write an `audit_event` row in the same transaction, with the request id and client IP; `/admin/audit` needs `audit:read` (0132, [rbac.md](rbac.md)).
 - **Impersonation:** admins only, never of an admin, at most an hour, audited; the impersonated session can't change the account (password, email, two-factor, linked accounts, sessions, deletion: `OWNER_ONLY_PATHS`, `requireAccountOwner`; 0134).
@@ -104,7 +107,7 @@ Then `pnpm auth:schema` + `pnpm db:generate` (a `passkey` table), messages in bo
 
 - **Where:** `.env` holds real secrets and is gitignored. `.env.example` lists names only.
 - **Validation:** the server validates its environment at boot and refuses to start with anything missing or malformed. Production also refuses the console email provider.
-- **Cron endpoints** need `Authorization: Bearer $CRON_SECRET` (constant-time compare); without the variable they answer 404.
+- **Cron endpoints** need `Authorization: Bearer $CRON_SECRET` (constant-time compare, `defineCron`); without the variable they answer 404.
 
 ## Pitfalls already solved
 

@@ -1,4 +1,7 @@
 import "@tanstack/react-start/server-only";
+import { getRequest } from "@tanstack/react-start/server";
+import { clientIpHash, trustedClientIp } from "../auth/client-ip";
+import { serverEnv } from "../env";
 import { createOutbound, type Outbound } from "./outbound";
 
 const SITEVERIFY = "https://challenges.cloudflare.com/turnstile/v0/siteverify";
@@ -29,3 +32,18 @@ export async function verifyTurnstile(
 		return false;
 	}
 }
+
+/**
+ * What a public form's service needs from the request it came in (the contact form, a
+ * published survey): the client's address for a rate limit, its keyed hash to store, and
+ * the captcha check when Turnstile is configured (null: there is none).
+ */
+export const publicFormGuards = () => {
+	const ip = trustedClientIp(getRequest());
+	const secret = serverEnv.TURNSTILE_SECRET_KEY;
+	return {
+		ip,
+		ipHash: clientIpHash(ip),
+		verifyCaptcha: secret ? (token: string | undefined) => verifyTurnstile(secret, token, ip) : null,
+	};
+};

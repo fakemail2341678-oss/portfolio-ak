@@ -27,19 +27,21 @@ describe("checkDatabaseHealth", () => {
 				result = await checkDatabaseHealth(ping, clock(0, 5));
 				return new Response();
 			},
-			() => "req-1",
+			{ createId: () => "req-1" },
 		);
 
 		expect(result).toEqual({ status: "error", latencyMs: 5, checkedAt: expect.any(String) });
 		expect(JSON.stringify(result)).not.toMatch(/ECONNREFUSED|secret|10\.0\.0\.5/);
-		// One JSON line on the server, with the request id and the driver's reason.
+		// One JSON line on the server, with the request id and the driver's reason (its secret redacted).
 		expect(JSON.parse(String(log.mock.calls[0]?.[0]))).toEqual({
+			time: expect.any(String),
 			level: "error",
 			msg: "db health check failed",
 			requestId: "req-1",
 			error: "Failed query: select 1",
-			cause: driverError.message,
+			causes: ["Error: connect ECONNREFUSED 10.0.0.5:5432 password=[redacted]"],
 		});
+		expect(driverError.message).toContain("password=secret");
 	});
 
 	it("counts a ping that doesn't answer in time as down", async () => {

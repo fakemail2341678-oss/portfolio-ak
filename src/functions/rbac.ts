@@ -1,5 +1,4 @@
 import { createServerFn } from "@tanstack/react-start";
-import { getRequestHeaders } from "@tanstack/react-start/server";
 import {
 	emailCheckSchema,
 	type RoleSummary,
@@ -17,7 +16,7 @@ import { zodInput } from "@/functions/_lib/validator";
 import { idSchema } from "@/lib/crud/schema";
 import { requirePermission } from "@/middleware/auth";
 import { withServices } from "@/middleware/services";
-import { auth } from "@/server/auth/auth";
+import { impersonate } from "@/server/auth/account";
 import { sendInvitation } from "@/server/auth/invite";
 import * as rbac from "@/server/rbac/service";
 
@@ -102,9 +101,4 @@ export const inviteUser = createServerFn({ method: "POST" })
 export const impersonateUser = createServerFn({ method: "POST" })
 	.middleware([requirePermission("users:update"), withServices])
 	.validator(zodInput(userIdSchema))
-	.handler(async ({ data, context }): Promise<void> => {
-		const headers = getRequestHeaders();
-		await rbac.impersonateUser(context, data.userId, async () => {
-			await auth.api.impersonateUser({ body: { userId: data.userId }, headers });
-		});
-	});
+	.handler(({ data, context }): Promise<void> => impersonate(context, data.userId));

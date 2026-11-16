@@ -209,6 +209,37 @@ const bareError: Rule = {
 	},
 };
 
+/** Where server routes live: Nitro's (registered in vite.config.ts) and Start's under /api. */
+const SERVER_ROUTE = /^src\/(server\/routes\/[^/]+\.ts|routes\/api\/.+\.ts)$/;
+
+const serverRoute: Rule = {
+	id: "server-route",
+	rule: "A server route is defineApiRoute or defineCron (src/server/http/api-route.ts, cron.ts), never a handler of its own.",
+	check: (tree) => {
+		const found: Deviation[] = [];
+		for (const file of sourceFiles(tree).filter((name) => SERVER_ROUTE.test(name))) {
+			const source = parse(tree, file);
+			let defined = false;
+			visit(source, (node) => {
+				if (ts.isCallExpression(node) && ["defineApiRoute", "defineCron"].includes(calleeName(node))) {
+					defined = true;
+				}
+			});
+			const own = importsOf(tree, file).find((entry) => entry.from === "nitro" || entry.from === "h3");
+			if (!defined || own) {
+				found.push({
+					key: file,
+					line: own?.line ?? 1,
+					message: own
+						? `imports ${own.from}: a route is defineApiRoute or defineCron`
+						: "no defineApiRoute or defineCron: a route says its methods, guards and limits through them",
+				});
+			}
+		}
+		return found;
+	},
+};
+
 /** The folder under src/ a specifier points into, for `@/x/…` and for relative paths. */
 function targetRoot(file: string, specifier: string): string | undefined {
 	if (specifier.startsWith("@/")) return specifier.split("/")[1];
@@ -264,6 +295,7 @@ export const codeRules: Rule[] = [
 	keyHandler,
 	timer,
 	bareError,
+	serverRoute,
 	importBoundary,
 	documentedExport,
 ];

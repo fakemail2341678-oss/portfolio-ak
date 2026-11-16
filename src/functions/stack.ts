@@ -3,8 +3,7 @@ import { type StackPage, type StackStats, stackSearchSchema } from "@/features/s
 import { zodInput } from "@/functions/_lib/validator";
 import { requireDev } from "@/middleware/dev";
 import { getLocale } from "@/paraglide/runtime";
-import { STACK } from "@/server/stack/data";
-import { queryStack } from "@/server/stack/query";
+import { queryStack, slowStats } from "@/server/stack/query";
 
 /**
  * Search, sort and paginate the stack. Uses the same schema as the /dev/stack URL,
@@ -13,19 +12,9 @@ import { queryStack } from "@/server/stack/query";
 export const listStack = createServerFn({ method: "GET" })
 	.middleware([requireDev])
 	.validator(zodInput(stackSearchSchema))
-	.handler(({ data }): StackPage => {
-		if (data.simulate === "error") {
-			// Deliberately leaky message: errorNormalizationMiddleware must hide it from the client.
-			throw new Error("Simulated failure: connection to 10.0.0.5:5432 refused (password=hunter2)");
-		}
-		return queryStack(data, getLocale());
-	});
+	.handler(({ data }): StackPage => queryStack(data, getLocale()));
 
 /** Deliberately slow, to demonstrate a deferred loader promise streamed via Suspense. */
 export const getStackStats = createServerFn({ method: "GET" })
 	.middleware([requireDev])
-	.handler(async (): Promise<StackStats> => {
-		// timer: slow on purpose, so /dev/stack shows a deferred value arriving.
-		await new Promise((resolve) => setTimeout(resolve, 800));
-		return { tools: STACK.length, categories: new Set(STACK.map((entry) => entry.category)).size };
-	});
+	.handler((): Promise<StackStats> => slowStats());

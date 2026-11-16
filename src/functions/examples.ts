@@ -1,5 +1,4 @@
 import { createServerFn } from "@tanstack/react-start";
-import { getRequest } from "@tanstack/react-start/server";
 import {
 	type ExampleTaskPage,
 	exampleContactSchema,
@@ -12,27 +11,21 @@ import {
 	exampleTasksDoneSchema,
 } from "@/features/dev/examples/schema";
 import { zodInput } from "@/functions/_lib/validator";
-import { AppError } from "@/lib/errors";
 import { bulkIdsSchema } from "@/lib/list/paging";
 import { requireDev } from "@/middleware/dev";
-import { m } from "@/paraglide/messages";
-import { trustedClientIp } from "@/server/auth/client-ip";
 import { db } from "@/server/db/client";
-import { serverEnv } from "@/server/env";
 import { submitContact } from "@/server/examples/contact";
-import { listMessages, resetMessages, sendMessage } from "@/server/examples/idempotency";
+import * as demos from "@/server/examples/demos";
+import { listMessages, sendMessage } from "@/server/examples/idempotency";
 import { runExampleJob } from "@/server/examples/jobs";
-import { deleteTasks, getTask, listTasks, nextSnapshot, resetTasks, setTasksDone } from "@/server/examples/tasks";
-import { verifyTurnstile } from "@/server/http/turnstile";
+import { deleteTasks, listTasks, nextSnapshot } from "@/server/examples/tasks";
+import { publicFormGuards } from "@/server/http/turnstile";
 
 /**
  * Server functions behind the /dev/examples pages. Every one runs
  * requireDev: in a production build they answer NOT_FOUND. The
  * permission example's functions are in examples-permissions.ts.
  */
-
-// timer: sleeps, because the examples answer slowly on purpose.
-const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 /** Loader + Query: each call counts, so a refetch after hydration would show. */
 export const getExampleSnapshot = createServerFn({ method: "GET" })
@@ -42,11 +35,7 @@ export const getExampleSnapshot = createServerFn({ method: "GET" })
 /** Streaming: deliberately slow, so the page streams its fallback first. */
 export const getSlowExample = createServerFn({ method: "GET" })
 	.middleware([requireDev])
-	.handler(async () => {
-		const started = Date.now();
-		await sleep(1500);
-		return { tookMs: Date.now() - started, finishedAt: new Date().toISOString() };
-	});
+	.handler(() => demos.slowExample());
 
 export const listExampleTasks = createServerFn({ method: "GET" })
 	.middleware([requireDev])
@@ -57,21 +46,13 @@ export const listExampleTasks = createServerFn({ method: "GET" })
 export const getExampleTask = createServerFn({ method: "GET" })
 	.middleware([requireDev])
 	.validator(zodInput(exampleTaskIdSchema))
-	.handler(({ data }) => {
-		const task = getTask(data.id);
-		if (!task) throw new AppError("NOT_FOUND", "No such example task");
-		return task;
-	});
+	.handler(({ data }) => demos.taskOrNotFound(data.id));
 
 /** Marks tasks done or not; `fail` makes it refuse (after a delay), to show the optimistic rollback. */
 export const setExampleTasksDone = createServerFn({ method: "POST" })
 	.middleware([requireDev])
 	.validator(zodInput(exampleTasksDoneSchema))
-	.handler(async ({ data }) => {
-		await sleep(600);
-		if (data.fail) throw new AppError("CONFLICT", "Simulated failure (examples)");
-		return { updated: setTasksDone(data.ids, data.done) };
-	});
+	.handler(({ data }) => demos.markTasksDone(data));
 
 export const deleteExampleTasks = createServerFn({ method: "POST" })
 	.middleware([requireDev])
@@ -80,33 +61,19 @@ export const deleteExampleTasks = createServerFn({ method: "POST" })
 
 export const resetExampleTasks = createServerFn({ method: "POST" })
 	.middleware([requireDev])
-	.handler(() => {
-		resetTasks();
-		return { ok: true };
-	});
+	.handler(() => demos.resetTaskList());
 
 /** Forms: the same schema as the client, plus a rule only the server knows (taken usernames). */
 export const submitExampleSignup = createServerFn({ method: "POST" })
 	.middleware([requireDev])
 	.validator(zodInput(exampleSignupSchema))
-	.handler(({ data }) => {
-		if (["admin", "root", "taken"].includes(data.username.toLowerCase())) {
-			throw new AppError("CONFLICT", "Username taken (examples)", {
-				fieldErrors: { username: [m.examples_forms_username_taken()] },
-			});
-		}
-		return { username: data.username };
-	});
+	.handler(({ data }) => demos.signUp(data));
 
-/** Errors: throws what the example asks for. A plain Error reaches the client as INTERNAL. */
+/** Errors: throws what the example asks for. Its crash, which is no AppError, reaches the client as INTERNAL. */
 export const getExampleFailure = createServerFn({ method: "POST" })
 	.middleware([requireDev])
 	.validator(zodInput(exampleErrorSchema))
-	.handler(({ data }): never => {
-		if (data.case === "forbidden") throw new AppError("FORBIDDEN", "Example refusal");
-		if (data.case === "not-found") throw new AppError("NOT_FOUND", "Example missing record");
-		throw new Error("Example crash: details stay in the server log");
-	});
+	.handler(({ data }): never => demos.fail(data));
 
 /** Idempotency: the messages sent so far. */
 export const listExampleMessages = createServerFn({ method: "GET" })
@@ -121,23 +88,13 @@ export const sendExampleMessage = createServerFn({ method: "POST" })
 
 export const resetExampleMessages = createServerFn({ method: "POST" })
 	.middleware([requireDev])
-	.handler(() => {
-		resetMessages();
-		return { ok: true };
-	});
+	.handler(() => demos.resetMessageList());
 
 /** Contact form recipe: honeypot, Turnstile when configured, a database-backed rate limit per IP. */
 export const submitExampleContact = createServerFn({ method: "POST" })
 	.middleware([requireDev])
 	.validator(zodInput(exampleContactSchema))
-	.handler(({ data }) => {
-		const ip = trustedClientIp(getRequest());
-		const secret = serverEnv.TURNSTILE_SECRET_KEY;
-		return submitContact(db, data, {
-			ip,
-			verifyCaptcha: secret ? (token) => verifyTurnstile(secret, token, ip) : null,
-		});
-	});
+	.handler(({ data }) => submitContact(db, data, publicFormGuards()));
 
 /** Background jobs recipe: runs the example job in process, the second step failing `failures` times. */
 export const startExampleJob = createServerFn({ method: "POST" })

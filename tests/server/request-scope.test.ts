@@ -1,13 +1,19 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { AppError } from "@/lib/errors";
 import { tagRequestId } from "@/lib/observability/sentry";
-import { normalizeServerError } from "@/middleware/errors";
+import { normalizeServerError } from "@/server/http/errors";
 import {
+	currentRequest,
 	currentRequestId,
 	forgetRequestMemo,
 	REQUEST_ID_HEADER,
+	recordTiming,
 	requestMemo,
 	runInRequestScope,
+	SERVER_TIMING_HEADER,
+	setRequestLocale,
+	setRequestUser,
+	timed,
 } from "@/server/http/request-scope";
 import { log } from "@/server/log";
 
@@ -30,10 +36,9 @@ describe("runInRequestScope", () => {
 	});
 
 	it("sets the header on responses with immutable headers too", async () => {
-		const response = await runInRequestScope(
-			async () => Response.redirect("https://example.com/login", 307),
-			() => "r-1",
-		);
+		const response = await runInRequestScope(async () => Response.redirect("https://example.com/login", 307), {
+			createId: () => "r-1",
+		});
 		expect(response.status).toBe(307);
 		expect(response.headers.get("location")).toBe("https://example.com/login");
 		expect(response.headers.get(REQUEST_ID_HEADER)).toBe("r-1");
@@ -48,11 +53,85 @@ describe("runInRequestScope", () => {
 						await new Promise((resolve) => setTimeout(resolve, (1 - index) * 10));
 						return new Response(currentRequestId());
 					},
-					() => id,
+					{ createId: () => id },
 				).then((response) => response.text()),
 			),
 		);
 		expect(seen).toEqual(ids);
+	});
+});
+
+describe("what a request's scope knows", () => {
+	it("says who asked and in which language in every log line, once they are known", async () => {
+		const lines: Array<Record<string, unknown>> = [];
+		vi.spyOn(console, "info").mockImplementation((line: string) => lines.push(JSON.parse(line)));
+		await runInRequestScope(
+			async () => {
+				log("info", "before the session");
+				setRequestUser("user-7");
+				setRequestLocale("ne");
+				log("info", "after the session");
+				expect(currentRequest()).toEqual({ id: "r-9", userId: "user-7", locale: "ne", method: "POST", path: "/x" });
+				return new Response();
+			},
+			{ createId: () => "r-9", request: new Request("https://app.test/x?token=abc", { method: "POST" }) },
+		);
+		expect(lines[0]).toMatchObject({ msg: "before the session", requestId: "r-9" });
+		expect(lines[0]).not.toHaveProperty("userId");
+		expect(lines[1]).toMatchObject({ msg: "after the session", requestId: "r-9", userId: "user-7" });
+		expect(currentRequest()).toBeUndefined();
+	});
+
+	it("names the total and each timed part in Server-Timing", async () => {
+		const response = await runInRequestScope(async () => {
+			recordTiming("session", 3.4);
+			recordTiming("fn", 12, 'list"Test\nCrud');
+			await timed("tmdb", async () => "x");
+			return new Response();
+		});
+		const header = response.headers.get(SERVER_TIMING_HEADER) ?? "";
+		expect(header).toMatch(/^total;dur=\d+, session;dur=3, fn;dur=12;desc="list_Test_Crud", tmdb;dur=\d+$/);
+	});
+
+	it("joins the scope that is already open: one request, one id", async () => {
+		const response = await runInRequestScope(
+			async (outer) =>
+				runInRequestScope(async (inner) => {
+					expect(inner).toBe(outer);
+					return new Response(inner);
+				}),
+			{ createId: () => "outer" },
+		);
+		expect(await response.text()).toBe("outer");
+		expect(response.headers.get(REQUEST_ID_HEADER)).toBe("outer");
+	});
+
+	it("leaves a slow request line with its path (never its query) and its parts", async () => {
+		vi.stubEnv("SLOW_REQUEST_MS", "1");
+		vi.resetModules();
+		const scope = await import("@/server/http/request-scope");
+		const lines: Array<Record<string, unknown>> = [];
+		vi.spyOn(console, "warn").mockImplementation((line: string) => lines.push(JSON.parse(line)));
+		await scope.runInRequestScope(
+			async () => {
+				scope.recordTiming("db", 20);
+				// timer: makes the request slower than the 1 ms threshold.
+				await new Promise((resolve) => setTimeout(resolve, 15));
+				return new Response(null, { status: 201 });
+			},
+			{ createId: () => "slow-1", request: new Request("https://app.test/admin/users?email=a@b.co") },
+		);
+		expect(lines).toHaveLength(1);
+		expect(lines[0]).toMatchObject({
+			level: "warn",
+			msg: "slow request",
+			requestId: "slow-1",
+			method: "GET",
+			path: "/admin/users",
+			status: 201,
+			timings: [{ name: "db", ms: 20 }],
+		});
+		expect(JSON.stringify(lines[0])).not.toContain("a@b.co");
 	});
 });
 
@@ -109,10 +188,9 @@ describe("requestMemo", () => {
 		const read = () => requestMemo("session", async () => ++calls);
 		const seen = await Promise.all(
 			[1, 2].map((index) =>
-				runInRequestScope(
-					async () => new Response(String(await read())),
-					() => `r-${index}`,
-				).then((response) => response.text()),
+				runInRequestScope(async () => new Response(String(await read())), { createId: () => `r-${index}` }).then(
+					(response) => response.text(),
+				),
 			),
 		);
 		expect(seen.sort()).toEqual(["1", "2"]);

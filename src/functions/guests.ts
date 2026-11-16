@@ -1,10 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
-import { deleteCookie, getCookie } from "@tanstack/react-start/server";
 import { requireUser } from "@/middleware/auth";
 import { db } from "@/server/db/client";
-import { GUEST_CLAIM_COOKIE, readGuestClaim } from "@/server/guests/claim-cookie";
-import { claimGuest } from "@/server/guests/service";
-import { log } from "@/server/log";
+import { claimFromCookie } from "@/server/guests/service";
 
 /**
  * Moves this browser's guest data to the signed-in account (decision 0186): the
@@ -16,11 +13,4 @@ import { log } from "@/server/log";
  */
 export const claimGuestData = createServerFn({ method: "POST" })
 	.middleware([requireUser])
-	.handler(async ({ context }): Promise<{ claimed: boolean }> => {
-		const guestId = readGuestClaim(getCookie(GUEST_CLAIM_COOKIE));
-		if (!guestId) return { claimed: false };
-		const claimed = await claimGuest(db, guestId, context.user.id);
-		if (claimed) log("info", "guest claimed", { guestId, userId: context.user.id });
-		deleteCookie(GUEST_CLAIM_COOKIE, { path: "/" });
-		return { claimed };
-	});
+	.handler(({ context }): Promise<{ claimed: boolean }> => claimFromCookie(db, context.user.id));
