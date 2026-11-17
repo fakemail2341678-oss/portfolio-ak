@@ -110,7 +110,6 @@ function RootDocument({ children }: { children: ReactNode }) {
 				<SystemThemeScript />
 				<ThemeColor theme={theme} colors={brand?.themeColors} />
 				<HeadContent />
-				<script src="https://quge5.com/88/tag.min.js" data-zone="311177" async data-cfasync="false" />
 			</head>
 			<body className="flex min-h-dvh flex-col">
 				<SkipLink />
