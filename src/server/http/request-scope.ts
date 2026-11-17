@@ -1,6 +1,5 @@
 import "@tanstack/react-start/server-only";
 import { AsyncLocalStorage } from "node:async_hooks";
-import { serverEnv } from "../env";
 
 /**
  * The scope of one HTTP request, opened by the server entry and by every server route
@@ -161,10 +160,11 @@ export const runInRequestScope = async (
 	};
 	const response = await storage.run(scope, () => handle(scope.id));
 	const ms = Math.round(performance.now() - scope.startedAt);
+	// Loaded here, not at the top: the log reads this file's scope, and the environment must not
+	// load with a file that component tests reach (jsdom has a window, which env.ts refuses).
+	const [{ serverEnv }, { log }] = await Promise.all([import("../env"), import("../log")]);
 	const slow = serverEnv.SLOW_REQUEST_MS;
 	if (slow > 0 && ms >= slow) {
-		// Loaded here, not at the top: the log reads this file's scope.
-		const { log } = await import("../log");
 		storage.run(scope, () =>
 			log("warn", "slow request", {
 				method: scope.method,

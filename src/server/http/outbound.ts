@@ -41,7 +41,7 @@ export class UpstreamError extends Error {
 export type OutboundOptions = {
 	/** The service's name in the log and in `Server-Timing`: "tmdb". */
 	service: string;
-	/** Where the service lives: its base URLs. Only their origins can be called. */
+	/** Where the service lives: its base URLs (an empty one is skipped). Only their origins can be called. */
 	bases: readonly string[];
 	/** How long a call may take, body included. 8 s. */
 	timeoutMs?: number;
@@ -103,7 +103,8 @@ export function createOutbound(options: OutboundOptions): Outbound {
 	} = options;
 	const fetcher = options.fetcher ?? fetch;
 	const sleep = options.sleep ?? defaultSleep;
-	const origins = new Set(options.bases.map((base) => new URL(base).origin));
+	// An empty base is a host the client has but isn't configured (a test's Lichess without an explorer).
+	const origins = new Set(options.bases.filter(Boolean).map((base) => new URL(base).origin));
 
 	const note = (call: string, method: string, status: number, started: number, attempts: number, failure?: string) => {
 		const ms = Math.round(performance.now() - started);

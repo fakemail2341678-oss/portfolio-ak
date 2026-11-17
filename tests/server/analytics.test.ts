@@ -126,6 +126,7 @@ describe("with VITE_POSTHOG_KEY", () => {
 		posthog.captureImmediate.mockRejectedValueOnce(new Error("network down"));
 		await expect(analytics.captureServerEvent("e", "u")).resolves.toBeUndefined();
 		expect(JSON.parse(String(warn.mock.calls[0]?.[0]))).toEqual({
+			time: expect.any(String),
 			level: "warn",
 			msg: "analytics capture failed",
 			error: "network down",

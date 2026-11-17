@@ -4478,7 +4478,7 @@ As 10.1 (with 14.1's differences), and:
 | 100 | The standard: rules written, enforced by tests, AI rules, the generator | xhigh | context7, claude-code-setup | Done (decision 0297) |
 | 101 | Structure and names everywhere: one codemod, no behaviour change | high | typescript-lsp, serena | Done (decision 0298) |
 | 102 | Packages: upgrades, Pacer, Hotkeys, replacements | high | context7 | Done (decision 0299) |
-| 103 | Server core: requests, errors, auth, logs | xhigh | context7 | Planned |
+| 103 | Server core: requests, errors, auth, logs | xhigh | context7 | Done (decision 0300) |
 | 104 | Data core: repositories, migrations, seeds | high | context7 | Planned |
 | 105 | Writes: the optimistic engine | xhigh | context7 | Planned |
 | 106 | Reads: loaders, SSR, lists, generic pages | xhigh | context7, playwright | Planned |
@@ -4823,18 +4823,22 @@ Done in decision 0299. Current versions everywhere a release is safe to ship, Ta
   - Nothing is pushed, so CI has not run.
   - When TanStack DB 1.0 is final (or before Task 105): the upgrade, with `transaction.isPersisted.promise` becoming `transaction.when("settled")` at five call sites and a query collection's handlers refetching themselves.
 
-### Task 103: Server core: requests, errors, auth, logs
+### Task 103: Server core: requests, errors, auth, logs (done)
 
-**Goal:** one request path, one error shape, one way to log, for server functions and server routes alike.
+**Done** (2026-11-17, decision 0300). Server functions and server routes share one request scope, one error envelope, one mapping of what others throw, one way to call out and one log writer.
 
-- **Errors, end to end:** one envelope (`code`, `reason`, `message`, `fieldErrors`, `requestId`) from every server function and every route. Database errors (unique, foreign key, serialization), Zod errors and outside APIs' errors each map to an `AppError` in one place. Nothing expected reaches the client as a 500, and nothing internal leaks in a message.
-- **Server routes:** `defineApiRoute` (method, auth or secret, rate limit, body limit, errors as problem JSON, the log line) and `defineCron` (the secret, one run at a time, named steps, timing, failures reported). All sixteen Nitro routes and the `/api` routes use them.
-- **Request scope:** the id, the user, the locale, the start time; a `Server-Timing` header; a slow-request log line; timeouts.
-- **Calls out:** one helper for TMDB, Lichess, Cloudinary, Resend, Turnstile and PostHog: a timeout, retries with backoff, an abort signal, a host allowlist (no SSRF), a size cap, logs without tokens.
-- **Auth:** Better Auth's settings against its current docs (cookies, rotation, limits, two-factor, the account's life), the guards' names per 15.5, and what a page shows when a session ends while it is open.
-- **Logs:** standard fields, secrets and personal data redacted, the cause chain kept, unhandled rejections caught by a Nitro plugin. **The browser's errors reach the server log** through a small rate-limited endpoint when Sentry is off, with the request id.
-- **Tests:** a contract test made from the guard test's list, for every function: anonymous is `UNAUTHORIZED`, the wrong role `FORBIDDEN`, bad input `VALIDATION` with field errors, always in the envelope. Each route: method, secret, errors.
-- **Docs:** `routing-data.md`, `security.md`, `observability.md`.
+- **Errors:** the envelope is `code`, `reason`, `message`, `fieldErrors`, `requestId`, an `AppError` from a function and problem JSON from a route. New codes `VALIDATION` (422; `zodInput` threw `BAD_REQUEST`), `METHOD_NOT_ALLOWED` (405) and `TIMEOUT` (504), new reason `retry`, and `isRefusal` (below 500) for Task 105. `toAppError` (`src/server/http/errors.ts`) maps Zod, Postgres' SQLSTATE in the cause chain, a failed call out and Better Auth's `APIError`; a 5xx message is generic. A broken invariant is `internalError(message)`.
+- **Server routes:** `defineApiRoute` (secret, method, origin, session, rate limit in Postgres, body limit, deadline, problem JSON, one `api-route` line) and `defineCron` (the secret, a lease so one run at a time, named and timed steps, a failing step logged, sent to Sentry and answered 500). All 16 Nitro routes and the 4 `/api` routes use them, and a fifth, `POST /api/client-errors`. Eight `json()` helpers, six secret checks and three method checks are gone. The products' jobs export their steps.
+- **Request scope:** the id, the user, the locale, the start time and the timed parts; `Server-Timing` on every response; a `slow request` line past `SLOW_REQUEST_MS` (2 s); `TIMEOUT` past `REQUEST_TIMEOUT_MS` (30 s) for functions and routes.
+- **Calls out:** `createOutbound` for TMDB, Lichess (hosts and size cap; its lanes stay), Cloudinary, Turnstile and PostHog, `outboundCall` for Resend's SDK: the service's hosts only and no redirect, a timeout, retries with backoff for a GET after a 429 or a 5xx, the caller's signal, a size cap, one `outbound` line without headers or query strings.
+- **Auth:** checked against Better Auth 1.7.25: cookies (`HttpOnly`, `Lax`, `Secure` on https), the session policy written down (7 days, refreshed daily, `freshAge` 1 day), cookie cache off on purpose, `BETTER_AUTH_SECRETS` rotation documented. **Bug fixed:** the account page's session list and device revoking failed for sessions over a day old (Better Auth's `/list-sessions` wants a fresh session); they read the table now (`liveSessions`). A session that ends while a page is open lands on the login page with "Your session ended".
+- **Logs:** `log()` is the one writer (`log-line.ts` is gone): `time`, `level`, `msg`, `requestId`, `userId` first, secrets and email addresses redacted, the cause chain kept (`errorFields`). A Nitro plugin logs unhandled rejections and uncaught exceptions. With Sentry off the browser's errors reach the log through `POST /api/client-errors` (same origin, 8 kB, 10 a minute per client).
+- **Tests:** `functions-contract.test.ts` calls every server function's real middleware chain without its handler (anonymous `UNAUTHORIZED`, a guest `UNAUTHORIZED` where an account is needed, no permission `FORBIDDEN`, bad input `VALIDATION` with field errors, in the envelope with the request's id); `routes.test.ts` every route (method, secret, errors); `api-route`, `cron`, `outbound`, `log`, `errors`, `client-errors` and `auth-sessions` the pieces. The contract test reads the functions from the source as the guard test does (its lists can't be imported from a test file), recorded in 0300.
+- **The standard:** a 28th rule, `server-route` (0 deviations). `bare-error` 63 to 51 and `function-handler` 49 to 27: the core's are fixed (22 handlers moved into `src/server`), the rest are the layers'.
+- **Gates** (narrowed from Task 102's commit, `pnpm gates --base=c1a750e`): typecheck, Biome, knip, `i18n:check` and `pnpm standard` (28 rules); `pnpm test` whole (220 files, 2,802 tests; 2,621 at Task 102); Storybook whole (394 stories twice; one en/light run of test-crud's "Quick View" found its dialog title not yet visible and passed on the file's rerun); the build and the budget (entry 294.4 kB of 300, 294.1 before; heaviest route 351.8 kB of 360, 351.6 before); `build-storybook`; e2e: 3,257 flow and layer-page tests in eight shards on one worker (99.8 min) and every page once (305, 8.9 min), none failed, none flaky. The first run was stopped by Claude Code for low memory; it ran again after the editor's language server, Serena and Phone Link were closed.
+- **Deviations:** the four commits `swtest`, `ads`, `selocchange` and `ads` the owner made during the task hold part of this work and are pushed, so the task is more than one commit. The ad tag and its service worker they added were paused in `e7cffb8` at the owner's choice (blocked by the CSP, and a remote service worker at `/`).
+- **Left for the layers:** Chaal's stream routes answer their refusals as `{ error, reason }` (`src/server/chaal/stream.ts`), not the envelope; the 51 bare errors (Taskline 32, Kharcha 8, the apps 6, Parda 4, the portfolio 1) and 27 block handlers (Parda).
+- **Left for the owner:** the ads, if wanted, as their own change: public pages only, a CSP nonce, after consent, no service worker at `/`.
 
 ### Task 104: Data core: repositories, migrations, seeds
 

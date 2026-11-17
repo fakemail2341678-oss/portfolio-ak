@@ -41,10 +41,13 @@ describe("session expiry middleware (the server-function interceptor)", () => {
 		router.options.context.queryClient.setQueryData(authKeys.session, { user: { id: "u1" }, permissions: [] });
 	});
 
-	it("on UNAUTHORIZED: clears the session and goes to /login with a return URL, still rethrowing", async () => {
+	it("on UNAUTHORIZED: clears the session and goes to /login with a return URL and why, still rethrowing", async () => {
 		await callFailing(new AppError("UNAUTHORIZED"));
 		expect(router.options.context.queryClient.getQueryData(authKeys.session)).toBeNull();
-		expect(router.navigate).toHaveBeenCalledWith({ to: "/login", search: { redirect: "/admin/test-crud?page=2" } });
+		expect(router.navigate).toHaveBeenCalledWith({
+			to: "/login",
+			search: { redirect: "/admin/test-crud?page=2", reason: "session-ended" },
+		});
 	});
 
 	it("leaves FORBIDDEN and other errors to the caller", async () => {

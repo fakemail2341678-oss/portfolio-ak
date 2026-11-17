@@ -2,13 +2,14 @@ import "@tanstack/react-start/server-only";
 import { getRequestHeaders } from "@tanstack/react-start/server";
 import { isPasswordCompromised } from "better-auth/plugins/haveibeenpwned";
 import type { AccountSecurity, AccountSession } from "@/features/auth/schema";
+import { db } from "../db/client";
 import { serverEnv } from "../env";
 import * as rbac from "../rbac/service";
 import type { Services } from "../services";
 import { auth, authFeatures } from "./auth";
 import { setOwnPassword } from "./password";
 import { forgetSession } from "./session";
-import { revokeOwnSession } from "./sessions";
+import { liveSessions, revokeOwnSession } from "./sessions";
 
 /**
  * What the account's server functions do (src/functions/auth.ts, decision 0300): each
@@ -21,9 +22,11 @@ import { revokeOwnSession } from "./sessions";
 export const features = () => authFeatures;
 
 /** The caller's sessions, the current one first, then the newest. */
-export async function listSessions(): Promise<{ sessions: AccountSession[]; now: string }> {
-	const headers = getRequestHeaders();
-	const [sessions, current] = await Promise.all([auth.api.listSessions({ headers }), auth.api.getSession({ headers })]);
+export async function listSessions(userId: string): Promise<{ sessions: AccountSession[]; now: string }> {
+	const [sessions, current] = await Promise.all([
+		liveSessions(db, userId),
+		auth.api.getSession({ headers: getRequestHeaders() }),
+	]);
 	return {
 		// Sent with the data so relative times render identically on server and client.
 		now: new Date().toISOString(),
@@ -39,7 +42,16 @@ export async function listSessions(): Promise<{ sessions: AccountSession[]; now:
 }
 
 /** Signs out one of the caller's other sessions by id. */
-export const revokeSession = (id: string): Promise<void> => revokeOwnSession(auth.api, getRequestHeaders(), id);
+export const revokeSession = (userId: string, id: string): Promise<void> =>
+	revokeOwnSession(
+		{
+			listSessions: () => liveSessions(db, userId),
+			getSession: (input) => auth.api.getSession(input),
+			revokeSession: (input) => auth.api.revokeSession(input),
+		},
+		getRequestHeaders(),
+		id,
+	);
 
 /** How the caller signs in (password, Google, two-factor). */
 export async function security(

@@ -166,10 +166,12 @@ One word per meaning (`function-verb`):
 | A write | `useCrudMutation` over the feature's collection; a form uses `useCrudForm`. Never a raw `useMutation` | `write-path` |
 | A server function | a literal `createServerFn(…)` chain: `.middleware([require…, with…])`, `.validator(zodInput(schema))` when it takes data, a handler that is one call into a service | `function-literal`, `function-guards`, `function-validator`, `function-handler` |
 | A route | its search, loader, head and a component that renders one feature component; `queries.ts` imported inside the loader | `route-thin`, `route-import` |
-| A refusal | an `AppError` (`new AppError`, `ruleError`, `notFound`), never a bare `Error` | `bare-error` |
+| A refusal | an `AppError` (`new AppError`, `ruleError`, `notFound`), never a bare `Error`; a broken invariant is `internalError(message)` (0300) | `bare-error` |
+| A server route or a job | `defineApiRoute({ name, methods, auth, secret, sameOrigin, rateLimit, bodyLimit, handler })` or `defineCron({ name, steps })` (`src/server/http/api-route.ts`, `cron.ts`, 0300) | `server-route` |
+| A call to another service | the `fetch` from `createOutbound({ service, bases })` (`src/server/http/outbound.ts`), or `outboundCall` around an SDK's own request | |
 | A shortcut | `useShortcuts(group, [{ keys, name, run }])` (`src/hooks/use-shortcuts.ts`, TanStack Hotkeys, 0299): registered with a name, so `ShortcutsList` shows what is bound | `key-handler` |
 | Debounce, throttle, queue, batch | TanStack Pacer (0299): `useDebouncedValue` and `useDebouncer` for typing, `useThrottledCallback` for scroll and resize, `usePacedRefresh` for a reload that events ask for, `createJobQueue` (`src/lib/job-queue.ts`) for work that must not all start at once | `timer` |
-| A log line | `log()`, never `console.*` on the server | Biome `noConsole` |
+| A log line | `log()`, never `console.*` on the server; it adds the request's id and user and redacts secrets (0300) | Biome `noConsole` |
 | Dates, numbers, money | `src/lib/i18n` | Biome plugin |
 | Shared code | `src/lib`, `src/hooks` and `src/components` import no feature, function, route or server code; every export there says what it is for in a comment | `import-boundary`, `documented-export` |
 

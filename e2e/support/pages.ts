@@ -608,6 +608,8 @@ export const NOT_REVIEWED: Readonly<Record<string, string>> = {
 	"/api/health": "JSON for uptime monitors (checked by e2e/flows/health.spec.ts)",
 	"/api/account/export": "a JSON download (checked by e2e/flows/account.spec.ts)",
 	"/api/csp-report": "POST endpoint for CSP reports (checked by e2e/flows/frontend.spec.ts)",
+	"/api/client-errors":
+		"POST endpoint for the browser's errors when Sentry is off (checked by tests/server/routes.test.ts)",
 	"/l/$slug": "a redirect, or the 404 (checked by e2e/flows/apps.spec.ts)", // @apps
 	"/app/taskline/$ws": "a redirect to the workspace's projects (checked by e2e/flows/taskline.spec.ts)", // @taskline
 	"/app/parda/surprise": "a redirect to a random title (checked by e2e/flows/parda.spec.ts)", // @parda

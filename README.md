@@ -77,6 +77,8 @@ Everything is validated at startup with T3 Env (`src/server/env.ts` and `src/lib
 | `LICHESS_CLIENT_ID` | no | The OAuth client id Chaal shows Lichess (default `chaal`). <!-- @chaal --> |
 | `LICHESS_APP_TOKEN` | no | A Lichess personal token with no scopes, server only: the opening explorer refuses calls without one. <!-- @chaal --> |
 | `CRON_SECRET` | no | Bearer token for `/api/cron/*` (Vercel Cron, `vercel.json`); unset, the routes answer 404. |
+| `REQUEST_TIMEOUT_MS` | no | How long a server function or route may take before it answers `TIMEOUT` (default 30000; 0: no limit). Keep it under the host's function limit. |
+| `SLOW_REQUEST_MS` | no | A request slower than this leaves a `slow request` log line (default 2000; 0: never). |
 
 ## Architecture
 

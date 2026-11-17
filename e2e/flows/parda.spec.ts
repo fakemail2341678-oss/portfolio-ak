@@ -926,7 +926,10 @@ test.describe("Parda's source ranking", () => {
 			videoHosts: [],
 			error: null,
 		};
-		expect((await request.post(endpoint, { headers, data: { results: [{ ...run, extra: 1 }] } })).status()).toBe(400);
+		// Bad input is VALIDATION in the error envelope, as from every route (decision 0300).
+		const refused = await request.post(endpoint, { headers, data: { results: [{ ...run, extra: 1 }] } });
+		expect(refused.status()).toBe(422);
+		expect(await refused.json()).toMatchObject({ code: "VALIDATION", requestId: refused.headers()["x-request-id"] });
 		const stored = await request.post(endpoint, { headers, data: { results: [run] } });
 		expect(await stored.json()).toEqual({ ok: true, stored: 1, ignored: 0 });
 	});

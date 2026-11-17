@@ -87,7 +87,8 @@ Everything but e2e: 9 min 13 s (11 min 17 s before). The full set: 72 minutes (8
 - **The three projects** (`vitest.config.ts`, 0296) all run on worker threads. `unit` shares one module graph per worker (`isolate: false`): its tests keep nothing between files, and importing was over half their time. `components` and `server` stay isolated per file: run in a shuffled order without isolation, a file of each failed. So a `tests/unit` file must not rely on a fresh module (a `vi.mock` there needs `vi.resetModules()`), and a test that needs isolation belongs in the other two folders.
 - **Workers:** each project takes what the machine's free memory allows when the run starts (`scripts/lib/workers.ts`, measured per worker), so no command needs `--maxWorkers`. `GATE_WORKERS=<n>` overrides it.
 - **Messages are loaded by Node, not through Vite** (`server.deps.external` for `src/paraglide`): nearly every test file imports them, and 10 MB of compiled messages took 0.8 s a file through Vite's module runner. Don't `vi.mock` a Paraglide module; use `overwriteGetLocale`.
-- **Server functions** run only inside Start. Test the functions they call, and the wiring with static checks: `tests/server/functions-guards.test.ts` asserts each function's `requirePermission` and that every file in `src/functions` is declared, and `env-boundary.test.ts` asserts no client code imports `src/server`.
+- **Server functions** run only inside Start. Test the functions they call, and the wiring with static checks: `tests/server/functions-guards.test.ts` asserts each function's `requirePermission` and that every file in `src/functions` is declared, and `env-boundary.test.ts` asserts no client code imports `src/server`. `functions-contract.test.ts` then calls every function's real middleware chain inside Start's request storage, without its handler (0300): anonymous, a guest, no permission and bad input each get their code in the envelope. A new function is in it by being in `src/functions`.
+- **Server routes:** `routes.test.ts` calls every route; `defineApiRoute`'s and `defineCron`'s own tests take a `deps` or `db` option for PGlite. A test that calls a Start route's handler runs it in `inStartEvent` (`tests/utils/start-event.ts`), which gives Start's `getRequest()` its request.
 - **Routes:**
   - `createRouter({ routeTree, context: {} as RouterContext })` resolves real route ids (see `route-seo.test.ts`, `dev-examples.test.ts`);
   - `createMemoryHistory` plus a test route tree renders components that need a router (`breadcrumbs.test.tsx`, `route-masking.test.tsx`).
@@ -182,7 +183,7 @@ The standard ([conventions.md](conventions.md), "The standard"; decision 0297) i
 
 | File | Checks |
 | --- | --- |
-| `standard.test.ts` | Each of the 27 rules (`scripts/standard/rules/`) on the whole tree, against `known-deviations.json`. A deviation that is not listed fails; a listed one that is gone fails too |
+| `standard.test.ts` | Each of the 28 rules (`scripts/standard/rules/`) on the whole tree, against `known-deviations.json`. A deviation that is not listed fails; a listed one that is gone fails too |
 | `rules.test.ts` | The rules themselves, on a tree in memory (`fixture.ts`): one of each deviation, and a feature in the standard's shape that nothing may flag. The ratchet's arithmetic |
 | `generator.test.ts` | What `pnpm new:feature`'s templates make has no deviation; `biome.json`'s import boundaries forbid only what the standard forbids |
 
