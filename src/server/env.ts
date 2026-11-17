@@ -109,6 +109,17 @@ export const serverEnvSchema = {
 	/** Bearer token for scheduled jobs (/api/cron/*); Vercel Cron sends it. Unset: the routes answer 404. */
 	CRON_SECRET: z.string().trim().min(16).optional(),
 	/**
+	 * Monetag's push notifications (decision 0301): the service worker served at /sw.js, from the
+	 * `sw.js` Monetag gives for the push zone (`self.options = { domain, zoneId }`). Both or neither;
+	 * unset, /sw.js is a 404 and the push format can't run.
+	 */
+	MONETAG_PUSH_DOMAIN: z
+		.string()
+		.trim()
+		.regex(/^[a-z0-9-]+(?:\.[a-z0-9-]+)+$/i, "Use the domain from Monetag's sw.js, e.g. 3nbf4.com.")
+		.optional(),
+	MONETAG_PUSH_ZONE: z.string().trim().regex(/^\d+$/, "Use the zoneId number from Monetag's sw.js.").optional(),
+	/**
 	 * How long a server function or a server route may take, in ms, before its caller gets
 	 * TIMEOUT (504) in the error envelope instead of the platform's own page (decision 0300).
 	 * Keep it under the host's limit for a function. 0: no limit.
@@ -210,6 +221,13 @@ export const createServerEnv = (runtimeEnv: Record<string, string | undefined>) 
 						path: ["CLOUDINARY_CLOUD_NAME"],
 						message:
 							"Set CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY and CLOUDINARY_API_SECRET together, or none of them.",
+					});
+				}
+				if (Boolean(env.MONETAG_PUSH_DOMAIN) !== Boolean(env.MONETAG_PUSH_ZONE)) {
+					ctx.addIssue({
+						code: "custom",
+						path: [env.MONETAG_PUSH_DOMAIN ? "MONETAG_PUSH_ZONE" : "MONETAG_PUSH_DOMAIN"],
+						message: "Set both MONETAG_PUSH_DOMAIN and MONETAG_PUSH_ZONE, or neither.",
 					});
 				}
 				if (env.EMAIL_PROVIDER === "resend" && !env.RESEND_API_KEY) {

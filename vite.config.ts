@@ -158,6 +158,8 @@ export default defineConfig(async ({ command, mode }) => {
 					// Nitro routes so dev serves them to manifest fetches too (see the file). One per locale.
 					"/manifest.webmanifest": { handler: "./src/server/routes/manifest.ts", method: "GET" },
 					"/ne/manifest.webmanifest": { handler: "./src/server/routes/manifest.ts", method: "GET" },
+					// Monetag's push worker, at the root where its tag registers it; 404 unless configured (decision 0301).
+					"/sw.js": { handler: "./src/server/routes/monetag-sw.ts", method: "GET" },
 					// taskline:start
 					"/app/taskline/manifest.webmanifest": { handler: "./src/server/routes/taskline-manifest.ts", method: "GET" },
 					"/ne/app/taskline/manifest.webmanifest": {
@@ -198,6 +200,13 @@ export default defineConfig(async ({ command, mode }) => {
 					"/**": { headers: STATIC_SECURITY_HEADERS },
 					// Parda's placeholder player is framed by this app's own pages (decision 0230).
 					"/parda/api/**": { headers: { "x-frame-options": "SAMEORIGIN" } }, // @parda
+					// parda:start
+					// Parda's pages carry ads (decision 0301): the popunder keeps the window it opens.
+					"/app/parda": { headers: { "cross-origin-opener-policy": "same-origin-allow-popups" } },
+					"/app/parda/**": { headers: { "cross-origin-opener-policy": "same-origin-allow-popups" } },
+					"/ne/app/parda": { headers: { "cross-origin-opener-policy": "same-origin-allow-popups" } },
+					"/ne/app/parda/**": { headers: { "cross-origin-opener-policy": "same-origin-allow-popups" } },
+					// parda:end
 					// chaal:start
 					// Chaal's engine (decisions 0257 and 0263): hashed names, so a year's cache; a dedicated worker
 					// follows its own response's CSP, so only these files may compile WebAssembly.

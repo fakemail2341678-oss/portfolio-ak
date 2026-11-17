@@ -11,6 +11,9 @@ import { inStartEvent } from "../utils/start-event";
 const CRON_SECRET = vi.hoisted(() => {
 	const secret = "routes-cron-secret-0123";
 	process.env.CRON_SECRET = secret;
+	// Monetag's push worker (decision 0301), configured for this file.
+	process.env.MONETAG_PUSH_DOMAIN = "push.example";
+	process.env.MONETAG_PUSH_ZONE = "12279218";
 	return secret;
 });
 vi.mock("@/server/db/client", async () => {
@@ -101,6 +104,22 @@ describe("the Nitro routes", () => {
 			await problem(posted, 405, "METHOD_NOT_ALLOWED");
 			expect(posted.headers.get("allow")).toBe("GET");
 		}
+	});
+
+	it("serve Monetag's push worker from its configured zone, and nothing but GET", async () => {
+		quiet();
+		const worker = await nitro("monetag-sw", "/sw.js");
+		expect(worker.status).toBe(200);
+		expect(worker.headers.get("content-type")).toBe("text/javascript; charset=utf-8");
+		expect(await worker.text()).toBe(
+			[
+				'self.options = {"domain":"push.example","zoneId":12279218};',
+				'self.lary = "";',
+				'importScripts("https://push.example/act/files/service-worker.min.js?r=sw");',
+				"",
+			].join("\n"),
+		);
+		await problem(await nitro("monetag-sw", "/sw.js", { method: "POST" }), 405, "METHOD_NOT_ALLOWED");
 	});
 
 	it("keep the probe a 404 while PARDA_PROBE_SECRET is unset", async () => {

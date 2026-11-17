@@ -349,6 +349,24 @@ Decision 0243. `/app/parda/party/{code}`, noindex and never listed; the code is 
 
 **Connecting Ably:** create an app, copy its API key (the whole `appId.keyId:secret`) to `PARDA_REALTIME_KEY`. `connect-src` gains Ably's hosts on Parda's pages only then. Another service means another implementation in `lib/channel.ts`, its hosts in `player/csp.ts`, and its token format in `token.ts` and the relay.
 
+## Ads (Monetag, decision 0301)
+
+Parda is the only part of the app with ads: Monetag's MultiTag, which runs the formats chosen in Monetag's dashboard (push notifications, in-page push, vignette, popunder).
+
+| Piece | Where |
+| --- | --- |
+| Which pages | `src/features/parda/ads/lib/pages.ts` (`isPardaAdPath`): home, hubs, discover, search, a title and its credits, a person, collections, the schedule, the library, about. Never the player, a watch party, signing in or up, the account or the profiles |
+| When | `src/features/parda/ads/hooks/use-parda-ads.ts`, from the layout: after the visitor accepts the consent banner, when the browser is idle; never for a kids' profile (switching to one unregisters the push worker and reloads) |
+| Leaving | from an ad page to one without ads (the player, a form, another section) is a full page load (`useBlocker`), so no ad script follows; back to an ad page loads the tag again |
+| The tag | `src/lib/ads/monetag.ts`: `VITE_MONETAG_TAG_URL` and `VITE_MONETAG_ZONE`, from the dashboard's "Get tag" (`<script src data-zone>`) |
+| Push | `GET /sw.js` (`src/server/routes/monetag-sw.ts`) from `MONETAG_PUSH_DOMAIN` and `MONETAG_PUSH_ZONE` (the push zone's `sw.js`); a 404 without them |
+| Consent | the site's one banner (`ConsentBanner`) asks on Parda's pages and names the ads; declining or withdrawing unregisters the push worker |
+| CSP and headers | on the ad pages only: `frame-src`, `img-src` and `connect-src` take any `https:` host (Monetag rotates its domains), `worker-src 'self'`; `script-src` stays nonce and `'strict-dynamic'` (our code adds the tag). `Cross-Origin-Opener-Policy: same-origin-allow-popups` on Parda's paths (route rules in `vite.config.ts`), for the popunder |
+
+**Setting it up:** in Vercel, set the four variables (the tag's URL and zone; the push zone's domain and number) and redeploy: the tag's are read at build time. **Frequency and formats** are Monetag's dashboard's: keep the popunder and the vignette capped (once a day or so), or browsing Parda gets tiring. Checked on a production build in Chrome: no CSP refusal, the push worker registered at `/sw.js`, the tag loaded only after consent, and none on the player.
+
+**The push worker's scope is the whole site** (Monetag registers it at `/`): it only exists for a visitor who allowed ads on Parda, but while it does, it sees that browser's requests to every section. That was the owner's choice (2026-11-17).
+
 ## Pitfalls already solved
 
 - **The billboard from `lg` is one screen tall:** its picture is `flex-1` in a frame of `100svh - 3.75rem`, so a change to the top mask's height must change `FRAME` in `kit/components/billboard-hero.tsx` too (0249).

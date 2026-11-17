@@ -26,7 +26,7 @@ All optional except the logs. Without their variables, Sentry and PostHog are of
 
 ## PostHog (`VITE_POSTHOG_KEY`, optional `VITE_POSTHOG_HOST`)
 
-- **Opt-in:** a consent banner stores the choice in a cookie (`analyticsConsent` preference), rendered on the server so nothing shifts. The footer link changes it later.
+- **Opt-in:** a consent banner stores the choice in a cookie (`analyticsConsent` preference), rendered on the server so nothing shifts. The footer link changes it later. The same choice covers Parda's ads when they are configured (decision 0301): the banner then names them, and on Parda's pages it asks even without PostHog ([parda.md](parda.md), "Ads").
 - **Before consent:** `posthog-js` isn't downloaded, `track()` is a no-op, and the server sends no events.
 - **After consent:** pageviews on navigation, `identify` on login and `reset` on logout, plus feature events: `test_crud_created`, `test_crud_updated` and `test_crud_deleted` (server) and `test_crud_viewed` (browser).
 - **In features:** call `track("event", props)` freely; it does nothing without consent.

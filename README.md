@@ -78,6 +78,8 @@ Everything is validated at startup with T3 Env (`src/server/env.ts` and `src/lib
 | `LICHESS_APP_TOKEN` | no | A Lichess personal token with no scopes, server only: the opening explorer refuses calls without one. <!-- @chaal --> |
 | `CRON_SECRET` | no | Bearer token for `/api/cron/*` (Vercel Cron, `vercel.json`); unset, the routes answer 404. |
 | `REQUEST_TIMEOUT_MS` | no | How long a server function or route may take before it answers `TIMEOUT` (default 30000; 0: no limit). Keep it under the host's function limit. |
+| `VITE_MONETAG_TAG_URL`, `VITE_MONETAG_ZONE` | no | Monetag's MultiTag (script URL and `data-zone`): ads in Parda only, after consent, never for a kids' profile (0301). |
+| `MONETAG_PUSH_DOMAIN`, `MONETAG_PUSH_ZONE` | no | The push zone's `sw.js` options, served at `/sw.js` for Monetag's push notifications (0301). |
 | `SLOW_REQUEST_MS` | no | A request slower than this leaves a `slow request` log line (default 2000; 0: never). |
 
 ## Architecture

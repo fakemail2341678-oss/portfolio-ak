@@ -23,6 +23,10 @@ for (const [key, value] of Object.entries(defaults)) process.env[key] = value;
  */
 const OFF = [
 	"VITE_POSTHOG_KEY",
+	"VITE_MONETAG_TAG_URL",
+	"VITE_MONETAG_ZONE",
+	"MONETAG_PUSH_DOMAIN",
+	"MONETAG_PUSH_ZONE",
 	"VITE_POSTHOG_HOST",
 	"POSTHOG_SECRET_KEY",
 	"VITE_SENTRY_DSN",

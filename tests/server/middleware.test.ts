@@ -168,6 +168,48 @@ describe("security headers middleware", () => {
 		expect((await run("application/json")).csp).toBeNull();
 	});
 
+	it("opens frames, images and requests to any https host, and a worker from this origin, on Parda's ad pages only (decision 0301)", async () => {
+		vi.doMock("@/server/parda/player/csp", () => ({
+			pardaCspOrigins: async () => ({ embed: ["https://player.example"], img: [], connect: [], worker: [] }),
+		}));
+		vi.stubEnv("VITE_MONETAG_TAG_URL", "https://ads.example/88/tag.min.js");
+		vi.stubEnv("VITE_MONETAG_ZONE", "311177");
+		vi.stubEnv("PROD", true);
+		vi.resetModules();
+		const { securityHeadersMiddleware } = await import("@/middleware/security-headers");
+		const csp = async (path: string) => {
+			const result = (await stepOf(
+				securityHeadersMiddleware,
+				"server",
+			)({
+				request: new Request(`https://app.example${path}`),
+				next: async () => ({ response: new Response("<html></html>", { headers: { "content-type": "text/html" } }) }),
+			})) as { response: Response };
+			return result.response.headers.get("content-security-policy") ?? "";
+		};
+		/** A directive's sources, by name. */
+		const directives = (policy: string) =>
+			Object.fromEntries(
+				policy.split("; ").map((part) => {
+					const [name = "", ...sources] = part.split(" ");
+					return [name, sources];
+				}),
+			) as Record<string, string[] | undefined>;
+		const ads = directives(await csp("/ne/app/parda/search"));
+		for (const name of ["frame-src", "img-src", "connect-src"]) expect(ads[name], name).toContain("https:");
+		expect(ads["frame-src"]).toContain("https://player.example");
+		expect(ads["worker-src"]).toEqual(["'self'"]);
+		// Scripts stay nonce-only: the tag comes through 'strict-dynamic', never through a host.
+		expect(ads["script-src"]).not.toContain("https:");
+		for (const path of ["/app/parda/watch/movie/550", "/admin/parda", "/"]) {
+			const strict = directives(await csp(path));
+			for (const name of ["frame-src", "img-src", "connect-src"])
+				expect(strict[name] ?? [], `${path} ${name}`).not.toContain("https:");
+			expect(strict["worker-src"], path).toBeUndefined();
+		}
+		vi.doUnmock("@/server/parda/player/csp");
+	});
+
 	it("reports violations to this origin's /api/csp-report (production only)", async () => {
 		expect((await run("text/html")).reportingEndpoints).toBeNull();
 		vi.stubEnv("PROD", true);

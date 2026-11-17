@@ -49,6 +49,9 @@ export const E2E_PUBLIC_ENV = {
 	// Set but empty, so values from .env don't reach the bundle (real env wins over .env files).
 	VITE_SENTRY_DSN: "",
 	VITE_POSTHOG_KEY: "",
+	// No ads in the suite (decision 0301): third-party ads would fail the review's console and CLS checks.
+	VITE_MONETAG_TAG_URL: "",
+	VITE_MONETAG_ZONE: "",
 	VITE_POSTHOG_HOST: "",
 	// The browser review covers the /dev pages too (src/lib/dev-routes.ts).
 	VITE_DEV_ROUTES: "true",

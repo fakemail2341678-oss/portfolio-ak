@@ -3,6 +3,7 @@ import { ConfirmProvider } from "@/components/dialogs/confirm";
 import { NotFound } from "@/components/errors/not-found-page";
 import { SectionHome } from "@/components/errors/section-home";
 import { m } from "@/paraglide/messages";
+import { usePardaAds } from "../../ads/hooks/use-parda-ads";
 import { pardaLinks } from "../../links";
 import { PardaFrame } from "./parda-frame";
 
@@ -11,6 +12,8 @@ const home = () => <Link {...pardaLinks.home()}>{m.parda_go_home()}</Link>;
 
 /** The `_parda` layout's component: every page in Parda's frame, and errors lead back to Parda's home. */
 export function PardaSection() {
+	// Its ads, when Monetag is configured and the visitor allowed them (decision 0301).
+	usePardaAds();
 	return (
 		<SectionHome link={home()}>
 			{/* History's "Clear" and deleting a profile ask first (decision 0240). */}

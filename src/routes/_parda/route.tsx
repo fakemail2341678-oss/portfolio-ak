@@ -12,7 +12,8 @@ import { getLocale } from "@/paraglide/runtime";
  * with seo(). Every page is in its frame; a 404 brings the frame itself.
  */
 export const Route = createFileRoute("/_parda")({
-	staticData: { brand: PARDA_BRAND },
+	// `ads`: the consent banner asks about ads here (decision 0301); usePardaAds says on which pages.
+	staticData: { brand: PARDA_BRAND, ads: true },
 	// The admin's banner (decision 0237) and a guest's, which names the day their progress is
 	// deleted (decision 0236): read here, so both render whole. None of these can fail the page.
 	loader: async ({ context }) => {

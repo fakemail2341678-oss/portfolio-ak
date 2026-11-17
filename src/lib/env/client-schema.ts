@@ -40,6 +40,14 @@ export const clientEnvSchema = {
 	VITE_POSTHOG_KEY: z.string().trim().startsWith("phc_", "PostHog project API keys start with 'phc_'.").optional(),
 	VITE_POSTHOG_HOST: z.url("Must be your PostHog ingest host, e.g. https://eu.i.posthog.com.").optional(),
 
+	// Monetag ads on the portfolio's public pages (decision 0301), from the dashboard's "Get tag" for
+	// the MultiTag: <script src="VITE_MONETAG_TAG_URL" data-zone="VITE_MONETAG_ZONE">. Both or neither;
+	// unset, there are no ads. They load only after the visitor accepts the consent banner.
+	VITE_MONETAG_TAG_URL: z
+		.url({ protocol: /^https$/, error: "Must be the tag's https:// script URL from Monetag's dashboard." })
+		.optional(),
+	VITE_MONETAG_ZONE: z.string().trim().regex(/^\d+$/, "Must be the tag's data-zone number.").optional(),
+
 	// For the e2e harness only: keep the /dev pages in a build (src/lib/dev-routes.ts). Never in production:
 	// the build and the server refuse it when VERCEL_ENV is "production" (devRoutesInProduction).
 	VITE_DEV_ROUTES: z.enum(["true", "false"], "Must be true or false.").optional(),

@@ -1,9 +1,10 @@
 import { useQuery } from "@tanstack/react-query";
-import { useRouter } from "@tanstack/react-router";
+import { useMatches, useRouter } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { sessionQueryOptions } from "@/features/auth/queries";
 import { useSessionSkipped } from "@/hooks/use-session-skipped";
+import { adsConfigured, removeAds, sectionShowsAds } from "@/lib/ads/monetag";
 import {
 	analyticsKey,
 	analyticsRunning,
@@ -48,6 +49,8 @@ export function ObservabilitySync() {
 		} else {
 			stopAnalytics();
 			setRunning(false);
+			// Ads (decision 0301) need the same consent: without it, no push worker stays registered.
+			if (adsConfigured) void removeAds();
 		}
 		return () => {
 			cancelled = true;
@@ -76,14 +79,22 @@ export function ObservabilitySync() {
 }
 
 /**
- * Asks for analytics consent. Rendered on the server too: the choice is a
- * cookie, so the banner is present (or absent) from the first byte and the
- * page doesn't shift after hydration. Hidden when PostHog isn't configured.
+ * Asks for consent to analytics and, where a section shows them, ads (decision 0301): one
+ * choice, and the text names what is configured. Rendered on the server too: the choice is
+ * a cookie, so the banner is present (or absent) from the first byte and the page doesn't
+ * shift after hydration. Shown on every page when PostHog is configured, on the pages of a
+ * section with ads when only ads are, and never when neither is.
  */
 export function ConsentBanner() {
 	const consent = usePreferences((preferences) => preferences.analyticsConsent);
 	const store = usePreferencesStore();
-	if (!analyticsKey || consent !== "unset") return null;
+	const adsHere = useMatches({ select: sectionShowsAds });
+	if (consent !== "unset" || !(analyticsKey || adsHere)) return null;
+	const body = adsConfigured
+		? analyticsKey
+			? m.consent_body_ads_analytics()
+			: m.consent_body_ads()
+		: m.consent_body();
 	return (
 		<section
 			aria-labelledby="consent-title"
@@ -95,31 +106,40 @@ export function ConsentBanner() {
 					<h2 id="consent-title" className="font-medium">
 						{m.consent_title()}
 					</h2>
-					<p className="text-muted-foreground text-sm">{m.consent_body()}</p>
+					<p className="text-muted-foreground text-sm">{body}</p>
 				</div>
 				<div className="flex shrink-0 gap-2">
 					<Button variant="outline" onClick={() => store.actions.setAnalyticsConsent("denied")}>
 						{m.consent_decline()}
 					</Button>
-					<Button onClick={() => store.actions.setAnalyticsConsent("granted")}>{m.consent_accept()}</Button>
+					<Button onClick={() => store.actions.setAnalyticsConsent("granted")}>
+						{adsConfigured ? m.consent_accept_all() : m.consent_accept()}
+					</Button>
 				</div>
 			</div>
 		</section>
 	);
 }
 
-/** Footer control to revisit the choice (brings the banner back). Hidden without PostHog. */
+/** Footer control to revisit the choice (brings the banner back). Hidden without PostHog or ads. */
 export function ConsentSettingsButton() {
 	const consent = usePreferences((preferences) => preferences.analyticsConsent);
 	const store = usePreferencesStore();
-	if (!analyticsKey || consent === "unset") return null;
+	if (!(analyticsKey || adsConfigured) || consent === "unset") return null;
+	const granted = consent === "granted";
 	return (
 		<button
 			type="button"
 			className="underline-offset-4 hover:underline"
 			onClick={() => store.actions.setAnalyticsConsent("unset")}
 		>
-			{consent === "granted" ? m.consent_settings_on() : m.consent_settings_off()}
+			{adsConfigured
+				? granted
+					? m.consent_settings_on_ads()
+					: m.consent_settings_off_ads()
+				: granted
+					? m.consent_settings_on()
+					: m.consent_settings_off()}
 		</button>
 	);
 }

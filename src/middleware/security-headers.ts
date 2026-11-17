@@ -1,4 +1,5 @@
 import { createMiddleware } from "@tanstack/react-start";
+import { adsConfigured } from "@/lib/ads/monetag"; // @parda
 import { clientEnv } from "@/lib/env/client";
 import { buildCsp, CSP_REPORT_PATH, originOf, reportingEndpoints } from "@/lib/http/csp";
 import { analyticsHost, analyticsKey } from "@/lib/observability/analytics";
@@ -90,6 +91,18 @@ export const securityHeadersMiddleware = createMiddleware().server(async ({ next
 		if (PARDA_PAGE.test(pathname)) {
 			const { pardaCspOrigins } = await import("@/server/parda/player/csp");
 			Object.assign(section, await pardaCspOrigins({ includeDisabled: PARDA_LAB.test(pathname) }));
+		}
+		// Its ad pages (decision 0301): Monetag's scripts come through 'strict-dynamic' (our code adds the
+		// tag), but its frames, images and requests come from hosts it rotates, and its push format
+		// registers a worker from this origin. Only there, and only when ads are configured.
+		if (adsConfigured) {
+			const { isPardaAdPath } = await import("@/features/parda/ads/lib/pages");
+			if (isPardaAdPath(pathname)) {
+				section.embed = [...section.embed, "https:"];
+				section.img = [...section.img, "https:"];
+				section.connect = [...section.connect, "https:"];
+				section.worker = [...section.worker, "'self'"];
+			}
 		}
 		// parda:end
 		// chaal:start
