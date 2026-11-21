@@ -97,7 +97,7 @@
 		"fractional-indexing": "^4.0.0",
 		"input-otp": "^1.5.0",
 		"libphonenumber-js": "^1.13.16",
-		"lucide-react": "^1.73.0",
+		"lucide-react": "^1.75.0",
 		"nitro": "3.0.261103-rc",
 		"pg": "^8.23.1",
 		"posthog-js": "1.450.0",
