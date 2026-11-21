@@ -26,23 +26,23 @@ jobs:
     name: Typecheck, lint, knip, migrations
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
-      - uses: pnpm/action-setup@v4
-      - uses: actions/setup-node@v5
+      - uses: actions/checkout@v7
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v7
         with:
           node-version-file: .nvmrc
           cache: pnpm
       - run: pnpm install --frozen-lockfile
       # The compiled messages and the record of what they were compiled from (scripts/i18n-compile.ts):
       # compiling takes 44 s, and most pushes change no message.
-      - uses: actions/cache@v4
+      - uses: actions/cache@v6
         with:
           path: |
             src/paraglide
             node_modules/.cache/paraglide
           key: paraglide-${{ runner.os }}-${{ hashFiles('messages/**', 'project.inlang/settings.json', 'project.inlang/paraglide.config.ts', 'pnpm-lock.yaml') }}
       # tsc's incremental file: a push rechecks what changed since the last run on any branch.
-      - uses: actions/cache@v4
+      - uses: actions/cache@v6
         with:
           path: node_modules/.cache/tsc
           key: tsc-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml', 'tsconfig.json') }}-${{ github.sha }}
@@ -61,20 +61,20 @@ jobs:
     name: Unit, server and component tests
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
-      - uses: pnpm/action-setup@v4
-      - uses: actions/setup-node@v5
+      - uses: actions/checkout@v7
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v7
         with:
           node-version-file: .nvmrc
           cache: pnpm
       - run: pnpm install --frozen-lockfile
       # The migrated PGlite database every server test loads (tests/setup/pglite.ts names it by the migrations' hash).
-      - uses: actions/cache@v4
+      - uses: actions/cache@v6
         with:
           path: node_modules/.cache/vitest-pglite
           key: vitest-pglite-${{ runner.os }}-${{ hashFiles('drizzle/**', 'pnpm-lock.yaml') }}
       # Vitest's transformed modules (fsModuleCache in vitest.config.ts).
-      - uses: actions/cache@v4
+      - uses: actions/cache@v6
         with:
           path: node_modules/.vitest-cache
           key: vitest-modules-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml', 'vitest.config.ts') }}-${{ github.sha }}
@@ -85,15 +85,15 @@ jobs:
     name: Storybook build and story tests
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
-      - uses: pnpm/action-setup@v4
-      - uses: actions/setup-node@v5
+      - uses: actions/checkout@v7
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v7
         with:
           node-version-file: .nvmrc
           cache: pnpm
       - run: pnpm install --frozen-lockfile
       # Vite's optimized dependencies for the story tests and Storybook's own.
-      - uses: actions/cache@v4
+      - uses: actions/cache@v6
         with:
           path: |
             node_modules/.vite
@@ -125,9 +125,9 @@ jobs:
     env:
       E2E_DATABASE_URL: postgresql://e2e:e2e@localhost:5432/e2e
     steps:
-      - uses: actions/checkout@v5
-      - uses: pnpm/action-setup@v4
-      - uses: actions/setup-node@v5
+      - uses: actions/checkout@v7
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v7
         with:
           node-version-file: .nvmrc
           cache: pnpm
@@ -136,14 +136,14 @@ jobs:
       # (e2e/harness/build-hash.ts), and the harness builds again unless that hash is today's, so a
       # stale cache costs a build and nothing else. A push that changes only tests, docs or
       # scripts builds nothing in any shard.
-      - uses: actions/cache@v4
+      - uses: actions/cache@v6
         with:
           path: .output
           key: e2e-build-${{ runner.os }}-${{ hashFiles('src/**', 'public/**', 'messages/**', 'project.inlang/settings.json', 'vite/**', 'vite.config.ts', 'tsconfig.json', 'package.json', 'pnpm-lock.yaml', 'components.json') }}
       # Builds (unless cached), migrates, seeds and starts the production server itself (e2e/harness/server.ts).
       # Uses the runner's installed Chrome, like the story tests.
       - run: pnpm test:e2e --shard=${{ matrix.shard }}/5
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         if: failure()
         with:
           name: playwright-report-${{ matrix.shard }}
@@ -162,9 +162,9 @@ jobs:
       matrix:
         keep: ["", "--keep-apps", "--keep-portfolio", "--keep-taskline", "--keep-parda", "--keep-chaal", "--keep-kharcha"]
     steps:
-      - uses: actions/checkout@v5
-      - uses: pnpm/action-setup@v4
-      - uses: actions/setup-node@v5
+      - uses: actions/checkout@v7
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v7
         with:
           node-version-file: .nvmrc
           cache: pnpm
@@ -191,9 +191,9 @@ jobs:
     name: Production build
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
-      - uses: pnpm/action-setup@v4
-      - uses: actions/setup-node@v5
+      - uses: actions/checkout@v7
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v7
         with:
           node-version-file: .nvmrc
           cache: pnpm
