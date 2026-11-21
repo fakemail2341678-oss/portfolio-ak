@@ -106,7 +106,7 @@
 		"react": "^19.3.1",
 		"react-day-picker": "^10.0.2",
 		"react-dom": "^19.3.1",
-		"react-email": "^6.11.13",
+		"react-email": "^6.11.16",
 		"recharts": "^3.10.1",
 		"resend": "^6.38.1",
 		"sanitize-html": "^2.18.2",
